@@ -1,0 +1,85 @@
+from frozen.general.extended_power import ExtendedPower
+from frozen.managers.roles import UnitTask
+from frozen.plans.acts import *
+from frozen.plans.acts.zerg import *
+from frozen.plans.require import *
+from frozen.plans.tactics import *
+from frozen.plans.tactics.zerg import *
+from frozen.plans import BuildOrder, Step, StepBuildGas
+from frozen.knowledges import KnowledgeBot
+from sc2 import BotAI, UnitTypeId, AbilityId, Race
+from sc2.units import Units
+
+
+class PlanZoneAttack2(PlanZoneAttack):
+
+    def _start_attack(self, power: ExtendedPower, attackers: Units):
+        drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.knowledge.enemy_start_location, 10)
+        self.retreat_multiplier = 0  # never retreat, never surrender
+
+        for unit in drones:
+            self.knowledge.roles.set_task(UnitTask.Attacking, unit)
+
+        return super()._start_attack(power, attackers)
+
+
+class TwelvePool(KnowledgeBot):
+    """Zerg 12 pool cheese tactic"""
+
+    def __init__(self):
+        super().__init__("12pool")
+
+    async def create_plan(self) -> BuildOrder:
+        build_step_buildings = [
+            # 12 Pool
+            Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1), RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1)),
+        ]
+
+        finish = [
+            Step(RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30),
+                 StepBuildGas(2)),
+            ActExpand(2),
+            RequiredUnitExists(UnitTypeId.DRONE, 20),
+            MorphLair(),
+            RequiredUnitExists(UnitTypeId.DRONE, 30),
+            StepBuildGas(4),
+            ActBuilding(UnitTypeId.SPIRE),
+            ZergUnit(UnitTypeId.MUTALISK, 10, priority=True)
+        ]
+
+        build_step_units = [
+
+            # 12 Pool followed by overlord
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
+                 RequiredUnitExists(UnitTypeId.OVERLORD, 2)),
+
+            # TheMusZero
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
+                 RequiredUnitExists(UnitTypeId.DRONE, 14)),
+            # Queen for more larvae
+            # BuildStep(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1), RequiredUnitExists(UnitTypeId.QUEEN, 1)),
+
+            # Endless zerglings
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA),
+                 None),
+
+        ]
+
+        return BuildOrder([
+            build_step_buildings,
+            finish,
+            build_step_units,
+            AutoOverLord(),
+            InjectLarva(),
+            PlanWorkerOnlyDefense(),
+            PlanZoneDefense(),
+            PlanZoneGather(),
+            PlanZoneAttack2(2),
+            PlanFinishEnemy(),
+        ])
+
+
+class LadderBot(TwelvePool):
+    @property
+    def my_race(self):
+        return Race.Zerg
