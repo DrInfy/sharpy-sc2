@@ -153,7 +153,7 @@ class BuildBio(BuildOrder):
 
 class BioBot(KnowledgeBot):
     def __init__(self):
-        super().__init__("Rusty Ball")
+        super().__init__("Rusty Infantry")
         self.attack = PlanZoneAttack(26)
 
     async def create_plan(self) -> BuildOrder:

@@ -90,7 +90,7 @@ zip_types = {
     "bc": DummyZip("FlyingRust", "Terran", "dummies\\terran\\battle_cruisers.py"),
     "marine": DummyZip("RustyMarines", "Terran", "dummies\\terran\\marine_rush.py"),
     "tank": DummyZip("RustyTanks", "Terran", "dummies\\terran\\two_base_tanks.py"),
-    "bio": DummyZip("RustyBall", "Terran", "dummies\\terran\\bio.py"),
+    "bio": DummyZip("RustyInfantry", "Terran", "dummies\\terran\\bio.py"),
     "banshee": DummyZip("RustyScreams", "Terran", "dummies\\terran\\banshees.py"),
 
     # Zerg dummies
