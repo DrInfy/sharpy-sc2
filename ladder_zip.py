@@ -3,6 +3,7 @@ import shutil
 import subprocess
 
 import argparse
+import zipfile
 from typing import Tuple, List, Optional
 
 from version import update_version_txt
@@ -12,7 +13,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 # Files or folders common to all bots.
 common = [
     ("jsonpickle", None),
-    ("python-sc2\\sc2", root_dir + "\\sc2"),
+    ("python-sc2\\sc2", "\\sc2"),
     ("sc2pathlibp", None),
     ("requirements.txt", None),
     ("version.txt", None),
@@ -62,7 +63,7 @@ class DummyZip(LadderZip):
         files = [
             ("frozen", None),
             ("dummy", None),
-            ("dummies\\run.py", root_dir),
+            ("dummies\\run.py", "run.py"),
         ]
         super().__init__(archive_name, race, files)
 
@@ -108,6 +109,13 @@ zip_types = {
 }
 
 
+def zipdir(path: str, ziph: zipfile.ZipFile):
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            ziph.write(os.path.join(root, file))
+
+
 def create_ladder_zip(bot_name: str):
     update_version_txt()
     print()
@@ -123,6 +131,7 @@ def create_ladder_zip(bot_name: str):
         os.remove(archive_name)
 
     files_to_zip = []
+    directories_to_zip = []
     files_to_delete = []
 
     f = open("ladderbots.json", "w+")
@@ -137,7 +146,10 @@ def create_ladder_zip(bot_name: str):
 
         if dest is None:
             # the file or folder can be used as is.
-            files_to_zip.append(src)
+            if os.path.isdir(src):
+                directories_to_zip.append(src)
+            else:
+                files_to_zip.append(src)
         else:  # need to move the file or folder.
             # if not os.path.exists(dest):
             #     raise ValueError(f"'{dest}' does not exist.")
@@ -146,11 +158,13 @@ def create_ladder_zip(bot_name: str):
 
             if os.path.isdir(src):
                 shutil.copytree(src, dest)
-                files_to_zip.append(dest)
+                directories_to_zip.append(dest)
+                # files_to_zip.append(dest)
                 files_to_delete.append(dest)
                 pass
             else:  # src is a file.
                 src_file = os.path.basename(src)
+
                 if os.path.isdir(dest):
                     # Join directory with filename
                     dest_path = os.path.join(dest, src_file)
@@ -158,21 +172,22 @@ def create_ladder_zip(bot_name: str):
                     # Rename into another file
                     dest_path = dest
 
-                print(f"Copying {src} ... {dest_path}")
-
                 files_to_zip.append(dest_path)
+
+                print(f"Copying {src} ... {dest_path}")
                 files_to_delete.append(dest_path)
 
                 shutil.copy(src, dest_path)
         pass
 
-    params = ' '.join(files_to_zip)
-
-    cmd = f"C:\\Program Files\\7-Zip\\7z a {archive_name} {params}"
-
     print()
-    print(cmd)
-    subprocess.run(cmd)
+    print(f"Zipping {archive_name}")
+    zipf = zipfile.ZipFile(archive_name, 'w', zipfile.ZIP_DEFLATED)
+    for file in files_to_zip:
+        zipf.write(file)
+    for directory in directories_to_zip:
+        zipdir(directory, zipf)
+    zipf.close()
 
     print()
     for file in files_to_delete:
