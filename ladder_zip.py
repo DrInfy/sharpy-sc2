@@ -13,7 +13,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 # Files or folders common to all bots.
 common = [
     ("jsonpickle", None),
-    ("python-sc2\\sc2", "sc2"),
+    (os.path.join("python-sc2", "sc2"), "sc2"),
     ("sc2pathlibp", None),
     ("requirements.txt", None),
     ("version.txt", None),
@@ -59,11 +59,11 @@ class DummyZip(LadderZip):
 
     def __init__(self, archive_name: str, race: str, file: str):
         self.dummy_file = file
-        self.new_dummy_file = root_dir + "\\dummy\\dummy.py"
+        self.new_dummy_file = os.path.join(root_dir, "dummy", "dummy.py")
         files = [
             ("frozen", None),
             ("dummy", None),
-            ("dummies\\run.py", "run.py"),
+            (os.path.join("dummies", "run.py"), "run.py"),
         ]
         super().__init__(archive_name, race, files)
 
@@ -77,32 +77,32 @@ class DummyZip(LadderZip):
 zip_types = {
 
     # Protoss dummies
-    "zealot": DummyZip("SharpKnives", "Protoss", "dummies\\protoss\\proxy_zealot_rush.py"),
-    "cannonrush": DummyZip("SharpCannon", "Protoss", "dummies\\protoss\\cannon_rush.py"),
-    "dt": DummyZip("SharpShadows", "Protoss", "dummies\\protoss\\dark_templar_rush.py"),
-    "4gate": DummyZip("SharpRush", "Protoss", "dummies\\protoss\\gate4.py"),
-    "stalker": DummyZip("SharpSpiders", "Protoss", "dummies\\protoss\\macro_stalkers.py"),
-    "robo": DummyZip("SharpRobots", "Protoss", "dummies\\protoss\\robo.py"),
-    "voidray": DummyZip("SharpRays", "Protoss", "dummies\\protoss\\voidray.py"),
+    "zealot": DummyZip("SharpKnives", "Protoss", os.path.join("dummies", "protoss", "proxy_zealot_rush.py")),
+    "cannonrush": DummyZip("SharpCannon", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py")),
+    "dt": DummyZip("SharpShadows", "Protoss", os.path.join("dummies", "protoss", "dark_templar_rush.py")),
+    "4gate": DummyZip("SharpRush", "Protoss", os.path.join("dummies", "protoss", "gate4.py")),
+    "stalker": DummyZip("SharpSpiders", "Protoss", os.path.join("dummies", "protoss", "macro_stalkers.py")),
+    "robo": DummyZip("SharpRobots", "Protoss", os.path.join("dummies", "protoss", "robo.py")),
+    "voidray": DummyZip("SharpRays", "Protoss", os.path.join("dummies", "protoss", "voidray.py")),
 
     # Terran dummies
-    "cyclone": DummyZip("RustyLocks", "Terran", "dummies\\terran\\cyclones.py"),
-    "oldrusty": DummyZip("OldRusty", "Terran", "dummies\\terran\\rusty.py"),
-    "bc": DummyZip("FlyingRust", "Terran", "dummies\\terran\\battle_cruisers.py"),
-    "marine": DummyZip("RustyMarines", "Terran", "dummies\\terran\\marine_rush.py"),
-    "tank": DummyZip("RustyTanks", "Terran", "dummies\\terran\\two_base_tanks.py"),
-    "bio": DummyZip("RustyInfantry", "Terran", "dummies\\terran\\bio.py"),
-    "banshee": DummyZip("RustyScreams", "Terran", "dummies\\terran\\banshees.py"),
+    "cyclone": DummyZip("RustyLocks", "Terran", os.path.join("dummies", "terran", "cyclones.py")),
+    "oldrusty": DummyZip("OldRusty", "Terran", os.path.join("dummies", "terran", "rusty.py")),
+    "bc": DummyZip("FlyingRust", "Terran", os.path.join("dummies", "terran", "battle_cruisers.py")),
+    "marine": DummyZip("RustyMarines", "Terran", os.path.join("dummies", "terran", "marine_rush.py")),
+    "tank": DummyZip("RustyTanks", "Terran", os.path.join("dummies", "terran", "two_base_tanks.py")),
+    "bio": DummyZip("RustyInfantry", "Terran", os.path.join("dummies", "terran", "bio.py")),
+    "banshee": DummyZip("RustyScreams", "Terran", os.path.join("dummies", "terran", "banshees.py")),
 
     # Zerg dummies
-    "lings": DummyZip("BluntTeeth", "Zerg", "dummies\\zerg\\lings.py"),
-    "200roach": DummyZip("BluntRoach", "Zerg", "dummies\\zerg\\macro_roach.py"),
-    "macro": DummyZip("BluntMacro", "Zerg", "dummies\\zerg\\macro_zerg_v2.py"),
-    "mutalisk": DummyZip("BluntFlies", "Zerg", "dummies\\zerg\\mutalisk.py"),
-    "hydra": DummyZip("BluntSpit", "Zerg", "dummies\\zerg\\roach_hydra.py"),
-    # "spine": DummyZip("BluntDefender", "Zerg", "dummies\\debug\\spine_defender.py"),
-    "12pool": DummyZip("BluntCheese", "Zerg", "dummies\\zerg\\twelve_pool.py"),
-    "workerrush": DummyZip("BluntyWorkers", "Zerg", "dummies\\zerg\\worker_rush.py"),
+    "lings": DummyZip("BluntTeeth", "Zerg", os.path.join("dummies", "zerg", "lings.py")),
+    "200roach": DummyZip("BluntRoach", "Zerg", os.path.join("dummies", "zerg", "macro_roach.py")),
+    "macro": DummyZip("BluntMacro", "Zerg", os.path.join("dummies", "zerg", "macro_zerg_v2.py")),
+    "mutalisk": DummyZip("BluntFlies", "Zerg", os.path.join("dummies", "zerg", "mutalisk.py")),
+    "hydra": DummyZip("BluntSpit", "Zerg", os.path.join("dummies", "zerg", "roach_hydra.py")),
+    # "spine": DummyZip("BluntDefender", "Zerg", os.path.join("dummies", "debug", "spine_defender.py")),
+    "12pool": DummyZip("BluntCheese", "Zerg", os.path.join("dummies", "zerg", "twelve_pool.py")),
+    "workerrush": DummyZip("BluntyWorkers", "Zerg", os.path.join("dummies", "zerg", "worker_rush.py")),
 
     # All
     "all": None
@@ -126,7 +126,7 @@ def create_ladder_zip(bot_name: str):
 
     bot_specific_paths = archive_zip.files
 
-    # Remove previous archive because we use 7-zip's append mode
+    # Remove previous archive
     if os.path.isfile(archive_name):
         print(f"Deleting {archive_name}")
         os.remove(archive_name)
@@ -206,10 +206,10 @@ def create_ladder_zip(bot_name: str):
     if not os.path.exists('publish'):
         os.mkdir('publish')
 
-    shutil.move(archive_name, "publish\\" + archive_name)
+    shutil.move(archive_name, os.path.join("publish", archive_name))
     archive_zip.post_zip()
 
-    print(f"\nSuccessfully created publish\\{archive_name}")
+    print(f"\nSuccessfully created {os.path.join('publish', archive_name)}")
 
 
 def get_archive(bot_name: str) -> LadderZip:
