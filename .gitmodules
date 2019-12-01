@@ -1,0 +1,3 @@
+[submodule "python-sc2"]
+	path = python-sc2
+	url = https://github.com/DrInfy/python-sc2.git
