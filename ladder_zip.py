@@ -206,7 +206,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Create a Ladder Manager ready zip archive for SC2 AI, AI Arena, Probots, ..."
     )
-    parser.add_argument("name", help=f"Bot name: {zip_keys}.")
+    parser.add_argument("-n", "--name", help=f"Bot name: {zip_keys}.")
 
     args = parser.parse_args()
 

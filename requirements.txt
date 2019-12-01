@@ -1,0 +1,9 @@
+s2clientprotocol==4.10.3.76114.0
+portpicker==1.3.1
+numpy==1.17.3
+requests==2.22.0
+aiohttp==3.6.2
+scipy==1.3.1
+opencv-python==4.1.1.26
+more-itertools==7.2.0
+pipenv==2018.11.26
