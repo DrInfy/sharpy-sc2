@@ -13,7 +13,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 # Files or folders common to all bots.
 common = [
     ("jsonpickle", None),
-    ("python-sc2\\sc2", "\\sc2"),
+    ("python-sc2\\sc2", "sc2"),
     ("sc2pathlibp", None),
     ("requirements.txt", None),
     ("version.txt", None),
@@ -68,7 +68,7 @@ class DummyZip(LadderZip):
         super().__init__(archive_name, race, files)
 
     def pre_zip(self):
-        shutil.copy(self.dummy_file, root_dir + "\\dummy\\dummy.py")
+        shutil.copy(self.dummy_file, self.new_dummy_file)
 
     def post_zip(self):
         os.remove(self.new_dummy_file)
@@ -113,7 +113,8 @@ def zipdir(path: str, ziph: zipfile.ZipFile):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
-            ziph.write(os.path.join(root, file))
+            if "__pycache__" not in root:
+                ziph.write(os.path.join(root, file))
 
 
 def create_ladder_zip(bot_name: str):
