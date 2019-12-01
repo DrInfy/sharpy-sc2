@@ -23,6 +23,7 @@ class KnowledgeBot(BotAI):
         self.start_plan = True
         self.run_custom = False
         self.realtime_worker = True
+        self.last_game_loop = -1
 
     async def real_init(self):
         self.knowledge.pre_start(self)
@@ -65,12 +66,11 @@ class KnowledgeBot(BotAI):
         and before expansion locations are calculated.
         Not all data is available yet.
         """
-        if self.realtime:
-            # Start building first worker before doing any heavy calculations
-            await self.start_first_worker()
-            self.client.game_step = 1
-        else:
-            self._client.game_step = int(self.config["general"]["game_step_size"])
+
+        # Start building first worker before doing any heavy calculations
+        # This is only needed for real time, but we don't really know whether the game is real time or not.
+        await self.start_first_worker()
+        self._client.game_step = int(self.config["general"]["game_step_size"])
 
 
     async def on_start(self):
@@ -83,6 +83,12 @@ class KnowledgeBot(BotAI):
             if iteration == 10:
                 await self.chat_init()
 
+            if not self.realtime and self.last_game_loop == self.state.game_loop:
+                self.realtime = True
+                self.client.game_step = 1
+                return
+
+            self.last_game_loop = self.state.game_loop
 
             ns_step = time.perf_counter_ns()
             await self.knowledge.update(iteration)
