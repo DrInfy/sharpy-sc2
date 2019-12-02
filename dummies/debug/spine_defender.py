@@ -1,12 +1,12 @@
 from sc2 import UnitTypeId, Race
 
-from frozen.knowledges import KnowledgeBot
-from frozen.plans import BuildOrder, Step, SequentialList
-from frozen.plans.acts import *
-from frozen.plans.acts.zerg import *
-from frozen.plans.require import *
-from frozen.plans.tactics import *
-from frozen.plans.tactics.zerg import *
+from sharpy.knowledges import KnowledgeBot
+from sharpy.plans import BuildOrder, Step, SequentialList
+from sharpy.plans.acts import *
+from sharpy.plans.acts.zerg import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.zerg import *
 
 
 class SpineDefender(KnowledgeBot):

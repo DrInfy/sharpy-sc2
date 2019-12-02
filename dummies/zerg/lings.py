@@ -1,17 +1,17 @@
 import random
 
-from frozen.combat import CombatManager, MoveType
-from frozen.plans.acts import *
-from frozen.plans.acts.zerg import *
-from frozen.plans.require import *
-from frozen.plans.tactics import *
-from frozen.plans.tactics.zerg import *
-from frozen.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.combat import CombatManager, MoveType
+from sharpy.plans.acts import *
+from sharpy.plans.acts.zerg import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.zerg import *
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
-from frozen.knowledges import Knowledge, KnowledgeBot
+from sharpy.knowledges import Knowledge, KnowledgeBot
 
 
 class LingSpeedBuild(BuildOrder):

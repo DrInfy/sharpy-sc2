@@ -1,9 +1,9 @@
-from bot.plans.tactics import PlanDistributeWorkers
+from sharpy.plans.tactics import PlanDistributeWorkers
 from sc2 import UnitTypeId
 
-from bot.knowledges import KnowledgeBot
-from bot.plans import BuildOrder
-from bot.plans.acts.protoss import RestorePower
+from sharpy.knowledges import KnowledgeBot
+from sharpy.plans import BuildOrder
+from sharpy.plans.acts.protoss import RestorePower
 
 
 class RestorePowerDummy(KnowledgeBot):

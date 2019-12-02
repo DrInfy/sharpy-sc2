@@ -6,5 +6,4 @@ from .worker_rush import WorkerRush
 from .roach_hydra import RoachHydra
 from .mutalisk import MutaliskBot
 from .roach_rush import RoachRush
-from .Paul import Paul
 from .zerg_random import RandomZergBot

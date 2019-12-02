@@ -31,11 +31,11 @@ Create an object::
 Use jsonpickle to transform the object into a JSON string::
 
     import jsonpickle
-    frozen = jsonpickle.encode(obj)
+    sharpy = jsonpickle.encode(obj)
 
 Use jsonpickle to recreate a Python object from a JSON string::
 
-    thawed = jsonpickle.decode(frozen)
+    thawed = jsonpickle.decode(sharpy)
 
 The new object has the same type and data, but essentially is now a copy of
 the original.

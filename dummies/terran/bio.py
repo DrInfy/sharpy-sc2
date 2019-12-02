@@ -1,16 +1,16 @@
 from typing import List
 
-from frozen.plans.acts import *
-from frozen.plans.acts.terran import *
-from frozen.plans.require import *
-from frozen.plans.require.required_supply import SupplyType
-from frozen.plans.tactics import *
-from frozen.plans.tactics.terran import *
-from frozen.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.plans.acts import *
+from sharpy.plans.acts.terran import *
+from sharpy.plans.require import *
+from sharpy.plans.require.required_supply import SupplyType
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.terran import *
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
-from frozen.knowledges import Knowledge, KnowledgeBot
+from sharpy.knowledges import Knowledge, KnowledgeBot
 from sc2.position import Point2
 
 

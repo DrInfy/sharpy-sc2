@@ -5,6 +5,5 @@ from .gate4 import Stalkers4Gate
 from .robo import MacroRobo
 from .voidray import MacroVoidray
 from .cannon_rush import CannonRush
-from .meepmeep import meepmeep
 from .adept_allin import AdeptRush
 from .protoss_random import RandomProtossBot

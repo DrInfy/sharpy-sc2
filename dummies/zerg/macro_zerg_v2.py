@@ -1,10 +1,10 @@
-from frozen.plans.acts import *
-from frozen.plans.acts.zerg import *
-from frozen.plans.require import *
-from frozen.plans.tactics import *
-from frozen.plans.tactics.zerg import *
-from frozen.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from frozen.knowledges import Knowledge, KnowledgeBot
+from sharpy.plans.acts import *
+from sharpy.plans.acts.zerg import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.zerg import *
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.knowledges import Knowledge, KnowledgeBot
 from sc2 import BotAI, UnitTypeId
 from sc2 import run_game, maps, Race, Difficulty
 from sc2.ids.upgrade_id import UpgradeId

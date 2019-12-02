@@ -61,7 +61,7 @@ class DummyZip(LadderZip):
         self.dummy_file = file
         self.new_dummy_file = os.path.join(root_dir, "dummy", "dummy.py")
         files = [
-            ("frozen", None),
+            ("sharpy", None),
             ("dummy", None),
             (os.path.join("dummies", "run.py"), "run.py"),
         ]
@@ -160,9 +160,7 @@ def create_ladder_zip(bot_name: str):
             if os.path.isdir(src):
                 shutil.copytree(src, dest)
                 directories_to_zip.append(dest)
-                # files_to_zip.append(dest)
                 files_to_delete.append(dest)
-                pass
             else:  # src is a file.
                 src_file = os.path.basename(src)
 

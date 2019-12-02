@@ -1,13 +1,13 @@
-from frozen.plans.acts import *
-from frozen.plans.acts.terran import *
-from frozen.plans.require import *
-from frozen.plans.tactics import *
-from frozen.plans.tactics.terran import *
-from frozen.plans import BuildOrder, Step, StepBuildGas
+from sharpy.plans.acts import *
+from sharpy.plans.acts.terran import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.terran import *
+from sharpy.plans import BuildOrder, Step, StepBuildGas
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
-from frozen.knowledges import KnowledgeBot
+from sharpy.knowledges import KnowledgeBot
 
 
 class TwoBaseTanks(KnowledgeBot):

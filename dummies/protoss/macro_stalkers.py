@@ -1,14 +1,14 @@
-from frozen.plans.acts import *
-from frozen.plans.acts.protoss import *
-from frozen.plans.acts.terran import *
-from frozen.plans.acts.zerg import *
-from frozen.plans.require import *
-from frozen.plans.tactics import *
-from frozen.plans.tactics.protoss import *
-from frozen.plans.tactics.terran import *
-from frozen.plans.tactics.zerg import *
-from frozen.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from frozen.knowledges import KnowledgeBot, Knowledge
+from sharpy.plans.acts import *
+from sharpy.plans.acts.protoss import *
+from sharpy.plans.acts.terran import *
+from sharpy.plans.acts.zerg import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.plans.tactics.protoss import *
+from sharpy.plans.tactics.terran import *
+from sharpy.plans.tactics.zerg import *
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.knowledges import KnowledgeBot, Knowledge
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
