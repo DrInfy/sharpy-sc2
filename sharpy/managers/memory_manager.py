@@ -85,7 +85,6 @@ class MemoryManager(ManagerBase):
                 continue
 
             snap = self.get_latest_snapshot(tag)
-            snap.is_memory = True
             memory_units.append(snap)
 
         return memory_units.visible

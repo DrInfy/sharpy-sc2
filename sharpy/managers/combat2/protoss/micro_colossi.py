@@ -89,7 +89,7 @@ class MicroColossi(MicroStep):
         if self.move_type == MoveType.DefensiveRetreat:
             if self.ready_to_shoot(unit):
                 closest = self.closest_units.get(unit.tag, None)
-                if closest and closest.is_target:
+                if closest and self.is_target(closest):
                     unit_range = self.unit_values.real_range(unit, closest, self.knowledge)
                     if unit_range > 0 and unit_range > unit.distance_to(closest):
                         return Action(closest, True)

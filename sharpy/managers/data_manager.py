@@ -36,6 +36,8 @@ class DataManager(ManagerBase):
                 try:
                     with open(self.file_name, 'r') as handle:
                         text = handle.read()
+                        text = text.replace("bot.tools", "sharpy.tools")
+                        text = text.replace("frozen.tools", "sharpy.tools")
                         self.data = jsonpickle.decode(text)
 
                 except:

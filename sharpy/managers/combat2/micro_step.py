@@ -153,7 +153,7 @@ class MicroStep(ABC):
         best_target: Optional[Unit] = None
         best_score: float = 0
         for enemy in enemies:  # type: Unit
-            if not enemy.is_target:
+            if not self.is_target(enemy):
                 continue
 
             if not shoot_air and enemy.is_flying:
@@ -233,3 +233,6 @@ class MicroStep(ABC):
         if unit.has_buff(BuffId.LOCKON):
             return True
         return False
+
+    def is_target(self, unit: Unit) -> bool:
+        return not unit.is_memory and unit.can_be_attacked and not unit.is_hallucination and not unit.is_snapshot
