@@ -34,11 +34,7 @@ class DataManager(ManagerBase):
             my_file = Path(self.file_name)
             if my_file.is_file():
                 try:
-                    with open(self.file_name, 'r') as handle:
-                        text = handle.read()
-                        text = text.replace("bot.tools", "sharpy.tools")
-                        text = text.replace("frozen.tools", "sharpy.tools")
-                        self.data = jsonpickle.decode(text)
+                    await self.read_data()
 
                 except:
                     self.data = OpponentData()
@@ -47,6 +43,14 @@ class DataManager(ManagerBase):
             else:
                 self.data = OpponentData()
                 self.data.enemy_id = self.ai.opponent_id
+
+    async def read_data(self):
+        with open(self.file_name, 'r') as handle:
+            text = handle.read()
+            # Compatibility with older versions to prevent crashes
+            text = text.replace("bot.tools", "sharpy.tools")
+            text = text.replace("frozen.tools", "sharpy.tools")
+            self.data = jsonpickle.decode(text)
 
     async def update(self):
         pass
@@ -80,16 +84,14 @@ class DataManager(ManagerBase):
         self.result.game_duration = self.ai.time
         self.write_results()
 
-    def write_results(self):
+    async def write_results(self):
         if not self.enable_write:
             return
         my_file = Path(self.file_name)
 
         if my_file.is_file():
             try:
-                with open(self.file_name, 'r') as handle:
-                    text = handle.read()
-                    self.data = jsonpickle.decode(text)
+                await self.read_data()
             except:
                 # Don't write if we can't read the current data
                 self.knowledge.print("Data read failed on save.")
@@ -128,4 +130,4 @@ class DataManager(ManagerBase):
             self.result.result = -1
 
         self.result.game_duration = self.ai.time
-        self.write_results()
+        await self.write_results()
