@@ -117,7 +117,7 @@ class ActBase(ABC):
         Return False if you want to block execution and not continue to the next act."""
         pass
 
-    def pending_build(self, unit_type: UnitTypeId) -> int:
+    def pending_build(self, unit_type: UnitTypeId) -> float:
         return self.ai.already_pending(unit_type)
 
     def pending_building_positions(self, unit_type: UnitTypeId) -> List[Point2]:
@@ -127,10 +127,8 @@ class ActBase(ABC):
         creation_ability: AbilityId = self.ai._game_data.units[unit_type.value].creation_ability
 
         # Workers ordered to build
-        for worker in self.ai.workers:
-            worker: Unit = worker
-            for order in worker.orders:
-                order: UnitOrder = order
+        for worker in self.ai.workers:  # type: Unit
+            for order in worker.orders:  # type: UnitOrder
                 if order.ability.id == creation_ability.id:
                     p2: Point2 = Point2.from_proto(order.target)
                     positions.append(p2)
@@ -143,7 +141,7 @@ class ActBase(ABC):
 
         return positions
 
-    def unit_pending_count(self, unit_type: UnitTypeId) -> int:
+    def unit_pending_count(self, unit_type: UnitTypeId) -> float:
         return self.ai.already_pending(unit_type)
 
     def building_progress(self, pre_type: UnitTypeId):

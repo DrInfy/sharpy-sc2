@@ -42,8 +42,7 @@ class ZoneManager(ManagerBase):
 
     def init_zones(self):
         """Add expansion locations as zones."""
-        for exp_loc in self.ai.expansion_locations:
-            exp_loc: Point2 = exp_loc
+        for exp_loc in self.ai.expansion_locations:  # type: Point2
             is_start_location = False
             if exp_loc in self.ai.enemy_start_locations:
                 is_start_location = True
@@ -257,8 +256,7 @@ class ZoneManager(ManagerBase):
         if self.knowledge.iteration == 0:
             self.init_zone_pathing()
 
-        for zone in self.zones.values():
-            zone: Zone = zone
+        for zone in self.zones.values():  # type: Zone
             zone.update()
 
         if not self._zones_truly_sorted and self.knowledge.enemy_start_location_found:

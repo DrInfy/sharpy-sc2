@@ -20,17 +20,17 @@ class ArtosisPylon(GridBuilding):
             if buildings.closer_than(1, point):
                 continue
 
-            count = 0
+            gate_count = 0
             for position in self.building_solver.building_position:
                 if self.building_solver.grid[position].ZoneIndex != ZoneArea.OwnMainZone:
                     # Not in main zone
                     continue
 
                 if point.distance_to_point2(position) < Constants.PYLON_POWERED_DISTANCE:
-                    count += 1
+                    gate_count += 1
 
-            if count > best_count:
-                best_count = count
+            if gate_count > best_count:
+                best_count = gate_count
                 best_position = point
 
         return best_position

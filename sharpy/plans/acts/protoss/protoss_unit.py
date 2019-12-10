@@ -37,7 +37,7 @@ class ProtossUnit(ActUnit):
             if self.is_done:
                 return True
             # Ensure that unit types are the same, python please some proper setters and getters?!?
-            self.unit_type = self.unit_type
+            self.warp.unit_type = self.unit_type
             if self.warp:
                 self.warp.to_count = self.to_count
                 return await self.warp.execute()

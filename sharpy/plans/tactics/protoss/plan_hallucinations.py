@@ -34,9 +34,7 @@ class PlanHallucination(ActBase):
     async def execute(self) -> bool:
         filtered_units = self.cache.own(self.types).tags_not_in(self.resolved_units_tags)
 
-        for unit in filtered_units:
-            unit: Unit = unit
-
+        for unit in filtered_units:  # type: Unit
             if unit.is_hallucination:
                 await self.hallucination_detected(unit)
 

@@ -332,8 +332,7 @@ class Knowledge:
 
     def building_started_before(self, type_id: UnitTypeId, start_time_ceiling: int) -> bool:
         """Returns true if a building of type type_id has been started before start_time_ceiling seconds."""
-        for unit in self.known_enemy_structures(type_id):
-            unit: Unit = unit
+        for unit in self.known_enemy_structures(type_id):  # type: Unit
             # fixme: for completed buildings this will report a time later than the actual start_time.
             # not fatal, but may be misleading.
             start_time = building_start_time(self.ai.time, unit.type_id, unit.build_progress)

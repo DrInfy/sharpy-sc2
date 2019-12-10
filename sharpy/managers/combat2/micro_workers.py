@@ -24,7 +24,7 @@ class MicroWorkers(MicroStep):
             if ((unit.health + unit.shield <= 5 and not self.ready_to_shoot(unit))
                     or (unit.shield_health_percentage < 0.5 and unit.weapon_cooldown > 9)):
                 backstep = self.pather.find_weak_influence_ground(backstep, 4)
-                if self.cache.own_in_range(unit.position, 1) or self.cache.own_in_range(unit.position, 1):
+                if self.cache.own_in_range(unit.position, 1) or self.cache.enemy_in_range(unit.position, 1):
                     # Mineral walk
                     angle = sc2math.line_angle(unit.position, backstep)
                     best_angle = sc2math.pi / 6

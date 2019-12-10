@@ -43,8 +43,7 @@ class ActExpand(ActBase):
         expand_here: "Zone" = None
         expand_now = False
 
-        for zone in self.knowledge.expansion_zones:
-            zone: "Zone" = zone
+        for zone in self.knowledge.expansion_zones:  # type: "Zone"
             if expand_here is None and zone.should_expand_here:
                 if not self.expanding_in(zone):
                     expand_here = zone

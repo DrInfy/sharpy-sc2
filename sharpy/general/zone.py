@@ -100,8 +100,7 @@ class Zone:
 
         all_mf: Units = self.ai.mineral_field.closer_than(10, self.center_location)
 
-        for mf in all_mf:
-            mf: Unit = mf
+        for mf in all_mf:  # type: Unit
             possible_behind_mineral_positions.append(self.center_location.towards(mf.position, 9))
 
         positions.append(self.center_location.towards(all_mf.center, 9))  # Center
@@ -137,8 +136,7 @@ class Zone:
 
         nearby_mineral_fields = self.mineral_fields
 
-        for mf in nearby_mineral_fields:
-            mf: Unit = mf
+        for mf in nearby_mineral_fields:  # type: Unit
             if mf.is_mineral_field:
                 if mf.is_visible:
                     total_minerals += mf.mineral_contents
@@ -408,8 +406,7 @@ class Zone:
         """ Ramp going closest to center of the map. """
         found_ramp: Optional[ExtendedRamp] = None
 
-        for map_ramp in ai.game_info.map_ramps:
-            map_ramp: Ramp = map_ramp
+        for map_ramp in ai.game_info.map_ramps:  # type: Ramp
             if map_ramp.top_center == map_ramp.bottom_center:
                 continue  # Bugged ramp data
             if ai.get_terrain_height(map_ramp.top_center) == self.height \

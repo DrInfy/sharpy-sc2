@@ -55,9 +55,11 @@ class LadderZip:
         return json.replace("[NAME]", self.name).replace("[RACE]", self.race)
 
     def pre_zip(self):
+        """ Override this as needed, actions to do before creating the zip"""
         pass
 
     def post_zip(self):
+        """ Override this as needed, actions to do after creating the zip"""
         pass
 
 class DummyZip(LadderZip):
@@ -156,10 +158,6 @@ def create_ladder_zip(archive_zip: LadderZip):
             else:
                 files_to_zip.append(src)
         else:  # need to move the file or folder.
-            # if not os.path.exists(dest):
-            #     raise ValueError(f"'{dest}' does not exist.")
-            # if not os.path.isdir(dest):
-            #     raise ValueError(f"'{dest}' must be a directory.")
 
             if os.path.isdir(src):
                 shutil.copytree(src, dest)
@@ -181,7 +179,6 @@ def create_ladder_zip(archive_zip: LadderZip):
                 files_to_delete.append(dest_path)
 
                 shutil.copy(src, dest_path)
-        pass
 
     print()
     print(f"Zipping {archive_name}")

@@ -47,8 +47,7 @@ class SpreadCreep(ActBase):
     async def spread_creep_tumors(self):
         tumors = self.cache.own(UnitTypeId.CREEPTUMORBURROWED)
 
-        for tumor in tumors:
-            tumor: Unit = tumor
+        for tumor in tumors:  # type: Unit
 
             if self.knowledge.cooldown_manager.is_ready(tumor.tag, AbilityId.BUILD_CREEPTUMOR_TUMOR):
                 position = self.get_next_creep_tumor_position(tumor)
@@ -63,8 +62,7 @@ class SpreadCreep(ActBase):
 
         idle_queens = all_queens.idle
 
-        for queen in idle_queens:
-            queen: Unit = queen
+        for queen in idle_queens:  # type: Unit
             if (
                 self.knowledge.cooldown_manager.is_ready(queen.tag, AbilityId.BUILD_CREEPTUMOR_QUEEN)
                 and (queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4)

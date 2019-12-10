@@ -190,8 +190,7 @@ class StateSentry(StateStep):
             enemies_at_close_range = enemies.close_enemies.closer_than(GUARDIAN_SHIELD_TRIGGER_RANGE,
                                                                        sentry.position)
             shooter_power = 0
-            for enemy in enemies_at_close_range:
-                enemy: Unit = enemy
+            for enemy in enemies_at_close_range:  # type: Unit
                 if self.unit_values.is_ranged_unit(enemy):
                     shooter_power += self.unit_values.power(enemy)
 

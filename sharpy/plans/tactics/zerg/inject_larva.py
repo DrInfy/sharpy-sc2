@@ -23,8 +23,7 @@ class InjectLarva(ActBase):
             for queen in idle_queens:
                 if self.knowledge.cooldown_manager.is_ready(queen.tag, AbilityId.EFFECT_INJECTLARVA):
                     # find closest hatch
-                    for town_hall in all_hatch:
-                        town_hall: Unit = town_hall
+                    for town_hall in all_hatch:  # type: Unit
                         if town_hall.has_buff(BuffId.QUEENSPAWNLARVATIMER) or town_hall.tag in injected_halls:
                             continue
 

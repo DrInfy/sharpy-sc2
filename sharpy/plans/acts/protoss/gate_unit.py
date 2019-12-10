@@ -26,7 +26,7 @@ class GateUnit(ActUnit):
                 return True
             # Ensure that unit types are the same, python please some proper setters and getters?!?
             self.warp.to_count = self.to_count
-            self.unit_type = self.unit_type
+            self.warp.unit_type = self.unit_type
             return await self.warp.execute()
 
         return await super().execute()

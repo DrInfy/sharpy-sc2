@@ -46,11 +46,10 @@ class PlanDistributeWorkers(ActBase):
         """All gas buildings that are on a safe zone and could use more workers."""
         result = Units([], self.ai)
 
-        for zone in self.knowledge.our_zones:
+        for zone in self.knowledge.our_zones:  # type: Zone
             if zone.is_under_attack:
                 continue
 
-            zone: Zone = zone
             filtered = filter(lambda g: g.surplus_harvesters < 0, zone.gas_buildings)
             result.extend(filtered)
 
@@ -80,8 +79,7 @@ class PlanDistributeWorkers(ActBase):
         """Number of active workers harvesting gas."""
         count: int = 0
 
-        for building in self.active_gas_buildings:
-            building: Unit = building
+        for building in self.active_gas_buildings:  # type: Unit
             count += building.assigned_harvesters
 
         return count
@@ -128,8 +126,7 @@ class PlanDistributeWorkers(ActBase):
                     return mineral_workers.first
 
         # Surplus gas worker
-        for gas in self.active_gas_buildings:
-            gas: Unit = gas
+        for gas in self.active_gas_buildings:  # type: Unit
             if gas.surplus_harvesters > 0:
                 excess_gas_workers = workers \
                     .filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)
@@ -139,8 +136,7 @@ class PlanDistributeWorkers(ActBase):
         return None
 
     def get_gas_worker(self) -> Optional[Unit]:
-        for gas in self.active_gas_buildings:
-            gas: Unit = gas
+        for gas in self.active_gas_buildings:  # type: Unit
 
             excess_gas_workers = self.ai.workers \
                 .filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)

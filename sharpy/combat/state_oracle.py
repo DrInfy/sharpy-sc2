@@ -105,10 +105,7 @@ class StateOracle(StateStep):
             target = self.knowledge.pathing_manager.find_weak_influence_air(goal.target, 7)
             backstep = self.knowledge.pathing_manager.find_influence_air_path(oracle.position, target)
 
-            if goal.move_type in offensive:
-                move_action = CombatAction(oracle, backstep, False)
-            else:
-                move_action = CombatAction(oracle, backstep, False)
+            move_action = CombatAction(oracle, backstep, False)
 
             if oracle.has_buff(BuffId.ORACLEWEAPON):
                 if possible_targets:

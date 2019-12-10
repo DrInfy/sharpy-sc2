@@ -82,8 +82,7 @@ class EnemyUnitsManager(ManagerBase):
     async def update(self):
         self.cloak_check()
 
-        for unit in self.knowledge.known_enemy_units:
-            unit: Unit = unit
+        for unit in self.knowledge.known_enemy_units:  # type: Unit
 
             real_type = self.unit_value.real_type(unit.type_id)
 
