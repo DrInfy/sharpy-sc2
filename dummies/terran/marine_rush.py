@@ -13,6 +13,7 @@ from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.position import Point2
 
 from sharpy.knowledges import KnowledgeBot
+from sharpy.utils import select_build_index
 
 
 class DodgeRampAttack(PlanZoneAttack):
@@ -50,16 +51,7 @@ class MarineRushBot(KnowledgeBot):
             self.knowledge.gather_point = self.knowledge.expansion_zones[-2].gather_point
 
     async def create_plan(self) -> BuildOrder:
-        tactic: Optional[int] = None
-        try:
-            tactic = self.knowledge.get_int_setting("build.marine")
-        except:
-            pass
-
-        if tactic is not None and 0 <= tactic <= 2:
-            self.tactic_index = tactic
-        else:
-            self.tactic_index = random.randint(0, 2)
+        self.tactic_index = select_build_index(self.knowledge, "build.marine", 0, 2)
 
         if self.tactic_index == 0:
             self.knowledge.print("Proxy 2 rax bunker rush", "Build")
