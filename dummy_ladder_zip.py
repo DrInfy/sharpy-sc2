@@ -97,7 +97,10 @@ zip_types = {
 
     # Protoss dummies
     "zealot": DummyZip("SharpKnives", "Protoss", os.path.join("dummies", "protoss", "proxy_zealot_rush.py")),
-    "cannonrush": DummyZip("SharpCannon", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py")),
+    "cannonrush_all": DummyZip("SharpCannonAll", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py")),
+    "cannonrush_1": DummyZip("SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 0"),
+    "cannonrush_2": DummyZip("SharpCannonContain", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 1"),
+    "cannonrush_3": DummyZip("SharpCannonExpand", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 2"),
     "dt": DummyZip("SharpShadows", "Protoss", os.path.join("dummies", "protoss", "dark_templar_rush.py")),
     "4gate": DummyZip("SharpRush", "Protoss", os.path.join("dummies", "protoss", "gate4.py")),
     "stalker": DummyZip("SharpSpiders", "Protoss", os.path.join("dummies", "protoss", "macro_stalkers.py")),
