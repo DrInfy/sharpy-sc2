@@ -1,5 +1,6 @@
 # import sc2
 import random
+from typing import Optional
 
 from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import *
@@ -39,6 +40,8 @@ class DodgeRampAttack(PlanZoneAttack):
 
 
 class MarineRushBot(KnowledgeBot):
+    tactic_index: int
+
     def __init__(self):
         super().__init__("Marine Rush")
 
@@ -47,7 +50,16 @@ class MarineRushBot(KnowledgeBot):
             self.knowledge.gather_point = self.knowledge.expansion_zones[-2].gather_point
 
     async def create_plan(self) -> BuildOrder:
-        self.tactic_index = random.randint(0, 2)
+        tactic: Optional[int] = None
+        try:
+            tactic = self.knowledge.get_int_setting("build.marine")
+        except:
+            pass
+
+        if tactic is not None and 0 <= tactic <= 2:
+            self.tactic_index = tactic
+        else:
+            self.tactic_index = random.randint(0, 2)
 
         if self.tactic_index == 0:
             self.knowledge.print("Proxy 2 rax bunker rush", "Build")
@@ -63,9 +75,9 @@ class MarineRushBot(KnowledgeBot):
                               zone.center_location.towards(self.game_info.map_center, 5),
                               exact=False, only_once=True),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-                Step(RequiredUnitReady(UnitTypeId.MARINE, 1), BuildPosition(UnitTypeId.BUNKER, natural.center_location
-                                .towards(self.game_info.map_center, 6),
-                                exact=False, only_once=True)),
+                Step(RequiredUnitReady(UnitTypeId.MARINE, 1), BuildPosition(UnitTypeId.BUNKER,
+                        natural.center_location.towards(self.game_info.map_center, 4),
+                        exact=False, only_once=True)),
 
                 Step(RequiredMinerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
             ]

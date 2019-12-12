@@ -64,9 +64,11 @@ class LadderZip:
 
 class DummyZip(LadderZip):
 
-    def __init__(self, archive_name: str, race: str, file: str):
+    def __init__(self, archive_name: str, race: str, file: str, build: str = None):
         self.dummy_file = file
         self.new_dummy_file = os.path.join(root_dir, "dummy", "dummy.py")
+        self.build = build
+
         files = [
             ("sharpy", None),
             ("dummy", None),
@@ -75,9 +77,19 @@ class DummyZip(LadderZip):
         super().__init__(archive_name, race, files)
 
     def pre_zip(self):
+        if self.build:
+            with open("config.ini", 'a', newline='\n') as handle:
+                handle.writelines([self.build, ""])
         shutil.copy(self.dummy_file, self.new_dummy_file)
 
     def post_zip(self):
+        if self.build:
+            with open("config.ini", "r") as f:
+                lines = f.readlines()
+            with open("config.ini", "w") as f:
+                for line in lines:
+                    if self.build not in line:
+                        f.write(line)
         os.remove(self.new_dummy_file)
 
 
@@ -96,7 +108,10 @@ zip_types = {
     "cyclone": DummyZip("RustyLocks", "Terran", os.path.join("dummies", "terran", "cyclones.py")),
     "oldrusty": DummyZip("OldRusty", "Terran", os.path.join("dummies", "terran", "rusty.py")),
     "bc": DummyZip("FlyingRust", "Terran", os.path.join("dummies", "terran", "battle_cruisers.py")),
-    "marine": DummyZip("RustyMarines", "Terran", os.path.join("dummies", "terran", "marine_rush.py")),
+    "marine_all": DummyZip("RustyMarinesAll", "Terran", os.path.join("dummies", "terran", "marine_rush.py")),
+    "marine_1": DummyZip("RustyMarines1", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 0"),
+    "marine_2": DummyZip("RustyMarines2", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 1"),
+    "marine_3": DummyZip("RustyMarines3", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 2"),
     "tank": DummyZip("RustyTanks", "Terran", os.path.join("dummies", "terran", "two_base_tanks.py")),
     "bio": DummyZip("RustyInfantry", "Terran", os.path.join("dummies", "terran", "bio.py")),
     "banshee": DummyZip("RustyScreams", "Terran", os.path.join("dummies", "terran", "banshees.py")),
