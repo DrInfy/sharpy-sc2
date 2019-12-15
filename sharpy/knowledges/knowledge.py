@@ -402,9 +402,6 @@ class Knowledge:
         """Returns the enemy start location, if found."""
         return self.zone_manager.enemy_start_location
 
-    def previous_units_upkeep(self):
-        self.previous_units_manager.previous_units_upkeep()
-
     #
     # BotAI event handlers
     #
