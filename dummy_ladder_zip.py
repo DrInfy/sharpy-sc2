@@ -34,6 +34,18 @@ json = """{
   }
 }"""
 
+json_exe = """{
+  "Bots": {
+    "[NAME]": {
+      "Race": "Protoss",
+      "Type": "cppwin32",
+      "RootPath": "./",
+      "FileName": "[NAME].exe",
+      "Debug": false
+    }
+  }
+}"""
+
 class LadderZip:
     archive: str
     files: List[Tuple[str, Optional[str]]]
@@ -51,8 +63,22 @@ class LadderZip:
         else:
             self.files.extend(common)
 
+        # Executable
+        # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build
+        self.pyinstaller = 'pyinstaller -y --add-data "[FOLDER]/sc2pathlibp' \
+                           '";"sc2pathlibp/" --add-data "[FOLDER]/sc2";"sc2/" ' \
+                           '--add-data "[FOLDER]/config.ini";"." --add-data ' \
+                           '"[FOLDER]/version.txt";"."  ' \
+                           '"[FOLDER]/run.py" ' \
+                           '-n "[NAME]" ' \
+                           '--distpath "[OUTPUTFOLDER]"'
+
+
     def create_json(self):
         return json.replace("[NAME]", self.name).replace("[RACE]", self.race)
+
+    def create_bin_json(self):
+        return json_exe.replace("[NAME]", self.name).replace("[RACE]", self.race)
 
     def pre_zip(self):
         """ Override this as needed, actions to do before creating the zip"""
@@ -61,6 +87,44 @@ class LadderZip:
     def post_zip(self):
         """ Override this as needed, actions to do after creating the zip"""
         pass
+
+    def package_executable(self, output_dir: str):
+        zip_name = f'{self.name}_bin.zip'
+        print()
+        print("unzip")
+        zip_path = os.path.join(output_dir, self.archive)
+        source_path = os.path.join(output_dir, self.name + "_source")
+        bin_path = os.path.join(output_dir, self.name)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(source_path)
+
+        print("run pyinstaller")
+        self.pyinstaller = self.pyinstaller.replace('[FOLDER]', source_path)\
+            .replace('[OUTPUTFOLDER]', bin_path)\
+            .replace("[NAME]", self.name)
+
+        print(self.pyinstaller)
+        subprocess.run(self.pyinstaller)
+
+        # Reset bin path as pyinstaller likes to make a new run folder
+        run_path = os.path.join(bin_path, self.name)
+
+        # remove PIL and cv2
+        print("removing PIL and cv2")
+        shutil.rmtree(os.path.join(run_path, "cv2"))
+        shutil.rmtree(os.path.join(run_path, "PIL"))
+        # Create new ladderbots.json
+        f = open(os.path.join(run_path, "ladderbots.json"), "w+")
+        f.write(self.create_bin_json())
+        f.close()
+
+        print("Zip executable version")
+        zipf = zipfile.ZipFile(os.path.join(output_dir, zip_name), 'w', zipfile.ZIP_DEFLATED)
+        zipdir(run_path, zipf, run_path)
+        zipf.close()
+        shutil.rmtree(bin_path)
+        shutil.rmtree(source_path)
+
 
 class DummyZip(LadderZip):
 
@@ -134,15 +198,19 @@ zip_types = {
 }
 
 
-def zipdir(path: str, ziph: zipfile.ZipFile):
+def zipdir(path: str, ziph: zipfile.ZipFile, remove_path: Optional[str] = None):
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):
         for file in files:
             if "__pycache__" not in root:
-                ziph.write(os.path.join(root, file))
+                path_to_file = os.path.join(root, file)
+                if remove_path:
+                    ziph.write(path_to_file, path_to_file.replace(remove_path, ""))
+                else:
+                    ziph.write(path_to_file)
 
 
-def create_ladder_zip(archive_zip: LadderZip):
+def create_ladder_zip(archive_zip: LadderZip, exe: bool):
     update_version_txt()
     print()
 
@@ -228,6 +296,9 @@ def create_ladder_zip(archive_zip: LadderZip):
 
     print(f"\nSuccessfully created {os.path.join('publish', archive_name)}")
 
+    if exe:
+        archive_zip.package_executable("publish")
+
 
 def get_archive(bot_name: str) -> LadderZip:
     bot_name = bot_name.lower()
@@ -240,7 +311,7 @@ def main():
         description="Create a Ladder Manager ready zip archive for SC2 AI, AI Arena, Probots, ..."
     )
     parser.add_argument("-n", "--name", help=f"Bot name: {zip_keys}.")
-
+    parser.add_argument("-e", "--exe", help="Also make executable (Requires pyinstaller)", action="store_true")
     args = parser.parse_args()
 
     bot_name = args.name
@@ -251,12 +322,12 @@ def main():
     if bot_name == "all" or not bot_name:
         zip_keys.remove("all")
         for key in zip_keys:
-            create_ladder_zip(get_archive(key))
+            create_ladder_zip(get_archive(key), args.exe)
     else:
         if bot_name not in zip_keys:
             raise ValueError(f'Unknown bot: {bot_name}, allowed values are: {zip_keys}')
 
-        create_ladder_zip(get_archive(bot_name))
+        create_ladder_zip(get_archive(bot_name), args.exe)
 
 
 if __name__ == "__main__":
