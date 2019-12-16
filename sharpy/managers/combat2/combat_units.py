@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
+from sc2.position import Point2
 from sharpy import sc2math
 from sharpy.general.extended_power import ExtendedPower
 
@@ -13,10 +14,10 @@ class CombatUnits():
         self.knowledge = knowledge
         self.unit_values = knowledge.unit_values
         self.units = units
-        self.center = sc2math.unit_geometric_median(units)
+        self.center: Point2 = sc2math.unit_geometric_median(units)
         self.ground_units = self.units.not_flying
         if self.ground_units:
-            self.center = self.ground_units.closest_to((self.center)).position
+            self.center: Point2 = self.ground_units.closest_to((self.center)).position
 
         self.power = ExtendedPower(self.unit_values)
         self.power.add_units(self.units)
@@ -62,3 +63,29 @@ class CombatUnits():
                     break
 
         return engaged_power > total_power * 0.15
+
+    def closest_target_group(self, combat_groups: List['CombatUnits']) -> Optional['CombatUnits']:
+        group = None
+        start = self.center
+        best_distance = 50  # doesn't find enemy groups closer than this
+
+        shoots_air = self.power.air_power > 0
+        shoots_ground = self.power.ground_power > 0
+
+        for combat_group in combat_groups:
+            if not combat_group.ground_units and not shoots_air:
+                continue  # We can't shoot the targets here
+            if combat_group.power.air_presence == 0 and combat_group.power.ground_presence > 0 and not shoots_ground:
+                continue  # We can't shoot the targets here
+
+            if combat_group.power.air_presence > 0 and combat_group.power.ground_presence == 0 and not shoots_air:
+                continue  # We can't shoot the targets here
+
+            center = combat_group.center
+
+            distance = start.distance_to(center)
+            if distance < best_distance:
+                best_distance = distance
+                group = combat_group
+
+        return group

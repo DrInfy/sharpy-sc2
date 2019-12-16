@@ -54,14 +54,11 @@ class MicroStep(ABC):
         self.closest_units.clear()
         self.engaged_power.clear()
 
-        self.closest_group = None
-        self.closest_group_distance = 1000000
-        for enemy_group in enemy_groups:
-            d = enemy_group.center.distance_to(group.center)
-            if d < self.closest_group_distance:
-                self.closest_group_distance = d
-                self.closest_group = enemy_group
-
+        self.closest_group = group.closest_target_group(enemy_groups)
+        if self.closest_group:
+            self.closest_group_distance = group.center.distance_to(self.closest_group.center)
+        else:
+            self.closest_group_distance = 100000
         self.enemy_groups = enemy_groups
         self.center = units.center
         self.enemies_near_by: Units = self.knowledge.unit_cache.enemy_in_range(self.center, 15 + len(group.units) * 0.1)

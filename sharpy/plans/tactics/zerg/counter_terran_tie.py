@@ -45,7 +45,7 @@ class CounterTerranTie(BuildOrder):
         if len(self.cache.own({UnitTypeId.MUTALISK, UnitTypeId.CORRUPTOR})) >= 10:
             return False
 
-        if len(self.ai.enemy_units) > 1:
+        if len(self.ai.enemy_units.not_flying) > 1:
             return False
 
         if self.ai.supply_workers < 20 and self.ai.supply_used < 190:

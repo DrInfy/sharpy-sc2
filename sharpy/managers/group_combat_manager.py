@@ -122,7 +122,7 @@ class GroupCombatManager(ManagerBase):
 
         for group in self.own_groups:
             center = group.center
-            closest_enemies = self.closest_group(center, self.enemy_groups)
+            closest_enemies = group.closest_target_group(self.enemy_groups)
 
             if closest_enemies is None:
                 if move_type == MoveType.PanicRetreat:
@@ -298,6 +298,8 @@ class GroupCombatManager(ManagerBase):
                 group = combat_group
 
         return group
+
+
 
     def group_own_units(self, our_units: Units, lookup_distance: float = 7) -> List[CombatUnits]:
         groups: List[Units] = []
