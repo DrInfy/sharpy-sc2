@@ -65,7 +65,10 @@ class PathingManager(ManagerBase):
     def set_rocks(self, grid: sc2pathlibp.PathFinder):
         for rock in self.ai.destructables:  # type: Unit
             rock_type = rock.type_id
-            if rock_type in breakable_rocks_2x2:
+            if rock.name == "MineralField450":
+                # Attempts to solve the issue with sc2 linux 4.10 vs Windows 4.11
+                grid.create_block(rock.position, (2, 1))
+            elif rock_type in breakable_rocks_2x2:
                 grid.create_block(rock.position, (2, 2))
             elif rock_type in breakable_rocks_4x4:
                 grid.create_block(rock.position, (4, 3))
@@ -114,6 +117,7 @@ class PathingManager(ManagerBase):
         self.path_finder_ground.reset()  # Reset
 
         positions = []
+
         for mf in self.ai.mineral_field:  # type: Unit
             # In 4.8.5+ minerals are no linger visible in pathing grid
             positions.append(mf.position)
