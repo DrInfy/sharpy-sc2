@@ -76,11 +76,13 @@ class DataManager(ManagerBase):
 
     def write_defeat(self):
         self.result.result = -1
+        self.result.enemy_build = int(self.knowledge.build_detector.rush_build)
         self.result.game_duration = self.ai.time
         self.write_results()
 
     def write_victory(self):
         self.result.result = 1
+        self.result.enemy_build = int(self.knowledge.build_detector.rush_build)
         self.result.game_duration = self.ai.time
         self.write_results()
 
