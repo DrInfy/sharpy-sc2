@@ -16,3 +16,5 @@ from .cancel_building import CancelBuilding
 from .defensive_building import DefensiveBuilding
 from .defensive_building import DefensePosition
 from .reserve import Reserve
+from .act_custom import ActCustom
+from .position_building import PositionBuilding

@@ -14,13 +14,16 @@ class DefensePosition(enum.Enum):
     BehindMineralLineLeft = 2
     BehindMineralLineRight = 3
     Entrance = 4
+    FarEntrance = 5
 
 
 class DefensiveBuilding(ActBase):
     """Act of building defensive buildings for zerg and terran, does not work with protoss due to pylon requirement!"""
 
-    def __init__(self, unit_type: UnitTypeId, position_type: DefensePosition, to_base_index: Optional[int] = None):
+    def __init__(self, unit_type: UnitTypeId, position_type: DefensePosition, to_base_index: Optional[int] = None,
+             to_count: int = 1):
         super().__init__()
+        self.to_count = to_count
         self.unit_type = unit_type
         self.position_type = position_type
         self.to_base_index = to_base_index
@@ -44,7 +47,7 @@ class DefensiveBuilding(ActBase):
 
             position = self.get_position(zone)
             zone_defenses = zone.our_units(self.unit_type)
-            if zone_defenses.exists and zone_defenses.closest_distance_to(position) < 6:
+            if len(zone_defenses.closer_than(6, position)) >= self.to_count:
                 # Already built
                 continue
 
@@ -60,7 +63,6 @@ class DefensiveBuilding(ActBase):
                                 self.ai.state.creep.is_set(pos):
                             can_build = True
                             break
-
 
             if can_build and self.knowledge.can_afford(self.unit_type):
                 self.knowledge.print(f'[DefensiveBuilding] building of type {self.unit_type} near {position}')
@@ -82,4 +84,6 @@ class DefensiveBuilding(ActBase):
             return zone.behind_mineral_positions[2]
         if self.position_type == DefensePosition.Entrance:
             return zone.center_location.towards(zone.gather_point, 5)
-        assert False # Exception?
+        if self.position_type == DefensePosition.FarEntrance:
+            return zone.center_location.towards(zone.gather_point, 9)
+        assert False  # Exception?
