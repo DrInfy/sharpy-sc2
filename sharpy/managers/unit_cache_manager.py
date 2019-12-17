@@ -62,7 +62,7 @@ class UnitCacheManager(ManagerBase):
         return units
 
     @property
-    def enemy_townhalls(self):
+    def enemy_townhalls(self) -> Units:
         """Returns all known enemy townhalls."""
         enemy_townhall_types = race_townhalls[self.knowledge.enemy_race]
         return self.enemy(enemy_townhall_types)

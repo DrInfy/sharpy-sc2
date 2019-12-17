@@ -60,7 +60,7 @@ class Knowledge:
         self.building_solver = BuildingSolver()
         self.income_calculator = IncomeCalculator()
         self.roles: UnitRoleManager = UnitRoleManager()
-        self.build_detector = BuildDetector()
+        self.build_detector: BuildDetector = BuildDetector()
         self.pathing_manager: PathingManager = PathingManager()
         self.enemy_army_predicter = EnemyArmyPredicter()
         self.lost_units_manager: LostUnitsManager = LostUnitsManager()
