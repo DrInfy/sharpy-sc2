@@ -91,6 +91,8 @@ class Zone:
         # This is ExtendedRamp!
         self.ramp = self._find_ramp(self.ai)
         self.radius = Zone.ZONE_RADIUS
+        self.danger_radius = Zone.ZONE_DANGER_RADIUS
+
         if self.ramp is not None:
             self.gather_point = self.ramp.top_center.towards(self.center_location, 4)
 
@@ -183,9 +185,6 @@ class Zone:
         self.enemy_workers = self.known_enemy_units.of_type(self.unit_values.worker_types)
         self.our_workers: Units = self.our_units.of_type(self.unit_values.worker_types)
 
-
-
-
         self._minerals_counter.execute()
         self._update_gas_buildings()
         self.update_our_townhall()
@@ -207,7 +206,7 @@ class Zone:
 
         if self.is_ours:
             self.calc_needs_evacuation()
-            self.assaulting_enemies: Units = self.cache.enemy_in_range(self.center_location, Zone.ZONE_DANGER_RADIUS)
+            self.assaulting_enemies: Units = self.cache.enemy_in_range(self.center_location, self.danger_radius)
             self.assaulting_enemy_power.add_units(self.assaulting_enemies)
         else:
             self.needs_evacuation = False
