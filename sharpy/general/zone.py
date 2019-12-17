@@ -245,7 +245,7 @@ class Zone:
             self.our_townhall = None
 
     def update_enemy_townhall(self):
-        enemy_townhalls = self.cache.enemy_townhalls.closer_than(5, self.center_location)
+        enemy_townhalls = self.cache.enemy_townhalls.not_flying.closer_than(5, self.center_location)
         if enemy_townhalls.exists:
             self.enemy_townhall = enemy_townhalls.closest_to(self.center_location)
         else:
