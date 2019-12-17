@@ -17,7 +17,7 @@ townhall_start_types = {
 }
 
 
-class EnemyRushBuild(enum.Enum):
+class EnemyRushBuild(enum.IntEnum):
     Macro = 0,
     Pool12 = 1,
     CannonRush = 2,
@@ -227,7 +227,8 @@ class BuildDetector(ManagerBase):
             # enemy has expanded TWICE or has large amount of workers, that's no rush
             return self._set_rush(EnemyRushBuild.Macro)
 
-        if self.knowledge.building_started_before(UnitTypeId.ROACHWARREN, 130):
+        if self.knowledge.building_started_before(UnitTypeId.ROACHWARREN, 130) or \
+                (self.ai.time < 160 and self.cache.enemy(UnitTypeId.ROACH)):
             return self._set_rush(EnemyRushBuild.RoachRush)
 
         hatch_start_time = self.started(UnitTypeId.HATCHERY, 1)
