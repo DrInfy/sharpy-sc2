@@ -1,4 +1,4 @@
-from random import random
+from random import randint
 from typing import List, Optional
 from sc2.unit import Point2
 
@@ -30,4 +30,4 @@ def select_build_index(knowledge: 'Knowledge', build_key: str, min_index: int, m
     if tactic is not None and min_index <= tactic <= max_index:
         return tactic
     else:
-        return random.randint(min_index, max_index)
+        return randint(min_index, max_index)

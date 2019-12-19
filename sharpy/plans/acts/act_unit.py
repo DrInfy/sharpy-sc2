@@ -66,8 +66,7 @@ class ActUnit(ActBase):
         if (self.unit_type == self.knowledge.my_worker_type):
             count = max(self.ai.supply_workers, count)
 
-        count += sum([o.ability.id == ability.id for u in self.builders for o in u.orders])
-
+        count += sum([o.ability and o.ability.id == ability.id for u in self.builders for o in u.orders])
 
         return count
 
