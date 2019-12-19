@@ -13,7 +13,7 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.WIDOWMINE: 8,
     UnitTypeId.WIDOWMINEBURROWED: 10,
     UnitTypeId.MULE: 3,
-    UnitTypeId.SCV: 4,
+    UnitTypeId.SCV: 10,  # prioritize scv because they'll continue repairing otherwise
     UnitTypeId.GHOST: 7,
     UnitTypeId.REAPER: 4,
     UnitTypeId.MARAUDER: 4,
