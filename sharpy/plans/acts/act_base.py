@@ -66,15 +66,16 @@ build_commands = {
 
 
 class ActBase(ABC):
+    knowledge: 'Knowledge'
+    ai: sc2.BotAI
+    cache: UnitCacheManager
+    unit_values: UnitValue
+    pather: PathingManager
+    combat: GroupCombatManager
+    roles: UnitRoleManager
+
     def __init__(self):
-        self.knowledge: 'Knowledge' = None
-        self.ai: sc2.BotAI = None
-        self.cache: UnitCacheManager = None
-        self.unit_values: 'UnitValue' = None
-        self._debug: bool = False
-        self.pather: PathingManager = None
-        self.combat: GroupCombatManager = None
-        self.roles: UnitRoleManager = None
+        _debug: bool = False
 
     @property
     def debug(self):
