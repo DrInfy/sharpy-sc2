@@ -51,7 +51,7 @@ class LostUnitsManager(ManagerBase):
             self.print(f"Unknown owner {unit.owner_id} for unit {unit}")
 
     def calculate_own_lost_resources(self) -> Tuple[int, int]:
-        """Calculates lost resources for our own sharpy. Returns a tuple with (unit_count, minerals, gas)."""
+        """Calculates lost resources for our own bot. Returns a tuple with (unit_count, minerals, gas)."""
         return self._calculate_lost_resources(self._my_lost_units)
 
     def calculate_enemy_lost_resources(self) -> Tuple[int, int]:

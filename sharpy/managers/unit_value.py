@@ -203,7 +203,7 @@ class UnitValue(ManagerBase):
             UnitTypeId.LIBERATOR: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.BANSHEE: UnitData(150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying, UnitFeature.Cloak]),
             UnitTypeId.RAVEN: UnitData(100, 200, 2, 2, features=[UnitFeature.Flying, UnitFeature.Detector]),
-            UnitTypeId.BATTLECRUISER: UnitData(400, 300, 6, 8, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
+            UnitTypeId.BATTLECRUISER: UnitData(400, 300, 6, 7, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.POINTDEFENSEDRONE: UnitData(0, 0, 0, 1, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             # Protoss
             UnitTypeId.PROBE: UnitData(50, 0, 1, 0.5, 12, features=[UnitFeature.HitsGround]),
@@ -213,7 +213,7 @@ class UnitValue(ManagerBase):
             UnitTypeId.ADEPT: UnitData(100, 25, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.HIGHTEMPLAR: UnitData(50, 150, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.DARKTEMPLAR: UnitData(125, 125, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
-            UnitTypeId.ARCHON: UnitData(0, 0, 4, 5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.ARCHON: UnitData(175, 275, 4, 5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.OBSERVER: UnitData(25, 75, 1, 0.25, features=[UnitFeature.Flying, UnitFeature.Detector]),
             UnitTypeId.WARPPRISM: UnitData(200, 0, 2, 2, features=[UnitFeature.Flying]),
             UnitTypeId.IMMORTAL: UnitData(275, 100, 4, 4, features=[UnitFeature.HitsGround]),

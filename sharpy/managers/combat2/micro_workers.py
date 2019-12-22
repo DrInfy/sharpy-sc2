@@ -1,7 +1,7 @@
 from sharpy import sc2math
 from sharpy.managers.combat2.micro_step import MicroStep
 from sharpy.managers.combat2 import Action
-from sc2 import AbilityId
+from sc2 import AbilityId, Race, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
@@ -48,7 +48,13 @@ class MicroWorkers(MicroStep):
             else:
                 current = Action(current_command.target, True)
             return self.melee_focus_fire(unit, current)
-
+        elif self.knowledge.enemy_race == Race.Terran:
+            # Kill scv building
+            nearby = self.cache.enemy_in_range(unit.position, 5)
+            scvs = nearby(UnitTypeId.SCV)
+            if scvs and nearby.structure.not_ready:
+                scv = scvs.closest_to(unit)
+                current_command = Action(scv, True)
         # if unit.health + unit.shield <= 5:
         #     backstep = self.pather.find_weak_influence_ground(backstep, 4)
         #     return Action(backstep, False)

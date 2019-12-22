@@ -12,10 +12,11 @@ from sc2.units import Units
 
 
 class CombatModel:
-    StalkerToRoach = 0,
-    StalkerToSpeedlings = 1,
-    StalkerToSiege = 2,
-    AssaultRamp = 3,
+    StalkerToRoach = 0,  # Longer range vs shorther
+    StalkerToSpeedlings = 1,  # Ranged vs melee
+    StalkerToSiege = 2,  # Range vs extreme fire power
+    AssaultRamp = 3,  # Push on narrow ramps
+    RoachToStalker = 4,  # Shorter range vs longer
 
 no_retreat_on_low_hp: Set[UnitTypeId] = {
     UnitTypeId.ZEALOT, UnitTypeId.ZERGLING,
@@ -57,7 +58,10 @@ class GenericMicro(MicroStep):
                 if self.knowledge.enemy_race == Race.Zerg:
                     self.model = CombatModel.StalkerToSpeedlings
                 else:
-                    self.model = CombatModel.StalkerToRoach
+                    if self.attack_range < self.enemy_attack_range:
+                        self.model = CombatModel.RoachToStalker
+                    else:
+                        self.model = CombatModel.StalkerToRoach
 
             if self.model == CombatModel.StalkerToSpeedlings:
                 if self.can_engage_ratio < 0.6:
@@ -143,6 +147,20 @@ class GenericMicro(MicroStep):
                     best_position = self.pather.find_low_inside_ground(unit.position, closest.position, range)
 
                 return Action(best_position, False)
+
+        elif self.model == CombatModel.RoachToStalker:
+            if self.ready_to_shoot(unit):
+                if self.closest_group:
+                    current_command = Action(self.closest_group.center, True)
+                else:
+                    current_command = Action(current_command.target, True)
+            else:
+                # Instead of backstep, move forward
+                current_command = self.focus_fire(unit, current_command, self.prio_dict)
+                if isinstance(current_command.target, Unit):
+                    current_command.target = current_command.target.position
+                    current_command.is_attack = False
+                return current_command
 
         if self.ready_to_shoot(unit) and current_command.is_attack:
             return self.focus_fire(unit, current_command, self.prio_dict)

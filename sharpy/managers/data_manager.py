@@ -1,12 +1,14 @@
 import json
 import os
+from typing import Optional
 from uuid import uuid4
 
 import jsonpickle
 from datetime import datetime
 from pathlib import Path
 
-from sc2 import Result
+from sc2 import Result, Tuple
+from sharpy.managers.build_detector import EnemyRushBuild, EnemyMacroBuild
 
 from sharpy.managers.manager_base import ManagerBase
 from sharpy.tools import IntervalFunc
@@ -18,6 +20,11 @@ class DataManager(ManagerBase):
     data: OpponentData
     enabled: bool
     enable_write: bool
+    last_result: Optional[GameResult]
+
+    def __init__(self):
+        self.last_result = None
+        super().__init__()
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
@@ -43,6 +50,9 @@ class DataManager(ManagerBase):
             else:
                 self.data = OpponentData()
                 self.data.enemy_id = self.ai.opponent_id
+
+            if self.data.results:
+                self.last_result = self.data.results[-1]
 
     def read_data(self):
         with open(self.file_name, 'r') as handle:
@@ -71,6 +81,14 @@ class DataManager(ManagerBase):
         elif self.result.result != -1 and self.knowledge.game_analyzer.predicting_defeat:
             self.write_defeat()
 
+    @property
+    def last_enemy_build(self) -> Tuple[EnemyRushBuild, EnemyMacroBuild]:
+        if not self.last_result or not hasattr(self.last_result, "enemy_macro_build")\
+                or not hasattr(self.last_result, "enemy_build"):
+            return EnemyRushBuild.Macro, EnemyMacroBuild.StandardMacro
+
+        return EnemyRushBuild(self.last_result.enemy_build), EnemyMacroBuild(self.last_result.enemy_macro_build)
+
     def set_build(self, build_name: str):
         self.result.build_used = build_name
 
@@ -84,7 +102,7 @@ class DataManager(ManagerBase):
 
     def solve_write_data(self):
         self.result.enemy_build = int(self.knowledge.build_detector.rush_build)
-        self.result.enemy_macro_build_build = int(self.knowledge.build_detector.macro_build)
+        self.result.enemy_macro_build = int(self.knowledge.build_detector.macro_build)
         self.result.game_duration = self.ai.time
         self.write_results()
 

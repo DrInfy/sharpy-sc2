@@ -1,9 +1,10 @@
 import enum
 import sys
-from typing import Dict, List, Optional, Set
-
-#from knowledges import Knowledge
+from typing import Dict, List, Optional, Set, TYPE_CHECKING
 from sharpy.managers.manager_base import ManagerBase
+if TYPE_CHECKING:
+    from sharpy.managers import *
+
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -36,7 +37,14 @@ class EnemyRushBuild(enum.IntEnum):
 
 class EnemyMacroBuild(enum.IntEnum):
     StandardMacro = 0,
-    BattleCruiserRush = 1,
+    BattleCruisers = 1,
+    Banshees = 2,
+    Tempests = 3,
+    Carriers = 4,
+    DarkTemplars = 5,
+    Lurkers = 6,
+    Mutalisks = 7,
+    Mmm = 8,
 
 class BuildDetector(ManagerBase):
     """Enemy build detector."""
@@ -278,4 +286,29 @@ class BuildDetector(ManagerBase):
 
         if self.knowledge.enemy_race == Race.Terran:
             if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.BATTLECRUISER):
-                self.macro_build = EnemyMacroBuild.BattleCruiserRush
+                self.macro_build = EnemyMacroBuild.BattleCruisers
+            elif self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.BANSHEE):
+                self.macro_build = EnemyMacroBuild.Banshees
+            elif self.ai.time > 7 * 60 and self.ai.time < 8 * 60:
+                mmm_check = (self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MARINE) >
+                             self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MARAUDER) > 15 >
+                             self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MEDIVAC) > 0)
+                if mmm_check:
+                    self.macro_build = EnemyMacroBuild.Mmm
+
+        if self.knowledge.enemy_race == Race.Protoss:
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.TEMPEST):
+                self.macro_build = EnemyMacroBuild.Tempests
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.CARRIER):
+                self.macro_build = EnemyMacroBuild.Carriers
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.DARKTEMPLAR):
+                self.macro_build = EnemyMacroBuild.DarkTemplars
+
+        if self.knowledge.enemy_race == Race.Zerg:
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.MUTALISK):
+                self.macro_build = EnemyMacroBuild.Mutalisks
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.LURKER):
+                self.macro_build = EnemyMacroBuild.Lurkers
+
+        if self.macro_build != EnemyMacroBuild.StandardMacro:
+            self.print(f"Enemy normal build recognized as {self.macro_build.name}")
