@@ -21,6 +21,7 @@ siege = {
     UnitTypeId.CYCLONE,
     UnitTypeId.BANSHEE,
     UnitTypeId.BATTLECRUISER,
+    UnitTypeId.VIKINGFIGHTER,
     # Protoss
     UnitTypeId.COLOSSUS,
     UnitTypeId.CARRIER,
