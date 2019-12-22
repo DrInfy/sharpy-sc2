@@ -39,8 +39,8 @@ class DefensiveKite(StateStep):
         unit_pos: Point2 = unit.position
 
         # Take into account both unit's radius
-        my_range = self.unit_values.real_range(unit, enemy, self.knowledge)
-        enemy_range = self.unit_values.real_range(enemy, unit, self.knowledge)
+        my_range = self.unit_values.real_range(unit, enemy)
+        enemy_range = self.unit_values.real_range(enemy, unit)
 
         # This is from unit's center to enemy's center.
         distance = enemy.distance_to(unit)

@@ -3,7 +3,6 @@ from typing import Optional, List, Dict
 import sc2
 from sharpy.general.extended_ramp import ExtendedRamp
 from .path import Path
-from sharpy.sc2math import building_completion_time
 from sharpy.tools import IntervalFunc
 from sc2 import UnitTypeId
 from sc2.game_info import Ramp
@@ -12,8 +11,6 @@ from sc2.position import Point2
 from sc2.units import Units
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.general.unit_value import UnitValue
-from sharpy.constants import Constants
 
 import enum
 
@@ -41,7 +38,7 @@ class Zone:
         self.knowledge = knowledge
         self.ai: sc2.BotAI = knowledge.ai
         self.cache: 'UnitCacheManager' = knowledge.unit_cache
-        self.unit_values: UnitValue = knowledge.unit_values
+        self.unit_values: 'UnitValue' = knowledge.unit_values
         self.needs_evacuation = False
         self._is_enemys = False
 
@@ -223,7 +220,7 @@ class Zone:
                     if self.enemy_townhall.is_ready:
                         self.could_have_enemy_workers_in = self.ai.time + 60
                     else:
-                        finish_time = building_completion_time(self.ai.time, self.enemy_townhall.type_id,
+                        finish_time = self.unit_values.building_completion_time(self.ai.time, self.enemy_townhall.type_id,
                                                                self.enemy_townhall.build_progress)
                         self.could_have_enemy_workers_in = finish_time + 60
         else:

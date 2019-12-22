@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 from sc2.position import Point2
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sharpy.managers.build_detector import EnemyRushBuild
 from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase

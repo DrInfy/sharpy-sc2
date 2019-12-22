@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Optional, Any, Callable, Union
+from typing import List, Dict, Optional, Any, Callable, Union, TYPE_CHECKING
 
 import sc2
 from sharpy.general.extended_power import ExtendedPower
@@ -7,12 +7,14 @@ from sharpy.managers.combat2.move_type import MoveType
 from sc2.ids.buff_id import BuffId
 from .action import Action
 from .combat_units import CombatUnits
-from sharpy.general.unit_value import UnitValue
-from sharpy.managers import CooldownManager, PathingManager, UnitCacheManager
+
 from sc2 import AbilityId, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+
+if TYPE_CHECKING:
+    from sharpy.managers import *
 
 changelings = {
     UnitTypeId.CHANGELING,
@@ -80,11 +82,11 @@ class MicroStep(ABC):
                     self.closest_units[unit.tag] = enemy_near
                     closest_distance = d
 
-                if not engage_added and d < self.unit_values.real_range(enemy_near, unit, self.knowledge):
+                if not engage_added and d < self.unit_values.real_range(enemy_near, unit):
                     engage_count += 1
                     engage_added = True
 
-                if not can_engage_added and d < self.unit_values.real_range(unit, enemy_near, self.knowledge):
+                if not can_engage_added and d < self.unit_values.real_range(unit, enemy_near):
                     can_engage_count += 1
                     can_engage_added = True
 
@@ -125,10 +127,10 @@ class MicroStep(ABC):
 
     def focus_fire(self, unit: Unit, current_command: Action, prio: Optional[Dict[UnitTypeId, int]]) -> Action:
         shoot_air = self.unit_values.can_shoot_air(unit)
-        shoot_ground = self.unit_values.can_shoot_ground(unit, self.knowledge)
+        shoot_ground = self.unit_values.can_shoot_ground(unit)
 
         air_range = self.unit_values.air_range(unit)
-        ground_range = self.unit_values.ground_range(unit, self.knowledge)
+        ground_range = self.unit_values.ground_range(unit)
         lookup = min(air_range + 3, ground_range + 3)
         enemies = self.cache.enemy_in_range(unit.position, lookup)
 
@@ -174,7 +176,7 @@ class MicroStep(ABC):
         return current_command
 
     def melee_focus_fire(self, unit: Unit, current_command: Action) -> Action:
-        ground_range = self.unit_values.ground_range(unit, self.knowledge)
+        ground_range = self.unit_values.ground_range(unit)
         lookup = ground_range + 3
         enemies = self.cache.enemy_in_range(unit.position, lookup)
 
@@ -186,7 +188,7 @@ class MicroStep(ABC):
 
         def melee_value(u: Unit):
             val = 1 - u.shield_health_percentage
-            range = self.unit_values.real_range(unit, u, self.knowledge)
+            range = self.unit_values.real_range(unit, u)
             if unit.distance_to(u) < range:
                 val += 2
             return val

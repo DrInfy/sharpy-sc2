@@ -58,7 +58,7 @@ class CombatUnits():
 
             for enemy_near in closest_enemies.units:
                 d = enemy_near.distance_to(unit)
-                if d < self.unit_values.real_range(unit, enemy_near, self.knowledge):
+                if d < self.unit_values.real_range(unit, enemy_near):
                     engaged_power += power
                     break
 

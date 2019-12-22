@@ -3,7 +3,7 @@ from typing import List, Dict, Optional
 from sc2.ids.buff_id import BuffId
 
 import sc2
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sc2 import AbilityId, UnitTypeId, Race
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
@@ -120,7 +120,7 @@ class StateSentry(StateStep):
              return [] # Hard priorizationg for guardian shield.
 
         relevant_enemies = enemies.close_enemies.not_structure.not_flying\
-            .exclude_type(UnitValue.worker_types).exclude_type(UnitTypeId.SIEGETANKSIEGED)
+            .exclude_type(self.unit_values.worker_types).exclude_type(UnitTypeId.SIEGETANKSIEGED)
 
         if sentry.energy < FORCE_FIELD_ENERGY_COST or relevant_enemies.amount < 5 or enemies.enemy_power.ground_presence < 15:
             return []

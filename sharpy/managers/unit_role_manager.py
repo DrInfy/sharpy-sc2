@@ -141,7 +141,7 @@ class UnitRoleManager(ManagerBase):
                 # Don't pull any more units that can't actually shoot the targets
                 continue
 
-            if not self.unit_values.can_shoot_ground(unit, self.knowledge) and enough_air_power and not enough_ground_power:
+            if not self.unit_values.can_shoot_ground(unit) and enough_air_power and not enough_ground_power:
                 # Don't pull any more units that can't actually shoot the targets
                 continue
 

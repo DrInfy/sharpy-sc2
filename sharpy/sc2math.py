@@ -4,13 +4,8 @@ from scipy.spatial.distance import cdist, euclidean
 from math import pi
 from typing import List
 
-from sc2 import UnitTypeId
 from sc2.position import Point2
-
-from sharpy.general.unit_value import UnitValue
 from sc2.units import Units
-
-unit_values = UnitValue()
 
 pi2 = 2 * math.pi
 
@@ -22,25 +17,6 @@ def to_new_ticks(time_value: float) -> float:
 
 def to_old_ticks(time_value: float) -> float:
     return time_value / NEW_TICKS * OLD_TICKS
-
-def building_start_time(game_time: float, type_id: UnitTypeId, build_progress: float):
-    """Calculates when building construction started. This can be used to eg. detect early rushes."""
-    build_time = unit_values.build_time(type_id)
-    if build_time is None:
-        return None
-
-    start_time = game_time - build_time * build_progress
-    return start_time
-
-
-def building_completion_time(game_time: float, type_id: UnitTypeId, build_progress: float):
-    start_time = building_start_time(game_time, type_id, build_progress)
-    if start_time is None:
-        return None
-
-    completion_time = start_time + unit_values.build_time(type_id)
-    return completion_time
-
 
 def points_on_circumference(center: Point2, radius, n=10) -> List[Point2]:
     """Calculates all points on the circumference of a circle. n = number of points."""

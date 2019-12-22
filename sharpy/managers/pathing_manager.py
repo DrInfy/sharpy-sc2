@@ -3,7 +3,7 @@ from math import floor
 from typing import List, Dict, Tuple
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.general.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
+from sharpy.managers.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
 from sharpy.sc2math import point_normalize
 from sc2.ids.effect_id import EffectId
 from sc2.units import Units
@@ -164,9 +164,9 @@ class PathingManager(ManagerBase):
 
                 self.path_finder_air.add_influence(positions, power.air_power, s_range + 3)
 
-            if self.unit_values.can_shoot_ground(example_enemy, self.knowledge):
+            if self.unit_values.can_shoot_ground(example_enemy):
                 positions = map(lambda u: u.position, enemies)  # need to be specified in both places
-                s_range = self.unit_values.ground_range(example_enemy, self.knowledge)
+                s_range = self.unit_values.ground_range(example_enemy)
                 if example_enemy.type_id == UnitTypeId.CYCLONE:
                     s_range = 7
 

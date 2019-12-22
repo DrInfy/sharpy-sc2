@@ -4,7 +4,6 @@ from configparser import ConfigParser
 from typing import Set, List, Optional, Dict, Callable
 
 import sc2
-from sharpy.general.unit_value import UnitValue, is_townhall, get_worker_type
 from sharpy.general.zone import Zone
 from sharpy.events import UnitDestroyedEvent
 from sharpy.managers import *
@@ -12,7 +11,6 @@ from sharpy.managers.enemy_units_manager import EnemyUnitsManager
 from sharpy.mapping.heat_map import HeatMap
 from sharpy.mapping.map import MapInfo
 from sharpy.general.extended_ramp import ExtendedRamp
-from sharpy.sc2math import building_start_time
 from sc2 import Race
 from sc2.constants import *
 from sc2.data import Result
@@ -73,6 +71,7 @@ class Knowledge:
         self.action_handler: ActionHandler = ActionHandler()
 
         self.managers: List[ManagerBase] = [
+            self.unit_values,
             self.unit_cache,
             self.action_handler,
             self.pathing_manager,
@@ -104,7 +103,7 @@ class Knowledge:
 
         self.my_race: Race = self.ai.race
         self.enemy_race: Race = self.ai.enemy_race
-        self.enemy_worker_type = get_worker_type(self.enemy_race)
+        self.enemy_worker_type = self.unit_values.get_worker_type(self.enemy_race)
 
         self.map = MapInfo(self)
         self.close_gates = self.enemy_race == Race.Zerg
@@ -117,7 +116,7 @@ class Knowledge:
 
         self.heat_map = HeatMap(self.ai, self)
 
-        self.my_worker_type = get_worker_type(self.my_race)
+        self.my_worker_type = self.unit_values.get_worker_type(self.my_race)
 
     def get_str_setting(self, key: str) -> str:
         """
@@ -223,7 +222,7 @@ class Knowledge:
         self._all_own: Units = self.ai.units + self.ai.structures
 
         self._known_enemy_structures: Units = self.ai.enemy_structures.filter(
-            lambda u: u.is_structure and u.type_id not in UnitValue.not_really_structure)
+            lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure)
         self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures + self.memory_manager.ghost_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units
 
@@ -261,7 +260,7 @@ class Knowledge:
             if self._known_enemy_units_workers(UnitTypeId.PROBE).exists:
                 self.enemy_race = Race.Protoss
 
-            self.enemy_worker_type = get_worker_type(self.enemy_race)
+            self.enemy_worker_type = self.unit_values.get_worker_type(self.enemy_race)
 
     def reserve(self, minerals: int, gas: int):
         self.reserved_minerals += minerals
@@ -335,7 +334,7 @@ class Knowledge:
         for unit in self.known_enemy_structures(type_id):  # type: Unit
             # fixme: for completed buildings this will report a time later than the actual start_time.
             # not fatal, but may be misleading.
-            start_time = building_start_time(self.ai.time, unit.type_id, unit.build_progress)
+            start_time = self.unit_values.building_start_time(self.ai.time, unit.type_id, unit.build_progress)
             if start_time is not None and start_time < start_time_ceiling:
                 return True
 
@@ -345,7 +344,7 @@ class Knowledge:
     def enemy_townhalls(self):
         """Returns all known enemy townhalls, ie. Command Centers, Nexuses, Hatcheries,
         or one of their upgraded versions."""
-        return self.known_enemy_structures.filter(is_townhall)
+        return self.known_enemy_structures.filter(self.unit_values.is_townhall)
 
     #
     # Zones and enemy start

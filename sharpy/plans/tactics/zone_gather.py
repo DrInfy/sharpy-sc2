@@ -10,7 +10,7 @@ from sc2.unit import Unit
 from sharpy.managers.roles import UnitTask
 from sharpy.combat import MoveType
 from sharpy.knowledges import Knowledge
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 
 
 class PlanZoneGather(ActBase):

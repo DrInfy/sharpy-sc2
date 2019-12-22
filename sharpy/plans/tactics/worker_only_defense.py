@@ -1,6 +1,6 @@
 from typing import List, Tuple
 
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
 from sharpy.managers.roles import UnitTask
@@ -61,7 +61,7 @@ class PlanWorkerOnlyDefense(ActBase):
         #         self.knowledge.roles.clear_task(unit)
         #         unit.gather(self.gather_mf)
 
-        worker_only = combined_enemies.amount == combined_enemies.of_type(UnitValue.worker_types).amount
+        worker_only = combined_enemies.amount == combined_enemies.of_type(self.unit_values.worker_types).amount
 
         if combined_enemies.amount == 1 and worker_only:
             # Single scout worker
@@ -129,7 +129,7 @@ class PlanWorkerOnlyDefense(ActBase):
         if unit.weapon_cooldown == 0:
             closest_to_this = combined_enemies.closest_to(unit)
 
-            if closest_to_this.distance_to(unit) < self.unit_values.real_range(unit, closest_to_this, self.knowledge):
+            if closest_to_this.distance_to(unit) < self.unit_values.real_range(unit, closest_to_this):
                 self.do(unit.attack(closest_to_this))
             else:
                 await self.regroup(army, unit)
@@ -167,7 +167,7 @@ class PlanWorkerOnlyDefense(ActBase):
         for unit in self.ai.units: # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
-            if unit.type_id in UnitValue.worker_types:
+            if unit.type_id in self.unit_values.worker_types:
                 workers.append(unit)
             elif self.knowledge.should_attack(unit):
                 fighters.append(unit)
@@ -215,7 +215,7 @@ class PlanWorkerOnlyDefense(ActBase):
         for unit in self.ai.units: # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
-            if unit.type_id in UnitValue.worker_types:
+            if unit.type_id in self.unit_values.worker_types:
                 workers.append(unit)
             elif self.knowledge.should_attack(unit):
                 fighters.append(unit)

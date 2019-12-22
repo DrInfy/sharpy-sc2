@@ -2,7 +2,7 @@ from typing import List, Dict
 
 from sharpy.combat.state_warpprism import StateWarpPrism
 from sharpy.sc2math import unit_geometric_median
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 
 from .state_step import StateStep
 from sc2 import UnitTypeId, AbilityId, common_pb, BotAI

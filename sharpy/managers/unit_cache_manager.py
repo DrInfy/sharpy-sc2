@@ -3,7 +3,7 @@ from typing import Dict, Union, Optional, List, Iterable
 
 from scipy.spatial.ckdtree import cKDTree
 
-from sharpy.general.unit_value import race_townhalls
+from sharpy.managers.unit_value import race_townhalls
 from sc2.constants import FakeEffectID
 from sc2.game_state import EffectData
 from sc2.position import Point2

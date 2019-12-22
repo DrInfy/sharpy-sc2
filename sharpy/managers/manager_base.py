@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from sc2 import Result, UnitTypeId
 
 import sc2
-from sharpy.general.unit_value import UnitValue
 from sc2.client import Client
 
 
@@ -13,7 +12,7 @@ class ManagerBase(ABC):
     def __init__(self):
         self.knowledge: 'Knowledge' = None
         self.ai: sc2.BotAI = None
-        self.unit_values: UnitValue = None
+        self.unit_values: 'UnitValue' = None
         self._debug: bool = False
 
         self.client: Client = None
@@ -29,7 +28,7 @@ class ManagerBase(ABC):
         self.ai = knowledge.ai
         self.client = self.ai._client
         self.cache = knowledge.unit_cache
-        self.unit_values: UnitValue = knowledge.unit_values
+        self.unit_values = knowledge.unit_values
 
     @abstractmethod
     async def update(self):

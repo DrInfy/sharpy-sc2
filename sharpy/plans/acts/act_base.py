@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import sc2
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
 from sc2 import AbilityId, Race, UnitTypeId

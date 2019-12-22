@@ -20,7 +20,7 @@ class EnemyTargeting(StateStep):
                     UnitTypeId.KD8CHARGE, UnitTypeId.INTERCEPTOR}
 
     def get_ground_lookup_range(self, unit: Unit) -> float:
-        ground_range = self.unit_values.ground_range(unit, self.knowledge)
+        ground_range = self.unit_values.ground_range(unit)
 
         if ground_range <= 0:
             return 0
@@ -114,7 +114,7 @@ class EnemyTargeting(StateStep):
 
             score *= (100 - range) / 100
 
-            if score > 0 and range < self.unit_values.real_range(goal.unit, enemy, self.knowledge):
+            if score > 0 and range < self.unit_values.real_range(goal.unit, enemy):
                 score = score * 10 # strong preference to targets that we can actually shoot
 
             if score > current_score:

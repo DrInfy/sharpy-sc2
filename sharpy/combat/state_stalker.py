@@ -21,8 +21,8 @@ class StateStalker(StateStep):
             if enemies.our_power.is_enough_for(enemies.enemy_power, 1.3):
                 # We have the advantage, enable offensive blink
                 distance = enemies.closest.distance_to(stalker)
-                own_range = self.unit_values.real_range(stalker, enemies.closest, self.knowledge)
-                enemy_range = self.unit_values.real_range(stalker, enemies.closest, self.knowledge)
+                own_range = self.unit_values.real_range(stalker, enemies.closest)
+                enemy_range = self.unit_values.real_range(stalker, enemies.closest)
 
                 if distance > own_range and own_range < enemy_range and distance < own_range + 5:
                     # Blink to tanks, colossi and tempest

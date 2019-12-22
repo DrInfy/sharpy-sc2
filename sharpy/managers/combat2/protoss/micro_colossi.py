@@ -90,7 +90,7 @@ class MicroColossi(MicroStep):
             if self.ready_to_shoot(unit):
                 closest = self.closest_units.get(unit.tag, None)
                 if closest and self.is_target(closest):
-                    unit_range = self.unit_values.real_range(unit, closest, self.knowledge)
+                    unit_range = self.unit_values.real_range(unit, closest)
                     if unit_range > 0 and unit_range > unit.distance_to(closest):
                         return Action(closest, True)
             return current_command
@@ -107,7 +107,7 @@ class MicroColossi(MicroStep):
             closest = self.closest_units[unit.tag]
 
             # d = unit.distance_to(closest)
-            unit_range = self.unit_values.real_range(unit, closest, self.knowledge) - 0.5
+            unit_range = self.unit_values.real_range(unit, closest) - 0.5
 
             if unit.is_flying:
                 best_position = self.pather.find_low_inside_air(unit.position, closest.position, unit_range)

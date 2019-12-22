@@ -6,7 +6,8 @@ from sc2 import Race, race_gas, race_townhalls
 from sc2.constants import *
 from sc2.unit import Unit
 from sc2.units import Units
-from .extended_power import ExtendedPower
+from . import ManagerBase
+from sharpy.general.extended_power import ExtendedPower
 
 buildings_2x2 = {
     UnitTypeId.SUPPLYDEPOT,
@@ -90,7 +91,7 @@ class UnitData:
             self.features: List[UnitFeature] = features
 
 
-class UnitValue:
+class UnitValue(ManagerBase):
     worker_types = {
             UnitTypeId.SCV,
             UnitTypeId.MULE,
@@ -172,10 +173,11 @@ class UnitValue:
 
     def __init__(self):
         # By storing data in the instance, can skip import conflicts.
+        super().__init__()
         self.combat_ignore = {
             UnitTypeId.OVERLORD,
             UnitTypeId.LARVA
-        } | UnitValue.not_really_structure
+        } | self.not_really_structure
 
         self.unit_data = {
             # Units
@@ -359,6 +361,29 @@ class UnitValue:
             if UnitFeature.Detector in unit_data.features:
                 self.detectors.append(unit_data_key)
 
+    async def update(self):
+        pass
+
+    async def post_update(self):
+        pass
+
+    def building_start_time(self, game_time: float, type_id: UnitTypeId, build_progress: float):
+        """Calculates when building construction started. This can be used to eg. detect early rushes."""
+        build_time = self.build_time(type_id)
+        if build_time is None:
+            return None
+
+        start_time = game_time - build_time * build_progress
+        return start_time
+
+    def building_completion_time(self, game_time: float, type_id: UnitTypeId, build_progress: float):
+        start_time = self.building_start_time(game_time, type_id, build_progress)
+        if start_time is None:
+            return None
+
+        completion_time = start_time + self.build_time(type_id)
+        return completion_time
+
     def minerals(self, unit_type: UnitTypeId) -> float:
         unit = self.unit_data.get(unit_type, None)
         if unit is not None:
@@ -414,7 +439,7 @@ class UnitValue:
             return unit_value.combat_value * health_percentage
         return 1.0 * health_percentage
 
-    def ground_range(self, unit: Unit, knowledge: 'Knowledge') -> float:
+    def ground_range(self, unit: Unit) -> float:
         if unit.type_id == UnitTypeId.RAVEN and unit.energy >= 50:
             return 9
         if unit.type_id == UnitTypeId.ORACLE:
@@ -427,16 +452,16 @@ class UnitValue:
             return 10
         if unit.type_id == UnitTypeId.COLOSSUS:
             if not unit.is_mine:
-                return 9 # Let's assume the worst, enemy has the upgrade!
+                return 9  # Let's assume the worst, enemy has the upgrade!
 
-            if knowledge.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
+            if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
                 return 9
             else:
                 return 7
         if unit.type_id == UnitTypeId.CYCLONE:
-            if not unit.is_mine or knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
+            if not unit.is_mine or self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
                 return 7
-            if knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
+            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
                 return 13
 
         return unit.ground_range
@@ -453,15 +478,15 @@ class UnitValue:
     def can_shoot_air(self, unit: Unit) -> bool:
         return self.air_range(unit) > 0
 
-    def can_shoot_ground(self, unit: Unit, knowledge: 'Knowledge') -> bool:
-        return self.ground_range(unit, knowledge) > 0
+    def can_shoot_ground(self, unit: Unit) -> bool:
+        return self.ground_range(unit) > 0
 
-    def real_range(self, unit: Unit, other: Unit, knowledge: 'Knowledge') -> float:
+    def real_range(self, unit: Unit, other: Unit) -> float:
         """Returns real range for a unit and against another unit, taking both units radius into account."""
         if other.is_flying or other.has_buff(BuffId.GRAVITONBEAM):
             corrected_range = self.air_range(unit)
         else:
-            corrected_range = self.ground_range(unit, knowledge)
+            corrected_range = self.ground_range(unit)
 
         if corrected_range <= 0:
             return corrected_range
@@ -469,19 +494,19 @@ class UnitValue:
         # eg. stalker.radius + stalker.range + marine.radius
         return unit.radius + corrected_range + other.radius
 
-    def real_speed(self, unit: Unit, knowledge: 'Knowledge') -> float:
+    def real_speed(self, unit: Unit) -> float:
         type_id = unit.type_id
         # TODO: OWn speed adjustments from upgrades
         # TODO: Hydralisk, banshee, warp prism, observer, better detection for zergling speed
         speed = unit.movement_speed
 
         if unit.is_enemy:
-            if knowledge.enemy_race == Race.Zerg:
+            if self.knowledge.enemy_race == Race.Zerg:
                 if type_id == UnitTypeId.ZERGLING:
-                    if knowledge.ai.time > 200:
+                    if self.ai.time > 200:
                         speed = 6.58
 
-                on_creep = knowledge.ai.has_creep(unit.position)
+                on_creep = self.ai.has_creep(unit.position)
 
                 if on_creep:
                     if type_id == UnitTypeId.QUEEN:
@@ -555,52 +580,49 @@ class UnitValue:
         """Find a mapping if there is one, or use the unit_type as it is"""
         return real_types.get(unit_type, unit_type)
 
+    def get_worker_type(self, race: Race) -> Optional[UnitTypeId]:
+        """Returns the basic worker type of each race. Does not support Random race."""
+        if race == Race.Terran:
+            return UnitTypeId.SCV
+        if race == Race.Protoss:
+            return UnitTypeId.PROBE
+        if race == Race.Zerg:
+            return UnitTypeId.DRONE
+        return None
 
-def get_worker_type(race: Race) -> Optional[UnitTypeId]:
-    """Returns the basic worker type of each race. Does not support Random race."""
-    if race == Race.Terran:
-        return UnitTypeId.SCV
-    if race == Race.Protoss:
-        return UnitTypeId.PROBE
-    if race == Race.Zerg:
-        return UnitTypeId.DRONE
-    return None
+    def is_townhall(self, unit_type: Union[Unit, UnitTypeId]):
+        """Returns true if the unit_type or unit_type type is a main structure, ie. Command Center, Nexus, Hatchery, or one of
+        their upgraded versions."""
 
+        if isinstance(unit_type, Unit):
+            final_type = unit_type.type_id
+        else:
+            final_type = unit_type
 
-def is_townhall(unit_type: Union[Unit, UnitTypeId]):
-    """Returns true if the unit_type or unit_type type is a main structure, ie. Command Center, Nexus, Hatchery, or one of
-    their upgraded versions."""
-    if isinstance(unit_type, Unit):
-        unit_type = unit_type.type_id
+        all_townhall_types = race_townhalls[Race.Random]
 
-    all_townhall_types = race_townhalls[Race.Random]
+        return final_type in all_townhall_types
 
-    return unit_type in all_townhall_types
+    def calc_total_power(self, units: Units) -> ExtendedPower:
+        """Calculates total power for the given units (either own or enemy)."""
 
+        total_power = ExtendedPower(self)
 
-unit_values = UnitValue()
+        if not units.exists:
+            return total_power
 
+        first_owner_id = None
 
-def calc_total_power(units: Units) -> ExtendedPower:
-    """Calculates total power for the given units (either own or enemy)."""
+        for unit in units:
+            if first_owner_id and unit.owner_id and not unit.owner_id == first_owner_id:
+                logging.warning(f"Unit owner id does not match. tag: {unit.tag} type: {unit.type_id} " +
+                                f"owner id: {unit.type_id} (expected {first_owner_id}")
+                continue
+            if unit.can_be_attacked:
+                first_owner_id = unit.owner_id
+            total_power.add_unit(unit)
 
-    total_power = ExtendedPower(unit_values)
-
-    if not units.exists:
         return total_power
-
-    first_owner_id = None
-
-    for unit in units:
-        if first_owner_id and unit.owner_id and not unit.owner_id == first_owner_id:
-            logging.warning(f"Unit owner id does not match. tag: {unit.tag} type: {unit.type_id} " +
-                            f"owner id: {unit.type_id} (expected {first_owner_id}")
-            continue
-        if unit.can_be_attacked:
-            first_owner_id = unit.owner_id
-        total_power.add_unit(unit)
-
-    return total_power
 
 
 real_types: Dict[UnitTypeId, UnitTypeId] = {

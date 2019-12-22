@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
@@ -45,7 +45,7 @@ class StateWarpPrism(StateStep):
             self.cd_manager.used_ability(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE)
             return CombatAction(goal.unit, None, False, AbilityId.MORPH_WARPPRISMPHASINGMODE)
         elif goal.unit.type_id == UnitTypeId.WARPPRISMPHASING:
-            not_ready = self.knowledge.unit_cache.own(UnitValue.gate_types).not_ready
+            not_ready = self.knowledge.unit_cache.own(self.unit_values.gate_types).not_ready
             if self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE, 2.5) \
                     and (len(not_ready) < 1 or not_ready.closest_distance_to(prism) > 4):
                 self.cd_manager.used_ability(prism.tag, AbilityId.MORPH_WARPPRISMTRANSPORTMODE)
@@ -91,7 +91,7 @@ class StateWarpPrism(StateStep):
                 if own_unit.distance_to(prism) > 12:
                     continue
 
-                score = self.unit_values.ground_range(own_unit, self.knowledge) * (1.1 - own_unit.health_percentage) \
+                score = self.unit_values.ground_range(own_unit) * (1.1 - own_unit.health_percentage) \
                         * self.unit_values.power(own_unit) - 1
 
                 if score > best_score:

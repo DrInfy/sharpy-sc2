@@ -80,7 +80,7 @@ class MicroPhoenixes(MicroStep):
             if self.ready_to_shoot(unit):
                 closest = self.closest_units.get(unit.tag, None)
                 if closest:
-                    real_range = self.unit_values.real_range(unit, closest, self.knowledge)
+                    real_range = self.unit_values.real_range(unit, closest)
                     if 0 < real_range < unit.distance_to(closest):
                         return Action(closest.position, True)
 
@@ -132,7 +132,7 @@ class MicroPhoenixes(MicroStep):
         if targets:
             closest = targets.closest_to(unit)
             # d = unit.distance_to(closest)
-            real_range = self.unit_values.real_range(unit, closest, self.knowledge) - 0.5
+            real_range = self.unit_values.real_range(unit, closest) - 0.5
             best_position = self.pather.find_low_inside_air(unit.position, closest.position, real_range)
 
             return Action(best_position, False)

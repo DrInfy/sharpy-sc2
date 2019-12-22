@@ -1,9 +1,10 @@
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 
 from sharpy.general.zone import Zone
 from sharpy.managers.combat2 import MoveType, Action, NoAction, GenericMicro, CombatModel
 from sc2.position import Point2
-from sharpy.general.unit_value import UnitValue
+if TYPE_CHECKING:
+    from sharpy.managers import *
 
 from sc2 import AbilityId, Race
 from sc2.ids.buff_id import BuffId
@@ -71,7 +72,7 @@ class MicroSentries(GenericMicro):
             if self.range_power > 5 and unit.energy >= HALLUCINATION_ENERGY_COST:
                 return Action(None, False, AbilityId.HALLUCINATION_ARCHON)
             if self.melee_power > 5 and unit.energy >= FORCE_FIELD_ENERGY_COST:
-                melee = self.knowledge.unit_cache.enemy(UnitValue.melee)
+                melee = self.knowledge.unit_cache.enemy(self.unit_values.melee)
                 if melee:
                     closest = melee.closest_to(unit)
                     pos = unit.position.towards(closest, 0.6)

@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Optional, List
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers import PathingManager, GameAnalyzer
 from sharpy.managers.game_states.advantage import at_least_small_disadvantage, at_least_small_advantage, \
     at_least_clear_advantage, at_least_clear_disadvantage
 from sharpy.general.zone import Zone
@@ -14,7 +13,9 @@ from sharpy.managers.roles import UnitTask
 from sharpy.knowledges import Knowledge
 from sharpy.combat import MoveType
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.general.unit_value import calc_total_power
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sharpy.managers import *
 
 
 ENEMY_TOTAL_POWER_MULTIPLIER = 1.2
@@ -94,7 +95,7 @@ class PlanZoneAttack(ActBase):
                 if self.knowledge.should_attack(unit):
                     attackers.append(unit)
 
-            own_power = calc_total_power(attackers)
+            own_power = self.unit_values.calc_total_power(attackers)
 
             if self._should_attack(own_power):
                 self._start_attack(own_power, attackers)
@@ -227,8 +228,8 @@ class PlanZoneAttack(ActBase):
         if self.knowledge.enemy_worker_type is not None:
             enemy_local_units = enemy_local_units.exclude_type(self.knowledge.enemy_worker_type)
 
-        own_local_power = calc_total_power(already_attacking)
-        enemy_local_power = calc_total_power(enemy_local_units)
+        own_local_power = self.unit_values.calc_total_power(already_attacking)
+        enemy_local_power = self.unit_values.calc_total_power(enemy_local_units)
 
         if self.attack_on_advantage and enemy_local_power.power < 2:
             if ((self.game_analyzer.our_army_predict in at_least_clear_advantage

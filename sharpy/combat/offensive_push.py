@@ -23,8 +23,8 @@ class OffensivePush(StateStep):
 
 
         unit: Unit = goal.unit
-        my_range = self.unit_values.ground_range(unit, self.knowledge)
-        enemy_range = self.unit_values.ground_range(enemies.closest, self.knowledge)
+        my_range = self.unit_values.ground_range(unit)
+        enemy_range = self.unit_values.ground_range(enemies.closest)
 
         move_type: MoveType = goal.move_type
         target: Point2 = goal.target

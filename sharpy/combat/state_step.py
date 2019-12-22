@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from typing import List
 
 import sc2
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers import UnitValue
 from sharpy.knowledges import Knowledge
 from sharpy.managers import CooldownManager
 from .combat_action import CombatAction

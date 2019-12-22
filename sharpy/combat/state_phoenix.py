@@ -128,7 +128,7 @@ class StatePhoenix(StateStep):
         phoenix: Unit = goal.unit
 
         if command.is_attack and isinstance(command.target, Unit):
-            range = self.unit_values.real_range(phoenix, command.target, self.knowledge)
+            range = self.unit_values.real_range(phoenix, command.target)
             check_point = (phoenix.position + command.target.position) * 0.5
             pathing_result = self.knowledge.pathing_manager.find_weak_influence_air(check_point, 4)
             direction = sc2math.point_normalize(pathing_result - command.target.position)

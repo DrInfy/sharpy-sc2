@@ -1,8 +1,7 @@
 from sc2.position import Point2
 
-from sharpy.general.unit_value import UnitValue
-from .sc2math import building_start_time, building_completion_time, points_on_circumference, \
-    points_on_circumference_sorted
+from sharpy.managers import UnitValue
+from .sc2math import points_on_circumference, points_on_circumference_sorted
 from sc2 import UnitTypeId
 
 unit_values = UnitValue()
@@ -13,8 +12,7 @@ class TestMath:
         game_time = 40
         build_progress = 0.46
         type_id = UnitTypeId.SPAWNINGPOOL
-
-        start_time = building_start_time(game_time, type_id, build_progress)
+        start_time = unit_values.building_start_time(game_time, type_id, build_progress)
 
         assert start_time == 18.84
 
@@ -24,7 +22,7 @@ class TestMath:
         type_id = UnitTypeId.KERRIGANEGG
 
         try:
-            start_time = building_start_time(game_time, type_id, build_progress)
+            start_time = unit_values.building_start_time(game_time, type_id, build_progress)
         except:
             assert False
 
@@ -33,7 +31,7 @@ class TestMath:
         build_progress = 0.46
         type_id = UnitTypeId.SPAWNINGPOOL
 
-        completion_time = building_completion_time(game_time, type_id, build_progress)
+        completion_time = unit_values.building_completion_time(game_time, type_id, build_progress)
 
         assert completion_time == 18.84 + unit_values.build_time(type_id)
 
@@ -43,7 +41,7 @@ class TestMath:
         type_id = UnitTypeId.KERRIGANEGG
 
         try:
-            completion_time = building_completion_time(game_time, type_id, build_progress)
+            completion_time = unit_values.building_completion_time(game_time, type_id, build_progress)
         except:
             assert False
 

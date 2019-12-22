@@ -2,7 +2,6 @@ from math import floor
 from typing import Tuple, List
 
 from sharpy.plans.acts import ActBase
-from sharpy.sc2math import building_completion_time, building_start_time
 from sc2 import UnitTypeId
 
 

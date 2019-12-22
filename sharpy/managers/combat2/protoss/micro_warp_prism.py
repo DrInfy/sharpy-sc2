@@ -1,7 +1,9 @@
 from typing import Dict
 
 from sharpy.managers.combat2 import Action, MicroStep
-from sharpy.general.unit_value import UnitValue
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sharpy.managers import *
 from sharpy.general.extended_power import ExtendedPower
 from sc2 import AbilityId, UnitTypeId
 from sc2.unit import Unit
@@ -36,7 +38,7 @@ class MicroWarpPrism(MicroStep):
             return Action(None, False, AbilityId.MORPH_WARPPRISMPHASINGMODE)
 
         elif unit.type_id == UnitTypeId.WARPPRISMPHASING:
-            not_ready = self.knowledge.unit_cache.own(UnitValue.gate_types).not_ready
+            not_ready = self.knowledge.unit_cache.own(self.unit_values.gate_types).not_ready
 
             if self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE, 2.5) \
                     and (len(not_ready) < 1 or not_ready.closest_distance_to(prism) > 4):
@@ -84,8 +86,8 @@ class MicroWarpPrism(MicroStep):
                 if own_unit.distance_to(prism) > 12:
                     continue
 
-                score = self.unit_values.ground_range(own_unit, self.knowledge) * (1.1 - own_unit.health_percentage) \
-                    * self.unit_values.power(own_unit) - 1
+                score = self.unit_values.ground_range(own_unit) * (1.1 - own_unit.health_percentage) \
+                        * self.unit_values.power(own_unit) - 1
 
                 if score > best_score:
                     best_score = score

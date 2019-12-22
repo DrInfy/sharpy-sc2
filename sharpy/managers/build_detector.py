@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Set
 
 #from knowledges import Knowledge
 from sharpy.managers.manager_base import ManagerBase
-from sharpy.sc2math import building_start_time
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -35,10 +34,9 @@ class EnemyRushBuild(enum.IntEnum):
     AdeptRush = 14,
     WorkerRush = 15,
 
-class EnemyMacroBuild(enum.Enum):
+class EnemyMacroBuild(enum.IntEnum):
     StandardMacro = 0,
-    TechCheese = 1,
-    SuperGreed = 2,
+    BattleCruiserRush = 1,
 
 class BuildDetector(ManagerBase):
     """Enemy build detector."""
@@ -69,6 +67,7 @@ class BuildDetector(ManagerBase):
     async def update(self):
         self._update_timings()
         self._rush_detection()
+        self._build_detection()
 
     def _update_timings(self):
         # Let's update just seen structures for now
@@ -88,7 +87,7 @@ class BuildDetector(ManagerBase):
                     list = []
                     self.timings[real_type] = list
 
-                start_time = building_start_time(self.ai.time, real_type, unit.build_progress)
+                start_time = self.unit_values.building_start_time(self.ai.time, real_type, unit.build_progress)
                 list.append(start_time)
 
     def started(self, type_id: UnitTypeId, index: int = 0) -> float:
@@ -271,3 +270,12 @@ class BuildDetector(ManagerBase):
             # and self.cache.enemy(UnitTypeId.LARVA).amount >= 3
         ):
             return self._set_rush(EnemyRushBuild.HatchPool15_14)
+
+    def _build_detection(self):
+        if self.macro_build != EnemyMacroBuild.StandardMacro:
+            # Only set macro build once
+            return
+
+        if self.knowledge.enemy_race == Race.Terran:
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.BATTLECRUISER):
+                self.macro_build = EnemyMacroBuild.BattleCruiserRush

@@ -8,7 +8,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.general.unit_value import UnitValue
+from sharpy.managers.unit_value import UnitValue
 
 
 class EnemyUnitsManager(ManagerBase):
@@ -21,17 +21,19 @@ class EnemyUnitsManager(ManagerBase):
         * warp gates are transformed from gateways.
         *
         """
+    unit_values: UnitValue
 
     def __init__(self):
         super().__init__()
 
         # Dictionary for enemy units. Key is unit type, values are sets of unit tags.
         self._known_enemy_units_dict: Dict[UnitTypeId, Set[int]] = {}
-        self.unit_value = UnitValue()
+
         self._enemy_cloak_trigger = False
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
+        self.unit_values = knowledge.unit_values
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
     @property
@@ -58,7 +60,7 @@ class EnemyUnitsManager(ManagerBase):
 
     def unit_count(self, unit_type: UnitTypeId) -> int:
         """Returns how many units enemy currently has of that unit type."""
-        real_type = self.unit_value.real_type(unit_type)
+        real_type = self.unit_values.real_type(unit_type)
         unit_tags = self._known_enemy_units_dict.get(real_type, set())
         return len(unit_tags)
 
@@ -66,9 +68,9 @@ class EnemyUnitsManager(ManagerBase):
     def enemy_total_power(self) -> ExtendedPower:
         """Returns the total power of all enemy units we currently know about.
          Assumes they are all in full health. Ignores workers and overlords."""
-        total_power = ExtendedPower(self.unit_value)
+        total_power = ExtendedPower(self.unit_values)
         for type_id in self._known_enemy_units_dict:
-            if self.unit_value.is_worker(type_id):
+            if self.unit_values.is_worker(type_id):
                 continue
 
             if type_id == UnitTypeId.OVERLORD:
@@ -84,7 +86,7 @@ class EnemyUnitsManager(ManagerBase):
 
         for unit in self.knowledge.known_enemy_units:  # type: Unit
 
-            real_type = self.unit_value.real_type(unit.type_id)
+            real_type = self.unit_values.real_type(unit.type_id)
 
             # Ignore some units that are eg. temporary
             if real_type in ignored_types:
@@ -129,7 +131,7 @@ class EnemyUnitsManager(ManagerBase):
         for unit in self.knowledge.known_enemy_units:
             if not unit.is_ready:
                 continue
-            real_range = self.unit_value.real_range(unit, danger_for_unit, self.knowledge)
+            real_range = self.unit_values.real_range(unit, danger_for_unit)
 
             if real_range < 1:
                 continue
@@ -141,7 +143,7 @@ class EnemyUnitsManager(ManagerBase):
             distance = unit.distance_to(position)
             if distance < real_range:
                 danger += local_danger + (1 - distance / real_range) * local_danger
-            elif self.unit_value.real_speed(danger_for_unit, self.knowledge) > self.unit_value.real_speed(unit, self.knowledge):
+            elif self.unit_values.real_speed(danger_for_unit) > self.unit_values.real_speed(unit):
                 danger += max(0, (1.5 - distance / real_range) * local_danger)
             else:
                 danger += max(0, (2 - distance / real_range) * local_danger)
@@ -154,7 +156,7 @@ class EnemyUnitsManager(ManagerBase):
             # We only care about enemy units here.
             return
 
-        real_type = self.unit_value.real_type(unit.type_id)
+        real_type = self.unit_values.real_type(unit.type_id)
         known_units = self._known_enemy_units_dict.get(real_type, set())
 
         if unit.tag in known_units:
