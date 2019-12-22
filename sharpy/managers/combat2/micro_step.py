@@ -8,7 +8,7 @@ from sc2.ids.buff_id import BuffId
 from .action import Action
 from .combat_units import CombatUnits
 
-from sc2 import AbilityId, UnitTypeId
+from sc2 import AbilityId, UnitTypeId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
@@ -46,6 +46,8 @@ class MicroStep(ABC):
         self.our_power = ExtendedPower(knowledge.unit_values)
         self.closest_units: Dict[int, Optional[Unit]] = dict()
         self.move_type = MoveType.Assault
+        self.attack_range = 0
+        self.enemy_attack_range = 0
 
     def init_group(self, group: CombatUnits, units: Units, enemy_groups: List[CombatUnits], move_type: MoveType):
         self.group = group
@@ -69,6 +71,11 @@ class MicroStep(ABC):
 
         engage_count = 0
         can_engage_count = 0
+        self.attack_range = 0
+        self.enemy_attack_range = 0
+        attack_range_count = 0
+        enemy_attack_range_count = 0
+
         for unit in units:
             closest_distance = 1000
             if self.ready_to_shoot(unit):
@@ -82,13 +89,26 @@ class MicroStep(ABC):
                     self.closest_units[unit.tag] = enemy_near
                     closest_distance = d
 
-                if not engage_added and d < self.unit_values.real_range(enemy_near, unit):
+                att_range = self.unit_values.real_range(enemy_near, unit)
+                self.enemy_attack_range += att_range
+                enemy_attack_range_count += 1
+                if not engage_added and d < att_range:
                     engage_count += 1
                     engage_added = True
 
-                if not can_engage_added and d < self.unit_values.real_range(unit, enemy_near):
+                att_range = self.unit_values.real_range(unit, enemy_near)
+                self.attack_range += att_range
+                attack_range_count += 1
+
+                if not can_engage_added and d < att_range:
                     can_engage_count += 1
                     can_engage_added = True
+
+        if attack_range_count > 0:
+            self.attack_range = self.attack_range / attack_range_count
+
+        if enemy_attack_range_count > 0:
+            self.enemy_attack_range = self.enemy_attack_range / enemy_attack_range_count
 
         self.ready_to_attack_ratio = ready_to_attack / len(units)
         self.engage_ratio = engage_count / len(units)
@@ -191,6 +211,9 @@ class MicroStep(ABC):
             range = self.unit_values.real_range(unit, u)
             if unit.distance_to(u) < range:
                 val += 2
+            if self.knowledge.enemy_race == Race.Terran and unit.is_structure and unit.build_progress < 1:
+                # if building isn't finished, focus on the possible scv instead
+                val -= 2
             return val
 
         value_func = melee_value
