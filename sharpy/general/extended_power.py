@@ -29,6 +29,7 @@ siege = {
     UnitTypeId.MOTHERSHIP,
     # Zerg
     UnitTypeId.BROODLORD,
+    UnitTypeId.LURKER,
 }
 
 
