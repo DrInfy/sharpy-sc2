@@ -33,6 +33,7 @@ class EnemyRushBuild(enum.IntEnum):
     ProxyRobo = 12,
     RoboRush = 13,
     AdeptRush = 14,
+    WorkerRush = 15,
 
 class EnemyMacroBuild(enum.Enum):
     StandardMacro = 0,
@@ -135,8 +136,15 @@ class BuildDetector(ManagerBase):
             # Past three minutes, early rushes no longer relevant
             return
 
-        # if self.rush_detected:
-        #     return
+        if self.rush_build == EnemyRushBuild.WorkerRush:
+            # Worker rush can never change to anything else
+            return
+
+        workers_close = self.knowledge.known_enemy_workers.filter(
+            lambda u: u.distance_to(self.ai.start_location) < u.distance_to(self.knowledge.likely_enemy_start_location))
+
+        if workers_close.amount > 9:
+            self._set_rush(EnemyRushBuild.WorkerRush)
 
         if self.knowledge.enemy_race == Race.Zerg:
             self._zerg_rushes()

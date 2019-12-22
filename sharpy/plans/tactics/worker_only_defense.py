@@ -18,9 +18,6 @@ class PlanWorkerOnlyDefense(ActBase):
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
-        # self.combat = CombatManager(self.knowledge)
-        # self.combat.move_formation = Formation.Nothing
-        # self.combat._kite.override_kite = True
         self.was_active = False
         self.gather_mf = self.solve_optimal_mineral_field()
 
@@ -58,6 +55,11 @@ class PlanWorkerOnlyDefense(ActBase):
             # Safe
             return True
 
+        # for unit in already_defending:
+        #     # return workers back to base that have wandered too far away
+        #     if unit.type_id in self.unit_values.worker_types and unit.distance_to(self.ai.start_location) > 30:
+        #         self.knowledge.roles.clear_task(unit)
+        #         unit.gather(self.gather_mf)
 
         worker_only = combined_enemies.amount == combined_enemies.of_type(UnitValue.worker_types).amount
 

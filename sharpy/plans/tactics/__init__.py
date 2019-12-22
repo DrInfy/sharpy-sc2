@@ -8,3 +8,4 @@ from .worker_only_defense import PlanWorkerOnlyDefense
 from .worker_scout import WorkerScout
 from .taunt_enemy import TauntEnemy
 from .warn_build_macro import WarnBuildMacro
+from .worker_counterattack import WorkerCounterAttack

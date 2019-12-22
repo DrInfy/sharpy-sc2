@@ -188,7 +188,7 @@ class MicroStep(ABC):
             val = 1 - u.shield_health_percentage
             range = self.unit_values.real_range(unit, u, self.knowledge)
             if unit.distance_to(u) < range:
-                val += 1
+                val += 2
             return val
 
         value_func = melee_value
@@ -204,7 +204,7 @@ class MicroStep(ABC):
             pos: Point2 = enemy.position
             score = value_func(enemy) + (1 - pos.distance_to(unit) / lookup)
             if enemy.tag == last_target:
-                score += 3
+                score += 1
 
             if score > best_score:
                 best_target = enemy

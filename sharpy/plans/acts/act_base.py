@@ -4,7 +4,7 @@ from typing import List
 
 import sc2
 from sharpy.general.unit_value import UnitValue
-from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager
+from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
 from sc2 import AbilityId, Race, UnitTypeId
 from sc2.client import Client
@@ -74,6 +74,7 @@ class ActBase(ABC):
         self._debug: bool = False
         self.pather: PathingManager = None
         self.combat: GroupCombatManager = None
+        self.roles: UnitRoleManager = None
 
     @property
     def debug(self):
@@ -107,6 +108,7 @@ class ActBase(ABC):
         self._client: Client = self.ai._client
         self.pather = self.knowledge.pathing_manager
         self.combat = self.knowledge.combat_manager
+        self.roles = self.knowledge.roles
 
     def print(self, msg: string, stats: bool = True):
         self.knowledge.print(msg, type(self).__name__, stats)
