@@ -1,4 +1,4 @@
-from typing import List, Union, Set
+from typing import List, Union, Set, Iterable
 
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId, Race
@@ -70,7 +70,7 @@ class UnitRoleManager(ManagerBase):
             else:
                 self.roles[i].remove_unit(unit)
 
-    def clear_tasks(self, units: Union[Units, List[int]]):
+    def clear_tasks(self, units: Union[Units, Iterable[int]]):
         for unit in units:
             self.clear_task(unit)
 
