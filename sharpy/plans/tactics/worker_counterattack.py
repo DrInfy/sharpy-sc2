@@ -52,7 +52,7 @@ class WorkerCounterAttack(ActBase):
     def get_army(self, target: Point2, attacker_count: int) -> Units:
         # Clear defenders
         defenders = self.roles.all_from_task(UnitTask.Defending)
-        self.roles.clear_tasks(defenders)
+        self.roles.clear_tasks(defenders.tags)
 
         count = 0
         army = Units([], self.ai)
@@ -63,6 +63,10 @@ class WorkerCounterAttack(ActBase):
             self.tags.append(unit.tag)
             if count >= attacker_count:
                 break
+
+        old_defenders = defenders.tags_not_in(self.tags)
+        for unit in old_defenders:
+            self.do(unit.stop())
         return army
 
     def handle_counter(self) -> bool:
@@ -84,11 +88,11 @@ class WorkerCounterAttack(ActBase):
                 self.do(attacker.gather(self.gather_mf))
             else:
                 own = self.cache.own_in_range(attacker.position, 3).amount
-                enemies = self.cache.own_in_range(attacker.position, 3)
+                enemies = self.cache.enemy_in_range(attacker.position, 3)
                 enemy_count = enemies.amount
 
                 if own >= attackers_left or enemy_count <= own:
-                    self.combat.add_units(attackers)
+                    self.combat.add_unit(attacker)
                 else:
                     # Regroup
                     if attacker.distance_to(self.gather_mf) < 5:
@@ -98,4 +102,4 @@ class WorkerCounterAttack(ActBase):
                         self.do(attacker.gather(self.gather_mf))
 
         self.combat.execute(self.knowledge.enemy_main_zone.center_location)
-        return self.ai.units.exclude_type(self.unit_values.worker_types).exists
+        return False
