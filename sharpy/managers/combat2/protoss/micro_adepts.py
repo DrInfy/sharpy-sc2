@@ -1,7 +1,10 @@
-from typing import Dict
+from typing import Dict, Optional
 
-from sc2 import UnitTypeId
-from sharpy.managers.combat2 import GenericMicro
+from sc2 import UnitTypeId, AbilityId
+from sc2.position import Point2
+from sc2.unit import Unit
+from sc2.units import Units
+from sharpy.managers.combat2 import GenericMicro, Action, MoveType, MicroStep, CombatModel
 
 high_priority: Dict[UnitTypeId, int] = {
     # Terran
@@ -76,6 +79,49 @@ class MicroAdepts(GenericMicro):
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.prio_dict = high_priority
+
+    def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
+        shuffler = unit.tag % 10
+
+        target: Optional[Unit] = None
+        enemy: Unit
+
+        target = self.get_target(self.enemies_near_by, target, unit, shuffler)
+
+        shade_tag = self.cd_manager.adept_to_shade.get(unit.tag, None)
+        if shade_tag:
+            shade = self.cache.by_tag(shade_tag)
+            if shade:
+                if target is None:
+                    nearby: Units = self.knowledge.unit_cache.enemy_in_range(shade.position, 12)
+                    target = self.get_target(nearby, target, shade, shuffler)
+
+                if target is not None:
+                    pos: Point2 = target.position
+                    self.ai.do(shade.move(pos.towards(unit, -1)))
+
+        if self.move_type in {MoveType.SearchAndDestroy, MoveType.Assault} and self.model == CombatModel.RoachToStalker:
+            if self.cd_manager.is_ready(unit.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT):
+                if target is not None:
+                    return Action(target.position, False, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
+
+        return super().unit_solve_combat(unit, current_command)
+
+    def get_target(self, nearby: Units, target: Optional[Unit], unit: Unit, shuffler: float) -> Optional[Unit]:
+        best_score = 0
+
+        for enemy in nearby:
+            d = enemy.distance_to(unit)
+            if d < 12 and not enemy.is_flying:
+                score = d * 0.2 - self.unit_values.power(enemy)
+                if enemy.is_light:
+                    score += 5
+                score += 0.1 * (enemy.tag % (shuffler + 2))
+
+                if score > best_score:
+                    target = enemy
+                    best_score = score
+        return target
 
     # TODO: Adepts shade on top of marines
     # TODO: Adepts put out a escape shade
