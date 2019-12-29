@@ -152,11 +152,11 @@ class UnitRoleManager(ManagerBase):
         return
 
     def all_from_task(self, task: UnitTask) -> Units:
-        return self.roles[task.value].units
+        return Units(self.roles[task.value].units, self.ai)
 
     @property
     def free_units(self) -> Units:
-        units: Units = self.roles[UnitTask.Idle.value].units.copy()
+        units: Units = Units(self.roles[UnitTask.Idle.value].units, self.ai)
         units.extend(self.roles[UnitTask.Moving.value].units)
         return units
 
@@ -170,7 +170,7 @@ class UnitRoleManager(ManagerBase):
     @property
     def free_workers(self) -> Units:
         """ Free workers, ie. gathering minerals or gas, or idling, and not dedicated to defending or scouting."""
-        units: Units = self.roles[UnitTask.Idle.value].units.copy()
+        units: Units = Units(self.roles[UnitTask.Idle.value].units, self.ai)
         units.extend(self.roles[UnitTask.Gathering.value].units)
         # Mules should not count for workers
         return units.of_type([UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV])
