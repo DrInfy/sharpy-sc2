@@ -26,6 +26,7 @@ no_retreat_on_low_hp: Set[UnitTypeId] = {
 class GenericMicro(MicroStep):
     def __init__(self, knowledge):
         self.prio_dict: Optional[Dict[UnitTypeId, int]] = None
+        self.model = CombatModel.StalkerToRoach
         super().__init__(knowledge)
 
     def should_retreat(self, unit: Unit) -> bool:
@@ -58,9 +59,9 @@ class GenericMicro(MicroStep):
                 if self.knowledge.enemy_race == Race.Zerg:
                     self.model = CombatModel.StalkerToSpeedlings
                 else:
-                    if self.attack_range < self.enemy_attack_range:
+                    if self.attack_range < self.enemy_attack_range - 0.5:
                         self.model = CombatModel.RoachToStalker
-                    else:
+                    elif self.attack_range > self.enemy_attack_range + 0.5:
                         self.model = CombatModel.StalkerToRoach
 
             if self.model == CombatModel.StalkerToSpeedlings:
