@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from sharpy.managers import UnitValue
 from sharpy.managers.combat2 import MoveType
@@ -142,9 +142,9 @@ class PlanWorkerOnlyDefense(ActBase):
         else:
             self.knowledge.combat_manager.add_unit(unit)
 
-    def closest_distance_between_our_theirs(self, combined_enemies: Units) -> Tuple[float, Unit]:
+    def closest_distance_between_our_theirs(self, combined_enemies: Units) -> Tuple[float, Optional[Unit]]:
         own = self.ai.units.filter(lambda unit: not unit.is_structure and unit.type_id not in self.unit_values.combat_ignore)
-        closest: Unit = None
+        closest: Optional[Unit] = None
         d = 0
         for own_unit in own:  # type: Unit
             closest_temp = combined_enemies.closest_to(own_unit)

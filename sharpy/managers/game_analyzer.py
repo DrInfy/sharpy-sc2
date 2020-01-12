@@ -189,7 +189,7 @@ class GameAnalyzer(ManagerBase):
                 and self.our_income_advantage == Advantage.OverwhelmingAdvantage)
 
     @property
-    def bean_predicting_defeat_for(self) -> float:
+    def been_predicting_defeat_for(self) -> float:
         if self.predicted_defeat_time == 0:
             return 0
         return self.ai.time - self.predicted_defeat_time
