@@ -119,4 +119,16 @@ Create bases up to a total count of 2. i.e. we already have a main base, so buil
                 PlanFinishEnemy(),
             ])
 ```
-This `SequentialList` step will perform a number of 'house keeping' duties (like managing workers), as well as managing the execution of an attack once the bot has a total of 4 gateways. 
+This `SequentialList` step will perform a number of 'house keeping' duties, as well as managing the execution of an attack once the bot has a total of 4 gateways.
+- `PlanZoneDefense()`  
+Manage defending our base/etc
+- `RestorePower()`  
+Build a pylon next to any de-powered buildings
+- `PlanDistributeWorkers()`  
+Handle idle workers and worker distribution
+- `PlanZoneGather()`  
+Manage where our units gather
+- `Step(RequiredUnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4))`  
+Attack the enemy once the bot has 4 gateways built
+- `PlanFinishEnemy()`  
+Finish the attack
