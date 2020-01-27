@@ -40,9 +40,7 @@ Step 1, 2 and 3 are all executed in the order they are listed - one after the ot
 Using the [macro_stalkers.py](../dummies/protoss/macro_stalkers.py) dummy bot as an example, we see the following:
 ```python
     async def create_plan(self) -> BuildOrder:
-        ...
         return BuildOrder([
-            attack = TheAttack(4)
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 40, include_pending=True), skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
             SequentialList([
