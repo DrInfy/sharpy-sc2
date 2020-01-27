@@ -9,3 +9,6 @@ The folder structure is subject to change.
 
 ## Ladder Dummy Bots
 To build dummy bot for ladder, run ladder_zip.py. Bots will appear as individual zip files in publish folder.
+
+## Getting started
+Read the [getting started](./docs/GETTING_STARTED.md) guide.
