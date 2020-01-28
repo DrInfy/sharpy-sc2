@@ -1,14 +1,14 @@
 from typing import List, Dict, Optional
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers import CooldownManager
+from sharpy.managers import CooldownManager, GroupCombatManager
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
 from sharpy.general.zone import Zone
-from sharpy.combat import CombatManager, MoveType, CombatAction
+from sharpy.managers.combat2 import MoveType
 from sharpy.managers.roles import UnitTask
 
 
@@ -20,7 +20,7 @@ class DoubleAdeptScout(ActBase):
         self.started = False
         self.ended = False
         self.scout_tags: List[int] = []
-        self.combat: CombatManager = None
+
         self.target_zone: Zone = []
         self.target_position: Point2 = None
         # Zones will be without workers until at least the specified time
@@ -33,10 +33,7 @@ class DoubleAdeptScout(ActBase):
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
-        self.combat = CombatManager(knowledge)
-        self.combat.prioritise_workers = True
-        self.combat.use_unit_micro = False
-        self.combat.ball_formation.minimum_distance = 1
+        self.combat: GroupCombatManager = knowledge.combat_manager
         self.cooldown_manager: CooldownManager = self.knowledge.cooldown_manager
 
     async def execute(self) -> bool:
@@ -107,9 +104,9 @@ class DoubleAdeptScout(ActBase):
                 self.target_changed = False
                 self.print(f'Using phase shift to: {self.adept_target}')
             else:
-                self.combat.addUnit(adept, local_target, MoveType.Harass)
+                self.combat.add_unit(adept)
 
-        self.combat.execute()
+        self.combat.execute(local_target, MoveType.Harass)
 
     async def select_targets(self, center: Point2) -> (Point2, Point2):
         """ Returns none if no valid target was found. """
@@ -194,12 +191,6 @@ class DoubleAdeptScout(ActBase):
                     distance = d2
 
         return target_position
-
-    async def execute_command(self, unit: Unit, command: CombatAction):
-        if command.is_attack:
-            self.do(unit.attack(command.target))
-        else:
-            self.do(unit.move(command.target))
 
     async def end_scout(self):
         self.started = False

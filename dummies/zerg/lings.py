@@ -1,6 +1,6 @@
 import random
 
-from sharpy.combat import CombatManager, MoveType
+from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
@@ -134,7 +134,6 @@ class DummyZergAttack(ActBase):
         await super().start(knowledge)
         self.all_out_started = False
         self.unit_values = knowledge.unit_values
-        self.combat_manager = CombatManager(knowledge)
 
     async def execute(self) -> bool:
 
@@ -143,15 +142,17 @@ class DummyZergAttack(ActBase):
         for zone in self.knowledge.expansion_zones:
             if zone.is_ours and zone.is_under_attack:
                 ground_units = zone.known_enemy_units.not_flying
+                target = zone.known_enemy_units.closest_to(zone.center_location).position
+
                 if zone.known_enemy_power.ground_presence > 0 and ground_units:
                     defend = True
                     for zl in self.ai.units.of_type([UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]):
-                        target = ground_units.closest_to(zone.center_location).position
-                        self.combat_manager.addUnit(zl, target, MoveType.SearchAndDestroy)
+                        self.combat.add_unit(zl)
                 elif zone.known_enemy_units:
                     for zl in self.cache.own(UnitTypeId.QUEEN):
-                        target = zone.known_enemy_units.closest_to(zone.center_location).position
-                        self.combat_manager.addUnit(zl, target, MoveType.SearchAndDestroy)
+                        self.combat.add_unit(zl)
+
+                self.combat.execute(target, MoveType.SearchAndDestroy)
                 break  # defend the most important zone first
 
         if not defend:
@@ -176,9 +177,9 @@ class DummyZergAttack(ActBase):
 
             if self.all_out_started:
                 for zl in self.ai.units.of_type([UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.MUTALISK]):
-                    self.combat_manager.addUnit(zl, target, MoveType.Assault)
+                    self.combat.add_unit(zl)
 
-        self.combat_manager.execute()
+            self.combat.execute(target, MoveType.Assault)
         return True
 
     async def select_attack_target(self):

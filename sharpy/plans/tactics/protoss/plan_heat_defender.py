@@ -1,10 +1,10 @@
 from typing import List
 
 from sc2.units import Units
+from sharpy.managers.combat2 import MoveType
 
 from sharpy.plans.acts import ActBase
 from sharpy.managers.roles import UnitTask
-from sharpy.combat import CombatManager, MoveType, Formation
 from sharpy.knowledges import Knowledge
 import sc2
 from sc2 import UnitTypeId
@@ -22,9 +22,7 @@ class PlanHeatDefender(ActBase):
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
         self.roles = self.knowledge.roles
-        self.combat = CombatManager(knowledge)
         self.combat.use_unit_micro = False
-        self.combat.move_formation = Formation.Nothing
         self.check_zones = [self.knowledge.expansion_zones[0], self.knowledge.expansion_zones[1],
                             self.knowledge.expansion_zones[2]]
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
@@ -57,20 +55,21 @@ class PlanHeatDefender(ActBase):
                 self.tag_shift_used_dict[adept.tag] = self.knowledge.ai.time
                 self.do(adept(sc2.AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, closest.position))
             else:
-                self.combat.addUnit(adept, closest.position,  MoveType.SearchAndDestroy)
+                self.combat.add_unit(adept)
                 shades = self.knowledge.ai.units(UnitTypeId.ADEPTPHASESHIFT)
 
                 for shade in shades.tags_in(self.phaseshift_tags):
-                    self.combat.addUnit(shade, closest.position, True)
+                    self.combat.add_unit(shade)
 
                 for shade in shades.tags_not_in(self.phaseshift_tags) .closer_than(6, adept):
                     self.phaseshift_tags.append(shade.tag)
-                    self.combat.addUnit(shade, closest.position, True)
+                    self.combat.add_unit(shade)
 
-
-        hot_spot = self.knowledge.heat_map.get_zones_hotspot(self.check_zones)
-        if hot_spot is None:
-            self.combat.addUnit(adept, self.gather_point)
+                self.combat.execute(closest.position, MoveType.SearchAndDestroy)
         else:
-            self.combat.addUnit(adept, hot_spot.center, MoveType.SearchAndDestroy)
+            hot_spot = self.knowledge.heat_map.get_zones_hotspot(self.check_zones)
+            if hot_spot is None:
+                hot_spot = self.gather_point
 
+            self.combat.add_unit(adept)
+            self.combat.execute(hot_spot, MoveType.SearchAndDestroy)

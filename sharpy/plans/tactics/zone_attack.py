@@ -11,7 +11,7 @@ from sc2.units import Units
 
 from sharpy.managers.roles import UnitTask
 from sharpy.knowledges import Knowledge
-from sharpy.combat import MoveType
+from sharpy.managers.combat2 import MoveType
 from sharpy.general.extended_power import ExtendedPower
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

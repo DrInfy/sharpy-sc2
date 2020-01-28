@@ -4,8 +4,6 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 
-from sharpy.managers.roles import UnitTask
-from sharpy.combat import CombatManager, Formation, MoveType
 from sharpy.knowledges import Knowledge
 from sharpy.managers import UnitValue
 
@@ -16,8 +14,6 @@ class PlanZoneGatherTerran(ActBase):
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
-        self.combat = CombatManager(knowledge)
-        self.combat.move_formation = Formation.Nothing
         self.unit_values: UnitValue = knowledge.unit_values
         self.gather_point = self.knowledge.gather_point
         self.gather_set: sc2.List[int] = []
@@ -50,7 +46,7 @@ class PlanZoneGatherTerran(ActBase):
                     if unit.distance_to(ramp.bottom_center) > 5 and unit.distance_to(ramp.top_center) > 4:
                         self.ai.do(unit(AbilityId.SIEGEMODE_SIEGEMODE))
                 elif (d > 6.5 and unit.type_id != UnitTypeId.SIEGETANKSIEGED) or d > 9:
-                    self.combat.addUnit(unit, self.gather_point, MoveType.Assault)
+                    self.combat.add_unit(unit)
 
-        self.combat.execute()
+        self.combat.execute(self.gather_point)
         return True # Always non blocking

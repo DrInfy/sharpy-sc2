@@ -1,6 +1,5 @@
 from sharpy.plans.acts import ActBase
 from sharpy.managers.roles import UnitTask
-from sharpy.combat import CombatManager
 from sharpy.knowledges import Knowledge
 from sc2 import Race, UnitTypeId
 
@@ -13,8 +12,6 @@ class PlanMainDefender(ActBase):
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.roles = self.knowledge.roles
-        self.combat = CombatManager(knowledge)
-
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
 
     async def execute(self):
@@ -28,14 +25,14 @@ class PlanMainDefender(ActBase):
                 sentry = sentries.first
                 self.sentry_tag = sentry.tag
                 self.roles.set_task(UnitTask.Reserved, sentry)
-                self.combat.addUnit(sentry, self.gather_point)
+                self.combat.add_unit(sentry)
         else:
             sentry = self.cache.by_tag(self.sentry_tag)
             if sentry is None:
                 self.sentry_tag = None
             else:
-                self.combat.addUnit(sentry, self.gather_point)
+                self.combat.add_unit(sentry)
 
-        self.combat.execute()
+        self.combat.execute(self.gather_point)
 
         return True # never block

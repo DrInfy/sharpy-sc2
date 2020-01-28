@@ -3,12 +3,12 @@ from typing import Optional
 from sc2 import AbilityId, UnitTypeId
 
 import sc2
+from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
 from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.managers.roles import UnitTask
-from sharpy.combat import MoveType
 from sharpy.knowledges import Knowledge
 from sharpy.managers import UnitValue
 

@@ -4,7 +4,6 @@ from sharpy.plans.acts import ActBase
 from sharpy.mapping.heat_map import HeatMap
 from sharpy.managers.roles import UnitTask
 from sharpy.knowledges import Knowledge
-from sharpy.combat import CombatManager, Formation
 from sc2 import UnitTypeId
 from sc2.position import Point2
 
@@ -22,10 +21,6 @@ class PlanHeatOverseer(ActBase):
         self.heat_map: HeatMap = knowledge.heat_map
         self.roles = self.knowledge.roles
         self.gather_point = self.knowledge.expansion_zones[0].center_location
-
-        self.combat = CombatManager(knowledge)
-        self.combat.use_unit_micro = False
-        self.combat.move_formation = Formation.Nothing
 
     async def execute(self) -> bool:
         stealth_hotspot: Optional[Tuple[Point2, float]] = self.heat_map.get_stealth_hotspot()
@@ -59,9 +54,9 @@ class PlanHeatOverseer(ActBase):
             else:
                 await self.assault_hot_spot(overseer)
 
-        self.combat.execute()
         return True  # never block
 
-    async def assault_hot_spot(self, overseer):
+    async def assault_hot_spot(self, observer):
         position = self.stealth_hotspot or self.gather_point
-        self.combat.addUnit(overseer, position, False)
+        self.combat.add_unit(observer)
+        self.combat.execute(position)
