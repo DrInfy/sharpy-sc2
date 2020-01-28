@@ -121,6 +121,9 @@ class EnemyUnitsManager(ManagerBase):
         if self.unit_count(UnitTypeId.BANSHEE) > 0:
             self._enemy_cloak_trigger = True
 
+        if self.unit_count(UnitTypeId.WIDOWMINE) > 0:
+            self._enemy_cloak_trigger = True
+
         if self.unit_count(UnitTypeId.LURKER) > 0 or \
                 self.knowledge.known_enemy_structures.of_type(
                     [UnitTypeId.LURKERDENMP, UnitTypeId.LURKERDEN]).exists:
