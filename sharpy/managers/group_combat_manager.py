@@ -65,6 +65,9 @@ class GroupCombatManager(ManagerBase):
         self.unit_micros[UnitTypeId.VIKINGFIGHTER] = MicroVikings(knowledge)
         self.unit_micros[UnitTypeId.MARINE] = MicroBio(knowledge)
         self.unit_micros[UnitTypeId.MARAUDER] = MicroBio(knowledge)
+        self.unit_micros[UnitTypeId.BATTLECRUISER] = MicroBattleCruisers(knowledge)
+        self.unit_micros[UnitTypeId.RAVEN] = MicroRavens(knowledge)
+        self.unit_micros[UnitTypeId.MEDIVAC] = MicroMedivacs(knowledge)
 
         self.generic_micro = GenericMicro(knowledge)
         self.regroup_threshold = 0.75
@@ -255,25 +258,25 @@ class GroupCombatManager(ManagerBase):
             group_action = micro.group_solve_combat(type_units, Action(target, is_attack))
 
             for unit in type_units:
-                action = micro.unit_solve_combat(unit, group_action)
-                order = action.to_commmand(unit)
+                final_action = micro.unit_solve_combat(unit, group_action)
+                order = final_action.to_commmand(unit)
                 if order:
                     self.ai.do(order)
 
                 if self.debug:
-                    if action.debug_comment:
-                        status = action.debug_comment
-                    elif action.ability:
-                        status = action.ability.name
-                    elif action.is_attack:
+                    if final_action.debug_comment:
+                        status = final_action.debug_comment
+                    elif final_action.ability:
+                        status = final_action.ability.name
+                    elif final_action.is_attack:
                         status = "Attack"
                     else:
                         status = "Move"
-                    if action.target is not None:
-                        if isinstance(action.target, Unit):
-                            status += f": {action.target.type_id.name}"
+                    if final_action.target is not None:
+                        if isinstance(final_action.target, Unit):
+                            status += f": {final_action.target.type_id.name}"
                         else:
-                            status += f": {action.target}"
+                            status += f": {final_action.target}"
 
                     status += f" G: {group.debug_index}"
                     status += f"\n{move_type.name}"
