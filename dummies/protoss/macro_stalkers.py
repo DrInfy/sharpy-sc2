@@ -1,24 +1,13 @@
-from sharpy.plans.acts import *
-from sharpy.plans.acts.protoss import *
-from sharpy.plans.acts.terran import *
-from sharpy.plans.acts.zerg import *
-from sharpy.plans.require import *
-from sharpy.plans.tactics import *
-from sharpy.plans.tactics.protoss import *
-from sharpy.plans.tactics.terran import *
-from sharpy.plans.tactics.zerg import *
-from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.knowledges import KnowledgeBot, Knowledge
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
+from sharpy.knowledges import KnowledgeBot
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.plans.acts import *
+from sharpy.plans.acts.protoss import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
 
-class TheAttack(PlanZoneAttack):
-
-    async def start(self, knowledge: Knowledge):
-        await super().start(knowledge)
-        #self.combat.move_formation = Formation.Nothing
-        #self.combat.offensive_stutter_step = False
 
 class MacroStalkers(KnowledgeBot):
 
@@ -26,7 +15,6 @@ class MacroStalkers(KnowledgeBot):
         super().__init__("Sharp Spiders")
 
     async def create_plan(self) -> BuildOrder:
-        attack = TheAttack(4)
         return BuildOrder([
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 40, include_pending=True), skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
@@ -61,15 +49,14 @@ class MacroStalkers(KnowledgeBot):
                     ]
                 ])
             ]),
-            SequentialList(
-                [
-                    PlanZoneDefense(),
-                    RestorePower(),
-                    PlanDistributeWorkers(),
-                    PlanZoneGather(),
-                    Step(RequiredUnitReady(UnitTypeId.GATEWAY, 4), attack),
-                    PlanFinishEnemy(),
-                ])
+            SequentialList([
+                PlanZoneDefense(),
+                RestorePower(),
+                PlanDistributeWorkers(),
+                PlanZoneGather(),
+                Step(RequiredUnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4)),
+                PlanFinishEnemy(),
+            ])
         ])
 
 
