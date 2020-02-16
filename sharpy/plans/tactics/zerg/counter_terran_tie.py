@@ -12,7 +12,7 @@ from sharpy.plans.tactics import PlanDistributeWorkers
 
 
 class CounterTerranTie(BuildOrder):
-    def __init__(self, orders: List[ActBase]):
+    def __init__(self, orders: List[Union[ActBase, List[ActBase]]]):
         """
         Build order package that replaces normal build order for Zerg with one that builds mutalisks to destroy terran
         flying buildings.
