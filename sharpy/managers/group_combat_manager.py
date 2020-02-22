@@ -18,6 +18,7 @@ ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
 
 class GroupCombatManager(ManagerBase):
     def __init__(self):
+        # How much distance must be between units to consider them to be in different groups
         self.own_group_threshold = 7
         super().__init__()
 
@@ -282,11 +283,8 @@ class GroupCombatManager(ManagerBase):
 
         return group
 
-
-
-    def group_own_units(self, our_units: Units, lookup_distance: Optional[float] = None) -> List[CombatUnits]:
-        if lookup_distance is None:
-            lookup_distance = self.own_group_threshold
+    def group_own_units(self, our_units: Units) -> List[CombatUnits]:
+        lookup_distance = self.own_group_threshold
         groups: List[Units] = []
         assigned: Dict[int, int] = dict()
 
