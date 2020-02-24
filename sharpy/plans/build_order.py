@@ -23,7 +23,7 @@ class BuildOrder(ActBase):
             elif isinstance(order, list):
                 self.orders.append(SequentialList(order))
             else:
-                assert False # Invalid type
+                assert False  # Invalid type
 
     async def debug_draw(self):
         for order in self.orders:
