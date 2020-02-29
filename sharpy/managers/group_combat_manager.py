@@ -133,8 +133,6 @@ class GroupCombatManager(ManagerBase):
             if closest_enemies is None:
                 if move_type == MoveType.PanicRetreat:
                     self.move_to(group, target, move_type)
-                elif self.faster_group_should_regroup(group, own_closest_group):
-                    self.move_to(group, own_closest_group.center, MoveType.ReGroup)
                 else:
                     self.attack_to(group, target, move_type)
             else:
@@ -171,10 +169,10 @@ class GroupCombatManager(ManagerBase):
                     else:
                         self.attack_to(group, closest_enemies.center, move_type)
                 else:
-                    if self.faster_group_should_regroup(group, own_closest_group):
-                        self.move_to(group, own_closest_group.center, MoveType.ReGroup)
+                    # if self.faster_group_should_regroup(group, own_closest_group):
+                    #     self.move_to(group, own_closest_group.center, MoveType.ReGroup)
 
-                    elif group.power.is_enough_for(self.all_enemy_power, 0.85):
+                    if group.power.is_enough_for(self.all_enemy_power, 0.85):
                         # We have enough units here to crush everything the enemy has
                         self.attack_to(group, closest_enemies.center, move_type)
                     else:
