@@ -61,6 +61,13 @@ class GroupCombatManager(ManagerBase):
         self.unit_micros[UnitTypeId.QUEEN] = MicroQueens(knowledge)
         self.unit_micros[UnitTypeId.RAVAGER] = MicroRavagers(knowledge)
 
+        self.unit_micros[UnitTypeId.LURKERMP] = MicroLurkers(knowledge)
+        self.unit_micros[UnitTypeId.INFESTOR] = MicroInfestors(knowledge)
+        self.unit_micros[UnitTypeId.SWARMHOSTMP] = MicroSwarmHosts(knowledge)
+        self.unit_micros[UnitTypeId.LOCUSTMP] = NoMicro(knowledge)
+        self.unit_micros[UnitTypeId.LOCUSTMPFLYING] = NoMicro(knowledge)
+        self.unit_micros[UnitTypeId.VIPER] = MicroVipers(knowledge)
+
         # Terran
         self.unit_micros[UnitTypeId.HELLIONTANK] = NoMicro(knowledge)
         self.unit_micros[UnitTypeId.SIEGETANK] = MicroTanks(knowledge)
@@ -224,9 +231,9 @@ class GroupCombatManager(ManagerBase):
         own_unit_cache: Dict[UnitTypeId, Units] = {}
 
         for unit in group.units:
-            units = own_unit_cache.get(unit.type_id, Units([], self.ai))
+            real_type = self.unit_values.real_type(unit.type_id)
+            units = own_unit_cache.get(real_type, Units([], self.ai))
             if units.amount == 0:
-                real_type = self.unit_values.real_type(unit.type_id)
                 own_unit_cache[real_type] = units
 
             units.append(unit)
