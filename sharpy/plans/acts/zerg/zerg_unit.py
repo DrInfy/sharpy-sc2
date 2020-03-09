@@ -30,7 +30,7 @@ class ZergUnit(BuildOrder):
             self.morph_unit = None
 
         if self.morph_unit:
-            self.unit_type = self.morph_unit.unit_type
+            unit_type = self.morph_unit.unit_type
 
         if unit_type == UnitTypeId.QUEEN:
             self.act_unit = ActUnit(unit_type, UnitTypeId.HATCHERY, to_count, priority)
@@ -41,18 +41,6 @@ class ZergUnit(BuildOrder):
             super().__init__([self.morph_unit, self.act_unit])
         else:
             super().__init__([self.act_unit])
-
-    @property
-    def is_done(self) -> bool:
-        if self.morph_unit:
-            # TODO: Burrowed versions!
-            unit_count = self.cache.own(self.morph_unit.result_type) + self.cache.own(self.morph_unit.cocoon_type)
-        else:
-            unit_count = self.act_unit.get_unit_count()
-
-        if self.only_once:
-            unit_count += self.knowledge.lost_units_manager.own_lost_type(self.unit_type)
-        return unit_count >= self._original_to_count
 
     async def execute(self) -> bool:
         if self.morph_unit:
