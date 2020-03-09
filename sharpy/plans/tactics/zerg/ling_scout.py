@@ -33,7 +33,6 @@ class LingScoutMain(ActBase):
             self.knowledge.roles.set_task(UnitTask.Scouting, scout)
             target = self.knowledge.expansion_zones[-1].behind_mineral_position_center
 
-            if self.knowledge.iteration == 0:  # first.distance_to(target) > 5:
-                self.do(scout.move(target))
+            self.do(scout.move(target))
 
         return True
