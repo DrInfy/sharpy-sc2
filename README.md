@@ -7,6 +7,9 @@ Sharpy uses [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the f
 The framework has all the necessary components to run the dummy bots that are used for testing against Sharpened Edge.
 The folder structure is subject to change.
 
+## Requirements
+Python 3.7 (>=3.8 is not supported yet)
+
 ## Ladder Dummy Bots
 To build dummy bot for ladder, run ladder_zip.py. Bots will appear as individual zip files in publish folder.
 
