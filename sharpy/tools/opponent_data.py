@@ -7,6 +7,7 @@ from sc2 import Race
 
 class GameResult:
     game_started: str
+    my_race:  Optional[Race]  # Race played in the selected game (useful for random bots)
     result: int  # -1 for defeat, 0 for draw, 1 for victory
     build_used: str
     enemy_build: int
@@ -17,6 +18,7 @@ class GameResult:
 
     def __init__(self) -> None:
         self.guid = uuid4()
+        self.my_race = None
         self.game_started = ""
         self.result = 0
         self.build_used = ""
