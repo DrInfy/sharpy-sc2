@@ -2,6 +2,7 @@ from .attack_expansions import PlanFinishEnemy
 from .cancel_building import PlanCancelBuilding
 from .distribute_workers import PlanDistributeWorkers
 from .zone_attack import PlanZoneAttack
+from .zone_attack_all_in import PlanZoneAttackAllIn
 from .zone_defense import PlanZoneDefense
 from .zone_gather import PlanZoneGather
 from .worker_only_defense import PlanWorkerOnlyDefense
