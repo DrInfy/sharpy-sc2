@@ -502,7 +502,8 @@ class BuildingSolver(ManagerBase):
                 for finder in wall_finders:
 
                     if finder.query(self.grid, lookup, ZoneArea.OwnNaturalZone):
-                        if not self.grid.query_area(lookup + search_vector * 5, BlockerType.Building1x1, self.is_pathable):
+                        if not self.grid.query_area(lookup + search_vector * 5, BlockerType.Building1x1, self.is_pathable) \
+                            or not self.grid.query_area(lookup - search_vector * 5, BlockerType.Building1x1, self.is_pathable):
                             # Wall was found, it seems like it's not towards open area
                             self.print(f"Wall was found at {lookup}, but disregarded due to not free area check", stats=False, log_level=logging.DEBUG)
                             continue
