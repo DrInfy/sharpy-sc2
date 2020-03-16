@@ -49,7 +49,11 @@ class MicroStep(ABC):
         self.attack_range = 0
         self.enemy_attack_range = 0
 
+        self.focus_fired: Dict[int, float] = dict()
+
+
     def init_group(self, group: CombatUnits, units: Units, enemy_groups: List[CombatUnits], move_type: MoveType):
+        self.focus_fired.clear()
         self.group = group
         self.move_type = move_type
         ready_to_attack = 0
@@ -160,14 +164,13 @@ class MicroStep(ABC):
             # No enemies to shoot at
             return current_command
 
-        value_func: Callable[[Unit],  float] = None
+        value_func: Callable[[Unit],  float]
         if prio:
             value_func = lambda u: 1 if u.type_id in changelings else prio.get(u.type_id, -1) \
                   * (1 - u.shield_health_percentage)
         else:
             value_func = lambda u: 1 if u.type_id in changelings else 2 \
                   * self.unit_values.power_by_type(u.type_id, 1 - u.shield_health_percentage)
-
 
         best_target: Optional[Unit] = None
         best_score: float = 0
@@ -186,11 +189,17 @@ class MicroStep(ABC):
             if enemy.tag == last_target:
                 score += 3
 
+            if self.focus_fired.get(enemy.tag, 0) > enemy.health:
+                score *= 0.1
+
             if score > best_score:
                 best_target = enemy
                 best_score = score
 
         if best_target:
+            self.focus_fired[best_target.tag] = self.focus_fired.get(best_target.tag, 0) + \
+                                                unit.calculate_damage_vs_target(best_target)[0]
+
             return Action(best_target, True)
 
         return current_command
@@ -231,11 +240,15 @@ class MicroStep(ABC):
             if enemy.tag == last_target:
                 score += 1
 
+            if self.focus_fired.get(enemy.tag, 0) > enemy.health:
+                score *= 0.1
+
             if score > best_score:
                 best_target = enemy
                 best_score = score
 
         if best_target:
+            self.focus_fired[best_target.tag] = self.focus_fired.get(best_target.tag, 0)
             return Action(best_target, True)
 
         return current_command
