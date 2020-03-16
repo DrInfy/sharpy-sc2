@@ -56,7 +56,8 @@ class DataManager(ManagerBase):
             if self.data.results:
                 self.last_result = self.data.results[-1]
                 self.last_result_as_current_race = next((result for result in reversed(self.data.results)
-                                                         if hasattr(result, "my_race") and result.my_race == self.knowledge.my_race),
+                                                         if  hasattr(result, "my_race")
+                                                         and result.my_race == self.knowledge.my_race),
                                                         None)
 
     def read_data(self):
