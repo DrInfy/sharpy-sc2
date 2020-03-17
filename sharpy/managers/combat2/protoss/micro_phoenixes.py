@@ -87,10 +87,11 @@ class MicroPhoenixes(MicroStep):
             return current_command
 
         # Phoenixes are generally faster than the rest of the army
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            if self.group.ground_units:
-                # Regroup with the ground army
-                return Action(self.group.center, False)
+
+        # if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
+        #     if self.group.ground_units:
+        #         # Regroup with the ground army
+        #         return Action(self.group.center, False)
 
         has_energy = unit.energy > GRAVITON_BEAM_ENERGY
 
@@ -132,7 +133,7 @@ class MicroPhoenixes(MicroStep):
         if targets:
             closest = targets.closest_to(unit)
             # d = unit.distance_to(closest)
-            real_range = self.unit_values.real_range(unit, closest) - 0.5
+            real_range = self.unit_values.real_range(unit, closest) - 1
             best_position = self.pather.find_low_inside_air(unit.position, closest.position, real_range)
 
             return Action(best_position, False)
