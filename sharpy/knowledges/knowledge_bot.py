@@ -3,6 +3,7 @@ import sys
 import threading
 from abc import abstractmethod
 
+from sc2.units import Units
 from sharpy.knowledges import Knowledge
 from sharpy.plans import BuildOrder
 from config import get_config, get_version
@@ -23,6 +24,7 @@ class KnowledgeBot(BotAI):
         self.start_plan = True
         self.run_custom = False
         self.realtime_worker = True
+        self.realtime_split = True
         self.last_game_loop = -1
         self.distance_calculation_method = 0
 
@@ -73,11 +75,25 @@ class KnowledgeBot(BotAI):
         await self.start_first_worker()
         self._client.game_step = int(self.config["general"]["game_step_size"])
 
+        if self.realtime_split:
+            # Split workers
+            mfs = self.mineral_field.closer_than(10, self.townhalls.first.position)
+            workers = Units(self.workers, self)
+
+            for mf in mfs:  # type: Unit
+                if workers:
+                    worker = workers.closest_to(mf)
+                    self.do(worker.gather(mf))
+                    workers.remove(worker)
+
+            for w in workers:  # type: Unit
+                self.do(w.gather(mfs.closest_to(w)))
+            await self._do_actions(self.actions)
+            self.actions.clear()
 
     async def on_start(self):
         """Allows initializing the bot when the game data is available."""
         await self.real_init()
-
 
     async def on_step(self, iteration):
         try:
