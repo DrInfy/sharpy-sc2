@@ -1,6 +1,7 @@
 from collections import deque
-from typing import Dict, Set, Deque
+from typing import Dict, Set, Deque, List
 
+from sc2.position import Point2
 from sharpy.events import UnitDestroyedEvent
 from sharpy.managers import ManagerBase
 from sc2 import UnitTypeId
@@ -32,7 +33,8 @@ class MemoryManager(ManagerBase):
 
     async def update(self):
         # Iterate all currently visible enemy units.
-        for unit in self.knowledge.known_enemy_units_mobile:
+        # self.ai.enemy_units is used here because it does not include memory lane units
+        for unit in self.ai.enemy_units:
             # Make sure that we have not added the same unit tag to both dictionaries, as that could
             # create very confusing bugs.
             assert not (unit.tag in self._memory_units_by_tag and unit.tag in self._archive_units_by_tag)
@@ -58,7 +60,19 @@ class MemoryManager(ManagerBase):
                 continue
 
             snap = self.get_latest_snapshot(unit_tag)
-            if self.ai.is_visible(snap.position):
+            points: List[Point2] = []
+            points.append(Point2((int(snap.position.x), int(snap.position.y))))
+            points.append(Point2((int(snap.position.x + 1), int(snap.position.y))))
+            points.append(Point2((int(snap.position.x), int(snap.position.y + 1))))
+            points.append(Point2((int(snap.position.x + 1), int(snap.position.y + 1))))
+
+            visible = True
+
+            for point in points:
+                if not self.ai.is_visible(point):
+                    visible = False
+
+            if visible:
                 # We see that the unit is no longer there.
                 # todo: what about burrowed units, especially lurkers?
                 memory_tags_to_remove.append(unit_tag)
@@ -87,7 +101,8 @@ class MemoryManager(ManagerBase):
             snap = self.get_latest_snapshot(tag)
             memory_units.append(snap)
 
-        return memory_units.visible
+        return memory_units
+        # return memory_units.visible
 
     def get_latest_snapshot(self, unit_tag: int) -> Unit:
         """Returns the latest snapshot of a unit. Throws KeyError if unit_tag is not found."""
@@ -117,6 +132,7 @@ ignored_unit_types = {
 
     # Zerg
     # Cocoons?
+    UnitTypeId.LARVA,
     UnitTypeId.LOCUSTMP,
     UnitTypeId.LOCUSTMPFLYING,
     UnitTypeId.INFESTEDTERRAN,

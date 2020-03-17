@@ -24,6 +24,13 @@ class CombatUnits():
         self.debug_index = 0
         self._total_distance: Optional[float] = None
         self._area_by_circles: float = 0
+        self.average_speed = 0
+
+        for unit in self.units:
+            self.average_speed += knowledge.unit_values.real_speed(unit)
+
+        if len(self.units) > 1:
+            self.average_speed /= len(self.units)
 
     def is_too_spread_out(self) -> bool:
         if self._total_distance is None:

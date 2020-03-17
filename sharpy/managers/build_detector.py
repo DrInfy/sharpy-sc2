@@ -62,9 +62,16 @@ class BuildDetector(ManagerBase):
 
     async def start(self, knowledge: 'Knowledge'):
         # Just put them all her in order to avoid any issues with random enemy types
-        self.timings[UnitTypeId.NEXUS] = [0]
-        self.timings[UnitTypeId.HATCHERY] = [0]
-        self.timings[UnitTypeId.COMMANDCENTER] = [0]
+        if knowledge.ai.enemy_race == Race.Terran:
+            self.timings[UnitTypeId.COMMANDCENTER] = [0]
+        elif knowledge.ai.enemy_race == Race.Protoss:
+            self.timings[UnitTypeId.NEXUS] = [0]
+        elif knowledge.ai.enemy_race == Race.Zerg:
+            self.timings[UnitTypeId.HATCHERY] = [0]
+        elif knowledge.ai.enemy_race == Race.Random:
+            self.timings[UnitTypeId.COMMANDCENTER] = [0]
+            self.timings[UnitTypeId.NEXUS] = [0]
+            self.timings[UnitTypeId.HATCHERY] = [0]
 
         return await super().start(knowledge)
 
@@ -307,7 +314,7 @@ class BuildDetector(ManagerBase):
         if self.knowledge.enemy_race == Race.Zerg:
             if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.MUTALISK):
                 self.macro_build = EnemyMacroBuild.Mutalisks
-            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.LURKER):
+            if self.ai.time < 7 * 60 and self.cache.enemy(UnitTypeId.LURKERMP):
                 self.macro_build = EnemyMacroBuild.Lurkers
 
         if self.macro_build != EnemyMacroBuild.StandardMacro:

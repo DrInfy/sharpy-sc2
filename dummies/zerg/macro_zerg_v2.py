@@ -56,7 +56,6 @@ class MacroBuild(BuildOrder):
             Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL3, UnitTypeId.EVOLUTIONCHAMBER)),
             Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL3, UnitTypeId.EVOLUTIONCHAMBER)),
             Step(None, ActTech(UpgradeId.CHITINOUSPLATING, UnitTypeId.ULTRALISKCAVERN)),
-            # TODO: Ultra lisk speed?
             Step(None, ActTech(UpgradeId.ANABOLICSYNTHESIS, UnitTypeId.ULTRALISKCAVERN)),
             # ULTRALISKCAVERNRESEARCH_EVOLVEANABOLICSYNTHESIS2
         ]

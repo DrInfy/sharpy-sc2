@@ -56,7 +56,7 @@ class GenericMicro(MicroStep):
             if self.engaged_power.siege_percentage > 0.5:
                 self.model = CombatModel.StalkerToSiege
             elif self.engaged_power.melee_percentage > 0.3 and not flyers:
-                if self.knowledge.enemy_race == Race.Zerg:
+                if self.knowledge.enemy_race == Race.Zerg and self.engaged_power.melee_power > 3:
                     self.model = CombatModel.StalkerToSpeedlings
                 else:
                     if self.attack_range < self.enemy_attack_range - 0.5:

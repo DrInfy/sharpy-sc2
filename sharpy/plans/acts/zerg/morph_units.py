@@ -54,3 +54,13 @@ class MorphBroodLord(MorphUnit):
     def __init__(self, target_count: int):
         super().__init__(UnitTypeId.CORRUPTOR, AbilityId.MORPHTOBROODLORD_BROODLORD, UnitTypeId.BROODLORD,
                          UnitTypeId.BROODLORDCOCOON, target_count)
+
+class MorphLurker(MorphUnit):
+    def __init__(self, target_count: int):
+        super().__init__(UnitTypeId.HYDRALISK, AbilityId.MORPH_LURKER, UnitTypeId.LURKERMP,
+            UnitTypeId.LURKERMPEGG, target_count)
+
+class MorphBaneling(MorphUnit):
+    def __init__(self, target_count: int):
+        super().__init__(UnitTypeId.ZERGLING, AbilityId.MORPHZERGLINGTOBANELING_BANELING, UnitTypeId.BANELING,
+            UnitTypeId.BANELINGCOCOON, target_count)

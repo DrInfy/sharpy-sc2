@@ -46,6 +46,7 @@ class ScanEnemy(ActBase):
                     if stealth:
                         self.last_stealth_scan = ai.time
                     self.last_scan = ai.time
+                    return  # only one orbital should scan
 
     def solve_target(self) -> Optional[Point2]:
         current_zone = None
