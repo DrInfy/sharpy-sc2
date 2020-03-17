@@ -1,6 +1,6 @@
 from typing import Dict
 
-from sharpy.managers.combat2 import MicroStep, Action, MoveType
+from sharpy.managers.combat2 import MicroStep, Action, MoveType, GenericMicro, CombatModel
 from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
@@ -74,48 +74,12 @@ high_priority: Dict[UnitTypeId, int] = {
 }
 
 
-class MicroColossi(MicroStep):
+class MicroColossi(GenericMicro):
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.prio_dict = high_priority
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
+        self.model = CombatModel.StalkerToRoach
         return current_command
 
-    def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
-
-        if self.move_type == MoveType.DefensiveRetreat:
-            if self.ready_to_shoot(unit):
-                closest = self.closest_units.get(unit.tag, None)
-                if closest and self.is_target(closest):
-                    unit_range = self.unit_values.real_range(unit, closest)
-                    if unit_range > 0 and unit_range > unit.distance_to(closest):
-                        return Action(closest, True)
-            return current_command
-
-        elif self.move_type == MoveType.PanicRetreat:
-            return current_command
-
-        if self.ready_to_shoot(unit):
-            if self.closest_group and self.closest_group.ground_units:
-                current_command = Action(self.closest_group.center, True)
-            else:
-                current_command = Action(current_command.target, True)
-        else:
-            closest = self.closest_units[unit.tag]
-
-            # d = unit.distance_to(closest)
-            unit_range = self.unit_values.real_range(unit, closest) - 0.5
-
-            if unit.is_flying:
-                best_position = self.pather.find_low_inside_air(unit.position, closest.position, unit_range)
-            else:
-                best_position = self.pather.find_low_inside_ground(unit.position, closest.position, unit_range)
-
-            return Action(best_position, False)
-
-        if self.ready_to_shoot(unit) and current_command.is_attack:
-            return self.focus_fire(unit, current_command, self.prio_dict)
-        return current_command
