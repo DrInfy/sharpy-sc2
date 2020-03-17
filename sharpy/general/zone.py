@@ -209,6 +209,20 @@ class Zone:
             self.needs_evacuation = False
             self.assaulting_enemies.clear()
 
+    def check_best_mineral_field(self) -> Optional[Unit]:
+        best_score = 0
+        best_mf: Optional[Unit] = None
+
+        for mf in self.mineral_fields:  # type: Unit
+            score = mf.mineral_contents
+            for worker in self.our_workers:   # type: Unit
+                if worker.order_target == mf.tag:
+                    score -= 1000
+            if score > best_score or best_mf is None:
+                best_mf = mf
+                best_score = score
+        return best_mf
+
     def update_enemy_worker_status(self):
         if self.is_ours:
             self.could_have_enemy_workers_in = self.ai.time + 5 * 60
