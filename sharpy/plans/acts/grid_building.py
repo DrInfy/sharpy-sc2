@@ -28,7 +28,7 @@ class GridBuilding(ActBuilding):
         self.priority = priority
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
-        self.consider_worker_production = True
+        self.consider_worker_production = False
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
