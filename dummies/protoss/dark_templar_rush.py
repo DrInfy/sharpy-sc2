@@ -52,8 +52,8 @@ class DarkTemplarRush(KnowledgeBot):
             Step(RequiredUnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
             Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
             Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), GridBuilding(UnitTypeId.DARKSHRINE, 1)),
-            ActTech(UpgradeId.BLINKTECH, UnitTypeId.TWILIGHTCOUNCIL),
-            ActTech(UpgradeId.CHARGE, UnitTypeId.TWILIGHTCOUNCIL)
+            ActTech(UpgradeId.BLINKTECH),
+            ActTech(UpgradeId.CHARGE)
         ]
 
         build_steps_workers = [
@@ -78,7 +78,7 @@ class DarkTemplarRush(KnowledgeBot):
             StepBuildGas(2),
             Step(RequiredSupply(21), GridBuilding(UnitTypeId.PYLON, 2), RequiredUnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE)),
+            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), ActTech(UpgradeId.WARPGATERESEARCH)),
 
             GridBuilding(UnitTypeId.GATEWAY, 3),
             AutoPylon()

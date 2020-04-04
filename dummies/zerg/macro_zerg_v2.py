@@ -36,28 +36,27 @@ class MacroBuild(BuildOrder):
         pool_and_tech = [
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             StepBuildGas(2, None),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED, UnitTypeId.SPAWNINGPOOL)),
+            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
             Step(RequiredGas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
 
             Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1),
-                 ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL1, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1, UnitTypeId.EVOLUTIONCHAMBER)),
+                 ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
+            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
             Step(None, MorphLair(), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
             StepBuildGas(4, None),
-            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL2, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2, UnitTypeId.EVOLUTIONCHAMBER)),
+            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL2)),
+            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
             # Infestation pit required
             Step(None, ActBuilding(UnitTypeId.INFESTATIONPIT, 1)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT, 1), MorphHive()),
 
-            Step(RequiredUnitReady(UnitTypeId.HIVE, 1), ActTech(UpgradeId.ZERGLINGATTACKSPEED, UnitTypeId.SPAWNINGPOOL)),
+            Step(RequiredUnitReady(UnitTypeId.HIVE, 1), ActTech(UpgradeId.ZERGLINGATTACKSPEED)),
             StepBuildGas(6, None),
             Step(None, ActBuilding(UnitTypeId.ULTRALISKCAVERN, 1)),
-            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL3, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL3, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.CHITINOUSPLATING, UnitTypeId.ULTRALISKCAVERN)),
-            Step(None, ActTech(UpgradeId.ANABOLICSYNTHESIS, UnitTypeId.ULTRALISKCAVERN)),
-            # ULTRALISKCAVERNRESEARCH_EVOLVEANABOLICSYNTHESIS2
+            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL3)),
+            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL3)),
+            Step(None, ActTech(UpgradeId.CHITINOUSPLATING)),
+            Step(None, ActTech(UpgradeId.ANABOLICSYNTHESIS)),
         ]
 
         super().__init__([

@@ -99,9 +99,9 @@ class BuildBio(BuildOrder):
         ]
 
         tech = [
-            Step(None, ActTech(UpgradeId.PUNISHERGRENADES, UnitTypeId.BARRACKSTECHLAB)),
-            Step(None, ActTech(UpgradeId.STIMPACK, UnitTypeId.BARRACKSTECHLAB)),
-            Step(None, ActTech(UpgradeId.SHIELDWALL, UnitTypeId.BARRACKSTECHLAB)),
+            Step(None, ActTech(UpgradeId.PUNISHERGRENADES)),
+            Step(None, ActTech(UpgradeId.STIMPACK)),
+            Step(None, ActTech(UpgradeId.SHIELDWALL)),
         ]
 
         mech = [

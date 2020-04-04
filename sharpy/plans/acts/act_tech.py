@@ -4,15 +4,31 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.units import Units
 from .act_base import ActBase
 
+from sc2.dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
 
-# Act of researching a technology or upgrade
+
 class ActTech(ActBase):
-    def __init__(self, upgrade_type: UpgradeId, from_building: UnitTypeId):
+    """
+    Act for researching or upgrading a technology.
+    """
+    def __init__(self, upgrade_type: UpgradeId, from_building: UnitTypeId = None):
+        """
+        :param upgrade_type: Upgrade to research.
+        :param from_building: Optional building to research the upgrade from. This should no longer be needed,
+        as the building is available through an existing mapping file. The parameter is left for backwards
+        compatibility and possible SC2 version mismatches.
+        """
         assert upgrade_type is not None and isinstance(upgrade_type, UpgradeId)
-        assert from_building is not None and isinstance(from_building, UnitTypeId)
-
         self.upgrade_type = upgrade_type
-        self.from_building = from_building
+
+        if from_building is not None:
+            assert isinstance(from_building, UnitTypeId)
+            self.from_building = from_building
+        else:
+            # todo: take upgradeable buildings into account:
+            #   SPIRE & GREATERSPIRE
+            #   HATCHERY &  LAIR & HIVE
+            self.from_building = UPGRADE_RESEARCHED_FROM[self.upgrade_type]
 
         super().__init__()
 

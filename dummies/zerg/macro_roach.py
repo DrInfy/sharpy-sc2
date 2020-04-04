@@ -25,15 +25,15 @@ class MacroRoach(KnowledgeBot):
         bsus = [
             Step(RequiredUnitReady(UnitTypeId.LAIR, 1), None),
             Step(RequiredUnitExists(UnitTypeId.ROACHWARREN, 1),
-                 ActTech(UpgradeId.GLIALRECONSTITUTION, UnitTypeId.ROACHWARREN)),
+                 ActTech(UpgradeId.GLIALRECONSTITUTION)),
         ]
 
         bsu = [
             Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1),
-                 ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL2, UnitTypeId.EVOLUTIONCHAMBER)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2, UnitTypeId.EVOLUTIONCHAMBER)),
+                 ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1)),
+            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
+            Step(None, ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL2)),
+            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
         ]
 
         buildings = [
