@@ -15,7 +15,7 @@ class RoachHydraBuild(BuildOrder):
     def __init__(self):
 
         gas_related = [
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED, UnitTypeId.SPAWNINGPOOL), skip_until=RequiredGas(100)),
+            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60), RequiredGas(100)),
             StepBuildGas(3, RequiredUnitExists(UnitTypeId.HYDRALISKDEN, 1), RequiredGas(50)),
