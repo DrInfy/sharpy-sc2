@@ -20,7 +20,7 @@ BAD_ZONE_POWER_THRESHOLD = -2
 class PlanDistributeWorkers(ActBase):
     """Handles idle workers and worker distribution."""
 
-    def     __init__(self, min_gas: Optional[int] = None, max_gas: Optional[int] = None):
+    def __init__(self, min_gas: Optional[int] = None, max_gas: Optional[int] = None):
         super().__init__()
         assert min_gas is None or isinstance(min_gas, int)
         assert max_gas is None or isinstance(max_gas, int)
@@ -60,7 +60,7 @@ class PlanDistributeWorkers(ActBase):
         """All zones which have a non-full mineral line and are safe from enemies."""
         zones = filter(
             lambda z: z.our_townhall.surplus_harvesters < 0 and z.power_balance > BAD_ZONE_POWER_THRESHOLD
-            and not z.needs_evacuation,
+                      and not z.needs_evacuation,
             self.knowledge.our_zones_with_minerals
         )
         return list(zones)
