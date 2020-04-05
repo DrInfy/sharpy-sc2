@@ -9,7 +9,6 @@ import portpicker
 from aiohttp.web_ws import WebSocketResponse
 
 from bot_loader.ladder_bot import BotLadder
-from bot_loader.sc2only_process import SC2OnlyProcess
 from sc2 import run_game, sc_pb
 from sc2.controller import Controller
 from sc2.main import _host_game

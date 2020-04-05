@@ -4,11 +4,13 @@ import glob
 import logging
 import os
 import random
-from typing import List
+from typing import List, Optional
 import sys
 
 sys.path.insert(1, "python-sc2")
 
+from bot_loader.loader import BotLoader
+from bot_loader.runner import MatchRunner
 from sharpy.knowledges import KnowledgeBot
 
 
@@ -106,12 +108,22 @@ Difficulties:
         print(f"Player1 type {bot_text} not found in {enemies.keys()}")
         return
 
+    enemy: Optional[AbstractPlayer]
+
     if enemy_type not in enemies:
-        print(f"Enemy type {enemy_type} not found in {enemies.keys()}")
-        return
+        loader = BotLoader()
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join("Bots")
+        path = os.path.join(root_dir, path)
+        loader.get_bots(path)
+        enemy = loader.get_bot(enemy_type)
+        if not enemy:
+            print(f"Enemy type {enemy_type} not found in {enemies.keys()}")
+            return
+    else:
+        enemy = enemies[enemy_type](enemy_split)
 
     bot: AbstractPlayer = enemies[bot_type](bot_split)
-    enemy: AbstractPlayer = enemies[enemy_type](enemy_split)
 
     folder = "games"
     if not os.path.isdir(folder):
@@ -127,15 +139,17 @@ Difficulties:
     setup_bot(bot, bot_text, enemy_text, args)
     setup_bot(enemy, enemy_text, bot_text, args)
 
-    run_game(
+    runner = MatchRunner()
+    runner.run_game(
         find_map(map_name),
         [
             bot,
             enemy
         ],
+        player1_id=bot_text,
         realtime=args.real_time,
         game_time_limit=(30 * 60),
-        save_replay_as=f'{folder}/{file_name}.SC2Replay',
+        save_replay_as=f'{folder}/{file_name}.SC2Replay'
     )
 
     # release file handle
