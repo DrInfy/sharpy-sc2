@@ -136,7 +136,7 @@ Difficulties:
         realtime=args.real_time,
         game_time_limit=(30 * 60),
         save_replay_as=f'{folder}/{file_name}.SC2Replay',
-        raw_affects_selection=args.raw_selection
+        # raw_affects_selection=args.raw_selection
     )
 
     # release file handle
@@ -166,6 +166,7 @@ enemies = {
     "robo":(lambda params: Bot(Race.Protoss, MacroRobo())),
     "voidray": (lambda params: Bot(Race.Protoss, MacroVoidray())),
     "cannonrush": (lambda params: Bot(Race.Protoss, CannonRush())),
+    "disruptor": (lambda params: Bot(Race.Protoss, SharpSphereBot())),
     "randomprotoss": (lambda params: Bot(Race.Protoss, RandomProtossBot())),
 
     # Zerg
