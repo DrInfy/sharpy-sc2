@@ -1,6 +1,6 @@
 import subprocess
 import os
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Any
 
 from sc2 import PlayerType, Race
 from sc2.player import AbstractPlayer
@@ -52,14 +52,14 @@ class BotLadder(AbstractPlayer):
         else:
             return f"Human({self.race._name_})"
 
-    async def join_game(self, opponentId: str, portconfig: Portconfig):
+    async def join_game(self, opponentId: str, portconfig: Portconfig) -> int:
         cmd: [str] = self.map_type_cmd()
         timeout = 1800  # 30 minutes
-        start_port = str(portconfig.shared)
-        game_port = str(portconfig.shared)
+        start_port = str(portconfig.server[0])
+        game_port = str(portconfig.server[1])
 
-        print(f"game port: {start_port}")
-        print(f"start port: {game_port}")
+        print(f"game port: {game_port}")
+        print(f"start port: {start_port}")
         cmd.append("--OpponentId")
         cmd.append(opponentId)
         cmd.append("--GamePort")
@@ -67,4 +67,4 @@ class BotLadder(AbstractPlayer):
         cmd.append("--StartPort")
         cmd.append(start_port)
 
-        subprocess.call(cmd, timeout=timeout)
+        return subprocess.call(cmd, timeout=timeout)

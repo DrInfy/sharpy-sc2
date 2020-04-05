@@ -136,7 +136,6 @@ Difficulties:
         realtime=args.real_time,
         game_time_limit=(30 * 60),
         save_replay_as=f'{folder}/{file_name}.SC2Replay',
-        # raw_affects_selection=args.raw_selection
     )
 
     # release file handle
@@ -149,6 +148,7 @@ def setup_bot(player: AbstractPlayer, bot_code, enemy_text: str, args):
         my_bot: KnowledgeBot = player.ai
         my_bot.opponent_id = bot_code + "-" + enemy_text
         my_bot.run_custom = True
+        my_bot.raw_affects_selection = args.raw_selection
         if args.release:
             my_bot.config = get_config(False)
 
