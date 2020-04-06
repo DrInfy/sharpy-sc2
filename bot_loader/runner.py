@@ -11,6 +11,7 @@ from aiohttp.web_ws import WebSocketResponse
 from bot_loader.ladder_bot import BotLadder
 from sc2 import run_game, sc_pb
 from sc2.controller import Controller
+# noinspection PyProtectedMember
 from sc2.main import _host_game
 from sc2.paths import Paths
 from sc2.player import Human, Bot, AbstractPlayer
@@ -36,8 +37,15 @@ class MatchRunner():
         if len(players) > 1 and isinstance(players[1], BotLadder):
             # host_only_args = ["save_replay_as", "rgb_render_config", "random_seed", "sc2_version"]
 
+            # Port config
             portconfig = Portconfig()
-            self.ladder_player2_port = portconfig.server[1]
+            ports = [portconfig.shared + p for p in range(1, 8)]
+
+            portconfig.shared = ports[0]  # Not used
+            portconfig.server = [ports[1], ports[2]]
+            portconfig.players = [[ports[3], ports[4]], [ports[5], ports[6]]]
+
+            self.ladder_player2_port = portconfig.players[1][0]
 
             # noinspection PyTypeChecker
             ladder_bot: BotLadder = players[1]
@@ -64,7 +72,7 @@ class MatchRunner():
             step_time_limit=None,
             game_time_limit=None,
     ):
-        port = portconfig.server[1]
+        port = self.ladder_player2_port
         self.print(f"Staring client server with port {port}")
         process_id = await self._launch("127.0.0.1", port, False)
         time.sleep(5)
