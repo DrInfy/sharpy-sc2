@@ -16,6 +16,35 @@ To build dummy bot for ladder, run ladder_zip.py. Bots will appear as individual
 ## Getting started
 Read the [getting started](./docs/GETTING_STARTED.md) guide.
 
+## Using Virtual Environment
+
+### Windows
+
+Virtual Environments (venv) can be used to isolate this project's Python dependencies from other projects.
+
+You can create a virtual environment for this project with
+
+```
+venv-create.bat
+```
+
+And activate it with
+
+```
+venv-activate.bat
+```
+
+Venv needs to be activated for every new console window, so it may be helpful to create an alias such as
+```
+doskey sharpy=cd C:\Dev\sharpy-sc2 $T venv-activate.bat
+```
+
+More information about virtual environments can be found from the [documentation.](https://docs.python.org/3.6/tutorial/venv.html)
+
+### Other operating systems
+
+You may replicate the commands used by the above bat scripts to work on your own operating system. 
+
 ## Running tests
 
 Tests are written using [pytest framework](https://docs.pytest.org/en/latest/getting-started.html).
