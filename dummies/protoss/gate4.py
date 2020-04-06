@@ -35,13 +35,13 @@ class Stalkers4Gate(KnowledgeBot):
                         SequentialList(
                         [
                             Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH, UnitTypeId.TWILIGHTCOUNCIL)),
+                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
                         ]),
                         SequentialList(
                         [
                             Step(None, GridBuilding(UnitTypeId.CYBERNETICSCORE, 1), skip_until=RequiredUnitReady(UnitTypeId.GATEWAY, 1)),
                             Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GateUnit(UnitTypeId.ADEPT, 2, only_once=True)),
-                            ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
+                            ActTech(UpgradeId.WARPGATERESEARCH),
                             GateUnit(UnitTypeId.STALKER, 100)
                         ]),
                         Step(RequiredUnitExists(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 4))

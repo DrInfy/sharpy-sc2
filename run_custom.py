@@ -163,6 +163,7 @@ def setup_bot(player: AbstractPlayer, bot_code, enemy_text: str, args):
         my_bot.opponent_id = bot_code + "-" + enemy_text
         my_bot.run_custom = True
         my_bot.raw_affects_selection = args.raw_selection
+  
         if args.release:
             my_bot.config = get_config(False)
 

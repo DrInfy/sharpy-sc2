@@ -34,7 +34,7 @@ class MacroStalkers(KnowledgeBot):
                 BuildOrder(
                     [
                         AutoPylon(),
-                        ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
+                        ActTech(UpgradeId.WARPGATERESEARCH),
                         [
                             ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                             Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
