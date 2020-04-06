@@ -1,24 +1,21 @@
 import subprocess
 import tempfile
 import time
-from subprocess import Popen
 from typing import List, Any, Optional
 
-import aiohttp
 import portpicker
 from aiohttp.web_ws import WebSocketResponse
 
+from bot_loader.killable_process import KillableProcess
 from bot_loader.ladder_bot import BotLadder
-from sc2 import run_game, sc_pb
-from sc2.controller import Controller
+from sc2 import run_game
 # noinspection PyProtectedMember
 from sc2.main import _host_game
 from sc2.paths import Paths
-from sc2.player import Human, Bot, AbstractPlayer
+from sc2.player import AbstractPlayer
 import asyncio
 
 from sc2.portconfig import Portconfig
-from sc2.sc2process import SC2Process
 
 
 class MatchRunner():
@@ -74,11 +71,11 @@ class MatchRunner():
     ):
         port = self.ladder_player2_port
         self.print(f"Staring client server with port {port}")
-        process_id = await self._launch("127.0.0.1", port, False)
+        KillableProcess(await self._launch("127.0.0.1", port, False))
         time.sleep(5)
-        pid = await ladder_bot.join_game(opponent_id, portconfig=portconfig)
-        # while True:
-        #     time.sleep(1)
+        KillableProcess(await ladder_bot.join_game(opponent_id, portconfig=portconfig))
+
+        # We'll have to host handle the rest
 
 
     async def _launch(self, host: str, port: int = None, full_screen: bool = False) -> Any:

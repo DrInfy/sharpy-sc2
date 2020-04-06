@@ -28,30 +28,32 @@ class BotLadder(AbstractPlayer):
     def map_type_cmd(self) -> [str]:
         bot_name = self.name
         if platform.system() == 'Linux':
+            # Linux
             bot_type_map = {
-                "python": ["run.py", "Python"],
-                "cppwin32": [f"{bot_name}.exe", None],
-                "cpplinux": [f"{bot_name}", "wsl"],
-                "dotnetcore": [f"{bot_name}.dll", "dotnet"],
-                "java": [f"{bot_name}.jar", "Java"],
-                "Python": ["run.py", "Python"],
-                "Wine": [f"{bot_name}.exe", None],
-                "BinaryCpp": [f"{bot_name}.exe", None],
-                "DotNetCore": [f"{bot_name}.dll", "dotnet"],
-                "Java": [f"{bot_name}.jar", "Java"],
-            }
-        else:
-            bot_type_map = {
-                "python": ["run.py", "Python"],
+                "python": ["run.py", "python3.7"],
                 "cppwin32": [f"{bot_name}.exe", "Wine"],
                 "cpplinux": [f"{bot_name}", None],
                 "dotnetcore": [f"{bot_name}.dll", "dotnet"],
-                "java": [f"{bot_name}.jar", "Java"],
+                "java": [f"{bot_name}.jar", "java"],
                 "Python": ["run.py", "python3.7"],
                 "Wine": [f"{bot_name}.exe", None],
-                "BinaryCpp": [f"{bot_name}.exe", "Wine"],
+                "BinaryCpp": [f"{bot_name}.exe", None],
                 "DotNetCore": [f"{bot_name}.dll", "dotnet"],
-                "Java": [f"{bot_name}.jar", "Java"],
+                "Java": [f"{bot_name}.jar", "java"],
+            }
+        else:
+            # Windows
+            bot_type_map = {
+                "python": ["run.py", "python"],
+                "cppwin32": [f"{bot_name}.exe", None],
+                "cpplinux": [f"{bot_name}", "wsl"],
+                "dotnetcore": [f"{bot_name}.dll", "dotnet"],
+                "java": [f"{bot_name}.jar", "java"],
+                "Python": ["run.py", "python"],
+                "Wine": [f"{bot_name}.exe", None],
+                "BinaryCpp": [f"{bot_name}.exe", None],
+                "DotNetCore": [f"{bot_name}.dll", "dotnet"],
+                "Java": [f"{bot_name}.jar", "java"],
             }
 
         mapping = bot_type_map[self.bot_type]
@@ -62,7 +64,8 @@ class BotLadder(AbstractPlayer):
         # TODO: non python bots
         if mapping[1] is None:
             return [os.path.join(self.path, file_name)]
-
+        if mapping[1] == "java":
+            return [mapping[1], "-jar", os.path.join(self.path, file_name)]
         return [mapping[1], os.path.join(self.path, file_name)]
 
     def __str__(self):
@@ -87,5 +90,6 @@ class BotLadder(AbstractPlayer):
         cmd.append(start_port)
         cmd.append("--LadderServer")
         cmd.append("127.0.0.1")
-
+        print("Starting Ladder bot with command:")
+        print(cmd)
         return subprocess.Popen(cmd, cwd=self.path)
