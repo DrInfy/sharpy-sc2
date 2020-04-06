@@ -54,7 +54,6 @@ class ActTech(ActBase):
             for builder in builders.ready:
                 if len(builder.orders) == 0:
                     # todo: remove this call?
-                    abilities = await self.ai.get_available_abilities(builder, True)
                     self.print(f'Started {self.upgrade_type.name}')
                     self.do(builder(creationAbilityID))
                     return False
