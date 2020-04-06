@@ -7,3 +7,4 @@ from .voidray import MacroVoidray
 from .cannon_rush import CannonRush
 from .adept_allin import AdeptRush
 from .protoss_random import RandomProtossBot
+from .disruptor import SharpSphereBot
