@@ -46,7 +46,7 @@ class TwoBaseTanks(KnowledgeBot):
             Step(RequiredSupply(45), GridBuilding(UnitTypeId.SUPPLYDEPOT, 8)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
             Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
-            Step(None, ActTech(UpgradeId.SHIELDWALL, UnitTypeId.BARRACKSTECHLAB)),
+            Step(None, ActTech(UpgradeId.SHIELDWALL)),
             StepBuildGas(4),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
             Step(RequiredSupply(75), GridBuilding(UnitTypeId.SUPPLYDEPOT, 10)),

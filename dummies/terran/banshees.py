@@ -78,7 +78,7 @@ class Banshees(KnowledgeBot):
                 Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
 
                 Step(RequiredUnitReady(UnitTypeId.STARPORT, 2), ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2)),
-                Step(None, ActTech(UpgradeId.SHIELDWALL, UnitTypeId.BARRACKSTECHLAB)),
+                Step(None, ActTech(UpgradeId.SHIELDWALL)),
 
                 Step(RequiredMinerals(600), GridBuilding(UnitTypeId.BARRACKS, 5)),
                 ActExpand(3),

@@ -16,7 +16,7 @@ class MutaliskBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, RequiredUnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED, UnitTypeId.SPAWNINGPOOL), skip_until=RequiredGas(100)),
+            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60)),
             StepBuildGas(3, RequiredUnitExists(UnitTypeId.LAIR, 1)),
@@ -40,12 +40,12 @@ class MutaliskBuild(BuildOrder):
             MorphOverseer(1),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 5)),
             Step(RequiredUnitExists(UnitTypeId.SPIRE), ActExpand(4)),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL1, UnitTypeId.SPIRE),
+            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
             Step(RequiredUnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
             MorphGreaterSpire(),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2, UnitTypeId.GREATERSPIRE),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL3, UnitTypeId.GREATERSPIRE),
+            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2, UnitTypeId.GREATERSPIRE), # this can be researched from SPIRE as well.
+            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL3, UnitTypeId.GREATERSPIRE), # python-sc2 thinks this can be researched from SPIRE
         ]
 
         high_tier = [

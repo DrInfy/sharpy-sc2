@@ -45,7 +45,7 @@ class MacroVoidray(KnowledgeBot):
                 [
                     AutoPylon(),
                     GateUnit(UnitTypeId.STALKER, 2, priority=True),
-                    ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
+                    ActTech(UpgradeId.WARPGATERESEARCH),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
                         Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ProtossUnit(UnitTypeId.PROBE, 44)),
@@ -59,9 +59,9 @@ class MacroVoidray(KnowledgeBot):
                              GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
                         GridBuilding(UnitTypeId.STARGATE, 1),
                         Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                             ActTech(UpgradeId.CHARGE, UnitTypeId.TWILIGHTCOUNCIL)),
+                             ActTech(UpgradeId.CHARGE)),
                         Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                             ActTech(UpgradeId.ADEPTPIERCINGATTACK, UnitTypeId.TWILIGHTCOUNCIL)),
+                             ActTech(UpgradeId.ADEPTPIERCINGATTACK)),
                     ]),
                     [
                         ProtossUnit(UnitTypeId.VOIDRAY, 20, priority=True)

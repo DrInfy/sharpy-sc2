@@ -140,7 +140,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                     [
                         AutoPylon(),
                         GateUnit(UnitTypeId.STALKER, 2, priority=True),
-                        ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
+                        ActTech(UpgradeId.WARPGATERESEARCH),
                         [
                             ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                             Step(RequiredUnitExists(UnitTypeId.NEXUS, 2),
@@ -156,9 +156,9 @@ class ProxyZealotRushBot(KnowledgeBot):
                                      GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
                                 GridBuilding(UnitTypeId.STARGATE, 1),
                                 Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                                     ActTech(UpgradeId.CHARGE, UnitTypeId.TWILIGHTCOUNCIL)),
+                                     ActTech(UpgradeId.CHARGE)),
                                 Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                                     ActTech(UpgradeId.ADEPTPIERCINGATTACK, UnitTypeId.TWILIGHTCOUNCIL)),
+                                     ActTech(UpgradeId.ADEPTPIERCINGATTACK)),
                             ]),
                         [
                             ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)
