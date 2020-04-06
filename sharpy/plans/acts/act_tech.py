@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId, AbilityId
+from sc2 import UnitTypeId, AbilityId, Set
 from sc2.ids.upgrade_id import UpgradeId
 
 from sc2.units import Units
@@ -11,6 +11,14 @@ class ActTech(ActBase):
     """
     Act for researching or upgrading a technology.
     """
+    equivalent_structures = {
+        UnitTypeId.SPIRE: {UnitTypeId.SPIRE, UnitTypeId.GREATERSPIRE},
+        UnitTypeId.GREATERSPIRE: {UnitTypeId.SPIRE, UnitTypeId.GREATERSPIRE},
+        UnitTypeId.HATCHERY: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
+        UnitTypeId.LAIR: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
+        UnitTypeId.HIVE: {UnitTypeId.HATCHERY, UnitTypeId.LAIR, UnitTypeId.HIVE},
+    }
+
     def __init__(self, upgrade_type: UpgradeId, from_building: UnitTypeId = None):
         """
         :param upgrade_type: Upgrade to research.
@@ -19,21 +27,22 @@ class ActTech(ActBase):
         compatibility and possible SC2 version mismatches.
         """
         assert upgrade_type is not None and isinstance(upgrade_type, UpgradeId)
-        self.upgrade_type = upgrade_type
+        self.upgrade_type: UpgradeId = upgrade_type
 
-        if from_building is not None:
-            assert isinstance(from_building, UnitTypeId)
-            self.from_building = from_building
+        if from_building is None:
+            from_building = UPGRADE_RESEARCHED_FROM[self.upgrade_type]
+
+        assert isinstance(from_building, UnitTypeId)
+
+        if from_building in self.equivalent_structures:
+            self.from_buildings: Set[UnitTypeId] = self.equivalent_structures[from_building]
         else:
-            # todo: take upgradeable buildings into account:
-            #   SPIRE & GREATERSPIRE
-            #   HATCHERY &  LAIR & HIVE
-            self.from_building = UPGRADE_RESEARCHED_FROM[self.upgrade_type]
+            self.from_buildings: Set[UnitTypeId] = {from_building}
 
         super().__init__()
 
     async def execute(self) -> bool:
-        builders = self.cache.own(self.from_building).ready
+        builders = self.cache.own(self.from_buildings).ready
 
         if self.already_pending_upgrade(builders) > 0:
             return True # Started

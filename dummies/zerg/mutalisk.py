@@ -44,8 +44,8 @@ class MutaliskBuild(BuildOrder):
             Step(RequiredUnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
             MorphGreaterSpire(),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2, UnitTypeId.GREATERSPIRE), # this can be researched from SPIRE as well.
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL3, UnitTypeId.GREATERSPIRE), # python-sc2 thinks this can be researched from SPIRE
+            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2),
+            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL3),
         ]
 
         high_tier = [
