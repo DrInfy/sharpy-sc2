@@ -18,7 +18,7 @@ class NoDoubleOrders(ActBase):
                 self.knowledge.print("[DUPLICATE] " + msg)
 
                 if self.last_cancel + 0.2 < self.ai.time:
-                    abilities = await self.ai.get_available_abilities(unit)
+                    # abilities = await self.ai.get_available_abilities(unit)
                     #for ability in abilities:
                     #    self.knowledge.print(f"[DUPLICATE] Ability {ability}")
                     self.knowledge.print("[DUPLICATE] " + "Cancelling!")
