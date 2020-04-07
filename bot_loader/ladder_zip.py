@@ -63,6 +63,7 @@ class LadderZip:
             self.files.extend(common_files)
         else:
             self.files.extend(common)
+            self.files.extend(common_sharpy)
 
         # Executable
         # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build

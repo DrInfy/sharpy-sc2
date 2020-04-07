@@ -84,11 +84,31 @@ class BotDefinitions:
 
         zip_dict: Dict[str, LadderZip] = {}
 
-        for key, value in self.players:
+        for key, value in self.players.items():
             if value[1]:
                 zip_dict[key] = value[1]
 
         return zip_dict
+
+    def load_playable(self, include_debug: bool, include_non_bots: bool) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
+        self.players.clear()
+        self.add_bots()
+        self.add_dummies()
+
+        if include_debug:
+            self.add_debug_bots()
+
+        if include_non_bots:
+            self.add_ai()
+            self.add_human()
+
+        play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
+
+        for key, value in self.players.items():
+            if value[0]:
+                play_dict[key] = value[0]
+
+        return play_dict
 
     def add_human(self):
         # Human, must be player 1
@@ -111,7 +131,7 @@ class BotDefinitions:
             "debugdetectneural": (lambda params: Bot(Race.Protoss, DetectNeuralParasiteDummy())),
         }
 
-        for key, func in debug_bots:
+        for key, func in debug_bots.items():
             self.players[key] = (func, None)
 
     def add_bots(self) -> None:
@@ -169,7 +189,7 @@ class BotDefinitions:
             "randomterran": (lambda params: Bot(Race.Terran, RandomTerranBot())),
         }
 
-        for key, func in not_buildable:
+        for key, func in not_buildable.items():
             # TODO: Solve this in a generic way!
             self.players[key] = (func, None)
 
@@ -189,6 +209,6 @@ class BotDefinitions:
                                  "marine = 2"),
         }
 
-        for key, dummy_zip in buildable_only:
+        for key, dummy_zip in buildable_only.items():
             # TODO: Solve this in a generic way!
             self.players[key] = (None, dummy_zip)
