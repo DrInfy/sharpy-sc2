@@ -3,6 +3,12 @@ Python framework for rapid development of Starcraft 2 AI bots
 
 Sharpy uses [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the framework used by [Sharpened Edge](https://ai-arena.net/bots/40/).
 
+**Build statuses**
+
+Master branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actions/badge.svg?branch=master)
+
+Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actions/badge.svg?branch=develop)
+
 ## Work in progress
 The framework has all the necessary components to run the dummy bots that are used for testing against Sharpened Edge.
 The folder structure is subject to change.
