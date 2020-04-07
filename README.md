@@ -20,7 +20,8 @@ Python 3.7 (>=3.8 is not supported yet)
 To build dummy bot for ladder, run ladder_zip.py. Bots will appear as individual zip files in publish folder.
 
 ## Getting started
-Read the [getting started](./docs/GETTING_STARTED.md) guide.
+
+Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/1.-Getting-Started) guide in wiki.
 
 ## Using Virtual Environment
 
