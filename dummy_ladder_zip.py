@@ -170,6 +170,7 @@ zip_types = {
     "stalker": DummyZip("SharpSpiders", "Protoss", os.path.join("dummies", "protoss", "macro_stalkers.py")),
     "robo": DummyZip("SharpRobots", "Protoss", os.path.join("dummies", "protoss", "robo.py")),
     "voidray": DummyZip("SharpRays", "Protoss", os.path.join("dummies", "protoss", "voidray.py")),
+    "tempests": DummyZip("SharpTempests", "Protoss", os.path.join("dummies", "protoss", "one_base_tempests.py")),
 
     # Terran dummies
     "cyclone": DummyZip("RustyLocks", "Terran", os.path.join("dummies", "terran", "cyclones.py")),
@@ -182,6 +183,7 @@ zip_types = {
     "tank": DummyZip("RustyTanks", "Terran", os.path.join("dummies", "terran", "two_base_tanks.py")),
     "bio": DummyZip("RustyInfantry", "Terran", os.path.join("dummies", "terran", "bio.py")),
     "banshee": DummyZip("RustyScreams", "Terran", os.path.join("dummies", "terran", "banshees.py")),
+    "one_base_turtle": DummyZip("RustyOneBaseTurtle", "Terran", os.path.join("dummies", "terran", "one_base_turtle.py")),
 
     # Zerg dummies
     "lings": DummyZip("BluntTeeth", "Zerg", os.path.join("dummies", "zerg", "lings.py")),
