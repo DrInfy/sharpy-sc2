@@ -6,3 +6,4 @@ from .cyclones import CycloneBot
 from .banshees import Banshees
 from .bio import BioBot
 from .terran_random import RandomTerranBot
+from .one_base_turtle import OneBaseTurtle

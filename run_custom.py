@@ -183,6 +183,7 @@ enemies = {
     "cannonrush": (lambda params: Bot(Race.Protoss, CannonRush())),
     "disruptor": (lambda params: Bot(Race.Protoss, SharpSphereBot())),
     "randomprotoss": (lambda params: Bot(Race.Protoss, RandomProtossBot())),
+    "tempests": (lambda params: Bot(Race.Protoss, OneBaseTempests())),
 
     # Zerg
     "12pool": (lambda params: Bot(Race.Zerg, TwelvePool())),
@@ -209,6 +210,7 @@ enemies = {
     "randomterran": (lambda params: Bot(Race.Terran, RandomTerranBot())),
     "bio": (lambda params: Bot(Race.Terran, BioBot())),
     "banshee": (lambda params: Bot(Race.Terran, Banshees())),
+    "one_base_turtle": (lambda params: Bot(Race.Terran, OneBaseTurtle())),
 
     # Random
     "weakworkerrush": (lambda params: Bot(Race.Random, WorkerRushBot())),
