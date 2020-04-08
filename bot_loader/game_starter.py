@@ -55,7 +55,7 @@ known_melee_maps = (
 
 class GameStarter():
 
-    def __init__(self, ladder_bots_path: Optional[str] = None) -> None:
+    def __init__(self, definitions: BotDefinitions) -> None:
         self.config = get_config()
 
         log_level = self.config["general"]["log_level"]
@@ -69,17 +69,9 @@ class GameStarter():
         for handler in sc2.main.logger.handlers:
             sc2.main.logger.removeHandler(handler)
 
-        definitions = BotDefinitions()
-        self.players = definitions.load_playable(True, True)
-        self.random_bots = definitions.load_playable(False, False)
-        self.ladder_bots: Dict[str, BotLadder] = {}
-
-        if ladder_bots_path:
-            loader = BotLoader()
-            loader.get_bots(ladder_bots_path)
-            for key, ladder_bot in loader.bots.items():
-                self.ladder_bots[key] = lambda params: ladder_bot
-                # self.random_bots[key] = lambda params: ladder_bot
+        self.definitions = definitions
+        self.players = definitions.playable
+        self.random_bots = definitions.random_bots
 
         self.maps = GameStarter.installed_maps()
         self.random_maps = [x for x in known_melee_maps if x in self.maps]
@@ -115,8 +107,6 @@ Enemies:
 random
 {new_line.join(self.players.keys())}
 
-Ladder bots:
-{new_line.join(self.ladder_bots.keys())}
 
 For ingame ai, use ai.race.difficulty.build where all arguments are optional
 ingame ai defaults to ai.random.veryhard.random
@@ -174,26 +164,24 @@ Builds:
         bot_split: List[str] = bot_text.split(".")
         bot_type = bot_split.pop(0)
 
-        if bot_type not in self.players:
-            keys = list(self.players.keys())
+        if bot_type not in self.definitions.player1:
+            keys = list(self.definitions.player1.keys())
             print(f"Player1 type {bot_text} not found in:{new_line} {new_line.join(keys)}")
             return
 
         enemy: Optional[AbstractPlayer]
 
-        if enemy_type not in self.players:
-            loader = BotLoader()
-            root_dir = os.path.dirname(os.path.abspath(__file__))
-            path = os.path.join("Bots")
-            path = os.path.join(root_dir, path)
-            loader.get_bots(path)
-            enemy = loader.get_bot(enemy_type)
-            if not enemy:
-                keys = list(self.players.keys())
-                print(f"Enemy type {enemy_type} not found in player types:{new_line}{new_line.join(keys)}")
-                keys = list(self.ladder_bots.keys())
-                print(f"Enemy type {enemy_type} not found in ladder bots:{new_line}{new_line.join(keys)}")
-                return
+        if enemy_type not in self.definitions.player2:
+            # loader = BotLoader()
+            # root_dir = os.path.dirname(os.path.abspath(__file__))
+            # path = os.path.join("Bots")
+            # path = os.path.join(root_dir, path)
+            # loader.get_bots(path)
+            # enemy = loader.get_bot(enemy_type)
+            # if not enemy:
+            keys = list(self.definitions.player2.keys())
+            print(f"Enemy type {enemy_type} not found in player types:{new_line}{new_line.join(keys)}")
+            return
         else:
             enemy = self.players[enemy_type](enemy_split)
 
@@ -204,7 +192,9 @@ Builds:
             os.mkdir(folder)
 
         time = datetime.now().strftime('%Y-%m-%d %H_%M_%S')
-        file_name = f'{enemy_text}_{map_name}_{time}'
+        randomizer = random.randint(0, 999999)
+        # Randomizer is to make it less likely that games started at the same time have same neme
+        file_name = f'{enemy_text}_{map_name}_{time}_{randomizer}'
         path = f'{folder}/{file_name}.log'
 
         handler = logging.FileHandler(path)

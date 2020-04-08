@@ -1,6 +1,7 @@
 import os
 from typing import List, Dict, Tuple, Callable, Optional
 
+from . import BotLadder
 from .dummy_zip import DummyZip
 from .ladder_zip import LadderZip
 from dummies.protoss import *
@@ -57,71 +58,110 @@ class DummyBuilder:
         return (lambda params: Bot(self.race, self.bot_type()), zip_builder)
 
 
-def index_check(items: List[str], index: int, default: str) -> str:
-    """
-    Simple method for parsing arguments with a default value if argument index not foung
-    @param items: arguments
-    @param index:  index of the argument
-    @param default: default value if not found
-    @return: argument value or default
-    """
-    try:
-        return items[index]
-    except IndexError:
-        return default
-
 
 class BotDefinitions:
-    def __init__(self) -> None:
-        self.players: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
+    def __init__(self, path: Optional[str] = None) -> None:
+        self.bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
+        self.humans: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = self._human()
+        self.ingame_ai: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = self._ai()
+        self.debug_bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
+        self.ladder_bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
+        if path:
+            self.ladder_bots = self._get_ladder_bots(path)
 
-    def load_zippable(self, include_bots: bool, include_dummies: bool) -> Dict[str, LadderZip]:
-        self.players.clear()
-        if include_bots:
-            self.add_bots()
-        if include_dummies:
-            self.add_dummies()
+        self.add_dummies(self.bots)
+        self.add_debug_bots(self.debug_bots)
 
+    @property
+    def zippable(self) -> Dict[str, LadderZip]:
         zip_dict: Dict[str, LadderZip] = {}
 
-        for key, value in self.players.items():
+        for key, value in self.bots.items():
             if value[1]:
                 zip_dict[key] = value[1]
 
         return zip_dict
 
-    def load_playable(self, include_debug: bool, include_non_bots: bool) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
-        self.players.clear()
-        self.add_bots()
-        self.add_dummies()
-
-        if include_debug:
-            self.add_debug_bots()
-
-        if include_non_bots:
-            self.add_ai()
-            self.add_human()
-
+    @property
+    def playable(self) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
         play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
-        for key, value in self.players.items():
+        for key, value in {**self.bots, **self.humans, **self.ladder_bots, **self.debug_bots, **self.ingame_ai}.items():
             if value[0]:
                 play_dict[key] = value[0]
 
         return play_dict
 
-    def add_human(self):
-        # Human, must be player 1
-        self.players["human"] = ((lambda params: Human(races[index_check(params, 0, "random")])), None)
+    @property
+    def random_bots(self) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
+        play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
-    def add_ai(self):
-        # Human, must be player 1
-        self.players["ai"] = ((lambda params: Computer(races[index_check(params, 0, "random")],
-                                                       difficulty[index_check(params, 1, "veryhard")],
-                                                       builds[index_check(params, 2, "random")])),
-                              None)
+        for key, value in self.bots.items():
+            if value[0]:
+                play_dict[key] = value[0]
 
-    def add_debug_bots(self):
+        return play_dict
+
+    @property
+    def player1(self) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
+        play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
+
+        for key, value in {**self.bots, **self.humans, **self.ingame_ai, **self.debug_bots}.items():
+            if value[0]:
+                play_dict[key] = value[0]
+
+        return play_dict
+
+    @property
+    def player2(self) -> Dict[str, Callable[[List[str]], AbstractPlayer]]:
+        play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
+
+        for key, value in {**self.bots, **self.ladder_bots, **self.debug_bots, **self.ingame_ai}.items():
+            if value[0]:
+                play_dict[key] = value[0]
+
+        return play_dict
+
+    def _human(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
+        # Human, must be player 1
+        return {
+            "human": ((lambda params: Human(races[self.index_check(params, 0, "random")])), None)
+        }
+
+    def _ai(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
+        # Ingame ai, can be player 1 or 2 and cannot be published
+        return {
+            "ai": ((lambda params: Computer(races[self.index_check(params, 0, "random")],
+                                            difficulty[self.index_check(params, 1, "veryhard")],
+                                            builds[self.index_check(params, 2, "random")])),
+                   None)
+        }
+
+    def _get_ladder_bots(self, path: str = None) \
+            -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
+        """
+        Searches bot_directory_location path to find all the folders containing "ladderbots.json"
+        and returns a list of bots.
+        :param request:
+        :return:
+        """
+        bots = dict()
+
+        if not os.path.isdir(path):
+            return bots
+
+        if len(os.listdir(path)) < 1:
+            return bots
+
+        for x in os.listdir(path):
+            full_path = os.path.join(path, x)
+            json_path = os.path.join(full_path, 'ladderbots.json')
+            if os.path.isfile(json_path):
+                key = os.path.basename(os.path.normpath(full_path))
+                bots[key] = (lambda params, tmp_path=full_path, path2=json_path: BotLadder(tmp_path, path2), None)
+        return bots
+
+    def add_debug_bots(self, bot_dict: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]):
         """ Debug bots won't have zip function. """
         debug_bots = {
             "debugidle": (lambda params: Bot(Race.Protoss, IdleDummy())),
@@ -132,15 +172,31 @@ class BotDefinitions:
         }
 
         for key, func in debug_bots.items():
-            self.players[key] = (func, None)
+            bot_dict[key] = (func, None)
 
-    def add_bots(self) -> None:
+    def add_bot(self, key: str, func: Callable[[List[str]], AbstractPlayer], ladder_zip: Optional[LadderZip] = None) -> None:
         """
-        Override this method to add your own bots here
+        Add your own custom bots here
         """
-        pass
+        assert isinstance(key, str)
+        assert isinstance(func, Callable)
+        assert ladder_zip is None or isinstance(ladder_zip, LadderZip)
+        self.bots[key] = (func, ladder_zip)
 
-    def add_dummies(self):
+    def index_check(self, items: List[str], index: int, default: str) -> str:
+        """
+        Simple method for parsing arguments with a default value if argument index not foung
+        @param items: arguments
+        @param index:  index of the argument
+        @param default: default value if not found
+        @return: argument value or default
+        """
+        try:
+            return items[index]
+        except IndexError:
+            return default
+
+    def add_dummies(self, bot_dict: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]):
         bots: List[DummyBuilder] = [
             # Protoss
             DummyBuilder("4gate", "SharpRush", Race.Protoss, "gate4.py", Stalkers4Gate),
@@ -178,7 +234,7 @@ class BotDefinitions:
 
 
         for bot in bots:
-            self.players[bot.key] = bot.build_definition()
+            bot_dict[bot.key] = bot.build_definition()
 
         not_buildable = {
             "lingflood": (lambda params: Bot(Race.Zerg, LingFlood(False))),
@@ -191,7 +247,7 @@ class BotDefinitions:
 
         for key, func in not_buildable.items():
             # TODO: Solve this in a generic way!
-            self.players[key] = (func, None)
+            bot_dict[key] = (func, None)
 
         buildable_only = {
             "cannonrush_1": DummyZip("SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"),
@@ -211,4 +267,4 @@ class BotDefinitions:
 
         for key, dummy_zip in buildable_only.items():
             # TODO: Solve this in a generic way!
-            self.players[key] = (None, dummy_zip)
+            bot_dict[key] = (None, dummy_zip)
