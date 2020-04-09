@@ -3,8 +3,8 @@ name: Python actions
 on: [push, pull_request]
 
 jobs:
-  run_pytest:
-    name: Run pytest
+  test:
+    name: Run linter and tests
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -30,6 +30,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install -r requirements.dev.txt
+
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors
+        echo Running flake8. error/warning count ...
+        flake8 .
 
     - name: Test with pytest
       run: |

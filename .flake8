@@ -1,0 +1,24 @@
+# flake8 is a Python linter.
+
+[flake8]
+show-source = True
+count = True
+
+select =
+    # Docs: https://flake8.pycqa.org/en/latest/user/error-codes.html
+    E9
+    F63
+    F7
+
+exclude =
+    # git repository
+    .git
+    # possible virtual environment
+    .venv
+    # Python caches
+    __pycache__
+    # external library code
+    python-sc2
+    # external library code
+    jsonpickle
+
