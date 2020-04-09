@@ -127,7 +127,7 @@ class LadderZip:
         shutil.rmtree(source_path)
 
     def create_ladder_zip(self, exe: bool):
-        update_version_txt()
+
         print()
 
         archive_name = self.archive

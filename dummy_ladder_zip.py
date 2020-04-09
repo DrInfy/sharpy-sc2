@@ -1,10 +1,6 @@
 import os
-import shutil
-import subprocess
 
 import argparse
-import zipfile
-from typing import Tuple, List, Optional
 
 from bot_loader import BotDefinitions
 from version import update_version_txt
@@ -14,7 +10,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 def main():
     definitions = BotDefinitions()
-    zip_types = definitions.load_zippable(include_bots=False, include_dummies=True)
+    zip_types = definitions.zippable
     zip_keys = list(zip_types.keys())
     zip_keys.append("all")
 
@@ -29,6 +25,8 @@ def main():
 
     if not os.path.exists('dummy'):
         os.mkdir('dummy')
+
+    update_version_txt()
 
     if bot_name == "all" or not bot_name:
         zip_keys.remove("all")
