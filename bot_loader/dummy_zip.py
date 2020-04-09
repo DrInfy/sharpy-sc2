@@ -12,7 +12,6 @@ class DummyZip(LadderZip):
         self.build = build
 
         files = [
-            ("sharpy", None),
             ("dummy", None),
             (os.path.join("dummies", "run.py"), "run.py"),
         ]
