@@ -208,6 +208,7 @@ class BotDefinitions:
             DummyBuilder("stalker", "SharpSpiders", Race.Protoss, "macro_stalkers.py", MacroStalkers),
             DummyBuilder("voidray", "SharpRays", Race.Protoss, "voidray.py", MacroVoidray),
             DummyBuilder("zealot", "SharpKnives", Race.Protoss, "proxy_zealot_rush.py", ProxyZealotRushBot),
+            DummyBuilder("tempest", "SharpTempests", Race.Protoss, "one_base_tempests.py", OneBaseTempests),
 
             # Zerg
             DummyBuilder("12pool", "BluntCheese", Race.Zerg, "twelve_pool.py", TwelvePool),
@@ -230,6 +231,7 @@ class BotDefinitions:
             DummyBuilder("marine", "RustyMarines", Race.Terran, "marine_rush.py", MarineRushBot),
             DummyBuilder("oldrusty", "OldRusty", Race.Terran, "rusty.py", Rusty),
             DummyBuilder("tank", "RustyTanks", Race.Terran, "two_base_tanks.py", TwoBaseTanks),
+            DummyBuilder("terranturtle", "RustyOneBaseTurtle", Race.Terran, "one_base_turtle.py", OneBaseTurtle),
         ]
 
 
