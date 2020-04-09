@@ -9,11 +9,6 @@ from sc2.ids.upgrade_id import UpgradeId
 
 from sharpy.knowledges import KnowledgeBot
 
-
-class TheAttack(PlanZoneAttack):
-    pass
-
-
 class OneBaseTurtle(KnowledgeBot):
     def __init__(self):
 
@@ -66,7 +61,7 @@ class OneBaseTurtle(KnowledgeBot):
             build_steps_marines,
         ])
 
-        attack = TheAttack(4)
+        attack = PlanZoneAttack(4)
         tactics = [
             PlanCancelBuilding(),
             ManTheBunkers(),
@@ -78,7 +73,7 @@ class OneBaseTurtle(KnowledgeBot):
             ContinueBuilding(),
             PlanZoneGatherTerran(),
             # once enough marines to guard the tanks, attack
-            Step(RequiredUnitReady(UnitTypeId.MARINE, 18), attack),
+            Step(RequiredUnitExists(UnitTypeId.MARINE, 18, include_killed=True), attack),
             PlanFinishEnemy(),
         ]
         return BuildOrder([

@@ -7,11 +7,6 @@ from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.managers.building_solver import WallType
 from sc2 import UnitTypeId, Race
 
-
-class TheAttack(PlanZoneAttack):
-    pass
-
-
 class OneBaseTempests(KnowledgeBot):
 
     def __init__(self):
@@ -19,7 +14,7 @@ class OneBaseTempests(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         self.knowledge.building_solver.wall_type = WallType.ProtossMainZerg
-        attack = TheAttack(4)
+        attack = PlanZoneAttack(4)
         return BuildOrder([
             ChronoUnitProduction(UnitTypeId.TEMPEST, UnitTypeId.STARGATE),
 
@@ -60,7 +55,7 @@ class OneBaseTempests(KnowledgeBot):
                     RestorePower(),
                     PlanDistributeWorkers(),
                     PlanZoneGather(),
-                    Step(RequiredUnitReady(UnitTypeId.TEMPEST, 1), attack),
+                    Step(RequiredUnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
                     PlanFinishEnemy(),
                 ])
         ])
