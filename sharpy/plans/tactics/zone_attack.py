@@ -27,13 +27,13 @@ RETREAT_STOP_DISTANCE_SQUARED = RETREAT_STOP_DISTANCE * RETREAT_STOP_DISTANCE
 
 
 class AttackStatus(Enum):
-    NotActive = 0,
-    GatheringForAttack = 1,  # Not in use yet
-    Attacking = 2,
-    MovingToExpansion = 3,  # NYI, moving to hold enemy expansion
-    ProtectingExpansion = 4,  # NYI, holding enemy expansion and preventing enemy expansions
-    Retreat = 10,  # Prefers to escape without fighting
-    Withdraw = 11,  # Fights any enemies while escaping
+    NotActive = 0
+    GatheringForAttack = 1  # Not in use yet
+    Attacking = 2
+    MovingToExpansion = 3  # NYI, moving to hold enemy expansion
+    ProtectingExpansion = 4  # NYI, holding enemy expansion and preventing enemy expansions
+    Retreat = 10  # Prefers to escape without fighting
+    Withdraw = 11  # Fights any enemies while escaping
 
 
 class PlanZoneAttack(ActBase):
