@@ -2,7 +2,7 @@ import enum
 
 
 class UnitFeature(enum.Enum):
-    Nothing = 0,
+    Nothing = 0
     Structure = 1
     Flying = 2
     HitsGround = 3

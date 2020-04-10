@@ -2,14 +2,14 @@ import enum
 
 
 class Advantage(enum.Enum):
-    Even = 0,
-    SlightAdvantage = 1,
-    SmallAdvantage = 2,
-    ClearAdvantage = 3,
+    Even = 0
+    SlightAdvantage = 1
+    SmallAdvantage = 2
+    ClearAdvantage = 3
     OverwhelmingAdvantage = 4
-    SlightDisadvantage = -1,
-    SmallDisadvantage = -2,
-    ClearDisadvantage = -3,
+    SlightDisadvantage = -1
+    SmallDisadvantage = -2
+    ClearDisadvantage = -3
     OverwhelmingDisadvantage = -4
 
 
