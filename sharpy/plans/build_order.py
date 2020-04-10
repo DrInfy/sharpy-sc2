@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Union, Callable, Tuple
 
 import sc2
 from sc2 import UnitTypeId
@@ -10,20 +10,36 @@ from sharpy.plans.build_step import Step
 from sharpy.plans.require import RequiredUnitReady, RequiredSupplyLeft, RequiredTechReady, RequiredAll, RequiredAny, \
     RequiredEnemyUnitExists
 from sharpy.plans.sequential_list import SequentialList
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
 class BuildOrder(ActBase):
-    def __init__(self, orders: List[Union[ActBase, List[ActBase]]]):
+    def __init__(self, obj: Union[Union[ActBase, list, Callable[['Knowledge'], bool]],
+                               List[Union[ActBase, list, Callable[['Knowledge'], bool]]]],
+                 *argv):
+        """
+        Build order is a list of actions that are executed sequentially, but they are not blocking.
+        When every act in build order returns true, so will also build order.
+
+        @param orders: build order can accept lists, acts and custom methods as parameters.
+        @param argv: same type requirements as for orders, but you can skip [] syntax by using argv
+        """
         super().__init__()
-        self.orders: List[Union[ActBase, List[ActBase]]] = orders
+
         self.orders: List[ActBase] = []
+        if len(argv) > 0 or isinstance(obj, ActBase) or isinstance(obj, Callable):
+            orders = [obj] + list(argv)
+        else:
+            orders = obj
+
         for order in orders:
-            if isinstance(order, ActBase):
-                self.orders.append(order)
-            elif isinstance(order, list):
+            assert order is not None
+
+            if isinstance(order, list):
                 self.orders.append(SequentialList(order))
             else:
-                assert False  # Invalid type
+                self.orders.append(Step.merge_to_act(order))
 
     async def debug_draw(self):
         for order in self.orders:
