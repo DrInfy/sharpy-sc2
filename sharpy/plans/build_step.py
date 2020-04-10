@@ -55,13 +55,13 @@ class Step(ActBase):
             await self.skip_until.debug_draw()
 
     async def start(self, knowledge: 'Knowledge'):
-        if self.requirement != None:
+        if self.requirement is not None:
             await self.requirement.start(knowledge)
-        if self.action != None:
+        if self.action is not None:
             await self.action.start(knowledge)
-        if self.skip != None:
+        if self.skip is not None:
             await self.skip.start(knowledge)
-        if self.skip_until != None:
+        if self.skip_until is not None:
             await self.skip_until.start(knowledge)
 
     async def execute(self) -> bool:

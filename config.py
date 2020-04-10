@@ -1,6 +1,8 @@
-import json
+import logging
 import os
 from configparser import ConfigParser
+
+logger = logging.getLogger(__name__)
 
 
 def get_config(local: bool = True) -> ConfigParser:
@@ -28,5 +30,6 @@ def get_version() -> tuple:
             commit_date = split[1]
 
         return commit_hash, commit_date
-    except:
+    except Exception as e:
+        logger.warning(f"Reading version.txt failed: {e}")
         return ()

@@ -112,8 +112,6 @@ class DoubleAdeptScout(ActBase):
 
     async def select_targets(self, center: Point2) -> (Point2, Point2):
         """ Returns none if no valid target was found. """
-        closest_distance = 100000
-        furthest_distance = 0
         closest_viable_zone: Zone = None
         second_viable_zone: Zone = None
         current_zone_index: Optional[int] = None

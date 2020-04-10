@@ -196,7 +196,7 @@ class PlanWorkerOnlyDefense(ActBase):
                         return army
 
         for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
-            if self.ready_to_defend(unit) and not unit.tag in self.defender_tags:
+            if self.ready_to_defend(unit) and unit.tag not in self.defender_tags:
                 count += 1
                 army.append(unit)
                 self.defender_tags.append(unit.tag)
@@ -204,7 +204,7 @@ class PlanWorkerOnlyDefense(ActBase):
                     return army
 
         for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
-            if not unit.tag in self.defender_tags:
+            if unit.tag not in self.defender_tags:
                 count += 1
                 army.append(unit)
                 self.defender_tags.append(unit.tag)

@@ -46,7 +46,7 @@ class SpineDefender(KnowledgeBot):
                     ),
                     ZergUnit(UnitTypeId.QUEEN, 2),
                 ],
-                [Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL), AutoOverLord()),],
+                [Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL), AutoOverLord())],
                 tactics,
             ]
         )

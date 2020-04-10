@@ -75,7 +75,7 @@ class BotLadder(AbstractPlayer):
 
     async def join_game(self, opponentId: str, portconfig: Portconfig) -> Any:
         cmd: [str] = self.map_type_cmd()
-        timeout = 1800  # 30 minutes
+
         start_port = str(portconfig.shared - 1)
         game_port = str(portconfig.players[1][0])
 

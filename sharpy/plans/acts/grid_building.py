@@ -322,7 +322,6 @@ class GridBuilding(ActBuilding):
 
         is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
         buildings = self.ai.structures
-        iterator = self.get_iterator(is_depot, count)
 
         if is_depot:
             for point in self.building_solver.pylon_position[::1]:

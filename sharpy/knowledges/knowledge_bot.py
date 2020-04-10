@@ -129,7 +129,7 @@ class KnowledgeBot(BotAI):
                     log_level=logging.WARNING,
                 )
 
-        except:  # catch all exceptions
+        except:  # noqa, catch all exceptions
             e = sys.exc_info()[0]
             logging.exception(e)
 

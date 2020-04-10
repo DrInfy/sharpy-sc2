@@ -2,7 +2,6 @@ from .require_base import RequireBase
 from .require_custom import RequireCustom
 from .required_any import RequiredAny
 from .required_all import RequiredAll
-from .required_enemy_unit_exists import RequiredEnemyUnitExists
 from .required_gas import RequiredGas
 from .required_minerals import RequiredMinerals
 from .required_supply import RequiredSupply

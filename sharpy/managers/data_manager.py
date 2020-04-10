@@ -45,8 +45,7 @@ class DataManager(ManagerBase):
             if my_file.is_file():
                 try:
                     self.read_data()
-
-                except:
+                except Exception:
                     self.data = OpponentData()
                     self.data.enemy_id = self.ai.opponent_id
                     self.knowledge.print("Data read failed on game start.")
@@ -128,9 +127,9 @@ class DataManager(ManagerBase):
         if my_file.is_file():
             try:
                 self.read_data()
-            except:
+            except Exception as e:
                 # Don't write if we can't read the current data
-                self.knowledge.print("Data read failed on save.")
+                self.print(f"Data read failed on save: {e}")
                 return
         elif not os.path.exists(DATA_FOLDER):
             os.makedirs(DATA_FOLDER)
@@ -151,8 +150,8 @@ class DataManager(ManagerBase):
             with open(self.file_name, 'w') as handle:
                 handle.write(frozen)
                 # pickle.dump(self.data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        except:
-            self.knowledge.print("Data write failed.")
+        except Exception as e:
+            self.print(f"Data write failed: {e}")
 
     async def on_end(self, game_result: Result):
         if not self.enabled:

@@ -13,7 +13,7 @@ class RestorePowerDummy(KnowledgeBot):
         super().__init__("RestorePowerDummy")
 
     async def create_plan(self) -> BuildOrder:
-        return BuildOrder([RestorePower(), PlanDistributeWorkers(),])
+        return BuildOrder([RestorePower(), PlanDistributeWorkers()])
 
     async def on_step(self, iteration):
         # Hack so that BuildingSolver is finally ready to give positions for the debug buildings.

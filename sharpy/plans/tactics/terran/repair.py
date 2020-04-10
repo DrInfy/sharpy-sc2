@@ -28,7 +28,7 @@ class Repair(ActBase):
 
                     if repairing_this_count < desired_count:
                         for worker in zone.our_workers:  # type: Unit
-                            if not worker.is_repairing and not worker.tag in current_repairers:
+                            if not worker.is_repairing and worker.tag not in current_repairers:
                                 self.do(worker.repair(unit))
                                 current_repairers.append(worker.tag)
                                 roles.set_task(UnitTask.Building, worker)

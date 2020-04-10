@@ -104,9 +104,9 @@ def angle_distance(angle1: float, angle2: float):
 def point_normalize(point: Point2) -> Point2:
     if point.x == 0 and point.y == 0:
         return point
-    l = math.sqrt(point.x ** 2 + point.y ** 2)
+    length = math.sqrt(point.x ** 2 + point.y ** 2)
 
-    return Point2((point.x / l, point.y / l))
+    return Point2((point.x / length, point.y / length))
 
 
 def spiral(N, M):

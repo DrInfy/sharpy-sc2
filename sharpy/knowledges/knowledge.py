@@ -467,7 +467,7 @@ class Knowledge:
         self._on_unit_destroyed_listeners.append(func)
 
     def unregister_on_unit_destroyed_listener(self, func):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @staticmethod
     def fire_event(listeners, event):

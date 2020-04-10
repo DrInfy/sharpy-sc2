@@ -38,16 +38,11 @@ class ProxyZealots(ActBase):
 
         nexus = self.ai.structures(UnitTypeId.NEXUS).ready.first
 
-        if self.ai.structures(UnitTypeId.PYLON).ready.exists:
-            proxy_pylon = self.ai.structures(UnitTypeId.PYLON).ready.random
-        ramp = self.ai.main_base_ramp
-
         proxy_pylon = self.proxy_location
         gateways = self.ai.structures(UnitTypeId.GATEWAY)
 
         selected = False
 
-        already_building_pylon = self.ai.already_pending(UnitTypeId.PYLON)
         worker = self.get_worker()
         if not worker:
             return
@@ -60,8 +55,6 @@ class ProxyZealots(ActBase):
                 and self.ai.supply_used + 7 > self.ai.supply_cap
                 and self.ai.supply_cap < 200
             ):
-                if self.ai.supply_used + 2 > self.ai.supply_cap:
-                    already_building_pylon = False
                 if self.ai.structures(UnitTypeId.PYLON).amount < 1:
                     await self.ai.build(UnitTypeId.PYLON, proxy_pylon, build_worker=worker)
                 if gateways.ready.amount > 1 and not self.ai.already_pending(UnitTypeId.PYLON):
@@ -190,7 +183,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                         backup,
                     ]
                 ),
-                [PlanDistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy(),],
+                [PlanDistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
                 ChronoUnitProduction(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
             ]
         )

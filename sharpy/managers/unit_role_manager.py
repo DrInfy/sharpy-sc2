@@ -224,8 +224,8 @@ class UnitRoleManager(ManagerBase):
             reserved = len(self.roles[UnitTask.Reserved.value].tags)
             hallucination = len(self.roles[UnitTask.Hallucination.value].tags)
 
-            enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
-            power_text = f'{enemy_total_power.power} ({enemy_total_power.ground_power}/{enemy_total_power.air_power})'
+            # enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
+            # power_text = f'{enemy_total_power.power} ({enemy_total_power.ground_power}/{enemy_total_power.air_power})'
 
             # msg = f'{self.ai.time_formatted} I{idle} B{building} G{gathering} S{scouting} M{moving} ' \
             #     f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination} ETP{power_text}'

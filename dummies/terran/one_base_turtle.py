@@ -1,13 +1,12 @@
+from sc2 import UnitTypeId, Race
+
+from sharpy.knowledges import KnowledgeBot
+from sharpy.plans import BuildOrder, Step, StepBuildGas
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
-from sharpy.plans import BuildOrder, Step, StepBuildGas
-from sc2 import UnitTypeId, Race
-from sc2.ids.upgrade_id import UpgradeId
-
-from sharpy.knowledges import KnowledgeBot
 
 
 class OneBaseTurtle(KnowledgeBot):
@@ -53,7 +52,7 @@ class OneBaseTurtle(KnowledgeBot):
             Step(RequiredUnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
         ]
 
-        build_order = BuildOrder([build_steps_buildings, build_step_tanks, build_steps_marines,])
+        build_order = BuildOrder([build_steps_buildings, build_step_tanks, build_steps_marines])
 
         attack = PlanZoneAttack(4)
         tactics = [

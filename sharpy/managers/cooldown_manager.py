@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional, Set
 
-# from knowledges import Knowledge
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
@@ -27,8 +26,8 @@ class CooldownManager(ManagerBase):
             return
         try:
             result: List[List[AbilityId]] = await self.ai.get_available_abilities(self.knowledge.all_own)
-        except:
-            self.print(f"Get available abilities failed.")
+        except Exception as e:
+            self.print(f"Get available abilities failed: {e}")
             return
 
         for i in range(0, len(self.knowledge.all_own)):

@@ -44,7 +44,7 @@ class UnitsInRole:
         for tag in self.tags:
             unit = self.cache.by_tag(tag)
 
-            if not unit is None and unit.is_mine:
+            if unit is not None and unit.is_mine:
                 # update unit to collection
                 self.units.append(unit)
                 new_tags.append(tag)

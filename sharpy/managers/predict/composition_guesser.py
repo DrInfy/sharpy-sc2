@@ -105,7 +105,6 @@ class CompositionGuesser:
     def add_units(self, type_id, count, additional_guess):
         mineral_price = self.unit_values.minerals(type_id)
         gas_price = self.unit_values.gas(type_id)
-        supply = self.unit_values.supply(type_id)  # TODO: use this for something
 
         if mineral_price > 0:
             mineral_amount = self.left_minerals / mineral_price

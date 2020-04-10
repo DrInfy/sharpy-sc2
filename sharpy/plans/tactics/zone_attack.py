@@ -140,16 +140,12 @@ class PlanZoneAttack(ActBase):
         center = already_attacking.center
         front_runner = already_attacking.closest_to(target)
 
-        # target = self.pather.find_path(center, target)
-
         for unit in already_attacking:
             # Only units in group are included to current combat force
             self.combat.add_unit(unit)
 
         for unit in self.knowledge.roles.free_units:
             if self.knowledge.should_attack(unit):
-                p: Point2 = unit.position
-
                 if not self.knowledge.roles.is_in_role(UnitTask.Attacking, unit) and (
                     unit.distance_to(center) > 20 or unit.distance_to(front_runner) > 20
                 ):

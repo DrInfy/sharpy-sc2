@@ -22,8 +22,8 @@ class TestMath:
         type_id = UnitTypeId.KERRIGANEGG
 
         try:
-            start_time = unit_values.building_start_time(game_time, type_id, build_progress)
-        except:
+            unit_values.building_start_time(game_time, type_id, build_progress)
+        except:  # noqa
             assert False
 
     def test_building_completion_time_works(self):
@@ -41,8 +41,8 @@ class TestMath:
         type_id = UnitTypeId.KERRIGANEGG
 
         try:
-            completion_time = unit_values.building_completion_time(game_time, type_id, build_progress)
-        except:
+            unit_values.building_completion_time(game_time, type_id, build_progress)
+        except:  # noqa
             assert False
 
     def test_points_on_circumference_with_unit_circle(self):

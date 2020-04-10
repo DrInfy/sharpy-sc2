@@ -27,7 +27,7 @@ def select_build_index(knowledge: 'Knowledge', build_key: str, min_index: int, m
     tactic: Optional[int] = None
     try:
         tactic = knowledge.get_int_setting(build_key)
-    except:
+    except:  # noqa
         pass
 
     if tactic is not None and min_index <= tactic <= max_index:

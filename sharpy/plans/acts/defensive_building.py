@@ -34,7 +34,6 @@ class DefensiveBuilding(ActBase):
         self.to_base_index = to_base_index
 
     async def execute(self) -> bool:
-        map_center = self.ai.game_info.map_center
         is_done = True
         pending_defense_count = self.pending_build(self.unit_type)
         if pending_defense_count > 0:

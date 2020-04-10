@@ -115,7 +115,7 @@ Races:
 
 Difficulties:
 {new_line.join(difficulty.keys())}
-        
+
 Builds:
 {new_line.join(builds.keys())}
                 ''',

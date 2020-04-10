@@ -1,21 +1,20 @@
-import random
 from math import floor
 from typing import List, Optional
-
-from sc2.unit import Unit
-from sharpy.managers.building_solver import WallType
-from sharpy.managers.roles import UnitTask
-from sharpy.plans.acts import *
-from sharpy.plans.acts.protoss import *
-from sharpy.plans.require import *
-from sharpy.plans.tactics import *
-from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.utils import select_build_index
 
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
+from sc2.unit import Unit
+
+from sharpy.knowledges import KnowledgeBot, Knowledge
+from sharpy.managers.building_solver import WallType
+from sharpy.managers.roles import UnitTask
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.plans.acts import *
+from sharpy.plans.acts.protoss import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.utils import select_build_index
 
 
 class ProxyCannoneer(ActBase):
@@ -353,7 +352,7 @@ class CannonRush(KnowledgeBot):
         self.knowledge.print(f"Cannon rush", "Build")
         return BuildOrder(
             [
-                [GridBuilding(UnitTypeId.PYLON, 1), GridBuilding(UnitTypeId.FORGE, 1, priority=True),],
+                [GridBuilding(UnitTypeId.PYLON, 1), GridBuilding(UnitTypeId.FORGE, 1, priority=True)],
                 ProxyCannoneer(),
                 ProtossUnit(UnitTypeId.PROBE, 18),
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
@@ -367,9 +366,7 @@ class CannonRush(KnowledgeBot):
 
     def cannon_expand(self) -> ActBase:
         self.knowledge.print(f"Cannon expand", "Build")
-        enemy_main = self.knowledge.expansion_zones[-1]
         natural = self.knowledge.expansion_zones[-2]
-        enemy_ramp = self.knowledge.enemy_base_ramp
         pylon_pos: Point2 = natural.behind_mineral_position_center
 
         return BuildOrder(

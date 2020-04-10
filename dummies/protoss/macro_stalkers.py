@@ -43,7 +43,7 @@ class MacroStalkers(KnowledgeBot):
                         StepBuildGas(3, skip=RequiredGas(300)),
                     ],
                     [GateUnit(UnitTypeId.STALKER, 100)],
-                    [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=RequiredGas(200)),],
+                    [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=RequiredGas(200))],
                 ),
             ),
             SequentialList(

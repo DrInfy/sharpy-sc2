@@ -266,8 +266,6 @@ class BuildDetector(ManagerBase):
         ):
             return self._set_rush(EnemyRushBuild.RoachRush)
 
-        hatch_start_time = self.started(UnitTypeId.HATCHERY, 1)
-
         # 12 pool starts at 20sec
         # 13 pool starts at 23sec
         # 14 pool starts at 27sec

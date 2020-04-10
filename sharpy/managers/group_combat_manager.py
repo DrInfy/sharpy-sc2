@@ -144,10 +144,8 @@ class GroupCombatManager(ManagerBase):
             else:
                 power = group.power
                 enemy_power = ExtendedPower(closest_enemies)
-                enemy_center = closest_enemies.center
 
                 is_in_combat = group.is_in_combat(closest_enemies)
-                # pseudocode for attack
 
                 if move_type == MoveType.DefensiveRetreat or move_type == MoveType.PanicRetreat:
                     self.move_to(group, target, move_type)

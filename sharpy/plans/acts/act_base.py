@@ -72,7 +72,7 @@ class ActBase(ABC):
     roles: UnitRoleManager
 
     def __init__(self):
-        _debug: bool = False
+        self._debug: bool = False
 
     @property
     def debug(self):
