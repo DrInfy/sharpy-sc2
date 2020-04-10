@@ -46,7 +46,7 @@ class Banshees(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             AutoDepot(),
             Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             [
@@ -94,7 +94,7 @@ class Banshees(KnowledgeBot):
             ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 10),
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 50),
             SequentialList(tactics)
-        ])
+        )
 
 
 class LadderBot(Banshees):

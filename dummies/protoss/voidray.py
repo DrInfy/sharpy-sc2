@@ -23,12 +23,12 @@ class MacroVoidray(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         attack = TheAttack(4)
-        return BuildOrder([
+        return BuildOrder(
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 30, include_pending=True), skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
             ChronoUnitProduction(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
             
-            SequentialList([
+            SequentialList(
                 ProtossUnit(UnitTypeId.PROBE, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 ProtossUnit(UnitTypeId.PROBE, 16),
@@ -42,7 +42,6 @@ class MacroVoidray(KnowledgeBot):
                 StepBuildGas(2),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
-                [
                     AutoPylon(),
                     GateUnit(UnitTypeId.STALKER, 2, priority=True),
                     ActTech(UpgradeId.WARPGATERESEARCH),
@@ -80,18 +79,18 @@ class MacroVoidray(KnowledgeBot):
                         StepBuildGas(4, skip=RequiredGas(200)),
                         GridBuilding(UnitTypeId.STARGATE, 2),
                     ]
-                ])
-            ]),
+                )
+            ),
             SequentialList(
-            [
+
                 PlanZoneDefense(),
                 RestorePower(),
                 PlanDistributeWorkers(),
                 PlanZoneGather(),
                 Step(RequiredUnitReady(UnitTypeId.VOIDRAY, 3), attack),
                 PlanFinishEnemy(),
-            ])
-        ])
+            )
+        )
 
 
 class LadderBot(MacroVoidray):

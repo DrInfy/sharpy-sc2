@@ -105,9 +105,9 @@ class MutaliskBot(KnowledgeBot):
             lambda k: len(self.enemy_start_locations) == 1), skip_until=RequiredSupply(20))
         distribute = PlanDistributeWorkers()
 
-        return BuildOrder([
+        return BuildOrder(
             MutaliskBuild(),
-            SequentialList([
+            SequentialList(
                 PlanCancelBuilding(),
                 PlanZoneGather(),
                 PlanZoneDefense(),
@@ -117,8 +117,8 @@ class MutaliskBot(KnowledgeBot):
                 distribute,
                 PlanZoneAttack(),
                 PlanFinishEnemy()
-            ]),
-        ])
+            ),
+        )
 
 
 class LadderBot(MutaliskBot):

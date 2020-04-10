@@ -122,7 +122,7 @@ class MarineRushBot(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             empty.depots,
             Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             [
@@ -132,7 +132,7 @@ class MarineRushBot(KnowledgeBot):
 
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 200),
             SequentialList(tactics)
-        ])
+        )
 
 
 class LadderBot(MarineRushBot):

@@ -74,7 +74,7 @@ class MacroRoach(KnowledgeBot):
             Step(RequiredUnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=RequiredGas(300))
         ]
 
-        build = BuildOrder([
+        build = BuildOrder(
             ZergUnit(UnitTypeId.DRONE, 70),
             AutoOverLord(),
             build_steps_exps,
@@ -85,7 +85,7 @@ class MacroRoach(KnowledgeBot):
             bsus,
             ravagers,
             build_steps_units,
-        ])
+        )
 
         attack = PlanZoneAttack(120)
 
@@ -100,10 +100,10 @@ class MacroRoach(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             build,
             tactics
-        ])
+        )
 
 
 class LadderBot(MacroRoach):

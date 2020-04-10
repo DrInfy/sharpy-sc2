@@ -221,18 +221,18 @@ class WorkerRush(KnowledgeBot):
         stop_gas = RequiredAny([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
         end_game = RequiredAny([RequiredSupply(70), RequiredUnitExists(UnitTypeId.LAIR, 1)])
 
-        return BuildOrder([
+        return BuildOrder(
             ActUnitOnce(UnitTypeId.DRONE, UnitTypeId.LARVA, 24),
             LingFloodBuild(),
-            SequentialList([
+            SequentialList(
                 InjectLarva(),
                 Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
                 Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
                 Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
                 WorkerAttack(),
                 DummyZergAttack()
-            ]),
-        ])
+            ),
+        )
 
 
 class LadderBot(WorkerRush):

@@ -94,10 +94,10 @@ class TwoBaseTanks(KnowledgeBot):
             self.attack,
             PlanFinishEnemy(),
         ]
-        return BuildOrder([
+        return BuildOrder(
             build_order,
             tactics
-        ])
+        )
 
     def should_expand(self, knowledge):
         count = 0

@@ -117,14 +117,14 @@ class ProxyZealotRushBot(KnowledgeBot):
         attack = PlanZoneAttack(7)
         attack.retreat_multiplier = 0.3
         # attack.attack_started = True
-        backup = BuildOrder([
+        backup = BuildOrder(
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 30, include_pending=True),
                  skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
             ChronoUnitProduction(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
                 ActDefensiveCannons(0, 1),
 
-            SequentialList([
+            SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 StepBuildGas(1),
@@ -137,45 +137,43 @@ class ProxyZealotRushBot(KnowledgeBot):
                 StepBuildGas(2),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
+                    AutoPylon(),
+                    GateUnit(UnitTypeId.STALKER, 2, priority=True),
+                    ActTech(UpgradeId.WARPGATERESEARCH),
                     [
-                        AutoPylon(),
-                        GateUnit(UnitTypeId.STALKER, 2, priority=True),
-                        ActTech(UpgradeId.WARPGATERESEARCH),
-                        [
-                            ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
-                            Step(RequiredUnitExists(UnitTypeId.NEXUS, 2),
-                                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                            StepBuildGas(3, skip=RequiredGas(300)),
-                            Step(RequiredUnitExists(UnitTypeId.NEXUS, 3),
-                                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 56)),
-                            StepBuildGas(5, skip=RequiredGas(200)),
-                        ],
-                        SequentialList(
-                            [
-                                Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                                     GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-                                GridBuilding(UnitTypeId.STARGATE, 1),
-                                Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                                     ActTech(UpgradeId.CHARGE)),
-                                Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                                     ActTech(UpgradeId.ADEPTPIERCINGATTACK)),
-                            ]),
-                        [
-                            ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)
-                        ],
-                        Step(RequiredTime(60 * 5), ActExpand(3)),
-                        [
-                            GateUnit(UnitTypeId.STALKER, 30)
-                        ],
-                        [
-                            GridBuilding(UnitTypeId.GATEWAY, 4),
-                            StepBuildGas(4, skip=RequiredGas(200)),
-                            GridBuilding(UnitTypeId.STARGATE, 2),
-                        ]
-                    ])
-            ]),
+                        ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
+                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2),
+                             ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        StepBuildGas(3, skip=RequiredGas(300)),
+                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 3),
+                             ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 56)),
+                        StepBuildGas(5, skip=RequiredGas(200)),
+                    ],
+                    SequentialList(
+                        Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
+                             GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
+                        GridBuilding(UnitTypeId.STARGATE, 1),
+                        Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                             ActTech(UpgradeId.CHARGE)),
+                        Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                             ActTech(UpgradeId.ADEPTPIERCINGATTACK)),
+                    ),
+                    [
+                        ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)
+                    ],
+                    Step(RequiredTime(60 * 5), ActExpand(3)),
+                    [
+                        GateUnit(UnitTypeId.STALKER, 30)
+                    ],
+                    [
+                        GridBuilding(UnitTypeId.GATEWAY, 4),
+                        StepBuildGas(4, skip=RequiredGas(200)),
+                        GridBuilding(UnitTypeId.STARGATE, 2),
+                    ]
+                )
+            ),
 
-        ])
+        )
         proxy_zealots = ProxyZealots()
 
         return BuildOrder([

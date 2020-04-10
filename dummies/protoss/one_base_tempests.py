@@ -18,7 +18,7 @@ class OneBaseTempests(KnowledgeBot):
         return BuildOrder([
             ChronoUnitProduction(UnitTypeId.TEMPEST, UnitTypeId.STARGATE),
 
-            SequentialList([
+            SequentialList(
                 ProtossUnit(UnitTypeId.PROBE, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 ProtossUnit(UnitTypeId.PROBE, 15),
@@ -30,34 +30,31 @@ class OneBaseTempests(KnowledgeBot):
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ProtossUnit(UnitTypeId.PROBE, 22),
                 BuildOrder(
+                    AutoPylon(),
+                    SequentialList(
+                            GridBuilding(UnitTypeId.STARGATE, 1),
+                            Step(RequiredUnitReady(UnitTypeId.STARGATE, 1),
+                                 GridBuilding(UnitTypeId.FLEETBEACON, 1))
+                        ),
                     [
-                        AutoPylon(),
-                        SequentialList(
-                            [
-                                GridBuilding(UnitTypeId.STARGATE, 1),
-                                Step(RequiredUnitReady(UnitTypeId.STARGATE, 1),
-                                     GridBuilding(UnitTypeId.FLEETBEACON, 1))
-                            ]),
-                        [
-                            ProtossUnit(UnitTypeId.TEMPEST, 100, priority=True)
-                        ],
-                        [
-                            Step(RequiredUnitExists(UnitTypeId.FLEETBEACON, 1),
-                                 GridBuilding(UnitTypeId.STARGATE, 2))
-                        ],
-                    ]),
+                        ProtossUnit(UnitTypeId.TEMPEST, 100, priority=True)
+                    ],
+                    [
+                        Step(RequiredUnitExists(UnitTypeId.FLEETBEACON, 1),
+                             GridBuilding(UnitTypeId.STARGATE, 2))
+                    ],
+                ),
 
-            ]),
+            ),
             ActDefensiveCannons(4, 2, 0),
             SequentialList(
-                [
-                    PlanZoneDefense(),
-                    RestorePower(),
-                    PlanDistributeWorkers(),
-                    PlanZoneGather(),
-                    Step(RequiredUnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
-                    PlanFinishEnemy(),
-                ])
+                PlanZoneDefense(),
+                RestorePower(),
+                PlanDistributeWorkers(),
+                PlanZoneGather(),
+                Step(RequiredUnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
+                PlanFinishEnemy(),
+            )
         ])
 
 

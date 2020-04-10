@@ -65,7 +65,7 @@ class TwelvePool(KnowledgeBot):
 
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             build_step_buildings,
             finish,
             build_step_units,
@@ -76,7 +76,7 @@ class TwelvePool(KnowledgeBot):
             PlanZoneGather(),
             PlanZoneAttack2(2),
             PlanFinishEnemy(),
-        ])
+        )
 
 
 class LadderBot(TwelvePool):
