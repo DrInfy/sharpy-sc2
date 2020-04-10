@@ -12,11 +12,11 @@ from sc2.units import Units
 
 
 class CombatModel:
-    StalkerToRoach = 0,  # Longer range vs shorther
-    StalkerToSpeedlings = 1,  # Ranged vs melee
-    StalkerToSiege = 2,  # Range vs extreme fire power
-    AssaultRamp = 3,  # Push on narrow ramps
-    RoachToStalker = 4,  # Shorter range vs longer
+    StalkerToRoach = 0  # Longer range vs shorther
+    StalkerToSpeedlings = 1  # Ranged vs melee
+    StalkerToSiege = 2  # Range vs extreme fire power
+    AssaultRamp = 3  # Push on narrow ramps
+    RoachToStalker = 4  # Shorter range vs longer
 
 no_retreat_on_low_hp: Set[UnitTypeId] = {
     UnitTypeId.ZEALOT, UnitTypeId.ZERGLING,

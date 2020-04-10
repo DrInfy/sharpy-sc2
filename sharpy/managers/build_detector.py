@@ -18,33 +18,35 @@ townhall_start_types = {
 
 
 class EnemyRushBuild(enum.IntEnum):
-    Macro = 0,
-    Pool12 = 1,
-    CannonRush = 2,
-    ProxyRax = 3,
-    OneBaseRax = 4,
-    ProxyZealots = 5,
-    Zealots = 6,
-    OneHatcheryAllIn = 7,
-    PoolFirst = 8,
-    RoachRush = 9,
-    Marauders = 10,
-    HatchPool15_14 = 11,
-    ProxyRobo = 12,
-    RoboRush = 13,
-    AdeptRush = 14,
-    WorkerRush = 15,
+    Macro = 0
+    Pool12 = 1
+    CannonRush = 2
+    ProxyRax = 3
+    OneBaseRax = 4
+    ProxyZealots = 5
+    Zealots = 6
+    OneHatcheryAllIn = 7
+    PoolFirst = 8
+    RoachRush = 9
+    Marauders = 10
+    HatchPool15_14 = 11
+    ProxyRobo = 12
+    RoboRush = 13
+    AdeptRush = 14
+    WorkerRush = 15
+
 
 class EnemyMacroBuild(enum.IntEnum):
-    StandardMacro = 0,
-    BattleCruisers = 1,
-    Banshees = 2,
-    Tempests = 3,
-    Carriers = 4,
-    DarkTemplars = 5,
-    Lurkers = 6,
-    Mutalisks = 7,
-    Mmm = 8,
+    StandardMacro = 0
+    BattleCruisers = 1
+    Banshees = 2
+    Tempests = 3
+    Carriers = 4
+    DarkTemplars = 5
+    Lurkers = 6
+    Mutalisks = 7
+    Mmm = 8
+
 
 class BuildDetector(ManagerBase):
     """Enemy build detector."""
