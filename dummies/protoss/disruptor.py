@@ -1,6 +1,6 @@
 from typing import List, Union
 
-from sc2 import UnitTypeId
+from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sharpy.knowledges import *
 from sharpy.plans import *
@@ -73,3 +73,7 @@ class SharpSphereBot(KnowledgeBot):
     async def create_plan(self) -> BuildOrder:
         return DistruptorBuild()
 
+class LadderBot(SharpSphereBot):
+    @property
+    def my_race(self):
+        return Race.Protoss
