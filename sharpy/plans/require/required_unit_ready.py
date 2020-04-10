@@ -6,6 +6,7 @@ from sharpy.plans.require.require_base import RequireBase
 
 class RequiredUnitReady(RequireBase):
     """Condition for how many units must be ready. Used mostly for buildings."""
+
     def __init__(self, unit_type: UnitTypeId, count: float = 1):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         super().__init__()

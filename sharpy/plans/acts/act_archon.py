@@ -42,15 +42,12 @@ class ActArchon(ActBase):
 
             from s2clientprotocol import raw_pb2 as raw_pb
             from s2clientprotocol import sc2api_pb2 as sc_pb
+
             command = raw_pb.ActionRawUnitCommand(
-                ability_id=AbilityId.MORPH_ARCHON.value,
-                unit_tags=[unit.tag, target.tag],
-                queue_command=False
+                ability_id=AbilityId.MORPH_ARCHON.value, unit_tags=[unit.tag, target.tag], queue_command=False
             )
             action = raw_pb.ActionRaw(unit_command=command)
-            await self.ai._client._execute(action=sc_pb.RequestAction(
-                actions=[sc_pb.Action(action_raw=action)]
-            ))
+            await self.ai._client._execute(action=sc_pb.RequestAction(actions=[sc_pb.Action(action_raw=action)]))
 
         return True
 

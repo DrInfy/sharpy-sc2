@@ -20,8 +20,13 @@ class DefensePosition(enum.Enum):
 class DefensiveBuilding(ActBase):
     """Act of building defensive buildings for zerg and terran, does not work with protoss due to pylon requirement!"""
 
-    def __init__(self, unit_type: UnitTypeId, position_type: DefensePosition, to_base_index: Optional[int] = None,
-             to_count: int = 1):
+    def __init__(
+        self,
+        unit_type: UnitTypeId,
+        position_type: DefensePosition,
+        to_base_index: Optional[int] = None,
+        to_count: int = 1,
+    ):
         super().__init__()
         self.to_count = to_count
         self.unit_type = unit_type
@@ -58,9 +63,13 @@ class DefensiveBuilding(ActBase):
                 for x in range(-2, 2):
                     for y in range(-2, 2):
                         pos = int_pos + Point2((x, y))
-                        if pos.x > 0 and pos.x < self.ai.state.creep.width and \
-                                pos.y > 0 and pos.y < self.ai.state.creep.height and \
-                                self.ai.state.creep.is_set(pos):
+                        if (
+                            pos.x > 0
+                            and pos.x < self.ai.state.creep.width
+                            and pos.y > 0
+                            and pos.y < self.ai.state.creep.height
+                            and self.ai.state.creep.is_set(pos)
+                        ):
                             can_build = True
                             break
 

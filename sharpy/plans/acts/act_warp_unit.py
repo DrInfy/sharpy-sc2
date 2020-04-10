@@ -8,6 +8,7 @@ from .act_base import ActBase
 
 class ActWarpUnit(ActBase):
     """Use Warp Gates (Protoss) to build units."""
+
     def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         assert to_count is not None and isinstance(to_count, int)

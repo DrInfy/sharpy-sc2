@@ -2,8 +2,9 @@ from typing import List
 
 import sc2
 
-#from sharpy import 'Knowledge'
+# from sharpy import 'Knowledge'
 from .act_base import ActBase
+
 
 class ActMany(ActBase):
     # Act of building multiple units

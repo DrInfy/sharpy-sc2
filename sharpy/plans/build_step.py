@@ -6,15 +6,19 @@ from sharpy.plans.require import RequireCustom
 from sharpy.plans.require.require_base import RequireBase
 from sharpy.plans.acts.act_base import ActBase
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
+
 class Step(ActBase):
-    def __init__(self,
-                 requirement: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]],
-                 action: Optional[Union[ActBase, Callable[['Knowledge'], bool]]],
-                 skip: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None,
-                 skip_until: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None):
+    def __init__(
+        self,
+        requirement: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]],
+        action: Optional[Union[ActBase, Callable[['Knowledge'], bool]]],
+        skip: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None,
+        skip_until: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None,
+    ):
         assert requirement is None or isinstance(requirement, RequireBase) or isinstance(requirement, Callable)
         assert action is None or isinstance(action, ActBase)
         assert skip is None or isinstance(skip, RequireBase) or isinstance(skip, Callable)
@@ -72,6 +76,3 @@ class Step(ActBase):
             return True
 
         return await self.action.execute()
-
-
-

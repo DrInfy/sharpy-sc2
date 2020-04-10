@@ -1,5 +1,6 @@
 from .act_unit import ActUnit
 
+
 class ActUnitOnce(ActUnit):
     def get_unit_count(self) -> int:
         count = super().get_unit_count()

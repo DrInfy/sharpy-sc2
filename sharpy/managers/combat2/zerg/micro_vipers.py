@@ -8,7 +8,6 @@ from sc2.unit import Unit
 
 
 class MicroVipers(MicroStep):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.blind_available = 0
@@ -41,7 +40,7 @@ class MicroVipers(MicroStep):
                     score = enemy.health + self.unit_values.power(enemy) * 50
                     # TODO: Needs proper target locking in order to not fire at the same target
                     # Simple and stupid way in an attempt to not use ability on same target:
-                    score += (enemy.tag % (shuffler + 2))
+                    score += enemy.tag % (shuffler + 2)
 
                     if score > best_score:
                         target = enemy
@@ -50,7 +49,8 @@ class MicroVipers(MicroStep):
             if target is not None:
                 return Action(target, False, AbilityId.EFFECT_ABDUCT)
 
-        if (self.parasitic_bomb_available < self.ai.time
+        if (
+            self.parasitic_bomb_available < self.ai.time
             and self.cd_manager.is_ready(unit.tag, AbilityId.PARASITICBOMB_PARASITICBOMB)
             and self.engaged_power.power > 10
         ):
@@ -71,7 +71,8 @@ class MicroVipers(MicroStep):
                 self.parasitic_bomb_available = self.ai.time + 3
                 return Action(target, False, AbilityId.PARASITICBOMB_PARASITICBOMB)
 
-        if (self.blind_available < self.ai.time
+        if (
+            self.blind_available < self.ai.time
             and self.cd_manager.is_ready(unit.tag, AbilityId.BLINDINGCLOUD_BLINDINGCLOUD)
             and self.engaged_power.power > 10
         ):
@@ -79,11 +80,16 @@ class MicroVipers(MicroStep):
             target: Optional[Unit] = None
             enemy: Unit
 
-            for enemy in self.enemies_near_by.filter(lambda u: not u.is_flying and self.unit_values.ground_range(u) > 2):
+            for enemy in self.enemies_near_by.filter(
+                lambda u: not u.is_flying and self.unit_values.ground_range(u) > 2
+            ):
                 d = enemy.distance_to(unit)
                 if d < 11 and self.unit_values.power(enemy) > 1 and not enemy.has_buff(BuffId.BLINDINGCLOUD):
-                    score = self.cache.enemy_in_range(enemy.position, 5)\
-                        .filter(lambda u: not u.is_flying and self.unit_values.ground_range(u) > 2).amount
+                    score = (
+                        self.cache.enemy_in_range(enemy.position, 5)
+                        .filter(lambda u: not u.is_flying and self.unit_values.ground_range(u) > 2)
+                        .amount
+                    )
                     # TODO: Needs proper target locking in order to not fire at the same target
                     if score > best_score:
                         target = enemy
@@ -92,8 +98,6 @@ class MicroVipers(MicroStep):
             if target is not None:
                 self.blind_available = self.ai.time + 1
                 return Action(target.position, False, AbilityId.BLINDINGCLOUD_BLINDINGCLOUD)
-
-
 
         return current_command
 

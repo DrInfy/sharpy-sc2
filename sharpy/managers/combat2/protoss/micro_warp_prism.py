@@ -2,6 +2,7 @@ from typing import Dict
 
 from sharpy.managers.combat2 import Action, MicroStep
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from sharpy.managers import *
 from sharpy.general.extended_power import ExtendedPower
@@ -11,7 +12,6 @@ from sc2.units import Units
 
 
 class MicroWarpPrism(MicroStep):
-
     def __init__(self, knowledge):
         self.release_tags: Dict[int, float] = dict()
         self.tag_unloading: Dict[int, float] = dict()
@@ -31,8 +31,13 @@ class MicroWarpPrism(MicroStep):
             if gate.is_transforming or self.cd_manager.is_ready(gate.tag, AbilityId.WARPGATETRAIN_ZEALOT):
                 ready += 1
 
-        if (ready > 2 and ready >= count and unit.type_id == UnitTypeId.WARPPRISM and self.ai.supply_left > 3
-                and self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMTRANSPORTMODE, 6)):
+        if (
+            ready > 2
+            and ready >= count
+            and unit.type_id == UnitTypeId.WARPPRISM
+            and self.ai.supply_left > 3
+            and self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMTRANSPORTMODE, 6)
+        ):
             # TODO: Is it safe to warp in?
             self.cd_manager.used_ability(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE)
             return Action(None, False, AbilityId.MORPH_WARPPRISMPHASINGMODE)
@@ -40,8 +45,9 @@ class MicroWarpPrism(MicroStep):
         elif unit.type_id == UnitTypeId.WARPPRISMPHASING:
             not_ready = self.knowledge.unit_cache.own(self.unit_values.gate_types).not_ready
 
-            if self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE, 2.5) \
-                    and (len(not_ready) < 1 or not_ready.closest_distance_to(prism) > 4):
+            if self.cd_manager.is_ready(prism.tag, AbilityId.MORPH_WARPPRISMPHASINGMODE, 2.5) and (
+                len(not_ready) < 1 or not_ready.closest_distance_to(prism) > 4
+            ):
 
                 self.cd_manager.used_ability(prism.tag, AbilityId.MORPH_WARPPRISMTRANSPORTMODE)
                 return Action(None, False, AbilityId.MORPH_WARPPRISMTRANSPORTMODE)
@@ -49,7 +55,7 @@ class MicroWarpPrism(MicroStep):
         if prism.cargo_used:
             for passenger in prism.passengers:  # type: Unit
                 if self.release_tags.get(passenger.tag, 0) < self.ai.time:
-                    if (not self.ai.in_pathing_grid(prism)):
+                    if not self.ai.in_pathing_grid(prism):
                         break
 
                     stop_drop = False
@@ -68,7 +74,6 @@ class MicroWarpPrism(MicroStep):
         power = ExtendedPower(self.unit_values)
         power.add_units(self.knowledge.unit_cache.enemy_in_range(prism.position, 12))
 
-
         if power.power < 3:
 
             return self.find_safe_position(current_command)
@@ -86,8 +91,12 @@ class MicroWarpPrism(MicroStep):
                 if own_unit.distance_to(prism) > 12:
                     continue
 
-                score = self.unit_values.ground_range(own_unit) * (1.1 - own_unit.health_percentage) \
-                        * self.unit_values.power(own_unit) - 1
+                score = (
+                    self.unit_values.ground_range(own_unit)
+                    * (1.1 - own_unit.health_percentage)
+                    * self.unit_values.power(own_unit)
+                    - 1
+                )
 
                 if score > best_score:
                     best_score = score
@@ -101,7 +110,8 @@ class MicroWarpPrism(MicroStep):
 
     def find_safe_position(self, current_command: Action):
         priority_units: Units = self.group.units.of_type(
-            [UnitTypeId.COLOSSUS, UnitTypeId.IMMORTAL, UnitTypeId.ARCHON, UnitTypeId.HIGHTEMPLAR])
+            [UnitTypeId.COLOSSUS, UnitTypeId.IMMORTAL, UnitTypeId.ARCHON, UnitTypeId.HIGHTEMPLAR]
+        )
         # Let's find the safest position that's closest to enemies
         if priority_units:
             focus = priority_units.center

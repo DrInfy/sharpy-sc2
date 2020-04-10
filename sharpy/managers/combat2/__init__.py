@@ -5,5 +5,3 @@ from .action import Action, NoAction
 from .move_type import MoveType
 from .no_micro import NoMicro
 from .micro_workers import MicroWorkers
-
-

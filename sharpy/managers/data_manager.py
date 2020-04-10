@@ -16,6 +16,7 @@ from sharpy.tools.opponent_data import GameResult, OpponentData
 
 DATA_FOLDER = "data"
 
+
 class DataManager(ManagerBase):
     data: OpponentData
     enabled: bool
@@ -55,10 +56,14 @@ class DataManager(ManagerBase):
 
             if self.data.results:
                 self.last_result = self.data.results[-1]
-                self.last_result_as_current_race = next((result for result in reversed(self.data.results)
-                                                         if  hasattr(result, "my_race")
-                                                         and result.my_race == self.knowledge.my_race),
-                                                        None)
+                self.last_result_as_current_race = next(
+                    (
+                        result
+                        for result in reversed(self.data.results)
+                        if hasattr(result, "my_race") and result.my_race == self.knowledge.my_race
+                    ),
+                    None,
+                )
 
     def read_data(self):
         with open(self.file_name, 'r') as handle:
@@ -89,8 +94,11 @@ class DataManager(ManagerBase):
 
     @property
     def last_enemy_build(self) -> Tuple[EnemyRushBuild, EnemyMacroBuild]:
-        if not self.last_result or not hasattr(self.last_result, "enemy_macro_build")\
-                or not hasattr(self.last_result, "enemy_build"):
+        if (
+            not self.last_result
+            or not hasattr(self.last_result, "enemy_macro_build")
+            or not hasattr(self.last_result, "enemy_build")
+        ):
             return EnemyRushBuild.Macro, EnemyMacroBuild.StandardMacro
 
         return EnemyRushBuild(self.last_result.enemy_build), EnemyMacroBuild(self.last_result.enemy_macro_build)
@@ -149,7 +157,7 @@ class DataManager(ManagerBase):
     async def on_end(self, game_result: Result):
         if not self.enabled:
             return
-        
+
         if game_result == Result.Victory:
             self.result.result = 1
         elif game_result == Result.Tie:

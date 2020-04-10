@@ -43,6 +43,7 @@ difficulty = {
     "veryeasy": Difficulty.VeryEasy,
 }
 
+
 class DummyBuilder:
     def __init__(self, key: str, name: str, race: Race, file_name: str, bot_type: type) -> None:
         self.key = key
@@ -56,7 +57,6 @@ class DummyBuilder:
         folder = race.lower()
         zip_builder = DummyZip(self.name, race, os.path.join("dummies", folder, self.file_name))
         return (lambda params: Bot(self.race, self.bot_type()), zip_builder)
-
 
 
 class BotDefinitions:
@@ -124,21 +124,26 @@ class BotDefinitions:
 
     def _human(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         # Human, must be player 1
-        return {
-            "human": ((lambda params: Human(races[self.index_check(params, 0, "random")])), None)
-        }
+        return {"human": ((lambda params: Human(races[self.index_check(params, 0, "random")])), None)}
 
     def _ai(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         # Ingame ai, can be player 1 or 2 and cannot be published
         return {
-            "ai": ((lambda params: Computer(races[self.index_check(params, 0, "random")],
-                                            difficulty[self.index_check(params, 1, "veryhard")],
-                                            builds[self.index_check(params, 2, "random")])),
-                   None)
+            "ai": (
+                (
+                    lambda params: Computer(
+                        races[self.index_check(params, 0, "random")],
+                        difficulty[self.index_check(params, 1, "veryhard")],
+                        builds[self.index_check(params, 2, "random")],
+                    )
+                ),
+                None,
+            )
         }
 
-    def _get_ladder_bots(self, path: str = None) \
-            -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
+    def _get_ladder_bots(
+        self, path: str = None
+    ) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         """
         Searches bot_directory_location path to find all the folders containing "ladderbots.json"
         and returns a list of bots.
@@ -174,7 +179,9 @@ class BotDefinitions:
         for key, func in debug_bots.items():
             bot_dict[key] = (func, None)
 
-    def add_bot(self, key: str, func: Callable[[List[str]], AbstractPlayer], ladder_zip: Optional[LadderZip] = None) -> None:
+    def add_bot(
+        self, key: str, func: Callable[[List[str]], AbstractPlayer], ladder_zip: Optional[LadderZip] = None
+    ) -> None:
         """
         Add your own custom bots here
         """
@@ -209,7 +216,6 @@ class BotDefinitions:
             DummyBuilder("voidray", "SharpRays", Race.Protoss, "voidray.py", MacroVoidray),
             DummyBuilder("zealot", "SharpKnives", Race.Protoss, "proxy_zealot_rush.py", ProxyZealotRushBot),
             DummyBuilder("tempest", "SharpTempests", Race.Protoss, "one_base_tempests.py", OneBaseTempests),
-
             # Zerg
             DummyBuilder("12pool", "BluntCheese", Race.Zerg, "twelve_pool.py", TwelvePool),
             DummyBuilder("200roach", "BluntRoaches", Race.Zerg, "macro_roach.py", MacroRoach),
@@ -223,7 +229,6 @@ class BotDefinitions:
             # DummyBuilder("spine", "BluntDefender", Race.Zerg, "spine_defender.py", SpineDefender),
             # TODO: Not really Sharpy bot
             # DummyBuilder("roachrush", "SharpShades", Race.Zerg, "adept_allin.py", RoachRush),
-
             # Terran
             DummyBuilder("banshee", "RustyScreams", Race.Terran, "banshees.py", Banshees),
             DummyBuilder("bc", "FlyingRust", Race.Terran, "battle_cruisers.py", BattleCruisers),
@@ -235,14 +240,12 @@ class BotDefinitions:
             DummyBuilder("terranturtle", "RustyOneBaseTurtle", Race.Terran, "one_base_turtle.py", OneBaseTurtle),
         ]
 
-
         for bot in bots:
             bot_dict[bot.key] = bot.build_definition()
 
         not_buildable = {
             "lingflood": (lambda params: Bot(Race.Zerg, LingFlood(False))),
             "lingspeed": (lambda params: Bot(Race.Zerg, LingFlood(True))),
-
             "randomzerg": (lambda params: Bot(Race.Zerg, RandomZergBot())),
             "randomprotoss": (lambda params: Bot(Race.Protoss, RandomProtossBot())),
             "randomterran": (lambda params: Bot(Race.Terran, RandomTerranBot())),
@@ -253,19 +256,24 @@ class BotDefinitions:
             bot_dict[key] = (func, None)
 
         buildable_only = {
-            "cannonrush_1": DummyZip("SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"),
-                                     "cannon_rush = 0"),
-            "cannonrush_2": DummyZip("SharpCannonContain", "Protoss",
-                                     os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 1"),
-            "cannonrush_3": DummyZip("SharpCannonExpand", "Protoss",
-                                     os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 2"),
-
-            "marine_1": DummyZip("RustyMarines1", "Terran", os.path.join("dummies", "terran", "marine_rush.py"),
-                                 "marine = 0"),
-            "marine_2": DummyZip("RustyMarines2", "Terran", os.path.join("dummies", "terran", "marine_rush.py"),
-                                 "marine = 1"),
-            "marine_3": DummyZip("RustyMarines3", "Terran", os.path.join("dummies", "terran", "marine_rush.py"),
-                                 "marine = 2"),
+            "cannonrush_1": DummyZip(
+                "SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 0"
+            ),
+            "cannonrush_2": DummyZip(
+                "SharpCannonContain", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 1"
+            ),
+            "cannonrush_3": DummyZip(
+                "SharpCannonExpand", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 2"
+            ),
+            "marine_1": DummyZip(
+                "RustyMarines1", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 0"
+            ),
+            "marine_2": DummyZip(
+                "RustyMarines2", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 1"
+            ),
+            "marine_3": DummyZip(
+                "RustyMarines3", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 2"
+            ),
         }
 
         for key, dummy_zip in buildable_only.items():

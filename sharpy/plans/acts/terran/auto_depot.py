@@ -6,6 +6,7 @@ from sc2 import UnitTypeId
 
 class AutoDepot(GridBuilding):
     """Builds pylons automatically when needed based on predicted supply growth speed."""
+
     def __init__(self):
         super().__init__(UnitTypeId.SUPPLYDEPOT, 0)
 
@@ -15,8 +16,9 @@ class AutoDepot(GridBuilding):
 
     async def pylon_count_calc(self) -> int:
         growth_speed = 0
-        nexus_count = self.cache.own({UnitTypeId.COMMANDCENTER, UnitTypeId.PLANETARYFORTRESS,
-                                      UnitTypeId.ORBITALCOMMAND}).ready.amount
+        nexus_count = self.cache.own(
+            {UnitTypeId.COMMANDCENTER, UnitTypeId.PLANETARYFORTRESS, UnitTypeId.ORBITALCOMMAND}
+        ).ready.amount
 
         rax_count = self.cache.own(UnitTypeId.BARRACKS).ready.amount
         rax_count += self.cache.own(UnitTypeId.BARRACKSREACTOR).ready.amount
@@ -47,8 +49,9 @@ class AutoDepot(GridBuilding):
         # build_time += min(self.ai.time / 60, 5) # probe walk time
 
         predicted_supply = min(200, self.ai.supply_used + build_time * growth_speed)
-        current_depots = self.cache.own({UnitTypeId.SUPPLYDEPOT, UnitTypeId.SUPPLYDEPOTLOWERED,
-                                      UnitTypeId.SUPPLYDEPOTDROP}).ready.amount
+        current_depots = self.cache.own(
+            {UnitTypeId.SUPPLYDEPOT, UnitTypeId.SUPPLYDEPOTLOWERED, UnitTypeId.SUPPLYDEPOTDROP}
+        ).ready.amount
 
         if self.ai.supply_cap == 200:
             return current_depots

@@ -9,6 +9,7 @@ from sharpy.tools import IntervalFunc
 
 class WorkerRallyPoint(ActBase):
     """Handles setting worker rally points"""
+
     ability: AbilityId
     func: IntervalFunc
 

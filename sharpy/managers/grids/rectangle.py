@@ -1,5 +1,5 @@
 class Rectangle:
-    def __init__(self, x: int, y:int, width: int, height: int):
+    def __init__(self, x: int, y: int, width: int, height: int):
         assert isinstance(x, int)
         assert isinstance(y, int)
         assert isinstance(width, int)

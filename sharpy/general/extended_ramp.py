@@ -35,11 +35,13 @@ class RampPosition(enum.Enum):
     # use this to block adepts
     PylonBlockVsProtoss = 12
 
+
 class ExtendedRamp:
     """
     Cache everything requiring any calculations from ramp
     Cache any usable positions
     """
+
     def __init__(self, ramp: Ramp, ai: sc2.BotAI):
         self.ramp = ramp
         # Do NOT Modify
@@ -48,17 +50,17 @@ class ExtendedRamp:
         self.lower = list(ramp.lower)
         self.top_center = ramp.top_center
         self.bottom_center = ramp.bottom_center
-        offset = Point2((0.5,0.5))
+        offset = Point2((0.5, 0.5))
         if self.top_center.x < self.bottom_center.x and self.top_center.y > self.bottom_center.y:
-            offset = Point2((0.5,0))
+            offset = Point2((0.5, 0))
 
         self.positions = None
         if ramp.depot_in_middle:
             self.positions: Dict[RampPosition, Point2] = {
                 RampPosition.Away: ramp.depot_in_middle.towards(self.bottom_center, -5).offset(offset),
-                RampPosition.Between: self.top_center.towards(self.bottom_center, -5)}
+                RampPosition.Between: self.top_center.towards(self.bottom_center, -5),
+            }
             self.find_ultimatum(ai)
-
 
     def find_ultimatum(self, ai: sc2.BotAI):
         if not self.upper:
@@ -67,7 +69,7 @@ class ExtendedRamp:
         for point in self.upper:
             corners.append(point)
 
-        bottom_center = self.ramp.bottom_center # self.lower[0]
+        bottom_center = self.ramp.bottom_center  # self.lower[0]
         top_center = self.ramp.top_center
         # distance2: float = None
         # for corner in corners:
@@ -86,8 +88,8 @@ class ExtendedRamp:
         direction_zealot: Point2
 
         if bottom_center.x < top_center.x and bottom_center.y < top_center.y:
-            #direction = Point2((2, 1)) # Should be correnct
-            direction = Point2((1.5, 0.5)) # Works correctly
+            # direction = Point2((2, 1)) # Should be correnct
+            direction = Point2((1.5, 0.5))  # Works correctly
             upper_direction = Point2((0, 1))
             lower_direction = Point2((2, -1))
             direction_gate = Point2((0, 0))
@@ -96,8 +98,8 @@ class ExtendedRamp:
             lower_direction_core = Point2((3, -2))
             adjust = Point2((0, 1))
         elif bottom_center.x > top_center.x and bottom_center.y < top_center.y:
-            #direction = Point2((-1, 1)) # Should be correct
-            direction = Point2((-1.5, 0.5)) # Works correctly
+            # direction = Point2((-1, 1)) # Should be correct
+            direction = Point2((-1.5, 0.5))  # Works correctly
             upper_direction = Point2((1, 1))
             lower_direction = Point2((-1, -1))
             direction_gate = Point2((-1, 0))
@@ -106,8 +108,8 @@ class ExtendedRamp:
             lower_direction_core = Point2((-3, -2))
             adjust = Point2((0, 1))
         elif bottom_center.x < top_center.x and bottom_center.y > top_center.y:
-            #direction = Point2((2, -2)) # Should be correct
-            direction = Point2((1.5, -2.5)) # Works correctly
+            # direction = Point2((2, -2)) # Should be correct
+            direction = Point2((1.5, -2.5))  # Works correctly
             upper_direction = Point2((2, 0))
             lower_direction = Point2((0, -2))
             direction_gate = Point2((0, -1))
@@ -116,7 +118,7 @@ class ExtendedRamp:
             lower_direction_core = Point2((-2, -3))
             adjust = Point2((0, 1))
         elif bottom_center.x > top_center.x and bottom_center.y > top_center.y:
-            #direction = Point2((-1, -3)) # Should be correct
+            # direction = Point2((-1, -3)) # Should be correct
             direction = Point2((-1.5, -2.5))  # Works correctly
             upper_direction = Point2((-1, 0))
             lower_direction = Point2((1, -2))
@@ -158,11 +160,14 @@ class ExtendedRamp:
         x = self.positions[RampPosition.GateVsProtoss].x - self.positions[RampPosition.CoreVsProtoss].x
         y = self.positions[RampPosition.GateVsProtoss].y - self.positions[RampPosition.CoreVsProtoss].y
         if abs(x) == 2:
-            self.positions[RampPosition.CoreVsProtoss] = self.positions[RampPosition.CoreVsProtoss].offset(Point2((math.copysign(1, x), 0)))
-
+            self.positions[RampPosition.CoreVsProtoss] = self.positions[RampPosition.CoreVsProtoss].offset(
+                Point2((math.copysign(1, x), 0))
+            )
 
         if abs(y) == 2:
-            self.positions[RampPosition.CoreVsProtoss] = self.positions[RampPosition.CoreVsProtoss].offset(Point2((0, math.copysign(1, y))))
+            self.positions[RampPosition.CoreVsProtoss] = self.positions[RampPosition.CoreVsProtoss].offset(
+                Point2((0, math.copysign(1, y)))
+            )
         if len(self.ramp.corner_depots) == 2:
             depots = list(self.ramp.corner_depots)
             if self.positions[RampPosition.GateVsProtoss].distance_to_point2(depots[0]) < 2:
@@ -170,5 +175,9 @@ class ExtendedRamp:
             else:
                 self.positions[RampPosition.PylonBlockVsProtoss] = depots[0]
 
-        self.positions[RampPosition.Center] = Point2(((inner_corner.x + outer_corner.x) * 0.5 + direction.x,
-                           (inner_corner.y + outer_corner.y) * 0.5 + direction.y))
+        self.positions[RampPosition.Center] = Point2(
+            (
+                (inner_corner.x + outer_corner.x) * 0.5 + direction.x,
+                (inner_corner.y + outer_corner.y) * 0.5 + direction.y,
+            )
+        )

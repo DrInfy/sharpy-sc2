@@ -5,6 +5,7 @@ class RequiredEnemyBases(RequireBase):
     """
     Checks if enemy has units of the type based on the information we have seen.
     """
+
     def __init__(self, count: int):
         assert count is not None and isinstance(count, int)
         super().__init__()

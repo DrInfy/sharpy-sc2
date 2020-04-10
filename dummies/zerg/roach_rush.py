@@ -312,4 +312,3 @@ class RoachRush(sc2.BotAI):
             and self.supply_left + self.already_pending(UnitID.OVERLORD) * 8 < 2 + self.supply_used // 7
         ):
             self.do(self.larva.first.train(UnitID.OVERLORD))
-

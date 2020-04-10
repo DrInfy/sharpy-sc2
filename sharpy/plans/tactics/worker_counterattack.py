@@ -12,6 +12,7 @@ from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 
+
 class WorkerCounterAttack(ActBase):
     def __init__(self):
         self.has_failed = False
@@ -25,7 +26,7 @@ class WorkerCounterAttack(ActBase):
 
     def solve_optimal_mineral_field(self) -> Unit:
         main: Zone = self.knowledge.own_main_zone
-        for mf in main.mineral_fields: #type: Unit
+        for mf in main.mineral_fields:  # type: Unit
             if len(main.mineral_fields.closer_than(2, mf.position)) > 2:
                 return mf
         return main.mineral_fields.first

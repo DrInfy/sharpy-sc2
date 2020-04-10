@@ -32,7 +32,7 @@ class ActBuildingRamp(ActBuilding):
 
         worker = self.get_worker(position)
         if worker is None:
-            return True # No worker to build with.
+            return True  # No worker to build with.
 
         if self.knowledge.can_afford(self.unit_type):
             self.print(f'Building {self.unit_type.name} to {position}')
@@ -44,8 +44,9 @@ class ActBuildingRamp(ActBuilding):
 
             d = worker.distance_to(position)
             time = d / worker.movement_speed
-            if self.ai.minerals - self.knowledge.reserved_minerals > (cost.minerals - 10 * time) \
-                    and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
+            if self.ai.minerals - self.knowledge.reserved_minerals > (
+                cost.minerals - 10 * time
+            ) and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
 
                 if worker is not None:
                     self.do(worker.move(position))

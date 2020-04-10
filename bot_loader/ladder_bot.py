@@ -24,7 +24,6 @@ class BotLadder(AbstractPlayer):
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=False)
         self.bot_type: str = bot_dict["Type"]
 
-
     def map_type_cmd(self) -> [str]:
         bot_name = self.name
         if platform.system() == 'Linux':

@@ -12,11 +12,11 @@ class ManTheBunkers(ActBase):
         bunkers = self.cache.own(UnitTypeId.BUNKER).ready
         marines = self.cache.own(UnitTypeId.MARINE)
 
-        for bunker in bunkers: # type: Unit
+        for bunker in bunkers:  # type: Unit
             if len(bunker.passengers) >= 4:
                 continue
             if marines:
-                marine = marines.closest_to(bunker) #.prefer_idle()
+                marine = marines.closest_to(bunker)  # .prefer_idle()
                 self.do(marine(AbilityId.SMART, bunker))
                 roles.set_task(UnitTask.Reserved, marine)
         return True

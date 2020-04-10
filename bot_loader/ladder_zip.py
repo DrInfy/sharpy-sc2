@@ -47,13 +47,18 @@ json_exe = """{
   }
 }"""
 
+
 class LadderZip:
     archive: str
     files: List[Tuple[str, Optional[str]]]
 
-    def __init__(self, archive_name: str, race: str,
-                 files: List[Tuple[str, Optional[str]]],
-                 common_files: List[Tuple[str, Optional[str]]] = None):
+    def __init__(
+        self,
+        archive_name: str,
+        race: str,
+        files: List[Tuple[str, Optional[str]]],
+        common_files: List[Tuple[str, Optional[str]]] = None,
+    ):
         self.name = archive_name
         self.race = race
         self.archive = archive_name + ".zip"
@@ -67,13 +72,15 @@ class LadderZip:
 
         # Executable
         # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build
-        self.pyinstaller = 'pyinstaller -y --add-data "[FOLDER]/sc2pathlibp' \
-                           '";"sc2pathlibp/" --add-data "[FOLDER]/sc2";"sc2/" ' \
-                           '--add-data "[FOLDER]/config.ini";"." --add-data ' \
-                           '"[FOLDER]/version.txt";"."  ' \
-                           '"[FOLDER]/run.py" ' \
-                           '-n "[NAME]" ' \
-                           '--distpath "[OUTPUTFOLDER]"'
+        self.pyinstaller = (
+            'pyinstaller -y --add-data "[FOLDER]/sc2pathlibp'
+            '";"sc2pathlibp/" --add-data "[FOLDER]/sc2";"sc2/" '
+            '--add-data "[FOLDER]/config.ini";"." --add-data '
+            '"[FOLDER]/version.txt";"."  '
+            '"[FOLDER]/run.py" '
+            '-n "[NAME]" '
+            '--distpath "[OUTPUTFOLDER]"'
+        )
 
     def create_json(self):
         return json.replace("[NAME]", self.name).replace("[RACE]", self.race)
@@ -100,9 +107,11 @@ class LadderZip:
             zip_ref.extractall(source_path)
 
         print("run pyinstaller")
-        self.pyinstaller = self.pyinstaller.replace('[FOLDER]', source_path) \
-            .replace('[OUTPUTFOLDER]', bin_path) \
+        self.pyinstaller = (
+            self.pyinstaller.replace('[FOLDER]', source_path)
+            .replace('[OUTPUTFOLDER]', bin_path)
             .replace("[NAME]", self.name)
+        )
 
         print(self.pyinstaller)
         subprocess.run(self.pyinstaller)

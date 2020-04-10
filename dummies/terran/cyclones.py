@@ -20,24 +20,26 @@ class CycloneBot(KnowledgeBot):
         buildings = [
             Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
             Step(RequiredSupply(16), ActExpand(2)),
-
             Step(RequiredSupply(18), GridBuilding(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(1),
             Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             Step(None, StepBuildGas(2), skip_until=RequiredUnitExists(UnitTypeId.MARINE, 2)),
-            Step(None, GridBuilding(UnitTypeId.FACTORY, 1),
-                 skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             GridBuilding(UnitTypeId.FACTORY, 1),
             ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
             StepBuildGas(4),
             Step(None, ActExpand(3)),
             GridBuilding(UnitTypeId.FACTORY, 2),
             ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
-            Step(None, ActTech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE),
-                 skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1)),
+            Step(
+                None,
+                ActTech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE),
+                skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1),
+            ),
             StepBuildGas(5),
-            Step(None, ActTech(UpgradeId.HIGHCAPACITYBARRELS),
-                 skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 2)),
+            Step(
+                None, ActTech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 2)
+            ),
             StepBuildGas(6, None, RequiredGas(100)),
             Step(RequiredMinerals(400), GridBuilding(UnitTypeId.FACTORY, 4)),
             Step(None, ActBuildAddon(UnitTypeId.FACTORYREACTOR, UnitTypeId.FACTORY, 1)),
@@ -49,7 +51,6 @@ class CycloneBot(KnowledgeBot):
             Step(RequiredMinerals(400), GridBuilding(UnitTypeId.FACTORY, 8)),
             ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 7),
             Step(RequiredSupply(120), GridBuilding(UnitTypeId.ARMORY, 2)),
-
         ]
 
         upgrades = [
@@ -74,7 +75,6 @@ class CycloneBot(KnowledgeBot):
             Step(None, CallMule(50), skip=RequiredTime(5 * 60)),
             Step(None, CallMule(100), skip_until=RequiredTime(5 * 60)),
             Step(None, ScanEnemy(), skip_until=RequiredTime(5 * 60)),
-
             self.distribute_workers,
             ManTheBunkers(),
             Repair(),
@@ -87,12 +87,19 @@ class CycloneBot(KnowledgeBot):
         return BuildOrder(
             Step(RequiredUnitExists(UnitTypeId.BARRACKS, 1), SequentialList(self.depots)),
             [
-                Step(RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2), MorphOrbitals(3), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+                Step(
+                    RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2),
+                    MorphOrbitals(3),
+                    skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1),
+                ),
                 Step(None, MorphPlanetary(2), skip_until=RequiredUnitReady(UnitTypeId.ENGINEERINGBAY, 1)),
             ],
             [
                 Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 40)),
-                Step(RequiredUnitExists(UnitTypeId.COMMANDCENTER, 3), ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 70))
+                Step(
+                    RequiredUnitExists(UnitTypeId.COMMANDCENTER, 3),
+                    ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 70),
+                ),
             ],
             upgrades,
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 4),
@@ -102,13 +109,13 @@ class CycloneBot(KnowledgeBot):
                 ActUnit(UnitTypeId.CYCLONE, UnitTypeId.FACTORY, 4),
                 ActUnit(UnitTypeId.CYCLONE, UnitTypeId.FACTORY, 120, priority=True),
             ],
-            Step(RequiredUnitReady(UnitTypeId.FACTORYREACTOR, 1),
-                 ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 60),
-                 skip_until=RequiredMinerals(300),
-                 ),
-
+            Step(
+                RequiredUnitReady(UnitTypeId.FACTORYREACTOR, 1),
+                ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 60),
+                skip_until=RequiredMinerals(300),
+            ),
             buildings,
-            SequentialList(tactics)
+            SequentialList(tactics),
         )
 
     @property

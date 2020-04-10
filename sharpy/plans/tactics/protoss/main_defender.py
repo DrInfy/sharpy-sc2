@@ -16,7 +16,7 @@ class PlanMainDefender(ActBase):
 
     async def execute(self):
         if self.knowledge.enemy_race != Race.Zerg:
-            return True # never block
+            return True  # never block
 
         if self.sentry_tag is None:
             idle = self.roles.all_from_task(UnitTask.Idle)
@@ -35,4 +35,4 @@ class PlanMainDefender(ActBase):
 
         self.combat.execute(self.gather_point)
 
-        return True # never block
+        return True  # never block

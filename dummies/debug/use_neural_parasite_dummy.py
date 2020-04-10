@@ -5,6 +5,7 @@ from sc2.units import UnitSelection
 
 class UseNeuralParasiteDummy(BotAI):
     """Dummy that creates an infestor and then uses neural parasite on a random enemy unit."""
+
     async def on_step(self, iteration: int):
         if iteration == 0:
             await self.my_init()
@@ -30,9 +31,7 @@ class UseNeuralParasiteDummy(BotAI):
 
         player_id = self.player_id
 
-        await self._client.debug_create_unit([
-            [UnitTypeId.INFESTOR, 1, pos, player_id]
-        ])
+        await self._client.debug_create_unit([[UnitTypeId.INFESTOR, 1, pos, player_id]])
 
         # Enables neural parasite ability, among other things.
         await self._client.debug_tech_tree()

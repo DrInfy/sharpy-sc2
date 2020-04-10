@@ -17,6 +17,7 @@ class MemoryManager(ManagerBase):
     Structures are ignored because they have two tags. One for the real building and another
     for the building's snapshot when under fog of war.
     """
+
     def __init__(self):
         super().__init__()
 
@@ -125,11 +126,9 @@ class MemoryManager(ManagerBase):
 ignored_unit_types = {
     # Protoss
     UnitTypeId.INTERCEPTOR,
-
     # Terran
     UnitTypeId.MULE,
     UnitTypeId.AUTOTURRET,
-
     # Zerg
     # Cocoons?
     UnitTypeId.LARVA,

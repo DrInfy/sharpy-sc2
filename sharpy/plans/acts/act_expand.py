@@ -75,7 +75,7 @@ class ActExpand(ActBase):
         worker = self.get_worker(position)
         if worker is None:
             return
-        
+
         d = worker.distance_to(position)
         time = d / worker.movement_speed
         available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
@@ -151,9 +151,10 @@ class ActExpand(ActBase):
         for worker in self.ai.workers:
             for order in worker.orders:
                 if order.ability.id == creation_ability.id:
-                    if (isinstance(order.target, common_pb.Point)
-                            and (order.target.x, order.target.y) == (zone.center_location.x, zone.center_location.y)):
+                    if isinstance(order.target, common_pb.Point) and (order.target.x, order.target.y) == (
+                        zone.center_location.x,
+                        zone.center_location.y,
+                    ):
                         return True
 
         return False
-

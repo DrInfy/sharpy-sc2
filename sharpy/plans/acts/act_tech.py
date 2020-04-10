@@ -11,6 +11,7 @@ class ActTech(ActBase):
     """
     Act for researching or upgrading a technology.
     """
+
     equivalent_structures = {
         UnitTypeId.SPIRE: {UnitTypeId.SPIRE, UnitTypeId.GREATERSPIRE},
         UnitTypeId.GREATERSPIRE: {UnitTypeId.SPIRE, UnitTypeId.GREATERSPIRE},
@@ -45,7 +46,7 @@ class ActTech(ActBase):
         builders = self.cache.own(self.from_buildings).ready
 
         if self.already_pending_upgrade(builders) > 0:
-            return True # Started
+            return True  # Started
 
         cost = self.ai._game_data.upgrades[self.upgrade_type.value].cost
         creationAbilityID = self.solve_ability()

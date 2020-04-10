@@ -8,8 +8,9 @@ from sc2.sc2process import kill_switch
 """
 Process that is automatically killed by sc2.
 """
-class KillableProcess():
 
+
+class KillableProcess:
     def __init__(self, process: Any, tmp_dir: str = None) -> None:
         self._tmp_dir = tmp_dir
         self._process: Any = process
@@ -21,6 +22,7 @@ class KillableProcess():
         Method name is required to be _clean to be compatible with python-sc2
         """
         import logging
+
         logger = logging.getLogger(__name__)
         logger.info("Cleaning up...")
 

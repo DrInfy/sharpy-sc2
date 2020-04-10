@@ -8,7 +8,6 @@ from sc2.unit import Unit
 
 
 class MicroRavens(MicroStep):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.anti_armor_available = 0
@@ -40,7 +39,7 @@ class MicroRavens(MicroStep):
                     score = enemy.health + self.unit_values.power(enemy) * 50
                     # TODO: Needs proper target locking in order to not fire at the same target
                     # Simple and stupid way in an attempt to not use ability on same target:
-                    score += (enemy.tag % (shuffler + 2))
+                    score += enemy.tag % (shuffler + 2)
 
                     if score > best_score:
                         target = enemy
@@ -49,7 +48,8 @@ class MicroRavens(MicroStep):
             if target is not None:
                 return Action(target, False, AbilityId.EFFECT_INTERFERENCEMATRIX)
 
-        if (self.anti_armor_available < self.ai.time
+        if (
+            self.anti_armor_available < self.ai.time
             and self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_ANTIARMORMISSILE)
             and self.engaged_power.power > 10
         ):
@@ -59,7 +59,11 @@ class MicroRavens(MicroStep):
 
             for enemy in self.enemies_near_by:
                 d = enemy.distance_to(unit)
-                if d < 11 and self.unit_values.power(enemy) > 1 and not enemy.has_buff(BuffId.RAVENSHREDDERMISSILEARMORREDUCTION):
+                if (
+                    d < 11
+                    and self.unit_values.power(enemy) > 1
+                    and not enemy.has_buff(BuffId.RAVENSHREDDERMISSILEARMORREDUCTION)
+                ):
                     score = self.cache.enemy_in_range(enemy.position, 5).amount
 
                     if score > best_score:

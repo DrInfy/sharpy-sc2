@@ -8,6 +8,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit
 
+
 class LingScoutMain(ActBase):
     def __init__(self):
         self.scout_tags: List[int] = []

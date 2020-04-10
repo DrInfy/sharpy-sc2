@@ -28,8 +28,13 @@ class CallMule(ActBase):
 
     def solve_target(self) -> Optional[Unit]:
         for zone in self.knowledge.enemy_expansion_zones:  # type: Zone
-            if zone.is_ours and not zone.is_under_attack and zone.mineral_fields.exists\
-                    and zone.our_townhall and zone.our_townhall.is_ready:
+            if (
+                zone.is_ours
+                and not zone.is_under_attack
+                and zone.mineral_fields.exists
+                and zone.our_townhall
+                and zone.our_townhall.is_ready
+            ):
                 return zone.mineral_fields.random
 
         return None

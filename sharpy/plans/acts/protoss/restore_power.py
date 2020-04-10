@@ -20,6 +20,7 @@ PYLON = UnitTypeId.PYLON
 
 class RestorePower(ActBase):
     """Builds a pylon next to unpowered Protoss structures."""
+
     def __init__(self):
         super().__init__()
 
@@ -61,8 +62,9 @@ class RestorePower(ActBase):
     def unpowered_buildings(self):
         """Returns all of our unpowered buildings on the map."""
         structures = self.ai.structures
-        unpowered = filter(lambda s: not s.is_powered and s.build_progress == 1
-                                     and s.type_id not in ignored_building_types, structures)
+        unpowered = filter(
+            lambda s: not s.is_powered and s.build_progress == 1 and s.type_id not in ignored_building_types, structures
+        )
         return list(unpowered)
 
     def already_restoring(self, building: Unit) -> bool:

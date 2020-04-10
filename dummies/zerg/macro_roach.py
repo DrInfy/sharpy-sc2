@@ -24,21 +24,21 @@ class MacroRoach(KnowledgeBot):
 
         bsus = [
             Step(RequiredUnitReady(UnitTypeId.LAIR, 1), None),
-            Step(RequiredUnitExists(UnitTypeId.ROACHWARREN, 1),
-                 ActTech(UpgradeId.GLIALRECONSTITUTION)),
+            Step(RequiredUnitExists(UnitTypeId.ROACHWARREN, 1), ActTech(UpgradeId.GLIALRECONSTITUTION)),
         ]
 
         bsu = [
-            Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1),
-                 ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1)),
+            Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1)),
             Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
             Step(None, ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL2)),
             Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
         ]
 
         buildings = [
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
-                 ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
+            Step(
+                RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
+                ActBuilding(UnitTypeId.SPAWNINGPOOL, 1),
+            ),
             Step(RequiredUnitExists(UnitTypeId.QUEEN, 2), ActBuilding(UnitTypeId.ROACHWARREN, 1)),
         ]
 
@@ -55,23 +55,29 @@ class MacroRoach(KnowledgeBot):
         build_steps_units_early_defense = [
             Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
             Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 6)),
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
-                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
-                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
+            Step(
+                RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
+                ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3),
+            ),
+            Step(
+                RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
+                ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4),
+            ),
         ]
         # Add the roaches to here
         build_steps_units = [
             Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 4)),
             Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4)),
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
-                 ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA))
+            Step(
+                RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
+                ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA),
+            ),
         ]
 
         ravagers = [
             Step(RequiredUnitReady(UnitTypeId.ROACH, 4), None),
             Step(RequiredUnitReady(UnitTypeId.ROACHWARREN, 1), MorphRavager(5), skip_until=RequiredGas(200)),
-            Step(RequiredUnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=RequiredGas(300))
+            Step(RequiredUnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=RequiredGas(300)),
         ]
 
         build = BuildOrder(
@@ -100,10 +106,7 @@ class MacroRoach(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder(
-            build,
-            tactics
-        )
+        return BuildOrder(build, tactics)
 
 
 class LadderBot(MacroRoach):

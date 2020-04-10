@@ -8,6 +8,7 @@ from sharpy.plans import BuildOrder, Step
 
 class DebugUnitsDummy(KnowledgeBot):
     """Dummy bot for creating debug units to test against."""
+
     def __init__(self):
         super().__init__(type(self).__name__)
 
@@ -16,16 +17,12 @@ class DebugUnitsDummy(KnowledgeBot):
         attack.retreat_multiplier = 0.1
         attack.attack_on_advantage = False
 
-        return BuildOrder([
-            PlanDistributeWorkers(),
-            Step(RequiredTime(60), attack)
-        ])
+        return BuildOrder([PlanDistributeWorkers(), Step(RequiredTime(60), attack)])
 
     async def on_step(self, iteration):
         # Hack so that BuildingSolver is finally ready to give positions for the debug buildings.
         if iteration == 1:
             await self.create_debug_buildings()
-
 
         await super().on_step(iteration)
 
@@ -36,36 +33,37 @@ class DebugUnitsDummy(KnowledgeBot):
 
         for i in range(0, 5):
             await self._client.debug_create_unit(
-                [[UnitTypeId.COLOSSUS, amount, self.knowledge.enemy_expansion_zones[1].center_location.random_on_distance(4), 2]])
+                [
+                    [
+                        UnitTypeId.COLOSSUS,
+                        amount,
+                        self.knowledge.enemy_expansion_zones[1].center_location.random_on_distance(4),
+                        2,
+                    ]
+                ]
+            )
 
         # Enemy 3rd
         pos = self.knowledge.expansion_zones[-3].center_location
 
-        await self._client.debug_create_unit(
-            [[unit_type, amount, pos, pid]])
+        await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
         # Enemy 4th
         pos = self.knowledge.expansion_zones[-4].center_location
 
-        await self._client.debug_create_unit(
-            [[unit_type, amount, pos, pid]])
+        await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
-        await self._client.debug_create_unit(
-            [[UnitTypeId.OVERSEER, amount, pos, pid]])
+        await self._client.debug_create_unit([[UnitTypeId.OVERSEER, amount, pos, pid]])
 
         # Own natural
         pos = self.knowledge.expansion_zones[1].center_location
 
-        await self._client.debug_create_unit(
-            [[unit_type, amount, pos, pid]])
+        await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
         # Own main
         pos = self.knowledge.expansion_zones[0].center_location
 
-        await self._client.debug_create_unit(
-            [[unit_type, amount, pos, pid]])
-        await self._client.debug_create_unit(
-            [[UnitTypeId.WIDOWMINEBURROWED, amount, pos, pid]])
+        await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
+        await self._client.debug_create_unit([[UnitTypeId.WIDOWMINEBURROWED, amount, pos, pid]])
 
         await self._client.debug_tech_tree()
-

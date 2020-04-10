@@ -15,7 +15,7 @@ class MicroObservers(MicroStep):
         else:
             target_pos = current_command.target
 
-        target = self.pather.find_path(self.group.center, target_pos, 8) # move ahead of group
+        target = self.pather.find_path(self.group.center, target_pos, 8)  # move ahead of group
         enemies = self.cache.enemy_in_range(target, 12, False)
         other_observers = self.cache.own(UnitTypeId.OBSERVER).tags_not_in([unit.tag])
         if other_observers:
@@ -32,5 +32,3 @@ class MicroObservers(MicroStep):
             target = self.pather.find_weak_influence_air(target, 10)
 
         return Action(target, False)
-
-

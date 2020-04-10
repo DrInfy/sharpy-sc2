@@ -1,5 +1,6 @@
 from sharpy.plans.require.require_base import RequireBase
 
+
 class RequiredTime(RequireBase):
     # Condition for how many units must be ready.
     # Used mostly for buildings

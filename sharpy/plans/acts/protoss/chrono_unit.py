@@ -21,8 +21,8 @@ class ChronoUnitProduction(ActBase):
         self.creation_ability = unit.creation_ability.id
 
     async def execute(self) -> bool:
-        for target in self.cache.own(self.from_building).ready: # type: Unit
-            for order in target.orders: # type: UnitOrder
+        for target in self.cache.own(self.from_building).ready:  # type: Unit
+            for order in target.orders:  # type: UnitOrder
                 if order.ability.id == self.creation_ability:
                     # boost here!
                     if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):

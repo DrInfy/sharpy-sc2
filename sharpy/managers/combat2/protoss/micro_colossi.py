@@ -9,7 +9,6 @@ high_priority: Dict[UnitTypeId, int] = {
     # Terran
     UnitTypeId.MULE: 9,
     UnitTypeId.SCV: 7,
-
     UnitTypeId.SIEGETANK: 3,
     UnitTypeId.SIEGETANKSIEGED: 5,  # sieged tanks are much higher priority than unsieged
     UnitTypeId.GHOST: 8,
@@ -27,10 +26,8 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.LIBERATOR: -1,
     UnitTypeId.RAVEN: -1,
     UnitTypeId.BATTLECRUISER: -1,
-
     UnitTypeId.MISSILETURRET: 1,
     UnitTypeId.BUNKER: 2,
-
     # Zerg
     UnitTypeId.DRONE: 7,
     UnitTypeId.ZERGLING: 10,
@@ -48,12 +45,9 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.MUTALISK: -1,
     UnitTypeId.CORRUPTOR: -1,
     UnitTypeId.INFESTEDTERRAN: 1,
-
-
     UnitTypeId.LARVA: -1,
     UnitTypeId.EGG: -1,
     UnitTypeId.LOCUSTMP: -1,
-
     # Protoss
     UnitTypeId.SENTRY: 9,
     UnitTypeId.PROBE: 7,
@@ -65,12 +59,10 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.IMMORTAL: 2,
     UnitTypeId.COLOSSUS: 3,
     UnitTypeId.ARCHON: 4,
-
     UnitTypeId.SHIELDBATTERY: 1,
     UnitTypeId.PHOTONCANNON: 1,
     UnitTypeId.PYLON: 2,
     UnitTypeId.FLEETBEACON: 3,
-
 }
 
 
@@ -82,4 +74,3 @@ class MicroColossi(GenericMicro):
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         self.model = CombatModel.StalkerToRoach
         return current_command
-

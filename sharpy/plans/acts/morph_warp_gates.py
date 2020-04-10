@@ -3,6 +3,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 from .act_base import ActBase
 
+
 class MorphWarpGates(ActBase):
     def __init__(self):
         super().__init__()

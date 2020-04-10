@@ -18,17 +18,19 @@ class TheAttack(PlanZoneAttack):
 
 
 class MacroRobo(KnowledgeBot):
-
     def __init__(self):
         super().__init__("Sharp Robots")
 
     async def create_plan(self) -> BuildOrder:
         attack = TheAttack(4)
         return BuildOrder(
-            Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                 skip=RequiredUnitExists(UnitTypeId.PROBE, 30, include_pending=True), skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
+            Step(
+                None,
+                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                skip=RequiredUnitExists(UnitTypeId.PROBE, 30, include_pending=True),
+                skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1),
+            ),
             ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
-
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
@@ -49,33 +51,33 @@ class MacroRobo(KnowledgeBot):
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        StepBuildGas(3,skip=RequiredGas(300)),
+                        StepBuildGas(3, skip=RequiredGas(300)),
                         Step(RequiredUnitExists(UnitTypeId.NEXUS, 3), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 56)),
                         StepBuildGas(5, skip=RequiredGas(200)),
                     ],
                     SequentialList(
-                    [
-                        Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                             GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-                        GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1),
-                        Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                             ActTech(UpgradeId.CHARGE)),
-                    ]),
+                        [
+                            Step(
+                                RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
+                                GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                            ),
+                            GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1),
+                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.CHARGE)),
+                        ]
+                    ),
                     [
                         ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
                         ActUnit(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
-                        ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 20, priority=True)
+                        ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 20, priority=True),
                     ],
-                    Step(RequiredTime(60*5), ActExpand(3)),
-                    [
-                        GateUnit(UnitTypeId.ZEALOT, 100)
-                    ],
+                    Step(RequiredTime(60 * 5), ActExpand(3)),
+                    [GateUnit(UnitTypeId.ZEALOT, 100)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
                         StepBuildGas(4, skip=RequiredGas(200)),
                         GridBuilding(UnitTypeId.ROBOTICSFACILITY, 2),
-                    ]
-                )
+                    ],
+                ),
             ),
             SequentialList(
                 PlanCancelBuilding(),
@@ -86,7 +88,7 @@ class MacroRobo(KnowledgeBot):
                 PlanZoneGather(),
                 Step(RequiredUnitReady(UnitTypeId.IMMORTAL, 3), attack),
                 PlanFinishEnemy(),
-            )
+            ),
         )
 
 

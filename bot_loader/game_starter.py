@@ -53,8 +53,7 @@ known_melee_maps = (
 )
 
 
-class GameStarter():
-
+class GameStarter:
     def __init__(self, definitions: BotDefinitions) -> None:
         self.config = get_config()
 
@@ -119,17 +118,21 @@ Difficulties:
         
 Builds:
 {new_line.join(builds.keys())}
-                ''')
+                ''',
+        )
 
-        parser.add_argument("-map",
-                            help="Name of the map. The script works with any map present in Starcraft 2 Maps directory.",
-                            default="random")
+        parser.add_argument(
+            "-map",
+            help="Name of the map. The script works with any map present in Starcraft 2 Maps directory.",
+            default="random",
+        )
         parser.add_argument("-p1", "--player1", help="Name of player 1 human / bot.")
         parser.add_argument("-p2", "--player2", help="Name of the enemy bot.", default="random")
         parser.add_argument("-rt", "--real-time", help="Use real-time mode.", action="store_true")
         parser.add_argument("-human", "--human", help="Human vs bot mode. Specify race with lower case")
-        parser.add_argument("-release", "--release", help="Uses only release config and ignore config local",
-                            action="store_true")
+        parser.add_argument(
+            "-release", "--release", help="Uses only release config and ignore config local", action="store_true"
+        )
         parser.add_argument("-raw", "--raw_selection", help="Raw affects selection.", action="store_true")
 
         args = parser.parse_args()
@@ -209,14 +212,11 @@ Builds:
         runner = MatchRunner()
         runner.run_game(
             maps.get(map_name),
-            [
-                bot,
-                enemy
-            ],
+            [bot, enemy],
             player1_id=bot_text,
             realtime=args.real_time,
             game_time_limit=(30 * 60),
-            save_replay_as=f'{folder}/{file_name}.SC2Replay'
+            save_replay_as=f'{folder}/{file_name}.SC2Replay',
         )
 
         # release file handle

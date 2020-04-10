@@ -47,7 +47,7 @@ class MapInfo:
 
     def recognize_map(self) -> MapName:
 
-        if "Acolyte" in self.game_info.map_name: # self.height_hash == 4544808:
+        if "Acolyte" in self.game_info.map_name:  # self.height_hash == 4544808:
             self.zone_radiuses: List[float] = [24, 15]
             self.safe_first_expand = True
             return MapName.AcolyteLE

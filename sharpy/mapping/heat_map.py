@@ -36,7 +36,7 @@ class HeatArea:
                     #     print("MAIN ZONE")
                     self.zone = zone
 
-    def update(self,  time_change: float):
+    def update(self, time_change: float):
         if self.stealth_heat > 0:
             self.stealth_heat = min(2, max(0, (self.stealth_heat - time_change) * (1 - time_change * 0.5)))
 
@@ -44,7 +44,7 @@ class HeatArea:
             if self.is_visible():
                 self.heat = max(0, (self.heat - time_change * 0.02) * (1 - time_change * 0.5))
             else:
-                self.heat = max(0, (self.heat - time_change * 0.01) * (1 - time_change*0.25))
+                self.heat = max(0, (self.heat - time_change * 0.01) * (1 - time_change * 0.25))
 
         self.heat += self.last_enemy_power.power * time_change
         self.last_enemy_power.clear()
@@ -53,6 +53,7 @@ class HeatArea:
         # TODO: Check all corners?
         return self.ai.state.visibility.data_numpy[self._y, self._x] == 2
 
+
 class HeatMap:
     def __init__(self, ai: sc2.BotAI, knowledge: 'Knowledge'):
         self.ai = ai
@@ -60,7 +61,7 @@ class HeatMap:
         self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.unit_values: 'UnitValue' = knowledge.unit_values
         self.updater = IntervalFunc(ai, self.__real_update, 0.5)
-        grid:PixelMap = knowledge.ai._game_info.placement_grid
+        grid: PixelMap = knowledge.ai._game_info.placement_grid
         height = grid.height
         width = grid.width
 
@@ -82,7 +83,7 @@ class HeatMap:
     def __stealth_update(self):
         time_change = self.ai.time - self.last_quick_update
 
-        for unit in self.knowledge.known_enemy_units: # type: Unit
+        for unit in self.knowledge.known_enemy_units:  # type: Unit
             if unit.is_cloaked:
                 own_close = self.cache.own_in_range(unit.position, 12).not_flying
                 area = self.get_zone(unit.position)

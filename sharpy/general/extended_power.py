@@ -11,7 +11,7 @@ melee = {
     UnitTypeId.ZEALOT,
     UnitTypeId.SCV,
     UnitTypeId.PROBE,
-    UnitTypeId.DRONE
+    UnitTypeId.DRONE,
 }
 
 siege = {
@@ -34,16 +34,17 @@ siege = {
 
 
 class ExtendedPower:
-
     def is_enough_for(self, enemies: 'ExtendedPower', our_percentage: float = 1.1) -> bool:
         # reduce some variable from air / ground power so that we don't fight against 100 roach with
         # 20 stalkers and observer.
         if self.power < 1:
             return False
 
-        if self.air_power * our_percentage >= enemies.air_presence \
-            and self.ground_power * our_percentage >= enemies.ground_presence \
-            and self.power * our_percentage >= enemies.power:
+        if (
+            self.air_power * our_percentage >= enemies.air_presence
+            and self.ground_power * our_percentage >= enemies.ground_presence
+            and self.power * our_percentage >= enemies.power
+        ):
             return True
         return False
 
@@ -76,7 +77,7 @@ class ExtendedPower:
         for unit in units:
             self.add_unit(unit)
 
-    def add_unit(self, unit: Union[Unit, UnitTypeId], count = 1):
+    def add_unit(self, unit: Union[Unit, UnitTypeId], count=1):
         unit_type: UnitTypeId
 
         if type(unit) is Unit:

@@ -2,13 +2,14 @@ from typing import List
 
 from sharpy.plans.require import RequireBase
 
+
 class RequiredAny(RequireBase):
     """Check passes if any of the conditions are true."""
+
     def __init__(self, conditions: List[RequireBase]):
         super().__init__()
         assert conditions is not None and isinstance(conditions, List)
         self.conditions: List[RequireBase] = conditions
-
 
     async def start(self, knowledge: 'Knowledge'):
         await super().start(knowledge)
@@ -22,5 +23,3 @@ class RequiredAny(RequireBase):
                 return True
 
         return False
-
-

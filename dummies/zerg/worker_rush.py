@@ -30,7 +30,9 @@ class DummyZergAttack(ActBase):
                 ground_units = zone.known_enemy_units.not_flying
                 if zone.known_enemy_power.ground_presence > 0 and ground_units:
                     defend = True
-                    for zl in self.ai.units.of_type([UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]):
+                    for zl in self.ai.units.of_type(
+                        [UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]
+                    ):
                         target = ground_units.closest_to(zone.center_location).position
                         self.combat_manager.add_unit(zl)
                 elif zone.known_enemy_units:
@@ -110,36 +112,42 @@ class LingFloodBuild(BuildOrder):
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
             StepBuildGas(3, None),
             ActBuilding(UnitTypeId.SPIRE, 1),
-            ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA, 10, priority=True)
+            ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA, 10, priority=True),
         ]
 
         units = [
             Step(None, None, RequiredUnitExists(UnitTypeId.HATCHERY, 1)),
-
             # 12 Pool followed by overlord
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
-                 RequiredUnitExists(UnitTypeId.OVERLORD, 2)),
-
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
+                RequiredUnitExists(UnitTypeId.OVERLORD, 2),
+            ),
             # TheMusZero
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
-                 RequiredUnitExists(UnitTypeId.DRONE, 14)),
-
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
+                RequiredUnitExists(UnitTypeId.DRONE, 14),
+            ),
             # Early zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4),
-                 None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4), None
+            ),
             # Queen for more larvae
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1),
-                 RequiredUnitExists(UnitTypeId.QUEEN, 1)),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 20),
-                 None),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12),
-                 None),
-
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30),
-                 None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1),
+                RequiredUnitExists(UnitTypeId.QUEEN, 1),
+            ),
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 20), None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12),
+                None,
+            ),
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30), None),
             # Endless zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA),
-                 None)
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
         super().__init__([self.overlords, buildings, spire_end_game, gas_related, units])
@@ -176,7 +184,7 @@ class WorkerAttack(ActBase):
             target = self.ai.structures.closest_to(attack_zone.behind_mineral_position_center)
             move_type = MoveType.Assault
 
-        for fighter in fighters: # type: Unit
+        for fighter in fighters:  # type: Unit
             self.tags.append(fighter.tag)
             if fighter.health > 5 and fighter.distance_to(attack_zone.center_location) > 20:
                 self.do(fighter.move(attack_zone.center_location))
@@ -230,7 +238,7 @@ class WorkerRush(KnowledgeBot):
                 Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
                 Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
                 WorkerAttack(),
-                DummyZergAttack()
+                DummyZergAttack(),
             ),
         )
 

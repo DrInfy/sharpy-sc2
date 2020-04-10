@@ -8,8 +8,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 
-
-class CombatUnits():
+class CombatUnits:
     def __init__(self, units: Units, knowledge: 'Knowledge'):
         self.knowledge = knowledge
         self.unit_values = knowledge.unit_values
@@ -52,9 +51,10 @@ class CombatUnits():
         if distance > 17:
             return False
 
-        if distance < 10 \
-                or self.knowledge.unit_cache.enemy_in_range(self.center, 10).exclude_type(self.unit_values.combat_ignore):
-           return True
+        if distance < 10 or self.knowledge.unit_cache.enemy_in_range(self.center, 10).exclude_type(
+            self.unit_values.combat_ignore
+        ):
+            return True
 
         engaged_power = 0
         total_power = 0

@@ -19,7 +19,7 @@ class Repair(ActBase):
                 if self.should_repair(unit):
                     desired_count = self.solve_scv_count(zone, unit)
                     repairing_this_count = 0
-                    for worker in zone.our_workers: # type: Unit
+                    for worker in zone.our_workers:  # type: Unit
                         if not worker.orders:
                             continue
                         if worker.is_repairing:
@@ -41,11 +41,17 @@ class Repair(ActBase):
         if unit.health_percentage < 0.95:
             if unit.type_id == UnitTypeId.BUNKER:
                 return True
-            elif unit.type_id == UnitTypeId.COMMANDCENTER or unit.type_id == UnitTypeId.ORBITALCOMMAND or unit.type_id == UnitTypeId.PLANETARYFORTRESS:
+            elif (
+                unit.type_id == UnitTypeId.COMMANDCENTER
+                or unit.type_id == UnitTypeId.ORBITALCOMMAND
+                or unit.type_id == UnitTypeId.PLANETARYFORTRESS
+            ):
                 return True
         if unit.health_percentage < 0.3 and unit.is_structure:
             return True
-        if unit.health_percentage < 0.75 and (unit.type_id == UnitTypeId.BATTLECRUISER or unit.type_id == UnitTypeId.SIEGETANK):
+        if unit.health_percentage < 0.75 and (
+            unit.type_id == UnitTypeId.BATTLECRUISER or unit.type_id == UnitTypeId.SIEGETANK
+        ):
             return True
         return False
 
@@ -53,11 +59,14 @@ class Repair(ActBase):
         power_max = max(1, zone.known_enemy_power.power / 3)
         if unit.type_id == UnitTypeId.BUNKER:
             hp_max = 6
-        elif unit.type_id == UnitTypeId.COMMANDCENTER or unit.type_id == UnitTypeId.ORBITALCOMMAND or unit.type_id == UnitTypeId.PLANETARYFORTRESS:
+        elif (
+            unit.type_id == UnitTypeId.COMMANDCENTER
+            or unit.type_id == UnitTypeId.ORBITALCOMMAND
+            or unit.type_id == UnitTypeId.PLANETARYFORTRESS
+        ):
             hp_max = 12
         elif unit.is_structure:
             hp_max = 1
         else:
             hp_max = 2
         return ceil(min(power_max, hp_max))
-

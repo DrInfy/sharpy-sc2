@@ -19,5 +19,6 @@ elif val == 6:
 elif val == 7:
     from .one_base_turtle import LadderBot
 
+
 class RandomTerranBot(LadderBot):
     pass

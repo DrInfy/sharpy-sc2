@@ -17,7 +17,6 @@ from sharpy.utils import select_build_index
 
 
 class DodgeRampAttack(PlanZoneAttack):
-
     async def execute(self) -> bool:
         for effect in self.ai.state.effects:
             if effect.id != "FORCEFIELD":
@@ -57,20 +56,32 @@ class MarineRushBot(KnowledgeBot):
             self.knowledge.print("Proxy 2 rax bunker rush", "Build")
             self.attack = DodgeRampAttack(3)
             zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
-            natural  = self.knowledge.expansion_zones[-2]
+            natural = self.knowledge.expansion_zones[-2]
             chunk = [
                 Step(RequiredSupply(12), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
-                BuildPosition(UnitTypeId.BARRACKS, zone.center_location.towards(self.knowledge.enemy_base_ramp.bottom_center, 5),
-                              exact=False, only_once=True),
-                BuildPosition(UnitTypeId.BARRACKS,
-                              zone.center_location.towards(self.game_info.map_center, 5),
-                              exact=False, only_once=True),
+                BuildPosition(
+                    UnitTypeId.BARRACKS,
+                    zone.center_location.towards(self.knowledge.enemy_base_ramp.bottom_center, 5),
+                    exact=False,
+                    only_once=True,
+                ),
+                BuildPosition(
+                    UnitTypeId.BARRACKS,
+                    zone.center_location.towards(self.game_info.map_center, 5),
+                    exact=False,
+                    only_once=True,
+                ),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-                Step(RequiredUnitReady(UnitTypeId.MARINE, 1), BuildPosition(UnitTypeId.BUNKER,
+                Step(
+                    RequiredUnitReady(UnitTypeId.MARINE, 1),
+                    BuildPosition(
+                        UnitTypeId.BUNKER,
                         natural.center_location.towards(self.game_info.map_center, 4),
-                        exact=False, only_once=True)),
-
+                        exact=False,
+                        only_once=True,
+                    ),
+                ),
                 Step(RequiredMinerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
             ]
         elif self.tactic_index == 1:
@@ -88,14 +99,15 @@ class MarineRushBot(KnowledgeBot):
             zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
             chunk = [
                 Step(RequiredSupply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-                Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1),
-                     GridBuilding(UnitTypeId.BARRACKS, 1)),
+                Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
-                BuildPosition(UnitTypeId.BARRACKS,
-                              zone.center_location.towards(self.knowledge.enemy_base_ramp.bottom_center, 5),
-                              exact=False, only_once=True),
-
+                BuildPosition(
+                    UnitTypeId.BARRACKS,
+                    zone.center_location.towards(self.knowledge.enemy_base_ramp.bottom_center, 5),
+                    exact=False,
+                    only_once=True,
+                ),
                 Step(RequiredMinerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
             ]
 
@@ -112,7 +124,6 @@ class MarineRushBot(KnowledgeBot):
             Step(None, CallMule(50), skip=RequiredTime(5 * 60)),
             Step(None, CallMule(100), skip_until=RequiredTime(5 * 60)),
             Step(None, ScanEnemy(), skip_until=RequiredTime(5 * 60)),
-
             self.distribute_workers,
             ManTheBunkers(),
             Repair(),
@@ -125,13 +136,10 @@ class MarineRushBot(KnowledgeBot):
         return BuildOrder(
             empty.depots,
             Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
-            [
-                Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 20))
-            ],
+            [Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 20))],
             chunk,
-
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 200),
-            SequentialList(tactics)
+            SequentialList(tactics),
         )
 
 

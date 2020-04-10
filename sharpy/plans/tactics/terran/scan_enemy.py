@@ -62,5 +62,3 @@ class ScanEnemy(ActBase):
         if current_zone is None:
             return None
         return current_zone.center_location.towards_with_random_angle(current_zone.gather_point, 4)
-
-

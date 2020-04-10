@@ -21,6 +21,7 @@ class EnemyUnitsManager(ManagerBase):
         * warp gates are transformed from gateways.
         *
         """
+
     unit_values: UnitValue
 
     def __init__(self):
@@ -111,8 +112,10 @@ class EnemyUnitsManager(ManagerBase):
         if self._enemy_cloak_trigger:
             return
 
-        if self.unit_count(UnitTypeId.DARKTEMPLAR) > 0 or \
-                self.knowledge.known_enemy_structures(UnitTypeId.DARKSHRINE).exists:
+        if (
+            self.unit_count(UnitTypeId.DARKTEMPLAR) > 0
+            or self.knowledge.known_enemy_structures(UnitTypeId.DARKSHRINE).exists
+        ):
             self._enemy_cloak_trigger = True
 
         if self.unit_count(UnitTypeId.MOTHERSHIP) > 0:
@@ -124,9 +127,10 @@ class EnemyUnitsManager(ManagerBase):
         if self.unit_count(UnitTypeId.WIDOWMINE) > 0:
             self._enemy_cloak_trigger = True
 
-        if self.unit_count(UnitTypeId.LURKER) > 0 or \
-                self.knowledge.known_enemy_structures.of_type(
-                    [UnitTypeId.LURKERDENMP, UnitTypeId.LURKERDEN]).exists:
+        if (
+            self.unit_count(UnitTypeId.LURKER) > 0
+            or self.knowledge.known_enemy_structures.of_type([UnitTypeId.LURKERDENMP, UnitTypeId.LURKERDEN]).exists
+        ):
             self._enemy_cloak_trigger = True
 
     def danger_value(self, danger_for_unit: Unit, position: Point2) -> float:
@@ -196,11 +200,9 @@ ignored_types: Set[UnitTypeId] = (
     UnitTypeId.PARASITICBOMBDUMMY,  # wtf is this?
     UnitTypeId.LOCUSTMP,
     UnitTypeId.LOCUSTMPFLYING,
-
     # Terran
     UnitTypeId.MULE,
     UnitTypeId.KD8CHARGE,
-
     # Protoss
     # Adept is tricky, since the phase shift is temporary but
     # it should still be counted as an adept. just not twice.

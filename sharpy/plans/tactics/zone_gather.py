@@ -52,8 +52,9 @@ class PlanZoneGather(ActBase):
             self.gather_point = self.knowledge.gather_point
 
         unit: Unit
-        for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]) \
-                .tags_not_in(self.gather_set):
+        for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
+            self.gather_set
+        ):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
             pos = pos.towards(self.knowledge.gather_point, 3)
@@ -72,7 +73,7 @@ class PlanZoneGather(ActBase):
                     self.combat.add_unit(unit)
 
         self.combat.execute(self.gather_point, MoveType.Assault)
-        return True # Always non blocking
+        return True  # Always non blocking
 
     async def manage_blocker(self):
         target_position = self.knowledge.gate_keeper_position
@@ -92,8 +93,10 @@ class PlanZoneGather(ActBase):
                     if self.should_hold_position(target_position):
                         if unit.distance_to(target_position) < 0.2:
                             self.do(unit.hold_position())
-                        elif (self.knowledge.known_enemy_units_mobile.exists and
-                              self.knowledge.known_enemy_units_mobile.closest_distance_to(unit) < 2):
+                        elif (
+                            self.knowledge.known_enemy_units_mobile.exists
+                            and self.knowledge.known_enemy_units_mobile.closest_distance_to(unit) < 2
+                        ):
                             self.do(unit.attack(target_position))
                         else:
                             self.do(unit.move(target_position))
@@ -130,7 +133,7 @@ class PlanZoneGather(ActBase):
 
         main_zone = self.knowledge.expansion_zones[0]
 
-        for unit in main_zone.known_enemy_units : # type: Unit
+        for unit in main_zone.known_enemy_units:  # type: Unit
             if unit.is_flying or self.unit_values.defense_value(unit.type_id) == 0 or self.unit_values.is_worker(unit):
                 # Unit doesn't require removing gate keeper
                 continue

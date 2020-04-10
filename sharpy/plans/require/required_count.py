@@ -2,13 +2,14 @@ from typing import List
 
 from sharpy.plans.require.require_base import RequireBase
 
+
 class RequiredCount(RequireBase):
     # If any of the conditions is filled, we're good to go
     def __init__(self, count: int, conditions: List[RequireBase]):
         assert count is not None and isinstance(count, int)
         super().__init__()
 
-        self.conditions:List[RequireBase] = conditions
+        self.conditions: List[RequireBase] = conditions
         self.count = count
 
     async def start(self, knowledge: 'Knowledge'):
