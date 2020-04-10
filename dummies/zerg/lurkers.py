@@ -1,6 +1,6 @@
 from typing import Union, Callable, List
 
-from sc2 import UnitTypeId
+from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
 from sharpy.knowledges import KnowledgeBot, Knowledge
@@ -174,3 +174,8 @@ class LurkerBot(KnowledgeBot):
             )
         )
 
+
+class LadderBot(LurkerBot):
+    @property
+    def my_race(self):
+        return Race.Zerg
