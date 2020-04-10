@@ -37,14 +37,10 @@ class ActBuilding(ActBase):
 
         return False
 
-
-
     async def actually_build(self, ai, count):
         location = self.get_random_build_location()
         self.knowledge.print(f'[ActBuilding] {count+1}. building of type {self.unit_type} near {location}')
         await ai.build(self.unit_type, near=location)
-
-
 
     def get_random_build_location(self) -> Point2:
         """Calculates building position."""
