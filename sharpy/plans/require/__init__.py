@@ -17,3 +17,4 @@ from .required_unit_ready import RequiredUnitReady
 from .required_enemy_unit_exists_after import RequiredEnemyUnitExistsAfter
 from .required_enemy_building_exists import RequiredEnemyBuildingExists
 from .required_count import RequiredCount
+from .required_supply import SupplyType

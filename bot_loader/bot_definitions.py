@@ -218,6 +218,7 @@ class BotDefinitions:
             DummyBuilder("macro", "BluntMacro", Race.Zerg, "macro_zerg_v2.py", MacroZergV2),
             DummyBuilder("mutalisk", "BluntFlies", Race.Zerg, "mutalisk.py", MutaliskBot),
             DummyBuilder("workerrush", "BluntWorkers", Race.Zerg, "worker_rush.py", WorkerRush),
+            DummyBuilder("lurker", "BluntLurkers", Race.Zerg, "lurkers.py", LurkerBot),
             # TODO: Not really a functional bot
             # DummyBuilder("spine", "BluntDefender", Race.Zerg, "spine_defender.py", SpineDefender),
             # TODO: Not really Sharpy bot
