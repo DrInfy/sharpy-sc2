@@ -79,7 +79,7 @@ class GameStarter():
     @staticmethod
     def installed_maps() -> List[str]:
         maps_folder = Paths.MAPS
-        map_file_paths = glob.glob(f"{maps_folder}/**/*.SC2Map")
+        map_file_paths = glob.glob(f"{maps_folder}/**/*.SC2Map", recursive=True)
 
         def get_file_name(path) -> str:
             filename_w_ext = os.path.basename(path)
