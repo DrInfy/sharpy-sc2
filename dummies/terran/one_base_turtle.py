@@ -76,10 +76,10 @@ class OneBaseTurtle(KnowledgeBot):
             Step(RequiredUnitExists(UnitTypeId.MARINE, 18, include_killed=True), attack),
             PlanFinishEnemy(),
         ]
-        return BuildOrder([
+        return BuildOrder(
             build_order,
             tactics
-        ])
+        )
 
 
 class LadderBot(OneBaseTurtle):

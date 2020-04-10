@@ -66,7 +66,7 @@ class BattleCruisers(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             empty.depots,
             Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             [
@@ -109,13 +109,13 @@ class BattleCruisers(KnowledgeBot):
                                   RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE)]), None),
                 Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2, priority=True)),
             ],
-            Step(None, SequentialList([
+            Step(None, SequentialList(
                 ActUnit(UnitTypeId.BATTLECRUISER, UnitTypeId.STARPORT, 20, priority=True)
-            ]), skip_until=RequiredUnitReady(UnitTypeId.FUSIONCORE, 1)),
+            ), skip_until=RequiredUnitReady(UnitTypeId.FUSIONCORE, 1)),
             ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 10),
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 50),
             SequentialList(tactics)
-        ])
+        )
 
 
 class LadderBot(BattleCruisers):

@@ -124,10 +124,10 @@ class DarkTemplarRush(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             build_order,
             tactics
-        ])
+        )
 
 
 class LadderBot(DarkTemplarRush):

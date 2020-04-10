@@ -59,14 +59,14 @@ class MacroBuild(BuildOrder):
             Step(None, ActTech(UpgradeId.ANABOLICSYNTHESIS)),
         ]
 
-        super().__init__([
+        super().__init__(
             self.overlords,
             ultras,
             units,
             build_step_expansions,
             queens,
             pool_and_tech
-        ])
+        )
 
 
 class MacroZergV2(KnowledgeBot):
@@ -84,10 +84,10 @@ class MacroZergV2(KnowledgeBot):
             attack,
             PlanFinishEnemy(),
         ]
-        return BuildOrder([
+        return BuildOrder(
             MacroBuild(),
             tactics,
-        ])
+        )
 
 
 class LadderBot(MacroZergV2):

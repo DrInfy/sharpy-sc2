@@ -94,9 +94,9 @@ class RoachHydra(KnowledgeBot):
             lambda k: len(self.enemy_start_locations) == 1), skip_until=RequiredSupply(20))
         self.distribute = PlanDistributeWorkers()
 
-        return BuildOrder([
+        return BuildOrder(
             RoachHydraBuild(),
-            SequentialList([
+            SequentialList(
                 PlanCancelBuilding(),
                 PlanZoneGather(),
                 PlanZoneDefense(),
@@ -106,8 +106,8 @@ class RoachHydra(KnowledgeBot):
                 self.distribute,
                 PlanZoneAttack(),
                 PlanFinishEnemy()
-            ]),
-        ])
+            ),
+        )
 
 
 class LadderBot(RoachHydra):

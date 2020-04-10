@@ -84,7 +84,7 @@ class CycloneBot(KnowledgeBot):
             PlanFinishEnemy(),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             Step(RequiredUnitExists(UnitTypeId.BARRACKS, 1), SequentialList(self.depots)),
             [
                 Step(RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2), MorphOrbitals(3), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
@@ -109,7 +109,7 @@ class CycloneBot(KnowledgeBot):
 
             buildings,
             SequentialList(tactics)
-        ])
+        )
 
     @property
     def depots(self) -> List[Step]:

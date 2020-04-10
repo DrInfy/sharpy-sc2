@@ -205,16 +205,15 @@ class CannonRush(KnowledgeBot):
         else:
            cannon_rush = self.cannon_rush()
 
-        return BuildOrder([
+        return BuildOrder(
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 16), skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1)),
             ChronoAnyTech(0),
-            SequentialList([
+            SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 13),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 Step(None, cannon_rush, skip=rush_killed),
                 BuildOrder(
-                    [
                         [
                             ActExpand(2),
                             ProtossUnit(UnitTypeId.PROBE, 30),
@@ -243,19 +242,18 @@ class CannonRush(KnowledgeBot):
                             Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
                             StepBuildGas(4, skip=RequiredGas(200)),
                         ]
-                    ])
+                    )
 
-            ]),
+            ),
             SequentialList(
-                [
                     PlanCancelBuilding(),
                     PlanZoneDefense(),
                     PlanDistributeWorkers(),
                     PlanZoneGather(),
                     PlanZoneAttack(6),
                     PlanFinishEnemy(),
-                ])
-        ])
+            )
+        )
 
     def cannon_contain(self) -> ActBase:
         self.knowledge.print(f"Cannon contain", "Build")

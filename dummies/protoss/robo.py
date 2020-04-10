@@ -24,12 +24,12 @@ class MacroRobo(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         attack = TheAttack(4)
-        return BuildOrder([
+        return BuildOrder(
             Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                  skip=RequiredUnitExists(UnitTypeId.PROBE, 30, include_pending=True), skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1)),
             ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
 
-            SequentialList([
+            SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
@@ -43,7 +43,6 @@ class MacroRobo(KnowledgeBot):
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
-                [
                     AutoPylon(),
                     GateUnit(UnitTypeId.STALKER, 2, priority=True),
                     ActTech(UpgradeId.WARPGATERESEARCH),
@@ -76,9 +75,9 @@ class MacroRobo(KnowledgeBot):
                         StepBuildGas(4, skip=RequiredGas(200)),
                         GridBuilding(UnitTypeId.ROBOTICSFACILITY, 2),
                     ]
-                ])
-            ]),
-            SequentialList([
+                )
+            ),
+            SequentialList(
                 PlanCancelBuilding(),
                 PlanHeatObserver(),
                 PlanZoneDefense(),
@@ -87,8 +86,8 @@ class MacroRobo(KnowledgeBot):
                 PlanZoneGather(),
                 Step(RequiredUnitReady(UnitTypeId.IMMORTAL, 3), attack),
                 PlanFinishEnemy(),
-            ])
-        ])
+            )
+        )
 
 
 class LadderBot(MacroRobo):
