@@ -13,7 +13,7 @@ class RequiredAll(RequireBase):
         assert conditions is not None and isinstance(conditions, List)
         self.conditions: List[RequireBase] = conditions
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         for condition in self.conditions:

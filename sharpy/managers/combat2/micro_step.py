@@ -28,7 +28,7 @@ changelings = {
 
 class MicroStep(ABC):
     def __init__(self, knowledge):
-        self.knowledge: 'Knowledge' = knowledge
+        self.knowledge: "Knowledge" = knowledge
         self.ai: sc2.BotAI = knowledge.ai
         self.unit_values: UnitValue = knowledge.unit_values
         self.cd_manager: CooldownManager = knowledge.cooldown_manager

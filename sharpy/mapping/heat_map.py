@@ -13,7 +13,7 @@ SLOT_SIZE = 5
 
 
 class HeatArea:
-    def __init__(self, ai: sc2.BotAI, knowledge: 'Knowledge', x: int, y: int, x2: int, y2: int):
+    def __init__(self, ai: sc2.BotAI, knowledge: "Knowledge", x: int, y: int, x2: int, y2: int):
         self.ai = ai
         self.knowledge = knowledge
         self.cache: UnitCacheManager = self.knowledge.unit_cache
@@ -23,7 +23,7 @@ class HeatArea:
         self.top_right_y = y2
         self.center = Point2(((x + x2) / 2.0, (y + y2) / 2.0))
         self._x, self._y = self.center.rounded
-        self.zone: Optional['Zone'] = None
+        self.zone: Optional["Zone"] = None
         self.heat: float = 0
         self.stealth_heat: float = 0
         self.last_enemy_power = ExtendedPower(knowledge.unit_values)
@@ -55,11 +55,11 @@ class HeatArea:
 
 
 class HeatMap:
-    def __init__(self, ai: sc2.BotAI, knowledge: 'Knowledge'):
+    def __init__(self, ai: sc2.BotAI, knowledge: "Knowledge"):
         self.ai = ai
         self.knowledge = knowledge
         self.cache: UnitCacheManager = self.knowledge.unit_cache
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.unit_values: "UnitValue" = knowledge.unit_values
         self.updater = IntervalFunc(ai, self.__real_update, 0.5)
         grid: PixelMap = knowledge.ai._game_info.placement_grid
         height = grid.height
@@ -121,7 +121,7 @@ class HeatMap:
 
         return top_heat_position, top_value
 
-    def get_zones_hotspot(self, zones: List['Zone']) -> Optional[Point2]:
+    def get_zones_hotspot(self, zones: List["Zone"]) -> Optional[Point2]:
         top_heat_area = None
         top_value = 0
         for heat_area in self.heat_areas:

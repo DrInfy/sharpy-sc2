@@ -29,7 +29,7 @@ class UnitCacheManager(ManagerBase):
         self.all_own: Units = Units([], self.ai)
         self.mineral_fields: Dict[Point2, Unit] = {}
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.empty_units: Units = Units([], self.ai)
 

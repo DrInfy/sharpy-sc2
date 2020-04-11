@@ -160,7 +160,7 @@ class BotDefinitions:
 
         for x in os.listdir(path):
             full_path = os.path.join(path, x)
-            json_path = os.path.join(full_path, 'ladderbots.json')
+            json_path = os.path.join(full_path, "ladderbots.json")
             if os.path.isfile(json_path):
                 key = os.path.basename(os.path.normpath(full_path))
                 bots[key] = (lambda params, tmp_path=full_path, path2=json_path: BotLadder(tmp_path, path2), None)

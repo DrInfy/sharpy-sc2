@@ -16,7 +16,7 @@ class ActArchon(ActBase):
         self.already_merging_tags: List[int] = []
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 

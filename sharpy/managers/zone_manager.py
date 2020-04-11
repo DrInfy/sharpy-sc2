@@ -35,7 +35,7 @@ class ZoneManager(ManagerBase):
         self.found_enemy_start: Optional[Point2] = None
         self.map: MapInfo = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.map = knowledge.map
         self.init_zones()

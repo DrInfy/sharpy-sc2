@@ -58,7 +58,7 @@ class LingSpeedBuild(BuildOrder):
         ]
         super().__init__([self.overlords, buildings, gas_related, units])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.knowledge.print(f"LingSpeed", "Build")
 
@@ -128,7 +128,7 @@ class LingFloodBuild(BuildOrder):
 
         super().__init__([self.overlords, buildings, spire_end_game, gas_related, units])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.knowledge.print(f"LingFlood", "Build")
 

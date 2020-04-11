@@ -227,7 +227,7 @@ class PlanZoneAttack(ActBase):
     def _start_attack(self, power: ExtendedPower, attackers: Units):
         self.knowledge.roles.set_tasks(UnitTask.Attacking, attackers)
         self.status = AttackStatus.Attacking
-        self.print(f'Attack started at {power.power:.2f} power.')
+        self.print(f"Attack started at {power.power:.2f} power.")
 
     def _should_retreat(self, fight_center: Point2, already_attacking: Units) -> AttackStatus:
         enemy_local_units: Units = self.knowledge.known_enemy_units.closer_than(
@@ -264,8 +264,8 @@ class PlanZoneAttack(ActBase):
         if enemy_local_power.is_enough_for(own_local_power, self.retreat_multiplier):
             # Start retreat next turn
             self.print(
-                f'Retreat started at {own_local_power.power:.2f} own local power '
-                f'against {enemy_local_power.power:.2f} enemy local power.'
+                f"Retreat started at {own_local_power.power:.2f} own local power "
+                f"against {enemy_local_power.power:.2f} enemy local power."
             )
             return AttackStatus.Retreat
 

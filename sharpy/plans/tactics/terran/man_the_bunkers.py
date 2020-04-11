@@ -8,7 +8,7 @@ class ManTheBunkers(ActBase):
         super().__init__()
 
     async def execute(self) -> bool:
-        roles: 'UnitRoleManager' = self.knowledge.roles
+        roles: "UnitRoleManager" = self.knowledge.roles
         bunkers = self.cache.own(UnitTypeId.BUNKER).ready
         marines = self.cache.own(UnitTypeId.MARINE)
 

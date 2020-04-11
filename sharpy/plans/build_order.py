@@ -26,8 +26,8 @@ class BuildOrder(ActBase):
     def __init__(
         self,
         obj: Union[
-            Union[ActBase, list, Callable[['Knowledge'], bool]],
-            List[Union[ActBase, list, Callable[['Knowledge'], bool]]],
+            Union[ActBase, list, Callable[["Knowledge"], bool]],
+            List[Union[ActBase, list, Callable[["Knowledge"], bool]]],
         ],
         *argv,
     ):
@@ -275,7 +275,7 @@ class BuildOrder(ActBase):
             Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), ActTech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
         ]
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for order in self.orders:
             await order.start(knowledge)

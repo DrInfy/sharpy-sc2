@@ -44,7 +44,7 @@ class GameAnalyzer(ManagerBase):
         self._last_army: Advantage = Advantage.Even
         self._last_predict: Advantage = Advantage.Even
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enemy_predicter: EnemyArmyPredicter = knowledge.enemy_army_predicter
         self.our_power = ExtendedPower(self.unit_values)
@@ -111,13 +111,13 @@ class GameAnalyzer(ManagerBase):
         predict = self._calc_our_army_predict()
 
         if self._last_income != income:
-            self.print(f'Income advantage is now {income.name}')
+            self.print(f"Income advantage is now {income.name}")
 
         if self._last_army != army:
-            self.print(f'Known army advantage is now {army.name}')
+            self.print(f"Known army advantage is now {army.name}")
 
         if self._last_predict != predict:
-            self.print(f'Predicted army advantage is now {predict.name}')
+            self.print(f"Predicted army advantage is now {predict.name}")
 
         self._last_income = income
         self._last_army = army
@@ -328,8 +328,8 @@ class GameAnalyzer(ManagerBase):
 
         maxed_gas = max(self.vespene_left)
         avg_gas = sum(self.vespene_left) / len(self.vespene_left)
-        self.print_end(f'Minerals max {maxed_minerals} Average {round(avg_minerals)}')
-        self.print_end(f'Vespene max {maxed_gas} Average {round(avg_gas)}')
+        self.print_end(f"Minerals max {maxed_minerals} Average {round(avg_minerals)}")
+        self.print_end(f"Vespene max {maxed_gas} Average {round(avg_gas)}")
 
     def _print_by_type(
         self, types: List[UnitTypeId], lost_units: Dict[UnitTypeId, List[Unit]], left_units: Dict[UnitTypeId, int]

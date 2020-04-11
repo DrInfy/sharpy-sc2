@@ -91,7 +91,7 @@ class ActUnit(ActBase):
                         continue
 
                     if self.knowledge.cooldown_manager.is_ready(builder.tag, unit_data.creation_ability.id):
-                        self.print(f'{self.unit_type.name} from {self.from_building.name} at {builder.position}')
+                        self.print(f"{self.unit_type.name} from {self.from_building.name} at {builder.position}")
                         self.knowledge.reserve(cost.minerals, cost.vespene)
                         if self.allow_new_action(builder):
                             # Only do this when it is actually good idea

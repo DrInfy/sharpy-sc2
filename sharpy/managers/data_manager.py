@@ -28,7 +28,7 @@ class DataManager(ManagerBase):
         self.last_result = None
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enabled = self.ai.opponent_id is not None
         self.enable_write = self.knowledge.config["general"].getboolean("write_data")
@@ -65,7 +65,7 @@ class DataManager(ManagerBase):
                 )
 
     def read_data(self):
-        with open(self.file_name, 'r') as handle:
+        with open(self.file_name, "r") as handle:
             text = handle.read()
             # Compatibility with older versions to prevent crashes
             text = text.replace("bot.tools", "sharpy.tools")
@@ -147,7 +147,7 @@ class DataManager(ManagerBase):
 
         frozen = jsonpickle.encode(self.data)
         try:
-            with open(self.file_name, 'w') as handle:
+            with open(self.file_name, "w") as handle:
                 handle.write(frozen)
                 # pickle.dump(self.data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         except Exception as e:

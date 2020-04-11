@@ -58,7 +58,7 @@ class PositionBuilding(ActBuilding):
                             break
 
             if can_build and self.knowledge.can_afford(self.unit_type):
-                self.print(f'building of type {self.unit_type} near {position}')
+                self.print(f"building of type {self.unit_type} near {position}")
                 await self.ai.build(self.unit_type, near=position)
 
             self.knowledge.reserve_costs(self.unit_type)

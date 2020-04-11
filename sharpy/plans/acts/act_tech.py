@@ -55,7 +55,7 @@ class ActTech(ActBase):
             for builder in builders.ready:
                 if len(builder.orders) == 0:
                     # todo: remove this call?
-                    self.print(f'Started {self.upgrade_type.name}')
+                    self.print(f"Started {self.upgrade_type.name}")
                     self.do(builder(creationAbilityID))
                     return False
 

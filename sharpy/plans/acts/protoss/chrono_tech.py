@@ -27,5 +27,5 @@ class ChronoTech(ActBase):
                             abilities = await self.ai.get_available_abilities(nexus)
                             if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
                                 self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                                self.print(f'Chrono to {self.name}!')
+                                self.print(f"Chrono to {self.name}!")
         return True  # Never block

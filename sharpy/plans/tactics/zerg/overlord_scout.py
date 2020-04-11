@@ -14,7 +14,7 @@ class OverlordScout(ActBase):
         self.second_scout: Optional[int] = None
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         return await super().start(knowledge)
 
     async def execute(self) -> bool:

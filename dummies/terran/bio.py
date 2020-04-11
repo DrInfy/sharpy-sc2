@@ -177,7 +177,7 @@ class BuildBio(BuildOrder):
 
         super().__init__([warn, scv, opener, buildings, dt_counter, dt_counter2, tech, mech, air, marines, use_money])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.rush_bunker.position = knowledge.base_ramp.ramp.barracks_in_middle
         await super().start(knowledge)
 

@@ -13,7 +13,7 @@ class ActMany(ActBase):
         self.acts = acts
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for act in self.acts:
             await act.start(knowledge)

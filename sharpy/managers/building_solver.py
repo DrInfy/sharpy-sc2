@@ -157,7 +157,7 @@ class BuildingSolver(ManagerBase):
     def building_position(self) -> List[Point2]:
         return self._building_positions.get(BuildArea.Building, [])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.grid = BuildGrid(self.knowledge)
 
@@ -403,7 +403,7 @@ class BuildingSolver(ManagerBase):
             self.grid.fill_area(gate_pos, BlockerType.Building5x5, fill_padding)
 
     def protoss_wall(self):
-        ramp: 'ExtendedRamp' = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.knowledge.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
             zealot = ramp.positions.get(RampPosition.GateZealot)  # TODO: Incorrect!
@@ -412,7 +412,7 @@ class BuildingSolver(ManagerBase):
             self.wall_save(pylon, zealot, [gate, core])
 
     def zerg_wall(self):
-        ramp: 'ExtendedRamp' = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.knowledge.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
             zealot = ramp.positions.get(RampPosition.GateZealot)
@@ -513,14 +513,14 @@ class BuildingSolver(ManagerBase):
                         gates = finder.positions(lookup)
 
                         if wall is None:
-                            self.print(f'Natural wall found! ({lookup})', stats=False, log_level=logging.DEBUG)
+                            self.print(f"Natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
                             wall = (finder.score, pylon, zealot, gates)
                         elif wall[0] < finder.score:
-                            self.print(f'Better natural wall found! ({lookup})', stats=False, log_level=logging.DEBUG)
+                            self.print(f"Better natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
                             wall = (finder.score, pylon, zealot, gates)
                         else:
                             self.print(
-                                f'Natural wall found, but disregarded! ({lookup})', stats=False, log_level=logging.DEBUG
+                                f"Natural wall found, but disregarded! ({lookup})", stats=False, log_level=logging.DEBUG
                             )
                             wall = (finder.score, pylon, zealot, gates)
 

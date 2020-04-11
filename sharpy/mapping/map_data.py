@@ -53,7 +53,7 @@ class MapData:
 
         # size = myarray.shape[::-1]
         databytes = np.packbits(myarray)
-        im = Image.frombytes(mode='1', size=tuple((self.width, self.height)), data=databytes)
+        im = Image.frombytes(mode="1", size=tuple((self.width, self.height)), data=databytes)
 
         # im = Image.fromarray(myarray * 255, mode='L').convert('1')
         # im = Image.new("1", (self.width, self.height))

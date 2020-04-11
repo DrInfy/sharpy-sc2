@@ -32,7 +32,7 @@ class EnemyUnitsManager(ManagerBase):
 
         self._enemy_cloak_trigger = False
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)

@@ -12,7 +12,7 @@ class RequiredCount(RequireBase):
         self.conditions: List[RequireBase] = conditions
         self.count = count
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for condition in self.conditions:
             await condition.start(knowledge)

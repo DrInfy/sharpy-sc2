@@ -16,7 +16,7 @@ class PlanWorkerOnlyDefense(ActBase):
         super().__init__()
         self.defender_tags: List[int] = []
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.was_active = False
         self.gather_mf = self.solve_optimal_mineral_field()

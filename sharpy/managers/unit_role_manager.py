@@ -21,7 +21,7 @@ class UnitRoleManager(ManagerBase):
         self.chat_count = 0
         self.had_task_set: Set[int] = set()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         # Peace units aren't drawn back to defend
@@ -230,8 +230,8 @@ class UnitRoleManager(ManagerBase):
             # msg = f'{self.ai.time_formatted} I{idle} B{building} G{gathering} S{scouting} M{moving} ' \
             #     f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination} ETP{power_text}'
             msg = (
-                f'I{idle} B{building} G{gathering} S{scouting} M{moving} '
-                f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}'
+                f"I{idle} B{building} G{gathering} S{scouting} M{moving} "
+                f"F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}"
             )
             client: Client = self.ai._client
             client.debug_text_2d(msg, Point2((0.4, 0.1)), None, 16)

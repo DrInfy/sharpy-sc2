@@ -42,7 +42,7 @@ class PlanZoneDefense(ActBase):
         all_defenders = self.knowledge.roles.all_from_task(UnitTask.Defending)
 
         for i in range(0, len(self.knowledge.expansion_zones)):
-            zone: 'Zone' = self.knowledge.expansion_zones[i]
+            zone: "Zone" = self.knowledge.expansion_zones[i]
             zone_tags = self.defender_tags[i]
 
             zone_defenders_all = all_defenders.tags_in(zone_tags)
@@ -121,7 +121,7 @@ class PlanZoneDefense(ActBase):
         return True  # never block
 
     async def worker_defence(
-        self, defenders: float, defense_required, enemy_center, zone: 'Zone', zone_tags, zone_worker_defenders
+        self, defenders: float, defense_required, enemy_center, zone: "Zone", zone_tags, zone_worker_defenders
     ):
         ground_enemies: Units = zone.known_enemy_units.not_flying
 

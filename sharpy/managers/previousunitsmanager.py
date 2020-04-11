@@ -11,7 +11,7 @@ class PreviousUnitsManager(ManagerBase):
         super().__init__()
         self.previous_units: Dict[int, Unit] = dict()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def update(self):

@@ -21,22 +21,22 @@ class EnemyArmyPredicter(ManagerBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enemy_units_manager: EnemyUnitsManager = self.knowledge.enemy_units_manager
 
         self.lost_units_manager: LostUnitsManager = knowledge.lost_units_manager
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.unit_values: "UnitValue" = knowledge.unit_values
 
         self.updater = IntervalFuncAsync(self.ai, self._real_update, INTERVAL)
 
         self.enemy_base_value_minerals = 400 + 12 * 50 + 50
         self.enemy_known_worker_count = 12
 
-        self.mineral_dict: Dict['Zone', int] = {}
+        self.mineral_dict: Dict["Zone", int] = {}
 
         # Last time minerals were updated
-        self.mineral_updated_dict: Dict['Zone', float] = {}
+        self.mineral_updated_dict: Dict["Zone", float] = {}
         self.gas_dict: Dict[Point2, int] = {}
 
         for zone in knowledge.expansion_zones:

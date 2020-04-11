@@ -26,7 +26,7 @@ class BotLadder(AbstractPlayer):
 
     def map_type_cmd(self) -> [str]:
         bot_name = self.name
-        if platform.system() == 'Linux':
+        if platform.system() == "Linux":
             # Linux
             bot_type_map = {
                 "python": ["run.py", "python3.7"],

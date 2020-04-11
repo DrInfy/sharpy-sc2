@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 class Step(ActBase):
     def __init__(
         self,
-        requirement: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]],
-        action: Optional[Union[ActBase, Callable[['Knowledge'], bool]]],
-        skip: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None,
-        skip_until: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]] = None,
+        requirement: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]],
+        action: Optional[Union[ActBase, Callable[["Knowledge"], bool]]],
+        skip: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]] = None,
+        skip_until: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]] = None,
     ):
         assert requirement is None or isinstance(requirement, RequireBase) or isinstance(requirement, Callable)
         assert action is None or isinstance(action, ActBase)
@@ -31,14 +31,14 @@ class Step(ActBase):
         self.skip_until = Step.merge_to_require(skip_until)
 
     @staticmethod
-    def merge_to_act(obj: Optional[Union[ActBase, Callable[['Knowledge'], bool]]]) -> Optional[ActBase]:
+    def merge_to_act(obj: Optional[Union[ActBase, Callable[["Knowledge"], bool]]]) -> Optional[ActBase]:
         if isinstance(obj, ActBase) or obj is None:
             return obj
         assert isinstance(obj, Callable)
         return ActCustom(obj)
 
     @staticmethod
-    def merge_to_require(obj: Optional[Union[RequireBase, Callable[['Knowledge'], bool]]]) -> Optional[RequireBase]:
+    def merge_to_require(obj: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]]) -> Optional[RequireBase]:
         if isinstance(obj, RequireBase) or obj is None:
             return obj
         assert isinstance(obj, Callable)
@@ -54,7 +54,7 @@ class Step(ActBase):
         if self.skip_until is not None:
             await self.skip_until.debug_draw()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         if self.requirement is not None:
             await self.requirement.start(knowledge)
         if self.action is not None:

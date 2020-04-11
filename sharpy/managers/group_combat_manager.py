@@ -22,7 +22,7 @@ class GroupCombatManager(ManagerBase):
         self.own_group_threshold = 7
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.pather: PathingManager = self.knowledge.pathing_manager

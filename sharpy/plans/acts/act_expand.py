@@ -130,7 +130,7 @@ class ActExpand(ActBase):
         unit = self.get_worker(expand_here.center_location)
 
         if unit is not None:
-            self.print(f'Expanding to {expand_here.center_location}!')
+            self.print(f"Expanding to {expand_here.center_location}!")
             self.do(unit.build(self.townhall_type, expand_here.center_location))
 
     async def debug_actions(self):

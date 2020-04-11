@@ -37,7 +37,7 @@ class GridBuilding(ActBuilding):
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.building_solver = self.knowledge.building_solver
 
@@ -71,7 +71,7 @@ class GridBuilding(ActBuilding):
         elif self.knowledge.my_race == Race.Terran:
             position = self.position_terran(count)
         else:
-            raise ValueError(f'Position lookup for race {self.knowledge.my_race} not supported.')
+            raise ValueError(f"Position lookup for race {self.knowledge.my_race} not supported.")
 
         if position is None:
             if self.make_pylon is not None:

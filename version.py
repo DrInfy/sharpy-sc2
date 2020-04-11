@@ -15,12 +15,12 @@ def update_version_txt():
         )
 
         with open("version.txt", mode="w") as file:
-            file.write(commit_date + '\n')
+            file.write(commit_date + "\n")
             file.write(commit_hash)
             print(f"Updated version.txt with: {commit_date} {commit_hash}")
     except Exception:
         print(f"unable to update version.txt. Using previous values instead (if found).")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     update_version_txt()

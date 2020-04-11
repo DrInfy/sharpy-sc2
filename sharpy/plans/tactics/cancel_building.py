@@ -14,7 +14,7 @@ class PlanCancelBuilding(ActBase):
             if 1 > building.build_progress > 0:
                 if self.knowledge.building_going_down(building):
                     self.print(
-                        f'Cancelled {building.type_id.name} at {building.position} with {building.health} health'
+                        f"Cancelled {building.type_id.name} at {building.position} with {building.health} health"
                     )
                     self.do(building(AbilityId.CANCEL_BUILDINPROGRESS))
         return True

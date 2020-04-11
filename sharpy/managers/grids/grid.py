@@ -98,7 +98,7 @@ class Grid:
             w = 2
             h = 1
         else:
-            raise Exception('invalid fill type')
+            raise Exception("invalid fill type")
 
         wStart = math.ceil(x - w / 2)
         hStart = math.ceil(y - h / 2)
@@ -138,10 +138,10 @@ class Grid:
         from PIL import Image
 
         # databytes = np.packbits(myarray)
-        im = Image.frombytes(mode='RGBA', size=tuple((self.width, self.height)), data=myarray)
+        im = Image.frombytes(mode="RGBA", size=tuple((self.width, self.height)), data=myarray)
 
-        if not os.path.exists('data'):
-            os.mkdir('data')
+        if not os.path.exists("data"):
+            os.mkdir("data")
         im.save(os.path.join("data", filename))
 
     def color_to_value(self, color: Point3) -> int:

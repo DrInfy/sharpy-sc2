@@ -18,7 +18,7 @@ class DummyZip(LadderZip):
 
     def pre_zip(self):
         if self.build:
-            with open("config.ini", 'a', newline='\n') as handle:
+            with open("config.ini", "a", newline="\n") as handle:
                 handle.writelines([self.build, ""])
         shutil.copy(self.dummy_file, self.new_dummy_file)
 

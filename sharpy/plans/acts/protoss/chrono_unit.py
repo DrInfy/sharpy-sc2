@@ -15,7 +15,7 @@ class ChronoUnitProduction(ActBase):
         self.from_building = from_building
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         unit = self.ai._game_data.units[self.unit_type.value]
         self.creation_ability = unit.creation_ability.id
@@ -30,5 +30,5 @@ class ChronoUnitProduction(ActBase):
                             abilities = await self.ai.get_available_abilities(nexus)
                             if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
                                 self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                                self.print(f'Chrono {self.creation_ability.name}')
+                                self.print(f"Chrono {self.creation_ability.name}")
         return True  # Never block

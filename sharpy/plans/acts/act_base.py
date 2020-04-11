@@ -63,7 +63,7 @@ build_commands = {
 
 
 class ActBase(ABC):
-    knowledge: 'Knowledge'
+    knowledge: "Knowledge"
     ai: sc2.BotAI
     cache: UnitCacheManager
     unit_values: UnitValue
@@ -97,7 +97,7 @@ class ActBase(ABC):
         """
         return self.knowledge.action_handler.allow_action(unit)
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
         self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")
         self.ai = knowledge.ai

@@ -123,7 +123,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "builds.edge_protoss" for "edge_protoss" setting under [builds].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].get(key[1])
 
     def get_int_setting(self, key: str) -> int:
@@ -132,7 +132,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "gameplay.disruptor_max_count" for "disruptor_max_count" setting under [gameplay].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getint(key[1])
 
     def get_boolean_setting(self, key: str) -> str:
@@ -141,7 +141,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "general.chat" for "chat" setting under [general].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getboolean(key[1])
 
     @property

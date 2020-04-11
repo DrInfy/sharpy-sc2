@@ -31,7 +31,7 @@ class MatchRunner:
 
     def run_game(self, map_settings: str, players: List[AbstractPlayer], player1_id: str, **kwargs):
         if isinstance(players[0], BotLadder):
-            raise Exception('Player 1 cannot be a ladder bot!')
+            raise Exception("Player 1 cannot be a ladder bot!")
         if len(players) > 1 and isinstance(players[1], BotLadder):
             # host_only_args = ["save_replay_as", "rgb_render_config", "random_seed", "sc2_version"]
 

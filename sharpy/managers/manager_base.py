@@ -10,19 +10,19 @@ from sc2.client import Client
 
 class ManagerBase(ABC):
     def __init__(self):
-        self.knowledge: 'Knowledge' = None
+        self.knowledge: "Knowledge" = None
         self.ai: sc2.BotAI = None
-        self.unit_values: 'UnitValue' = None
+        self.unit_values: "UnitValue" = None
         self._debug: bool = False
 
         self.client: Client = None
-        self.cache: 'UnitCacheManager' = None
+        self.cache: "UnitCacheManager" = None
 
     @property
     def debug(self):
         return self._debug and self.knowledge.debug
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
         self._debug = self.knowledge.config["debug"].getboolean(type(self).__name__)
         self.ai = knowledge.ai

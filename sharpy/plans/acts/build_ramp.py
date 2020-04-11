@@ -35,7 +35,7 @@ class ActBuildingRamp(ActBuilding):
             return True  # No worker to build with.
 
         if self.knowledge.can_afford(self.unit_type):
-            self.print(f'Building {self.unit_type.name} to {position}')
+            self.print(f"Building {self.unit_type.name} to {position}")
             # await ai.build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
             self.do(worker.build(self.unit_type, position))
         else:

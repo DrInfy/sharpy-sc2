@@ -13,7 +13,7 @@ class SequentialList(ActBase):
     def __init__(
         self,
         orders: Union[
-            Union[ActBase, Callable[['Knowledge'], bool]], List[Union[ActBase, Callable[['Knowledge'], bool]]]
+            Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
         ],
         *argv,
     ):
@@ -38,7 +38,7 @@ class SequentialList(ActBase):
         for order in self.orders:
             await order.debug_draw()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for order in self.orders:
             await order.start(knowledge)

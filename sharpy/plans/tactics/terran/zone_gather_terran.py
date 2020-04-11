@@ -12,7 +12,7 @@ class PlanZoneGatherTerran(ActBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.unit_values: UnitValue = knowledge.unit_values
         self.gather_point = self.knowledge.gather_point

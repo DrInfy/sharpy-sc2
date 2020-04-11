@@ -23,8 +23,8 @@ def main():
 
     bot_name = args.name
 
-    if not os.path.exists('dummy'):
-        os.mkdir('dummy')
+    if not os.path.exists("dummy"):
+        os.mkdir("dummy")
 
     update_version_txt()
 
@@ -34,7 +34,7 @@ def main():
             zip_types.get(key).create_ladder_zip(args.exe)
     else:
         if bot_name not in zip_keys:
-            raise ValueError(f'Unknown bot: {bot_name}, allowed values are: {zip_keys}')
+            raise ValueError(f"Unknown bot: {bot_name}, allowed values are: {zip_keys}")
 
         zip_types.get(bot_name).create_ladder_zip(args.exe)
 

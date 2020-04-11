@@ -20,7 +20,7 @@ class WorkerCounterAttack(ActBase):
         self.tags: List[int] = []
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_mf = self.solve_optimal_mineral_field()
 

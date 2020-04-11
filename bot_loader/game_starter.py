@@ -18,7 +18,7 @@ from sc2.paths import Paths
 from sc2.player import AbstractPlayer, Bot
 from sharpy.knowledges import KnowledgeBot
 
-new_line = '\n'
+new_line = "\n"
 
 # Used for random map selection
 known_melee_maps = (
@@ -97,7 +97,7 @@ class GameStarter:
         parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description="Run a game with custom parameters.",
-            epilog=f'''\
+            epilog=f"""\
 Maps:
 random
 {new_line.join(self.maps)}
@@ -118,7 +118,7 @@ Difficulties:
 
 Builds:
 {new_line.join(builds.keys())}
-                ''',
+                """,
         )
 
         parser.add_argument(
@@ -194,11 +194,11 @@ Builds:
         if not os.path.isdir(folder):
             os.mkdir(folder)
 
-        time = datetime.now().strftime('%Y-%m-%d %H_%M_%S')
+        time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
         randomizer = random.randint(0, 999999)
         # Randomizer is to make it less likely that games started at the same time have same neme
-        file_name = f'{enemy_text}_{map_name}_{time}_{randomizer}'
-        path = f'{folder}/{file_name}.log'
+        file_name = f"{enemy_text}_{map_name}_{time}_{randomizer}"
+        path = f"{folder}/{file_name}.log"
 
         handler = logging.FileHandler(path)
         self.root_logger.addHandler(handler)
@@ -216,7 +216,7 @@ Builds:
             player1_id=bot_text,
             realtime=args.real_time,
             game_time_limit=(30 * 60),
-            save_replay_as=f'{folder}/{file_name}.SC2Replay',
+            save_replay_as=f"{folder}/{file_name}.SC2Replay",
         )
 
         # release file handle

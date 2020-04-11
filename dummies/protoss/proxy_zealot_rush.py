@@ -26,7 +26,7 @@ class ProxyZealots(ActBase):
         self.gather_point: Point2
         self.proxy_location: Point2
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.proxy_location = self.ai.game_info.map_center.towards(self.ai.enemy_start_locations[0], 25)
         self.gather_point = self.pather.find_path(self.proxy_location, self.knowledge.enemy_start_location, 8)

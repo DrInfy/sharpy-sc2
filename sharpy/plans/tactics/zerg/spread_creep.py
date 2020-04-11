@@ -29,7 +29,7 @@ class SpreadCreep(ActBase):
         self.building_solver: BuildingSolver = None
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.building_solver = knowledge.building_solver
         return await super().start(knowledge)
 

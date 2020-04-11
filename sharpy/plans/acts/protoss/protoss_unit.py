@@ -27,7 +27,7 @@ class ProtossUnit(ActUnit):
             count += self.knowledge.lost_units_manager.own_lost_type(self.unit_type)
         return count
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         if self.warp:
             await self.warp.start(knowledge)
         await super().start(knowledge)

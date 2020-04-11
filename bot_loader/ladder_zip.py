@@ -97,19 +97,19 @@ class LadderZip:
         pass
 
     def package_executable(self, output_dir: str):
-        zip_name = f'{self.name}_bin.zip'
+        zip_name = f"{self.name}_bin.zip"
         print()
         print("unzip")
         zip_path = os.path.join(output_dir, self.archive)
         source_path = os.path.join(output_dir, self.name + "_source")
         bin_path = os.path.join(output_dir, self.name)
-        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        with zipfile.ZipFile(zip_path, "r") as zip_ref:
             zip_ref.extractall(source_path)
 
         print("run pyinstaller")
         self.pyinstaller = (
-            self.pyinstaller.replace('[FOLDER]', source_path)
-            .replace('[OUTPUTFOLDER]', bin_path)
+            self.pyinstaller.replace("[FOLDER]", source_path)
+            .replace("[OUTPUTFOLDER]", bin_path)
             .replace("[NAME]", self.name)
         )
 
@@ -129,7 +129,7 @@ class LadderZip:
         f.close()
 
         print("Zip executable version")
-        zipf = zipfile.ZipFile(os.path.join(output_dir, zip_name), 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(os.path.join(output_dir, zip_name), "w", zipfile.ZIP_DEFLATED)
         LadderZip.zipdir(run_path, zipf, run_path)
         zipf.close()
         shutil.rmtree(bin_path)
@@ -193,7 +193,7 @@ class LadderZip:
 
         print()
         print(f"Zipping {archive_name}")
-        zipf = zipfile.ZipFile(archive_name, 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(archive_name, "w", zipfile.ZIP_DEFLATED)
         for file in files_to_zip:
             zipf.write(file)
         for directory in directories_to_zip:
@@ -213,8 +213,8 @@ class LadderZip:
 
         os.remove("ladderbots.json")
 
-        if not os.path.exists('publish'):
-            os.mkdir('publish')
+        if not os.path.exists("publish"):
+            os.mkdir("publish")
 
         shutil.move(archive_name, os.path.join("publish", archive_name))
         self.post_zip()

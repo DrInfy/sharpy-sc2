@@ -37,8 +37,8 @@ class Zone:
 
         self.knowledge = knowledge
         self.ai: sc2.BotAI = knowledge.ai
-        self.cache: 'UnitCacheManager' = knowledge.unit_cache
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.cache: "UnitCacheManager" = knowledge.unit_cache
+        self.unit_values: "UnitValue" = knowledge.unit_values
         self.needs_evacuation = False
         self._is_enemys = False
 

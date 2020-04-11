@@ -6,9 +6,9 @@ from sc2 import Race, UnitTypeId
 
 
 class CompositionGuesser:
-    def __init__(self, knowledge: 'Knowledge'):
+    def __init__(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.unit_values: "UnitValue" = knowledge.unit_values
         self.left_minerals = 0
         self.left_gas = 0
 

@@ -34,7 +34,7 @@ siege = {
 
 
 class ExtendedPower:
-    def is_enough_for(self, enemies: 'ExtendedPower', our_percentage: float = 1.1) -> bool:
+    def is_enough_for(self, enemies: "ExtendedPower", our_percentage: float = 1.1) -> bool:
         # reduce some variable from air / ground power so that we don't fight against 100 roach with
         # 20 stalkers and observer.
         if self.power < 1:
@@ -48,7 +48,7 @@ class ExtendedPower:
             return True
         return False
 
-    def __init__(self, values: 'UnitValue'):
+    def __init__(self, values: "UnitValue"):
         self.values = values
         self.power: float = 0
         self.air_presence: float = 0
@@ -122,7 +122,7 @@ class ExtendedPower:
             if UnitFeature.Detector in features:
                 self.detectors += 1
 
-    def add_power(self, extended_power: 'ExtendedPower'):
+    def add_power(self, extended_power: "ExtendedPower"):
         self.power += extended_power.power
         self.air_presence += extended_power.air_presence
         self.ground_presence += extended_power.ground_presence
@@ -134,7 +134,7 @@ class ExtendedPower:
         self.detectors += extended_power.detectors
         self.stealth_power += extended_power.stealth_power
 
-    def substract_power(self, extended_power: 'ExtendedPower'):
+    def substract_power(self, extended_power: "ExtendedPower"):
         self.power -= extended_power.power
         self.air_presence -= extended_power.air_presence
         self.ground_presence -= extended_power.ground_presence

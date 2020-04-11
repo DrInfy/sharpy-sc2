@@ -18,13 +18,13 @@ from sc2.protocol import ConnectionAlreadyClosed
 def run_ladder_game(bot):
     # Load command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--GamePort', type=int, nargs="?", help='Game port')
-    parser.add_argument('--StartPort', type=int, nargs="?", help='Start port')
-    parser.add_argument('--LadderServer', type=str, nargs="?", help='Ladder server')
-    parser.add_argument('--ComputerOpponent', type=str, nargs="?", help='Computer opponent')
-    parser.add_argument('--ComputerRace', type=str, nargs="?", help='Computer race')
-    parser.add_argument('--ComputerDifficulty', type=str, nargs="?", help='Computer difficulty')
-    parser.add_argument('--OpponentId', type=str, nargs="?", help='Opponent ID')
+    parser.add_argument("--GamePort", type=int, nargs="?", help="Game port")
+    parser.add_argument("--StartPort", type=int, nargs="?", help="Start port")
+    parser.add_argument("--LadderServer", type=str, nargs="?", help="Ladder server")
+    parser.add_argument("--ComputerOpponent", type=str, nargs="?", help="Computer opponent")
+    parser.add_argument("--ComputerRace", type=str, nargs="?", help="Computer race")
+    parser.add_argument("--ComputerDifficulty", type=str, nargs="?", help="Computer difficulty")
+    parser.add_argument("--OpponentId", type=str, nargs="?", help="Opponent ID")
     args, unknown = parser.parse_known_args()
 
     if args.GamePort is None or args.StartPort is None:

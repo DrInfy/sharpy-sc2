@@ -130,5 +130,5 @@ class StepBuildGas(ActBase):
                 mf = self.ai.mineral_field.closest_to(worker)
                 self.ai.do(worker.gather(mf, queue=True))
 
-            self.knowledge.print(f'Building {self.unit_type.name} to {target.position}')
+            self.knowledge.print(f"Building {self.unit_type.name} to {target.position}")
         return False

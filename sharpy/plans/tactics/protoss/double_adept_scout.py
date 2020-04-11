@@ -31,7 +31,7 @@ class DoubleAdeptScout(ActBase):
         self.adept_target = False
         self.adepts_to_start = adepts_to_start
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.combat: GroupCombatManager = knowledge.combat_manager
         self.cooldown_manager: CooldownManager = self.knowledge.cooldown_manager
@@ -75,7 +75,7 @@ class DoubleAdeptScout(ActBase):
             return
 
         if self.target_position != targets[0]:
-            self.print(f'target changed to: {targets[0]}')
+            self.print(f"target changed to: {targets[0]}")
         self.target_position = targets[0]
 
         if self.adept_target != targets[1]:
@@ -104,7 +104,7 @@ class DoubleAdeptScout(ActBase):
                 self.do(adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target))
                 self.cooldown_manager.used_ability(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
                 self.target_changed = False
-                self.print(f'Using phase shift to: {self.adept_target}')
+                self.print(f"Using phase shift to: {self.adept_target}")
             else:
                 self.combat.add_unit(adept)
 

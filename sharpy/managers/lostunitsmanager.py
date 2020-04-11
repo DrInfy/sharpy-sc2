@@ -18,7 +18,7 @@ class LostUnitsManager(ManagerBase):
         self._my_lost_units: Dict[UnitTypeId, List[Unit]] = {}
         self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = {}
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 

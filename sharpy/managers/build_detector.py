@@ -64,7 +64,7 @@ class BuildDetector(ManagerBase):
         # Timings when the unit was first seen or our estimate when structure was started building
         self.timings: Dict[UnitTypeId, List[float]] = dict()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         # Just put them all her in order to avoid any issues with random enemy types
         if knowledge.ai.enemy_race == Race.Terran:
             self.timings[UnitTypeId.COMMANDCENTER] = [0]

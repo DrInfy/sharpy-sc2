@@ -73,7 +73,7 @@ class DefensiveBuilding(ActBase):
                             break
 
             if can_build and self.knowledge.can_afford(self.unit_type):
-                self.knowledge.print(f'[DefensiveBuilding] building of type {self.unit_type} near {position}')
+                self.knowledge.print(f"[DefensiveBuilding] building of type {self.unit_type} near {position}")
                 await self.ai.build(self.unit_type, near=position)
             else:
                 is_done = False

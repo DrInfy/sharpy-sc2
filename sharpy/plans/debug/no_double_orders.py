@@ -12,7 +12,7 @@ class NoDoubleOrders(ActBase):
     async def execute(self) -> bool:
         for unit in self.ai.structures:
             if len(unit.orders) > 1:
-                msg = f'{unit.type_id} has multiple orders!'
+                msg = f"{unit.type_id} has multiple orders!"
                 if self.knowledge.is_chat_allowed:
                     await self.ai.chat_send(msg)
 

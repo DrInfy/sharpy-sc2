@@ -28,7 +28,7 @@ class MapName(enum.Enum):
 
 
 class MapInfo:
-    def __init__(self, knowledge: 'Knowledge'):
+    def __init__(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
         self.ai: BotAI = knowledge.ai
         self.game_info: GameInfo = self.ai.game_info
@@ -41,9 +41,9 @@ class MapInfo:
 
         self.map = self.recognize_map()
         if self.map != MapName.Unknown:
-            knowledge.print(f'Map recognized as {self.map.name}', type(self).__name__, stats=False)
+            knowledge.print(f"Map recognized as {self.map.name}", type(self).__name__, stats=False)
         else:
-            knowledge.print(f'Unknown map', type(self).__name__, stats=False, log_level=logging.WARNING)
+            knowledge.print(f"Unknown map", type(self).__name__, stats=False, log_level=logging.WARNING)
 
     def recognize_map(self) -> MapName:
 

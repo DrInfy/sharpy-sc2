@@ -19,7 +19,7 @@ class PlanHeatDefender(ActBase):
 
         self.phaseshift_tags: List[int] = []
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.roles = self.knowledge.roles
         self.combat.use_unit_micro = False

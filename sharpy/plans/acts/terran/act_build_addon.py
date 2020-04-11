@@ -27,7 +27,7 @@ class ActBuildAddon(ActBase):
 
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def execute(self) -> bool:

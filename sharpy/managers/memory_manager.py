@@ -28,7 +28,7 @@ class MemoryManager(ManagerBase):
         # Dictionary of units that we know of, but which are longer present at the location last seen. Keyed by unit tag.
         self._archive_units_by_tag: Dict[int, Deque[Unit]] = dict()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
