@@ -59,6 +59,7 @@ class GroupCombatManager(ManagerBase):
         self.unit_micros[UnitTypeId.ULTRALISK] = NoMicro(knowledge)
         self.unit_micros[UnitTypeId.OVERSEER] = MicroOverseers(knowledge)
         self.unit_micros[UnitTypeId.QUEEN] = MicroQueens(knowledge)
+        self.unit_micros[UnitTypeId.ROACH] = MicroRoaches(knowledge)
         self.unit_micros[UnitTypeId.RAVAGER] = MicroRavagers(knowledge)
 
         self.unit_micros[UnitTypeId.LURKERMP] = MicroLurkers(knowledge)
