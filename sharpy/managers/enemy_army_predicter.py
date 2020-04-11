@@ -21,22 +21,22 @@ class EnemyArmyPredicter(ManagerBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enemy_units_manager: EnemyUnitsManager = self.knowledge.enemy_units_manager
 
         self.lost_units_manager: LostUnitsManager = knowledge.lost_units_manager
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.unit_values: "UnitValue" = knowledge.unit_values
 
         self.updater = IntervalFuncAsync(self.ai, self._real_update, INTERVAL)
 
         self.enemy_base_value_minerals = 400 + 12 * 50 + 50
         self.enemy_known_worker_count = 12
 
-        self.mineral_dict: Dict['Zone', int] = {}
+        self.mineral_dict: Dict["Zone", int] = {}
 
         # Last time minerals were updated
-        self.mineral_updated_dict: Dict['Zone', float] = {}
+        self.mineral_updated_dict: Dict["Zone", float] = {}
         self.gas_dict: Dict[Point2, int] = {}
 
         for zone in knowledge.expansion_zones:
@@ -46,7 +46,7 @@ class EnemyArmyPredicter(ManagerBase):
 
             self.mineral_dict[zone] = minerals
 
-        for geyser in self.ai.vespene_geyser: # type: Unit
+        for geyser in self.ai.vespene_geyser:  # type: Unit
             self.gas_dict[geyser.position] = 2250
 
         self.enemy_mined_minerals = 0
@@ -91,7 +91,8 @@ class EnemyArmyPredicter(ManagerBase):
 
         self.predicted_enemy_composition.clear()
         gas_miners = self.knowledge.known_enemy_structures.of_type(
-            [UnitTypeId.ASSIMILATOR, UnitTypeId.EXTRACTOR, UnitTypeId.REFINERY])
+            [UnitTypeId.ASSIMILATOR, UnitTypeId.EXTRACTOR, UnitTypeId.REFINERY]
+        )
 
         minerals_used: int = 0
         gas_used: int = 0
@@ -118,8 +119,10 @@ class EnemyArmyPredicter(ManagerBase):
                 minerals_used += mineral_value
                 gas_used += gas_value
 
-                if not self.unit_values.is_worker(unit_count.enemy_type) \
-                        and self.unit_values.power_by_type(unit_count.enemy_type) > 0.25:
+                if (
+                    not self.unit_values.is_worker(unit_count.enemy_type)
+                    and self.unit_values.power_by_type(unit_count.enemy_type) > 0.25
+                ):
                     self.enemy_power.add_unit(unit_count.enemy_type, unit_count.count)
 
                     self.predicted_enemy_composition.append(unit_count)
@@ -145,7 +148,12 @@ class EnemyArmyPredicter(ManagerBase):
                 if zone.is_enemys:
                     mined_minerals += last_minerals - current_minerals
             elif zone.is_enemys:
-                prediction = last_minerals - (self.ai.time - self.mineral_updated_dict.get(zone, 0)) * MINERAL_MINING_SPEED * worker_count_per_base
+                prediction = (
+                    last_minerals
+                    - (self.ai.time - self.mineral_updated_dict.get(zone, 0))
+                    * MINERAL_MINING_SPEED
+                    * worker_count_per_base
+                )
                 prediction = max(0.0, prediction)
                 mined_minerals_predict += last_minerals - prediction
 
@@ -168,9 +176,9 @@ class EnemyArmyPredicter(ManagerBase):
         minerals_used += lost_tuple[0]
         gas_used += lost_tuple[1]
 
-        self.predicted_enemy_free_minerals = round(self.enemy_base_value_minerals
-                                                   + self.enemy_mined_minerals_prediction
-                                                   - minerals_used)
+        self.predicted_enemy_free_minerals = round(
+            self.enemy_base_value_minerals + self.enemy_mined_minerals_prediction - minerals_used
+        )
 
         self.predicted_enemy_free_gas = round(self.enemy_mined_gas - gas_used)
 

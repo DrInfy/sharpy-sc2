@@ -18,23 +18,31 @@ class CounterTerranTie(BuildOrder):
         flying buildings.
         Add any PlanDistributeWorkers acts with orders
         """
-        cover_list = SequentialList([
-            PlanDistributeWorkers(),
-            AutoOverLord(),
-            Step(None, ZergUnit(UnitTypeId.DRONE, 20), skip=RequiredSupply(198)),
-            StepBuildGas(4, None),
-            MorphLair(),
-            ActBuilding(UnitTypeId.SPIRE, 1),
-            Step(None, DefensiveBuilding(UnitTypeId.SPORECRAWLER, DefensePosition.BehindMineralLineCenter),
-                 skip_until=RequiredSupply(199)),
-            Step(None, DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance),
-                 skip_until=RequiredSupply(199)),
-            ZergUnit(UnitTypeId.MUTALISK, 10),
-        ])
+        cover_list = SequentialList(
+            [
+                PlanDistributeWorkers(),
+                AutoOverLord(),
+                Step(None, ZergUnit(UnitTypeId.DRONE, 20), skip=RequiredSupply(198)),
+                StepBuildGas(4, None),
+                MorphLair(),
+                ActBuilding(UnitTypeId.SPIRE, 1),
+                Step(
+                    None,
+                    DefensiveBuilding(UnitTypeId.SPORECRAWLER, DefensePosition.BehindMineralLineCenter),
+                    skip_until=RequiredSupply(199),
+                ),
+                Step(
+                    None,
+                    DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance),
+                    skip_until=RequiredSupply(199),
+                ),
+                ZergUnit(UnitTypeId.MUTALISK, 10),
+            ]
+        )
 
         new_build_order = [
             Step(None, cover_list, skip_until=self.should_build_mutalisks),
-            Step(None, BuildOrder(orders), skip=self.should_build_mutalisks)
+            Step(None, BuildOrder(orders), skip=self.should_build_mutalisks),
         ]
         super().__init__(new_build_order)
 

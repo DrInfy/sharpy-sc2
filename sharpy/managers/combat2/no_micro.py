@@ -4,7 +4,6 @@ from sc2.units import Units
 
 
 class NoMicro(MicroStep):
-
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         return current_command
 

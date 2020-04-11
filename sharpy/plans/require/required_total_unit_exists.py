@@ -8,7 +8,10 @@ from sc2 import UnitTypeId
 
 class RequiredTotalUnitExists(RequireBase):
     """names is a list of units types. Their total count is summed to compare to count."""
-    def __init__(self, type_ids: List[UnitTypeId], count: int = 1, include_pending: bool = False, include_killed: bool = False):
+
+    def __init__(
+        self, type_ids: List[UnitTypeId], count: int = 1, include_pending: bool = False, include_killed: bool = False
+    ):
         assert count is not None and isinstance(count, int)
         assert include_pending is not None and isinstance(include_pending, bool)
         assert include_killed is not None and isinstance(include_killed, bool)
@@ -32,7 +35,7 @@ class RequiredTotalUnitExists(RequireBase):
         if amount >= self.count:
             return True
         return False
-    
+
     def count_type(self, unit_type) -> int:
         # TODO: Use aliases
         count = self.cache.own(unit_type).amount

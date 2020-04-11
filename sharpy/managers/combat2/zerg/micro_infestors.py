@@ -8,7 +8,6 @@ from sc2.unit import Unit
 
 
 class MicroInfestors(MicroStep):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.aoe_available = 0
@@ -45,7 +44,7 @@ class MicroInfestors(MicroStep):
                     score = enemy.health + self.unit_values.power(enemy) * 50
                     # TODO: Needs proper target locking in order to not fire at the same target
                     # Simple and stupid way in an attempt to not use ability on same target:
-                    score += (enemy.tag % (shuffler + 2))
+                    score += enemy.tag % (shuffler + 2)
 
                     if score > best_score:
                         target = enemy
@@ -54,7 +53,8 @@ class MicroInfestors(MicroStep):
             if target is not None:
                 return Action(target, False, AbilityId.NEURALPARASITE_NEURALPARASITE)
 
-        if (self.aoe_available < self.ai.time
+        if (
+            self.aoe_available < self.ai.time
             and self.cd_manager.is_ready(unit.tag, AbilityId.FUNGALGROWTH_FUNGALGROWTH)
             and self.engaged_power.power > 4
         ):

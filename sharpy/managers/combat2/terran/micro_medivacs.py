@@ -8,7 +8,6 @@ from sc2.unit import Unit
 
 
 class MicroMedivacs(MicroStep):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.anti_armor_available = 0
@@ -26,9 +25,11 @@ class MicroMedivacs(MicroStep):
         if unit.energy < 5:
             return self.stay_safe(unit)
 
-        healable_targets = self.group.ground_units.filter(lambda x:
-                                                    (x.health_percentage < 1 and not x.is_flying
-                                                     and (x.is_biological or x.type_id == UnitTypeId.HELLIONTANK)))
+        healable_targets = self.group.ground_units.filter(
+            lambda x: (
+                x.health_percentage < 1 and not x.is_flying and (x.is_biological or x.type_id == UnitTypeId.HELLIONTANK)
+            )
+        )
 
         if not healable_targets:
             return self.stay_safe(unit)

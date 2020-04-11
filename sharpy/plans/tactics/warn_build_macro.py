@@ -6,15 +6,17 @@ from sc2 import UnitTypeId
 
 
 class WarnBuildMacro(ActBase):
-    def __init__(self, building_timings: List[Tuple[UnitTypeId, int, float]],
-                 unit_timings: List[Tuple[UnitTypeId, int, float]]):
+    def __init__(
+        self, building_timings: List[Tuple[UnitTypeId, int, float]], unit_timings: List[Tuple[UnitTypeId, int, float]]
+    ):
         super().__init__()
 
         self.building_timings = building_timings
         self.unit_timings = unit_timings
 
     async def execute(self) -> bool:
-        if not self.debug: return True
+        if not self.debug:
+            return True
 
         for item in self.building_timings:
             type_id = item[0]
@@ -30,7 +32,9 @@ class WarnBuildMacro(ActBase):
                 units = self.cache.own(type_id)
 
             if units and len(units) == count:
-                text = f'#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}'
+                text = (
+                    f"#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}"
+                )
                 await self.knowledge.chat_manager.chat_taunt_once(str(item), lambda: text)
 
         for item in self.unit_timings:
@@ -39,7 +43,9 @@ class WarnBuildMacro(ActBase):
             timing = item[2]
             current_count = self.get_count(type_id, include_killed=True)
             if count == current_count:
-                text = f'#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}'
+                text = (
+                    f"#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}"
+                )
                 await self.knowledge.chat_manager.chat_taunt_once(str(item), lambda: text)
         return True
 

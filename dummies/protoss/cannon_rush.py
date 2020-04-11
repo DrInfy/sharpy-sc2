@@ -1,21 +1,20 @@
-import random
 from math import floor
 from typing import List, Optional
-
-from sc2.unit import Unit
-from sharpy.managers.building_solver import WallType
-from sharpy.managers.roles import UnitTask
-from sharpy.plans.acts import *
-from sharpy.plans.acts.protoss import *
-from sharpy.plans.require import *
-from sharpy.plans.tactics import *
-from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.utils import select_build_index
 
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
+from sc2.unit import Unit
+
+from sharpy.knowledges import KnowledgeBot, Knowledge
+from sharpy.managers.building_solver import WallType
+from sharpy.managers.roles import UnitTask
+from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
+from sharpy.plans.acts import *
+from sharpy.plans.acts.protoss import *
+from sharpy.plans.require import *
+from sharpy.plans.tactics import *
+from sharpy.utils import select_build_index
 
 
 class ProxyCannoneer(ActBase):
@@ -70,7 +69,7 @@ class ProxyCannoneer(ActBase):
         self.knowledge.roles.set_task(UnitTask.Reserved, worker)
 
         if self.has_build_order(worker):
-           return
+            return
 
         target_index = self.get_cannon_index()
 
@@ -95,7 +94,7 @@ class ProxyCannoneer(ActBase):
     async def micro_pylon_worker(self, worker):
         self.knowledge.roles.set_task(UnitTask.Reserved, worker)
         if self.has_build_order(worker):
-           return
+            return
 
         cannon_index = self.get_cannon_index()
         target_index = self.get_index()
@@ -187,72 +186,76 @@ class ProxyCannoneer(ActBase):
         self.proxy_worker_tag2 = worker.tag
         return worker
 
-class CannonRush(KnowledgeBot):
 
+class CannonRush(KnowledgeBot):
     def __init__(self):
         super().__init__("Sharp Cannon")
 
     async def create_plan(self) -> BuildOrder:
         rnd = select_build_index(self.knowledge, "build.cannon_rush", 0, 2)
         self.knowledge.building_solver.wall_type = WallType.NoWall
-        rush_killed = RequireCustom(lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or
-                                    self.time > 4 * 60)
+        rush_killed = RequireCustom(
+            lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or self.time > 4 * 60
+        )
 
         if rnd == 2:
-           cannon_rush = self.cannon_expand()
+            cannon_rush = self.cannon_expand()
         elif rnd == 1:
-           cannon_rush = self.cannon_contain()
+            cannon_rush = self.cannon_contain()
         else:
-           cannon_rush = self.cannon_rush()
+            cannon_rush = self.cannon_rush()
 
         return BuildOrder(
-            Step(None, ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                 skip=RequiredUnitExists(UnitTypeId.PROBE, 16), skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1)),
+            Step(
+                None,
+                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                skip=RequiredUnitExists(UnitTypeId.PROBE, 16),
+                skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1),
+            ),
             ChronoAnyTech(0),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 13),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 Step(None, cannon_rush, skip=rush_killed),
                 BuildOrder(
-                        [
-                            ActExpand(2),
-                            ProtossUnit(UnitTypeId.PROBE, 30),
-                            Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        ],
-                        GridBuilding(UnitTypeId.GATEWAY, 2),
-                        GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
-                        StepBuildGas(2),
-                        AutoPylon(),
-                        ProtossUnit(UnitTypeId.STALKER, 4, priority=True),
+                    [
+                        ActExpand(2),
+                        ProtossUnit(UnitTypeId.PROBE, 30),
+                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                    ],
+                    GridBuilding(UnitTypeId.GATEWAY, 2),
+                    GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
+                    StepBuildGas(2),
+                    AutoPylon(),
+                    ProtossUnit(UnitTypeId.STALKER, 4, priority=True),
+                    StepBuildGas(3, skip=RequiredGas(300)),
+                    ActTech(UpgradeId.WARPGATERESEARCH),
+                    BuildOrder([]).forge_upgrades_all,
+                    Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
+                    [
+                        ProtossUnit(UnitTypeId.PROBE, 22),
+                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                         StepBuildGas(3, skip=RequiredGas(300)),
-                        ActTech(UpgradeId.WARPGATERESEARCH),
-                        BuildOrder([]).forge_upgrades_all,
-                        Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
-                        [
-                            ProtossUnit(UnitTypeId.PROBE, 22),
-                            Step(RequiredUnitExists(UnitTypeId.NEXUS, 2),
-                                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                            StepBuildGas(3, skip=RequiredGas(300))
-                        ],
-                        [
-                            ProtossUnit(UnitTypeId.STALKER, 100)
-                        ],
-                        [
-                            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-                            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
-                            StepBuildGas(4, skip=RequiredGas(200)),
-                        ]
-                    )
-
+                    ],
+                    [ProtossUnit(UnitTypeId.STALKER, 100)],
+                    [
+                        Step(
+                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
+                            GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        ),
+                        Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
+                        StepBuildGas(4, skip=RequiredGas(200)),
+                    ],
+                ),
             ),
             SequentialList(
-                    PlanCancelBuilding(),
-                    PlanZoneDefense(),
-                    PlanDistributeWorkers(),
-                    PlanZoneGather(),
-                    PlanZoneAttack(6),
-                    PlanFinishEnemy(),
-            )
+                PlanCancelBuilding(),
+                PlanZoneDefense(),
+                PlanDistributeWorkers(),
+                PlanZoneGather(),
+                PlanZoneAttack(6),
+                PlanFinishEnemy(),
+            ),
         )
 
     def cannon_contain(self) -> ActBase:
@@ -261,78 +264,109 @@ class CannonRush(KnowledgeBot):
         natural = self.knowledge.expansion_zones[-2]
         enemy_ramp = self.knowledge.enemy_base_ramp
 
-        return Step(None, BuildOrder(
-            [
+        return Step(
+            None,
+            BuildOrder(
                 [
-                    ActUnitOnce(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
-                    GridBuilding(UnitTypeId.FORGE, 1),
-                    ActUnitOnce(UnitTypeId.PROBE, UnitTypeId.NEXUS, 18),
-                ],
-                [
-                    BuildPosition(UnitTypeId.PYLON, natural.center_location),
-                    BuildPosition(UnitTypeId.PHOTONCANNON, natural.center_location.towards(enemy_ramp.bottom_center, 5),
-                                  exact=False, only_once=True),
-                    BuildPosition(UnitTypeId.PYLON, natural.center_location.towards(enemy_ramp.bottom_center, 8),
-                                  exact=False, only_once=True),
-                    BuildPosition(UnitTypeId.PHOTONCANNON, natural.center_location.towards(enemy_ramp.top_center, 13),
-                                  exact=False, only_once=True),
-                    BuildPosition(UnitTypeId.PYLON,
-                                  natural.center_location.towards(enemy_ramp.bottom_center, 16), exact=False,
-                                  only_once=True),
-                    BuildPosition(UnitTypeId.PHOTONCANNON,
-                                  natural.center_location.towards(enemy_ramp.top_center, 20), exact=False,
-                                  only_once=True),
-                ],
-                [
-                    BuildPosition(UnitTypeId.PYLON, natural.behind_mineral_position_center, exact=False,
-                                  only_once=True),
-                    BuildPosition(UnitTypeId.PHOTONCANNON,
-                                  natural.center_location.towards(enemy_main.behind_mineral_position_center, 5),
-                                  exact=False, only_once=True),
-                    BuildPosition(UnitTypeId.PYLON,
-                                  natural.center_location.towards(enemy_main.behind_mineral_position_center, 8),
-                                  exact=False, only_once=True),
-                    BuildPosition(UnitTypeId.PHOTONCANNON,
-                                  natural.center_location.towards(enemy_main.behind_mineral_position_center, 12),
-                                  exact=False, only_once=True),
-
-                    BuildPosition(UnitTypeId.PYLON,
-                                  natural.center_location.towards(enemy_main.behind_mineral_position_center, 16),
-                                  exact=False,
-                                  only_once=True),
-                    BuildPosition(UnitTypeId.PHOTONCANNON,
-                                  natural.center_location.towards(enemy_main.behind_mineral_position_center, 20),
-                                  exact=False,
-                                  only_once=True),
-                ],
-                ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
-            ]),
-        # Skip cannon rushing if we started nexus, or have over 750 minerals, the build is probably stuck
-        skip=RequiredAny([RequiredUnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]))
+                    [
+                        ActUnitOnce(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
+                        GridBuilding(UnitTypeId.FORGE, 1),
+                        ActUnitOnce(UnitTypeId.PROBE, UnitTypeId.NEXUS, 18),
+                    ],
+                    [
+                        BuildPosition(UnitTypeId.PYLON, natural.center_location),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_ramp.bottom_center, 5),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PYLON,
+                            natural.center_location.towards(enemy_ramp.bottom_center, 8),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_ramp.top_center, 13),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PYLON,
+                            natural.center_location.towards(enemy_ramp.bottom_center, 16),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_ramp.top_center, 20),
+                            exact=False,
+                            only_once=True,
+                        ),
+                    ],
+                    [
+                        BuildPosition(
+                            UnitTypeId.PYLON, natural.behind_mineral_position_center, exact=False, only_once=True
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_main.behind_mineral_position_center, 5),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PYLON,
+                            natural.center_location.towards(enemy_main.behind_mineral_position_center, 8),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_main.behind_mineral_position_center, 12),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PYLON,
+                            natural.center_location.towards(enemy_main.behind_mineral_position_center, 16),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            natural.center_location.towards(enemy_main.behind_mineral_position_center, 20),
+                            exact=False,
+                            only_once=True,
+                        ),
+                    ],
+                    ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
+                ]
+            ),
+            # Skip cannon rushing if we started nexus, or have over 750 minerals, the build is probably stuck
+            skip=RequiredAny([RequiredUnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]),
+        )
 
     def cannon_rush(self) -> ActBase:
         self.knowledge.print(f"Cannon rush", "Build")
-        return BuildOrder([
+        return BuildOrder(
             [
-                GridBuilding(UnitTypeId.PYLON, 1),
-                GridBuilding(UnitTypeId.FORGE, 1, priority=True),
-            ],
-
-            ProxyCannoneer(),
-            ProtossUnit(UnitTypeId.PROBE, 18),
-            ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-            [
-                Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
-                Step(RequiredMinerals(700), ActExpand(2), skip=RequiredUnitExists(UnitTypeId.NEXUS, 2)),
-                GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
+                [GridBuilding(UnitTypeId.PYLON, 1), GridBuilding(UnitTypeId.FORGE, 1, priority=True)],
+                ProxyCannoneer(),
+                ProtossUnit(UnitTypeId.PROBE, 18),
+                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                [
+                    Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
+                    Step(RequiredMinerals(700), ActExpand(2), skip=RequiredUnitExists(UnitTypeId.NEXUS, 2)),
+                    GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
+                ],
             ]
-        ])
+        )
 
     def cannon_expand(self) -> ActBase:
         self.knowledge.print(f"Cannon expand", "Build")
-        enemy_main = self.knowledge.expansion_zones[-1]
         natural = self.knowledge.expansion_zones[-2]
-        enemy_ramp = self.knowledge.enemy_base_ramp
         pylon_pos: Point2 = natural.behind_mineral_position_center
 
         return BuildOrder(
@@ -340,23 +374,27 @@ class CannonRush(KnowledgeBot):
                 [
                     ActUnitOnce(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                     GridBuilding(UnitTypeId.FORGE, 1),
-
                     ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 18),
                 ],
                 [
-                    BuildPosition(UnitTypeId.PYLON, pylon_pos, exact=False,
-                                  only_once=True),
-                    Step(None,
-                    BuildPosition(UnitTypeId.PHOTONCANNON,
-                                  pylon_pos.towards(natural.center_location, 4),
-                                  exact=False, only_once=True),
-                         skip=RequireCustom(lambda k: k.lost_units_manager.own_lost_type(UnitTypeId.PYLON) > 0))
-                    ,
+                    BuildPosition(UnitTypeId.PYLON, pylon_pos, exact=False, only_once=True),
+                    Step(
+                        None,
+                        BuildPosition(
+                            UnitTypeId.PHOTONCANNON,
+                            pylon_pos.towards(natural.center_location, 4),
+                            exact=False,
+                            only_once=True,
+                        ),
+                        skip=RequireCustom(lambda k: k.lost_units_manager.own_lost_type(UnitTypeId.PYLON) > 0),
+                    ),
                     ActExpand(2),
                     GridBuilding(UnitTypeId.GATEWAY, 1),
                     ActDefensiveCannons(2, 0, 1),
-                ]
-            ])
+                ],
+            ]
+        )
+
 
 class LadderBot(CannonRush):
     @property

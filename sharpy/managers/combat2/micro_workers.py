@@ -15,14 +15,15 @@ class MicroWorkers(MicroStep):
             if self.ready_to_attack_ratio < 0.25:
                 return Action(self.closest_group.center, True)
             return Action(self.closest_group.center.towards(self.center, -3), False)
-        #if self.engage_percentage == 0
+        # if self.engage_percentage == 0
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         if self.closest_group and self.engaged_power.melee_percentage > 0.9:
             backstep: Point2 = unit.position.towards(self.closest_group.center, -3)
-            if ((unit.health + unit.shield <= 5 and not self.ready_to_shoot(unit))
-                    or (unit.shield_health_percentage < 0.5 and unit.weapon_cooldown > 9)):
+            if (unit.health + unit.shield <= 5 and not self.ready_to_shoot(unit)) or (
+                unit.shield_health_percentage < 0.5 and unit.weapon_cooldown > 9
+            ):
                 backstep = self.pather.find_weak_influence_ground(backstep, 4)
                 if self.cache.own_in_range(unit.position, 1) or self.cache.enemy_in_range(unit.position, 1):
                     # Mineral walk

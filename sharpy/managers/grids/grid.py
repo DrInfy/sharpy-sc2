@@ -8,6 +8,7 @@ from sc2.position import Point2, Point3
 from .rectangle import Rectangle
 from .blocker_type import BlockerType
 
+
 class Grid:
     def __init__(self, width, height):
         self.height = height
@@ -16,15 +17,15 @@ class Grid:
         self._data = [[0 for y in range(height)] for x in range(width)]
 
     def set(self, x: int, y: int, value):
-        #print(f"{x},{y})")
+        # print(f"{x},{y})")
         self._data[x][y] = value
 
-    def get(self, x:int, y: int):
+    def get(self, x: int, y: int):
         """Get value from position, no checking for performance"""
-        #print(f'{x}, {y}')
+        # print(f'{x}, {y}')
         return self._data[x][y]
 
-    def __getitem__(self, pos:Point2):
+    def __getitem__(self, pos: Point2):
         """ Example usage: is_pathable = self._game_info.pathing_grid[Point2((20, 20))] == 0 """
         if not self.is_inside(pos):
             return self.get_default()
@@ -35,7 +36,7 @@ class Grid:
     def get_default(self):
         ...
 
-    def is_inside(self, pos:Point2):
+    def is_inside(self, pos: Point2):
         return 0 <= pos[0] < self.width and 0 <= pos[1] < self.height
 
     def query_area(self, position: Point2, fillType: BlockerType, check) -> bool:
@@ -97,7 +98,7 @@ class Grid:
             w = 2
             h = 1
         else:
-            raise Exception('invalid fill type')
+            raise Exception("invalid fill type")
 
         wStart = math.ceil(x - w / 2)
         hStart = math.ceil(y - h / 2)
@@ -130,17 +131,17 @@ class Grid:
         for y in range(0, self.height):
             for x in range(0, self.width):
                 y_value = self.height - 1 - y
-                #print(f'{x}, {y_value}')
+                # print(f'{x}, {y_value}')
                 image_data.append(self.color_to_value(color_func(self.get(x, y_value))))
 
         myarray = np.asarray(image_data, dtype=np.uint32)
         from PIL import Image
 
-        #databytes = np.packbits(myarray)
-        im = Image.frombytes(mode='RGBA', size=tuple((self.width, self.height)), data=myarray)
+        # databytes = np.packbits(myarray)
+        im = Image.frombytes(mode="RGBA", size=tuple((self.width, self.height)), data=myarray)
 
-        if not os.path.exists('data'):
-            os.mkdir('data')
+        if not os.path.exists("data"):
+            os.mkdir("data")
         im.save(os.path.join("data", filename))
 
     def color_to_value(self, color: Point3) -> int:

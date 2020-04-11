@@ -12,8 +12,15 @@ class ChronoAnyTech(ActBase):
     def __init__(self, save_to_energy: int):
         assert save_to_energy is not None and isinstance(save_to_energy, int)
         self.save_to_energy = save_to_energy
-        self.types = [UnitTypeId.FORGE, UnitTypeId.ROBOTICSBAY, UnitTypeId.TWILIGHTCOUNCIL, UnitTypeId.TEMPLARARCHIVE,
-                      UnitTypeId.CYBERNETICSCORE, UnitTypeId.DARKSHRINE, UnitTypeId.FLEETBEACON]
+        self.types = [
+            UnitTypeId.FORGE,
+            UnitTypeId.ROBOTICSBAY,
+            UnitTypeId.TWILIGHTCOUNCIL,
+            UnitTypeId.TEMPLARARCHIVE,
+            UnitTypeId.CYBERNETICSCORE,
+            UnitTypeId.DARKSHRINE,
+            UnitTypeId.FLEETBEACON,
+        ]
         super().__init__()
 
     async def execute(self):
@@ -30,6 +37,6 @@ class ChronoAnyTech(ActBase):
                     for nexus in self.cache.own(UnitTypeId.NEXUS):
                         if nexus.energy > self.save_to_energy + ChronoAnyTech.ENERGY_COST:
                             self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                            self.print(f'Chrono {ability_id.name}')
+                            self.print(f"Chrono {ability_id.name}")
                             return True  # Never block and only boost one building per iteration
         return True  # Never block

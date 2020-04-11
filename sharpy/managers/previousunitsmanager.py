@@ -6,11 +6,12 @@ from sc2.unit import Unit
 
 class PreviousUnitsManager(ManagerBase):
     """Keeps track of units from the previous iteration. Useful for checking eg. which unit died."""
+
     def __init__(self):
         super().__init__()
         self.previous_units: Dict[int, Unit] = dict()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def update(self):

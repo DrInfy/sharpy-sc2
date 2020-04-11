@@ -19,9 +19,14 @@ worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
 class GridBuilding(ActBuilding):
-
-    def __init__(self, unit_type: UnitTypeId, to_count: int, iterator: Optional[int] = None, priority: bool = False,
-                 allow_wall: bool = True):
+    def __init__(
+        self,
+        unit_type: UnitTypeId,
+        to_count: int,
+        iterator: Optional[int] = None,
+        priority: bool = False,
+        allow_wall: bool = True,
+    ):
         super().__init__(unit_type, to_count)
         self.allow_wall = allow_wall
         assert isinstance(priority, bool)
@@ -32,7 +37,7 @@ class GridBuilding(ActBuilding):
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.building_solver = self.knowledge.building_solver
 
@@ -50,8 +55,10 @@ class GridBuilding(ActBuilding):
 
             return True  # Step is done
 
-        if count + (self.pending_build(self.unit_type)
-                    - self.cache.own(self.unit_type).not_ready.amount) >= self.to_count:
+        if (
+            count + (self.pending_build(self.unit_type) - self.cache.own(self.unit_type).not_ready.amount)
+            >= self.to_count
+        ):
             if self.builder_tag is not None:
                 worker = self.cache.by_tag(self.builder_tag)
                 if worker is not None:
@@ -64,7 +71,7 @@ class GridBuilding(ActBuilding):
         elif self.knowledge.my_race == Race.Terran:
             position = self.position_terran(count)
         else:
-            raise ValueError(f'Position lookup for race {self.knowledge.my_race} not supported.')
+            raise ValueError(f"Position lookup for race {self.knowledge.my_race} not supported.")
 
         if position is None:
             if self.make_pylon is not None:
@@ -120,8 +127,10 @@ class GridBuilding(ActBuilding):
                     else:
                         available_minerals -= 50  # should start producing workers soon now
 
-            if available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals \
-                    and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene:
+            if (
+                available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals
+                and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene
+            ):
                 # Go wait
                 self.set_worker(worker)
                 self.knowledge.reserve(cost.minerals, cost.vespene)
@@ -151,8 +160,9 @@ class GridBuilding(ActBuilding):
         worker: Unit = None
         if self.builder_tag is None:
             if self.knowledge.my_race == Race.Protoss:
-                builders: Units = self.knowledge.roles.all_from_task(UnitTask.Building)\
-                    .filter(lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET))
+                builders: Units = self.knowledge.roles.all_from_task(UnitTask.Building).filter(
+                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
+                )
 
                 if builders:
                     closest = None
@@ -170,8 +180,9 @@ class GridBuilding(ActBuilding):
                     worker = closest
 
             if worker is None:
-                free_workers = self.knowledge.roles.free_workers\
-                    .filter(lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET))
+                free_workers = self.knowledge.roles.free_workers.filter(
+                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
+                )
                 if self.knowledge.my_race == Race.Terran:
                     free_workers = free_workers.filter(lambda u: not self.has_build_order(u))
                 if free_workers.exists:
@@ -311,7 +322,6 @@ class GridBuilding(ActBuilding):
 
         is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
         buildings = self.ai.structures
-        iterator = self.get_iterator(is_depot, count)
 
         if is_depot:
             for point in self.building_solver.pylon_position[::1]:

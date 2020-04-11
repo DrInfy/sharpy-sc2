@@ -14,5 +14,5 @@ def main():
     print(result, " against opponent ", opponentid)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

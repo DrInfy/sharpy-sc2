@@ -21,12 +21,16 @@ class UnitRoleManager(ManagerBase):
         self.chat_count = 0
         self.had_task_set: Set[int] = set()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         # Peace units aren't drawn back to defend
         if knowledge.my_race == Race.Zerg:
-            self.peace_unit_types = [UnitTypeId.OVERLORD, UnitTypeId.TRANSPORTOVERLORDCOCOON, UnitTypeId.OVERLORDTRANSPORT]
+            self.peace_unit_types = [
+                UnitTypeId.OVERLORD,
+                UnitTypeId.TRANSPORTOVERLORDCOCOON,
+                UnitTypeId.OVERLORDTRANSPORT,
+            ]
         else:
             self.peace_unit_types = []
 
@@ -109,7 +113,7 @@ class UnitRoleManager(ManagerBase):
         """Short cut to roles[Idle].units"""
         return self.roles[UnitTask.Idle.value].units
 
-    def get_defenders(self, power: ExtendedPower, position: Point2 ) -> Units:
+    def get_defenders(self, power: ExtendedPower, position: Point2) -> Units:
         units = Units([], self.ai)
         current_power = ExtendedPower(self.unit_values)
 
@@ -119,7 +123,9 @@ class UnitRoleManager(ManagerBase):
         self._defenders_from(UnitTask.Attacking, current_power, position, power, units)
         return units
 
-    def _defenders_from(self, task: UnitTask, current_power: ExtendedPower, position: Point2, power: ExtendedPower, units: Units):
+    def _defenders_from(
+        self, task: UnitTask, current_power: ExtendedPower, position: Point2, power: ExtendedPower, units: Units
+    ):
         """ Get defenders from a task. """
         if current_power.is_enough_for(power):
             return
@@ -129,8 +135,7 @@ class UnitRoleManager(ManagerBase):
         exclude_types.extend(self.knowledge.unit_values.worker_types)
         exclude_types.extend(self.peace_unit_types)
 
-        role_units = self.roles[task.value].units\
-            .exclude_type(exclude_types)
+        role_units = self.roles[task.value].units.exclude_type(exclude_types)
 
         unit: Unit
         for unit in role_units.sorted_by_distance_to(position):
@@ -206,7 +211,7 @@ class UnitRoleManager(ManagerBase):
         self.had_task_set.clear()
 
     async def post_update(self):
-        if self.debug: # and self.chat_count < self.ai.time / 15:
+        if self.debug:  # and self.chat_count < self.ai.time / 15:
             self.chat_count += 1
             idle = len(self.roles[UnitTask.Idle.value].tags)
             building = len(self.roles[UnitTask.Building.value].tags)
@@ -219,15 +224,16 @@ class UnitRoleManager(ManagerBase):
             reserved = len(self.roles[UnitTask.Reserved.value].tags)
             hallucination = len(self.roles[UnitTask.Hallucination.value].tags)
 
-            enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
-            power_text = f'{enemy_total_power.power} ({enemy_total_power.ground_power}/{enemy_total_power.air_power})'
+            # enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
+            # power_text = f'{enemy_total_power.power} ({enemy_total_power.ground_power}/{enemy_total_power.air_power})'
 
             # msg = f'{self.ai.time_formatted} I{idle} B{building} G{gathering} S{scouting} M{moving} ' \
             #     f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination} ETP{power_text}'
-            msg = f'I{idle} B{building} G{gathering} S{scouting} M{moving} ' \
-                f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}'
-            client: Client  = self.ai._client
+            msg = (
+                f"I{idle} B{building} G{gathering} S{scouting} M{moving} "
+                f"F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}"
+            )
+            client: Client = self.ai._client
             client.debug_text_2d(msg, Point2((0.4, 0.1)), None, 16)
 
-            #self.knowledge.print(msg)
-
+            # self.knowledge.print(msg)

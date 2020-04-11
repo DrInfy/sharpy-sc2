@@ -5,7 +5,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
 
-class SiegingStatus():
+class SiegingStatus:
     def __init__(self, tank: Unit):
         self.requested_time = 0
         self.status = 0
@@ -36,7 +36,6 @@ class SiegingStatus():
 
 
 class MicroLurkers(GenericMicro):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.siege_status: Dict[int, SiegingStatus] = {}
@@ -81,12 +80,14 @@ class MicroLurkers(GenericMicro):
 
         order = status.relay_order(unit, siege_mode, self.ai.time)
 
-        if (order and order.ability == AbilityId.BURROWDOWN_LURKER
-                and self.cache.own_in_range(unit.position, 0.9375 * 2).filter(lambda u: u.is_burrowed).amount > 0):
+        if (
+            order
+            and order.ability == AbilityId.BURROWDOWN_LURKER
+            and self.cache.own_in_range(unit.position, 0.9375 * 2).filter(lambda u: u.is_burrowed).amount > 0
+        ):
             return current_command
 
         if order:
             return order
 
         return current_command
-

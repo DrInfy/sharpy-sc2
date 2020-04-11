@@ -10,6 +10,7 @@ from sharpy.managers.enemy_units_manager import ignored_types
 
 class LostUnitsManager(ManagerBase):
     """Keeps track of lost units. Both ours and enemies."""
+
     def __init__(self):
         super().__init__()
         self.hallucination_tags: List[int] = []
@@ -17,7 +18,7 @@ class LostUnitsManager(ManagerBase):
         self._my_lost_units: Dict[UnitTypeId, List[Unit]] = {}
         self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = {}
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
@@ -85,13 +86,9 @@ class LostUnitsManager(ManagerBase):
         self.print_contents()
 
     def print_contents(self):
-        self.print_end(
-            f"My lost units minerals and gas: {self.calculate_own_lost_resources()}"
-        )
+        self.print_end(f"My lost units minerals and gas: {self.calculate_own_lost_resources()}")
 
-        self.print_end(
-            f"Enemy lost units minerals and gas: {self.calculate_enemy_lost_resources()}"
-        )
+        self.print_end(f"Enemy lost units minerals and gas: {self.calculate_enemy_lost_resources()}")
 
     def print_end(self, msg: str):
         self.knowledge.print(msg, "LostUnitsContents", stats=False)

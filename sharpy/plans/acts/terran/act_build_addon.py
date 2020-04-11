@@ -13,6 +13,7 @@ from sc2.unit import Unit
 
 class ActBuildAddon(ActBase):
     """Act of starting to build new buildings up to specified count"""
+
     def __init__(self, unit_type: UnitTypeId, unit_from_type: UnitTypeId, to_count: int):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         assert unit_from_type is not None and isinstance(unit_from_type, UnitTypeId)
@@ -26,7 +27,7 @@ class ActBuildAddon(ActBase):
 
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def execute(self) -> bool:
@@ -44,8 +45,8 @@ class ActBuildAddon(ActBase):
         for builder in self.cache.own(self.unit_from_type).ready.idle:
             if builder.add_on_tag == 0:
 
-                #if self.tried_to_build_dict.get(builder.tag, 0) + 0.5 > ai.time:
-                    #continue # Prevent crashes by only trying to build twice per seconds
+                # if self.tried_to_build_dict.get(builder.tag, 0) + 0.5 > ai.time:
+                # continue # Prevent crashes by only trying to build twice per seconds
 
                 center: Point2 = builder.position.offset(Point2((2.5, -0.5)))
 

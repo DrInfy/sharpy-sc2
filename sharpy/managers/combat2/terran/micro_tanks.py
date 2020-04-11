@@ -5,7 +5,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
 
-class SiegingStatus():
+class SiegingStatus:
     def __init__(self, tank: Unit):
         self.requested_time = 0
         self.status = 0
@@ -36,12 +36,11 @@ class SiegingStatus():
 
 
 class MicroTanks(GenericMicro):
-
     def __init__(self, knowledge):
         super().__init__(knowledge)
         self.siege_status: Dict[int, SiegingStatus] = {}
 
-    def get_siege_status(self, tank: Unit)-> SiegingStatus:
+    def get_siege_status(self, tank: Unit) -> SiegingStatus:
         status = self.siege_status.get(tank.tag)
         if status is None:
             status = SiegingStatus(tank)
@@ -75,8 +74,9 @@ class MicroTanks(GenericMicro):
                 if unit.distance_to(self.knowledge.enemy_base_ramp.bottom_center) > 7:
                     siege_mode = AbilityId.SIEGEMODE_SIEGEMODE
 
-            if distance > unsiege_threshold and \
-                    (unit.type_id == UnitTypeId.SIEGETANKSIEGED and distance > unsiege_threshold):
+            if distance > unsiege_threshold and (
+                unit.type_id == UnitTypeId.SIEGETANKSIEGED and distance > unsiege_threshold
+            ):
                 siege_mode = AbilityId.UNSIEGE_UNSIEGE
 
             if unit.type_id == UnitTypeId.SIEGETANKSIEGED and not relevant_enemies.exists:
@@ -92,4 +92,3 @@ class MicroTanks(GenericMicro):
             return current_command
         else:
             return super().unit_solve_combat(unit, current_command)
-

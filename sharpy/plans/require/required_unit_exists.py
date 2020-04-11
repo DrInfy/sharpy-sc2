@@ -5,10 +5,14 @@ from sharpy.plans.require.require_base import RequireBase
 
 
 class RequiredUnitExists(RequireBase):
-    def __init__(self, unit_type: UnitTypeId, count: int = 1,
-                 include_pending: bool = False,
-                 include_killed: bool = False,
-                 include_not_ready: bool = True):
+    def __init__(
+        self,
+        unit_type: UnitTypeId,
+        count: int = 1,
+        include_pending: bool = False,
+        include_killed: bool = False,
+        include_not_ready: bool = True,
+    ):
 
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         assert count is not None and isinstance(count, int)

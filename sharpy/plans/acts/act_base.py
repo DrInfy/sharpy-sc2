@@ -16,7 +16,6 @@ from sc2.units import Units
 
 build_commands = {
     # Protoss
-
     AbilityId.PROTOSSBUILD_NEXUS,
     AbilityId.PROTOSSBUILD_PYLON,
     AbilityId.PROTOSSBUILD_GATEWAY,
@@ -32,7 +31,6 @@ build_commands = {
     AbilityId.PROTOSSBUILD_DARKSHRINE,
     AbilityId.PROTOSSBUILD_ROBOTICSFACILITY,
     AbilityId.PROTOSSBUILD_ROBOTICSBAY,
-
     # Terran
     AbilityId.TERRANBUILD_COMMANDCENTER,
     AbilityId.TERRANBUILD_SUPPLYDEPOT,
@@ -47,7 +45,6 @@ build_commands = {
     AbilityId.TERRANBUILD_GHOSTACADEMY,
     AbilityId.TERRANBUILD_STARPORT,
     AbilityId.TERRANBUILD_FUSIONCORE,
-
     # Zerg
     AbilityId.ZERGBUILD_BANELINGNEST,
     AbilityId.ZERGBUILD_EVOLUTIONCHAMBER,
@@ -66,7 +63,7 @@ build_commands = {
 
 
 class ActBase(ABC):
-    knowledge: 'Knowledge'
+    knowledge: "Knowledge"
     ai: sc2.BotAI
     cache: UnitCacheManager
     unit_values: UnitValue
@@ -75,7 +72,7 @@ class ActBase(ABC):
     roles: UnitRoleManager
 
     def __init__(self):
-        _debug: bool = False
+        self._debug: bool = False
 
     @property
     def debug(self):
@@ -100,7 +97,7 @@ class ActBase(ABC):
         """
         return self.knowledge.action_handler.allow_action(unit)
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
         self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")
         self.ai = knowledge.ai
@@ -139,7 +136,9 @@ class ActBase(ABC):
         # Already building structures
         # Avoid counting structures twice for Terran SCVs.
         if self.knowledge.my_race != Race.Terran:
-            pending_buildings: List[Point2] = list(map(lambda structure: structure.position, self.cache.own(unit_type).structure.not_ready))
+            pending_buildings: List[Point2] = list(
+                map(lambda structure: structure.position, self.cache.own(unit_type).structure.not_ready)
+            )
             positions.extend(pending_buildings)
 
         return positions
@@ -172,10 +171,9 @@ class ActBase(ABC):
                     return True
         return False
 
-    def get_count(self, unit_type: UnitTypeId,
-                  include_pending=True,
-                  include_killed=False,
-                  include_not_ready: bool = True) -> int:
+    def get_count(
+        self, unit_type: UnitTypeId, include_pending=True, include_killed=False, include_not_ready: bool = True
+    ) -> int:
         """Calculates how many buildings there are already, including pending structures."""
         count = 0
 

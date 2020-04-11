@@ -16,14 +16,14 @@ class PlanWorkerOnlyDefense(ActBase):
         super().__init__()
         self.defender_tags: List[int] = []
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.was_active = False
         self.gather_mf = self.solve_optimal_mineral_field()
 
     def solve_optimal_mineral_field(self) -> Unit:
         main: Zone = self.knowledge.own_main_zone
-        for mf in main.mineral_fields: #type: Unit
+        for mf in main.mineral_fields:  # type: Unit
             if len(main.mineral_fields.closer_than(2, mf.position)) > 2:
                 return mf
         return main.mineral_fields.first
@@ -40,7 +40,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         combined_enemies: Units = Units([], self.ai)
 
-        for zone in self.knowledge.expansion_zones: # type: Zone
+        for zone in self.knowledge.expansion_zones:  # type: Zone
             if not zone.is_ours:
                 continue
 
@@ -67,7 +67,12 @@ class PlanWorkerOnlyDefense(ActBase):
             # Single scout worker
             u: Unit
 
-            if self.ai.workers.filter(lambda u: u.shield_health_percentage < 0.75 and u.distance_to(self.ai.start_location) < 30).amount == 0:
+            if (
+                self.ai.workers.filter(
+                    lambda u: u.shield_health_percentage < 0.75 and u.distance_to(self.ai.start_location) < 30
+                ).amount
+                == 0
+            ):
                 # Safe, let the scout do whatever it wants
                 # TODO: Check expansion / building blocking
                 self.free_others()
@@ -83,9 +88,10 @@ class PlanWorkerOnlyDefense(ActBase):
                 closest_enemy = combined_enemies.closest_to(self.ai.start_location)
 
             buildings_needs_defending = self.ai.structures.filter(lambda u: self.building_needs_defending(u, 0.6))
-            if (not buildings_needs_defending.exists
-                    and (distance > 4
-                    or (len(already_defending) < 5 and combined_enemies.closest_distance_to(self.ai.start_location) > 9))):
+            if not buildings_needs_defending.exists and (
+                distance > 4
+                or (len(already_defending) < 5 and combined_enemies.closest_distance_to(self.ai.start_location) > 9)
+            ):
                 self.free_others()
                 return False  # no real danger, go back to mining
 
@@ -101,13 +107,13 @@ class PlanWorkerOnlyDefense(ActBase):
                 return False  # No army to fight with, waiting for one.
 
             self.knowledge.roles.set_tasks(UnitTask.Defending, army)
-            #my_closest = army.closest_to(closest_enemy.position)
+            # my_closest = army.closest_to(closest_enemy.position)
             # center = army.center
 
             buildings_needs_defending = self.ai.structures.filter(lambda u: self.building_needs_defending(u, 0.5))
             # own_closest = army.closest_to(closest_enemy)
 
-            if (buildings_needs_defending.exists or distance < 3):
+            if buildings_needs_defending.exists or distance < 3:
                 for unit in army:
                     # if unit.type_id == UnitTypeId.PROBE and unit.shield <= 5:
                     #     await self.regroup_defend(actions, army, combined_enemies, unit)
@@ -143,7 +149,9 @@ class PlanWorkerOnlyDefense(ActBase):
             self.knowledge.combat_manager.add_unit(unit)
 
     def closest_distance_between_our_theirs(self, combined_enemies: Units) -> Tuple[float, Optional[Unit]]:
-        own = self.ai.units.filter(lambda unit: not unit.is_structure and unit.type_id not in self.unit_values.combat_ignore)
+        own = self.ai.units.filter(
+            lambda unit: not unit.is_structure and unit.type_id not in self.unit_values.combat_ignore
+        )
         closest: Optional[Unit] = None
         d = 0
         for own_unit in own:  # type: Unit
@@ -164,7 +172,7 @@ class PlanWorkerOnlyDefense(ActBase):
         workers: Units = Units([], self.ai)
         count = 0
 
-        for unit in self.ai.units: # type: Unit
+        for unit in self.ai.units:  # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
             if unit.type_id in self.unit_values.worker_types:
@@ -173,13 +181,13 @@ class PlanWorkerOnlyDefense(ActBase):
                 fighters.append(unit)
 
         if fighters:
-            for fighter in fighters: # type: Unit
+            for fighter in fighters:  # type: Unit
                 army.append(fighter)
                 self.defender_tags.append(fighter.tag)
                 count += self.unit_values.power(fighter)
 
         if already_defending:
-            for unit in already_defending: # type: Unit
+            for unit in already_defending:  # type: Unit
                 if self.ready_to_defend(unit):
                     count += 1
                     army.append(unit)
@@ -187,17 +195,16 @@ class PlanWorkerOnlyDefense(ActBase):
                     if count >= defender_count:
                         return army
 
-
-        for unit in workers.sorted_by_distance_to(target.position): # type: Unit
-            if self.ready_to_defend(unit) and not unit.tag in self.defender_tags:
+        for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
+            if self.ready_to_defend(unit) and unit.tag not in self.defender_tags:
                 count += 1
                 army.append(unit)
                 self.defender_tags.append(unit.tag)
                 if count >= defender_count:
                     return army
 
-        for unit in workers.sorted_by_distance_to(target.position): # type: Unit
-            if not unit.tag in self.defender_tags:
+        for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
+            if unit.tag not in self.defender_tags:
                 count += 1
                 army.append(unit)
                 self.defender_tags.append(unit.tag)
@@ -212,7 +219,7 @@ class PlanWorkerOnlyDefense(ActBase):
         fighters: Units = Units([], self.ai)
         workers: Units = Units([], self.ai)
 
-        for unit in self.ai.units: # type: Unit
+        for unit in self.ai.units:  # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
             if unit.type_id in self.unit_values.worker_types:
@@ -221,7 +228,7 @@ class PlanWorkerOnlyDefense(ActBase):
                 fighters.append(unit)
 
         if fighters:
-            for fighter in fighters: # type: Unit
+            for fighter in fighters:  # type: Unit
                 self.knowledge.roles.set_task(UnitTask.Defending, fighter)
                 self.do(fighter.attack(target))
                 self.defender_tags.append(fighter.tag)
@@ -229,7 +236,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         count = 0
         if already_defending:
-            for unit in already_defending: # type: Unit
+            for unit in already_defending:  # type: Unit
                 if self.ready_to_defend(unit):
                     count += 1
                     self.do(unit.attack(target))
@@ -238,8 +245,7 @@ class PlanWorkerOnlyDefense(ActBase):
                     if count >= defender_count:
                         return
 
-
-        for unit in workers.sorted_by_distance_to(target.position): # type: Unit
+        for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
             if self.ready_to_defend(unit):
                 count += 1
                 self.do(unit.attack(target))

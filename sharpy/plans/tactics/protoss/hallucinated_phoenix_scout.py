@@ -17,6 +17,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     time_interval is seconds.
     """
+
     def __init__(self, time_interval: int = 60):
         super().__init__()
         self.time_interval: int = time_interval
@@ -62,7 +63,9 @@ class HallucinatedPhoenixScout(ActBase):
 
         for sentry in sentries:
             # we don't want to actually spend all energy to make hallucination
-            if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST):
+            if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (
+                another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST
+            ):
                 if self.knowledge.known_enemy_units_mobile.closer_than(15, sentry):
                     # Don't make combat hallucinated phoenixes1
                     continue

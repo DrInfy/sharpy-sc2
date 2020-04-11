@@ -3,6 +3,7 @@ from typing import List, Optional, TYPE_CHECKING
 from sharpy.general.zone import Zone
 from sharpy.managers.combat2 import MoveType, Action, NoAction, GenericMicro, CombatModel
 from sc2.position import Point2
+
 if TYPE_CHECKING:
     from sharpy.managers import *
 
@@ -19,6 +20,7 @@ FORCE_FIELD_ENERGY_COST = 50
 SHIELD_ENERGY_COST = 75
 HALLUCINATION_ENERGY_COST = 75
 
+
 class MicroSentries(GenericMicro):
     def __init__(self, knowledge):
         super().__init__(knowledge)
@@ -32,9 +34,9 @@ class MicroSentries(GenericMicro):
         ramp_ff_movement = 2
 
         self.main_ramp_position: Point2 = self.knowledge.base_ramp.bottom_center.towards(
-            self.knowledge.base_ramp.top_center, ramp_ff_movement)
+            self.knowledge.base_ramp.top_center, ramp_ff_movement
+        )
         # self.main_ramp_position = self.main_ramp_position.offset((0.5, -0.5))
-
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         self.upcoming_fields.clear()
@@ -62,8 +64,12 @@ class MicroSentries(GenericMicro):
             # Don't do anything if force field is ordered
             return NoAction()
 
-        if not self.shield_up and self.should_shield_up and unit.energy >= SHIELD_ENERGY_COST \
-                and self.last_shield_up + 0.5 < self.ai.time:
+        if (
+            not self.shield_up
+            and self.should_shield_up
+            and unit.energy >= SHIELD_ENERGY_COST
+            and self.last_shield_up + 0.5 < self.ai.time
+        ):
             self.shield_up = True
             self.last_shield_up = self.ai.time
             return Action(None, False, AbilityId.GUARDIANSHIELD_GUARDIANSHIELD)
@@ -103,7 +109,7 @@ class MicroSentries(GenericMicro):
                 if self.model == CombatModel.StalkerToSpeedlings:
                     # Protect buildings
                     buildings = self.cache.own_in_range(unit.position, 8).structure
-                    for building in buildings:   # type: Unit
+                    for building in buildings:  # type: Unit
                         if building.health + building.shield < 300:
                             action = self.should_force_field(building.position.towards(self.closest_group.center, 1.2))
                             if action:
@@ -111,7 +117,9 @@ class MicroSentries(GenericMicro):
 
             elif not natural.is_ours or natural.power_balance < 0 and d_main < main.radius:
                 # Protect main base ramp
-                not_flying = self.cache.enemy_in_range(self.main_ramp_position, 3).filter(lambda u: not u.is_flying and not u.is_structure)
+                not_flying = self.cache.enemy_in_range(self.main_ramp_position, 3).filter(
+                    lambda u: not u.is_flying and not u.is_structure
+                )
                 if not_flying:
                     action = self.should_force_field(self.main_ramp_position)
                     if action:
@@ -126,7 +134,7 @@ class MicroSentries(GenericMicro):
                 if position.distance_to(position) < 1.5:
                     return None
 
-        for ff_pos in self.upcoming_fields:   # type: Point2
+        for ff_pos in self.upcoming_fields:  # type: Point2
             if ff_pos.distance_to_point2(position) < 1.5:
                 return None
 

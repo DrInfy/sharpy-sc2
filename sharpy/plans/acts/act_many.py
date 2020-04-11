@@ -2,8 +2,9 @@ from typing import List
 
 import sc2
 
-#from sharpy import 'Knowledge'
+# from sharpy import 'Knowledge'
 from .act_base import ActBase
+
 
 class ActMany(ActBase):
     # Act of building multiple units
@@ -12,7 +13,7 @@ class ActMany(ActBase):
         self.acts = acts
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for act in self.acts:
             await act.start(knowledge)

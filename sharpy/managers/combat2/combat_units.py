@@ -8,9 +8,8 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 
-
-class CombatUnits():
-    def __init__(self, units: Units, knowledge: 'Knowledge'):
+class CombatUnits:
+    def __init__(self, units: Units, knowledge: "Knowledge"):
         self.knowledge = knowledge
         self.unit_values = knowledge.unit_values
         self.units = units
@@ -44,7 +43,7 @@ class CombatUnits():
         # self.knowledge.print(f"spread: {self._total_distance} d to {self._total_radius} r")
         return (self._total_distance / len(self.units)) ** 2 > self._area_by_circles * 2
 
-    def is_in_combat(self, closest_enemies: 'CombatUnits') -> bool:
+    def is_in_combat(self, closest_enemies: "CombatUnits") -> bool:
         if closest_enemies is None:
             return False
 
@@ -52,9 +51,10 @@ class CombatUnits():
         if distance > 17:
             return False
 
-        if distance < 10 \
-                or self.knowledge.unit_cache.enemy_in_range(self.center, 10).exclude_type(self.unit_values.combat_ignore):
-           return True
+        if distance < 10 or self.knowledge.unit_cache.enemy_in_range(self.center, 10).exclude_type(
+            self.unit_values.combat_ignore
+        ):
+            return True
 
         engaged_power = 0
         total_power = 0
@@ -71,7 +71,7 @@ class CombatUnits():
 
         return engaged_power > total_power * 0.15
 
-    def closest_target_group(self, combat_groups: List['CombatUnits']) -> Optional['CombatUnits']:
+    def closest_target_group(self, combat_groups: List["CombatUnits"]) -> Optional["CombatUnits"]:
         group = None
         start = self.center
         best_distance = 50  # doesn't find enemy groups closer than this

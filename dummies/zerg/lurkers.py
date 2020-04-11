@@ -6,6 +6,7 @@ from sc2.unit import Unit
 from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.plans.zerg import *
 
+
 class LingsAndRoaches(BuildOrder):
     def __init__(self):
         self.roaches = ZergUnit(UnitTypeId.ROACH, priority=True)
@@ -47,87 +48,147 @@ class RoachesAndHydrasAndLurkers(BuildOrder):
 
 class LurkerBuild(BuildOrder):
     def __init__(self):
-        gas = SequentialList([
-            Step(None, StepBuildGas(2), skip=RequiredGas(200),
-                 skip_until=RequiredSupply(25, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(3), skip=RequiredGas(200),
-                 skip_until=RequiredSupply(40, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(4), skip=RequiredGas(200),
-                 skip_until=RequiredSupply(50, supply_type=SupplyType.Workers)),
-            Step(RequiredMinerals(1000), StepBuildGas(6), skip=RequiredGas(200),
-                 skip_until=RequiredSupply(50, supply_type=SupplyType.Workers)),
-            Step(RequiredMinerals(2000), StepBuildGas(8), skip=RequiredGas(200),
-                 skip_until=RequiredSupply(50, supply_type=SupplyType.Workers)),
-        ])
+        gas = SequentialList(
+            [
+                Step(
+                    None,
+                    StepBuildGas(2),
+                    skip=RequiredGas(200),
+                    skip_until=RequiredSupply(25, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(3),
+                    skip=RequiredGas(200),
+                    skip_until=RequiredSupply(40, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(4),
+                    skip=RequiredGas(200),
+                    skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    RequiredMinerals(1000),
+                    StepBuildGas(6),
+                    skip=RequiredGas(200),
+                    skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    RequiredMinerals(2000),
+                    StepBuildGas(8),
+                    skip=RequiredGas(200),
+                    skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
+                ),
+            ]
+        )
 
-        heavy_gas = SequentialList([
-            Step(None, StepBuildGas(2), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(20, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(3), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(30, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(4), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(40, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(5), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(50, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(6), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(60, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(7), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(65, supply_type=SupplyType.Workers)),
-            Step(None, StepBuildGas(8), skip=RequiredGas(300),
-                 skip_until=RequiredSupply(70, supply_type=SupplyType.Workers)),
-        ])
+        heavy_gas = SequentialList(
+            [
+                Step(
+                    None,
+                    StepBuildGas(2),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(20, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(3),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(30, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(4),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(40, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(5),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(6),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(60, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(7),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(65, supply_type=SupplyType.Workers),
+                ),
+                Step(
+                    None,
+                    StepBuildGas(8),
+                    skip=RequiredGas(300),
+                    skip_until=RequiredSupply(70, supply_type=SupplyType.Workers),
+                ),
+            ]
+        )
 
         super().__init__(
             SequentialList(
                 # Overlords
                 Step(RequiredUnitExists(UnitTypeId.DRONE, 13), ZergUnit(UnitTypeId.OVERLORD, 2, priority=True)),
-                AutoOverLord()
+                AutoOverLord(),
             ),
             SequentialList(
                 # Opener
                 Step(RequiredSupply(16), ActExpand(2)),
-                Step(RequiredSupply(18),
-                     PositionBuilding(UnitTypeId.SPAWNINGPOOL, DefensePosition.BehindMineralLineLeft, 0)),
+                Step(
+                    RequiredSupply(18),
+                    PositionBuilding(UnitTypeId.SPAWNINGPOOL, DefensePosition.BehindMineralLineLeft, 0),
+                ),
                 StepBuildGas(1, RequiredSupply(20)),
                 ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4),
                 ZergUnit(UnitTypeId.QUEEN, 2),
                 Step(self.build_workers, None, skip=RequiredTime(8 * 60)),
                 Step(RequiredTime(3 * 60), ActExpand(3)),
                 ZergUnit(UnitTypeId.QUEEN, 4),
-                Step(RequiredSupply(40, SupplyType.Workers), ActExpand(4))
+                Step(RequiredSupply(40, SupplyType.Workers), ActExpand(4)),
             ),
             SequentialList(
                 # Workers
                 ZergUnit(UnitTypeId.DRONE, 20),
-                Step(self.build_workers, ZergUnit(UnitTypeId.DRONE, 80), skip=self.max_workers_reached)
+                Step(self.build_workers, ZergUnit(UnitTypeId.DRONE, 80), skip=self.max_workers_reached),
             ),
-
             Step(RequiredGas(90), ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
-            SequentialList([
-                Step(RequiredUnitReady(UnitTypeId.ROACHWARREN), gas, skip=RequiredUnitReady(UnitTypeId.HYDRALISKDEN)),
-                Step(RequiredUnitReady(UnitTypeId.HYDRALISKDEN), heavy_gas)
-            ]),
+            SequentialList(
+                [
+                    Step(
+                        RequiredUnitReady(UnitTypeId.ROACHWARREN), gas, skip=RequiredUnitReady(UnitTypeId.HYDRALISKDEN)
+                    ),
+                    Step(RequiredUnitReady(UnitTypeId.HYDRALISKDEN), heavy_gas),
+                ]
+            ),
             SequentialList(
                 Step(RequireCustom(lambda k: k.enemy_units_manager.enemy_cloak_trigger), MorphLair()),
-                Step(RequiredUnitReady(UnitTypeId.LAIR), MorphOverseer(2))
+                Step(RequiredUnitReady(UnitTypeId.LAIR), MorphOverseer(2)),
             ),
             SequentialList(
                 # Tech
-                Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
-                     PositionBuilding(UnitTypeId.ROACHWARREN, DefensePosition.BehindMineralLineRight, 0)),
+                Step(
+                    RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
+                    PositionBuilding(UnitTypeId.ROACHWARREN, DefensePosition.BehindMineralLineRight, 0),
+                ),
                 MorphLair(),
                 ActBuilding(UnitTypeId.HYDRALISKDEN),
-                ActBuilding(UnitTypeId.LURKERDENMP)
+                ActBuilding(UnitTypeId.LURKERDENMP),
             ),
-            Step(None,
+            Step(
+                None,
                 SequentialList(
                     # Units
                     Step(None, RoachesAndHydrasAndLurkers(), skip_until=RequiredUnitReady(UnitTypeId.LURKERDENMP)),
                     Step(None, LingsAndRoachesAndHydras(), skip_until=RequiredUnitReady(UnitTypeId.HYDRALISKDEN)),
                     Step(None, LingsAndRoaches(), skip_until=RequiredUnitReady(UnitTypeId.ROACHWARREN)),
-                    ZergUnit(UnitTypeId.ZERGLING)
-                )
-            )
+                    ZergUnit(UnitTypeId.ZERGLING),
+                ),
+            ),
         )
 
     def build_workers(self, knowledge: Knowledge) -> bool:
@@ -151,7 +212,6 @@ class LurkerBuild(BuildOrder):
 
 
 class LurkerBot(KnowledgeBot):
-
     def __init__(self):
         super().__init__("Blunt Lurkers")
 
@@ -170,8 +230,8 @@ class LurkerBot(KnowledgeBot):
                 InjectLarva(),
                 PlanDistributeWorkers(),
                 PlanZoneAttack(),
-                PlanFinishEnemy()
-            )
+                PlanFinishEnemy(),
+            ),
         )
 
 

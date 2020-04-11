@@ -4,15 +4,16 @@ from sc2 import BotAI
 
 from sharpy.plans.require import RequireBase
 
+
 class RequiredAll(RequireBase):
     """Check passes if all of the conditions are true."""
+
     def __init__(self, conditions: List[RequireBase]):
         super().__init__()
         assert conditions is not None and isinstance(conditions, List)
         self.conditions: List[RequireBase] = conditions
 
-
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         for condition in self.conditions:

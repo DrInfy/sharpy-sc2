@@ -16,7 +16,7 @@ class ActArchon(ActBase):
         self.already_merging_tags: List[int] = []
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
@@ -42,15 +42,12 @@ class ActArchon(ActBase):
 
             from s2clientprotocol import raw_pb2 as raw_pb
             from s2clientprotocol import sc2api_pb2 as sc_pb
+
             command = raw_pb.ActionRawUnitCommand(
-                ability_id=AbilityId.MORPH_ARCHON.value,
-                unit_tags=[unit.tag, target.tag],
-                queue_command=False
+                ability_id=AbilityId.MORPH_ARCHON.value, unit_tags=[unit.tag, target.tag], queue_command=False
             )
             action = raw_pb.ActionRaw(unit_command=command)
-            await self.ai._client._execute(action=sc_pb.RequestAction(
-                actions=[sc_pb.Action(action_raw=action)]
-            ))
+            await self.ai._client._execute(action=sc_pb.RequestAction(actions=[sc_pb.Action(action_raw=action)]))
 
         return True
 

@@ -14,7 +14,11 @@ class ActDefensiveCannons(ActBase):
     def __init__(self, to_count_pre_base: int, additional_batteries: int = 0, to_base_index: Optional[int] = None):
         self.to_base_index = to_base_index
         self.additional_batteries = additional_batteries
-        assert to_count_pre_base is not None and isinstance(to_count_pre_base, int) and (to_count_pre_base > 0 or additional_batteries > 0)
+        assert (
+            to_count_pre_base is not None
+            and isinstance(to_count_pre_base, int)
+            and (to_count_pre_base > 0 or additional_batteries > 0)
+        )
         self.to_count_per_base = to_count_pre_base
 
         super().__init__()

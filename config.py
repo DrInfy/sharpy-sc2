@@ -1,6 +1,8 @@
-import json
+import logging
 import os
 from configparser import ConfigParser
+
+logger = logging.getLogger(__name__)
 
 
 def get_config(local: bool = True) -> ConfigParser:
@@ -8,14 +10,9 @@ def get_config(local: bool = True) -> ConfigParser:
 
     # later files in the list can be used to overwrite settings in the primary config file
     if local:
-        config_files = [
-            "config.ini",
-            "config-local.ini"
-        ]
+        config_files = ["config.ini", "config-local.ini"]
     else:
-        config_files = [
-            "config.ini"
-        ]
+        config_files = ["config.ini"]
     if any([os.path.isfile(f) for f in config_files]):
         config = ConfigParser()
         config.read(config_files)
@@ -33,5 +30,6 @@ def get_version() -> tuple:
             commit_date = split[1]
 
         return commit_hash, commit_date
-    except:
+    except Exception as e:
+        logger.warning(f"Reading version.txt failed: {e}")
         return ()

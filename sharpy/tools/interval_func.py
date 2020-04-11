@@ -15,6 +15,7 @@ class IntervalFunc:
             self.cached_value = self.func()
         return self.cached_value
 
+
 class IntervalFuncAsync:
     def __init__(self, ai: sc2.BotAI, func, timer_seconds: float):
         self.timer_seconds = timer_seconds

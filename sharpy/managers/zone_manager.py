@@ -35,7 +35,7 @@ class ZoneManager(ManagerBase):
         self.found_enemy_start: Optional[Point2] = None
         self.map: MapInfo = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.map = knowledge.map
         self.init_zones()
@@ -54,7 +54,6 @@ class ZoneManager(ManagerBase):
         self._sort_expansion_zones()
         self._zones_truly_sorted = self.enemy_start_location_found
         self.zone_sorted_by = self.enemy_start_location
-
 
     def _path_distance(self, start: Point2, end: Point2):
         path = Path(self.knowledge.pathing_manager.path_finder_terrain.find_path(start, end))
@@ -161,10 +160,11 @@ class ZoneManager(ManagerBase):
         zone_count = len(self.expansion_zones)
         for i in range(0, zone_count):
             for j in range(i + 1, zone_count):
-                path_data = pf.find_path(self.expansion_zones[i].center_location, self.expansion_zones[j].center_location)
+                path_data = pf.find_path(
+                    self.expansion_zones[i].center_location, self.expansion_zones[j].center_location
+                )
                 self.expansion_zones[i].paths[j] = Path(path_data)
                 self.expansion_zones[j].paths[i] = Path(path_data, True)
-
 
         for i in range(1, zone_count - 1):
             # Recalculate improved gather points based on pathing
@@ -181,7 +181,7 @@ class ZoneManager(ManagerBase):
 
                 area: GridArea = grid.get(target[0], target[1])
                 if area.ZoneIndex == ZoneArea.OwnThirdZone:
-                    if len(self.gather_points )> 2:
+                    if len(self.gather_points) > 2:
                         self.gather_points.insert(2, 2)
                     else:
                         self.gather_points.append(2)
@@ -191,21 +191,25 @@ class ZoneManager(ManagerBase):
         last = 1
         count = len(self.expansion_zones) // 2
         if count > 2:
-            last_angle = sc2math.line_angle(self.expansion_zones[1].center_location, self.expansion_zones[-2].center_location)
+            last_angle = sc2math.line_angle(
+                self.expansion_zones[1].center_location, self.expansion_zones[-2].center_location
+            )
 
             for i in range(2, count):
-                angle = sc2math.line_angle(self.expansion_zones[last].center_location, self.expansion_zones[i].center_location)
+                angle = sc2math.line_angle(
+                    self.expansion_zones[last].center_location, self.expansion_zones[i].center_location
+                )
                 d = sc2math.angle_distance(last_angle, angle)
 
                 if d < 1:
-                    last_angle = sc2math.line_angle(self.expansion_zones[i].center_location,
-                                                    self.expansion_zones[-2].center_location)
+                    last_angle = sc2math.line_angle(
+                        self.expansion_zones[i].center_location, self.expansion_zones[-2].center_location
+                    )
                     last = i
 
                 gather_points.append(last)
 
         return gather_points
-
 
     def _zone_distance_to_start(self, zone: Zone):
         return zone.center_location.distance_to(self.ai.start_location)
@@ -223,8 +227,9 @@ class ZoneManager(ManagerBase):
         else:
             enemy_location = self.enemy_natural.center_location
 
-        return self._path_distance(zone.center_location, own_position) * 2 \
-               - self._path_distance(zone.center_location, enemy_location)
+        return self._path_distance(zone.center_location, own_position) * 2 - self._path_distance(
+            zone.center_location, enemy_location
+        )
 
     def _zone_distance_to_enemy_start(self, zone: Zone):
         enemy_location = self.enemy_start_location
@@ -245,9 +250,9 @@ class ZoneManager(ManagerBase):
         else:
             enemy_location = self.enemy_natural.center_location
 
-
-        return self._path_distance(zone.center_location, enemy_location) * 2 \
-               - self._path_distance(zone.center_location, own_position)
+        return self._path_distance(zone.center_location, enemy_location) * 2 - self._path_distance(
+            zone.center_location, own_position
+        )
 
     # endregion
 

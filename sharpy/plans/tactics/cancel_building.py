@@ -10,11 +10,11 @@ class PlanCancelBuilding(ActBase):
         super().__init__()
 
     async def execute(self) -> bool:
-        for building in self.ai.structures: # type: Unit
+        for building in self.ai.structures:  # type: Unit
             if 1 > building.build_progress > 0:
                 if self.knowledge.building_going_down(building):
-                    self.print(f'Cancelled {building.type_id.name} at {building.position} with {building.health} health')
+                    self.print(
+                        f"Cancelled {building.type_id.name} at {building.position} with {building.health} health"
+                    )
                     self.do(building(AbilityId.CANCEL_BUILDINPROGRESS))
         return True
-
-

@@ -24,10 +24,9 @@ class BotLadder(AbstractPlayer):
         super().__init__(PlayerType.Participant, race, name=name, fullscreen=False)
         self.bot_type: str = bot_dict["Type"]
 
-
     def map_type_cmd(self) -> [str]:
         bot_name = self.name
-        if platform.system() == 'Linux':
+        if platform.system() == "Linux":
             # Linux
             bot_type_map = {
                 "python": ["run.py", "python3.7"],
@@ -76,7 +75,7 @@ class BotLadder(AbstractPlayer):
 
     async def join_game(self, opponentId: str, portconfig: Portconfig) -> Any:
         cmd: [str] = self.map_type_cmd()
-        timeout = 1800  # 30 minutes
+
         start_port = str(portconfig.shared - 1)
         game_port = str(portconfig.players[1][0])
 

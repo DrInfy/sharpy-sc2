@@ -22,7 +22,7 @@ class GroupCombatManager(ManagerBase):
         self.own_group_threshold = 7
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.pather: PathingManager = self.knowledge.pathing_manager
@@ -85,7 +85,7 @@ class GroupCombatManager(ManagerBase):
         self.enemy_groups: List[CombatUnits] = self.group_enemy_units()
         self.all_enemy_power.clear()
 
-        for group in self.enemy_groups: # type: CombatUnits
+        for group in self.enemy_groups:  # type: CombatUnits
             self.all_enemy_power.add_units(group.units)
 
     async def post_update(self):
@@ -104,7 +104,6 @@ class GroupCombatManager(ManagerBase):
     def add_units(self, units: Units):
         for unit in units:
             self.add_unit(unit)
-
 
     def get_all_units(self) -> Units:
         units = Units([], self.ai)
@@ -145,10 +144,8 @@ class GroupCombatManager(ManagerBase):
             else:
                 power = group.power
                 enemy_power = ExtendedPower(closest_enemies)
-                enemy_center = closest_enemies.center
 
                 is_in_combat = group.is_in_combat(closest_enemies)
-                # pseudocode for attack
 
                 if move_type == MoveType.DefensiveRetreat or move_type == MoveType.PanicRetreat:
                     self.move_to(group, target, move_type)
@@ -156,10 +153,7 @@ class GroupCombatManager(ManagerBase):
 
                 if power.power > self.regroup_threshold * total_power.power:
                     # Most of the army is here
-                    if (
-                            group.is_too_spread_out()
-                            and not is_in_combat
-                    ):
+                    if group.is_too_spread_out() and not is_in_combat:
                         self.regroup(group, group.center)
                     else:
                         self.attack_to(group, target, move_type)
@@ -207,7 +201,6 @@ class GroupCombatManager(ManagerBase):
         # Our group is faster, it's a good idea to regroup
         return True
 
-
     def regroup(self, group: CombatUnits, target: Union[Unit, Point2]):
         if isinstance(target, Unit):
             target = self.pather.find_path(group.center, target.position, 1)
@@ -223,7 +216,7 @@ class GroupCombatManager(ManagerBase):
 
     def action_to(self, group: CombatUnits, target, move_type: MoveType, is_attack: bool):
         if isinstance(target, Point2) and group.ground_units:
-            if move_type in { MoveType.DefensiveRetreat, MoveType.PanicRetreat}:
+            if move_type in {MoveType.DefensiveRetreat, MoveType.PanicRetreat}:
                 target = self.pather.find_influence_ground_path(group.center, target, 14)
             else:
                 target = self.pather.find_path(group.center, target, 14)
@@ -337,7 +330,9 @@ class GroupCombatManager(ManagerBase):
 
         return [CombatUnits(u, self.knowledge) for u in groups]
 
-    def include_enemy_units(self, unit: Unit, units: Units, lookup_distance: float, index: int, assigned: Dict[int, int]):
+    def include_enemy_units(
+        self, unit: Unit, units: Units, lookup_distance: float, index: int, assigned: Dict[int, int]
+    ):
         units_close_by = self.cache.enemy_in_range(unit.position, lookup_distance)
 
         for unit_close in units_close_by:

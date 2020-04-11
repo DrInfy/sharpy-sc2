@@ -9,6 +9,7 @@ from sc2.units import Units
 
 GRAVITON_BEAM_ENERGY = 50
 
+
 class MicroPhoenixes(MicroStep):
     def __init__(self, knowledge):
         self.allow_lift = False
@@ -18,7 +19,6 @@ class MicroPhoenixes(MicroStep):
             # 5 or above: Prefer lift to shooting actual enemies
             # 0 - 4: Lift only if nothing to shoot
             # negative number: Never try lifting
-
             # Terran
             UnitTypeId.SIEGETANK: 4,
             UnitTypeId.SIEGETANKSIEGED: 9,  # sieged tanks are much higher priority than unsieged
@@ -34,7 +34,6 @@ class MicroPhoenixes(MicroStep):
             UnitTypeId.HELLION: 2,
             UnitTypeId.HELLIONTANK: 1,
             UnitTypeId.THOR: -1,
-
             # Zerg
             UnitTypeId.QUEEN: 3,
             UnitTypeId.DRONE: 4,
@@ -45,13 +44,11 @@ class MicroPhoenixes(MicroStep):
             UnitTypeId.INFESTOR: 10,
             UnitTypeId.INFESTEDTERRAN: 1,
             UnitTypeId.ROACH: 0,
-
             UnitTypeId.LARVA: -1,
             UnitTypeId.EGG: -1,
             UnitTypeId.LOCUSTMP: -1,
             UnitTypeId.BROODLING: -1,
             UnitTypeId.ULTRALISK: -1,
-
             # Protoss
             UnitTypeId.SENTRY: 8,
             UnitTypeId.PROBE: 4,
@@ -62,12 +59,14 @@ class MicroPhoenixes(MicroStep):
             UnitTypeId.STALKER: 2,
             UnitTypeId.IMMORTAL: 3,
             UnitTypeId.ARCHON: -1,
-            UnitTypeId.COLOSSUS: -1
+            UnitTypeId.COLOSSUS: -1,
         }
         super().__init__(knowledge)
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
-        beaming_phoenixes = units.filter(lambda p: p.orders and p.orders[0].ability.id == AbilityId.GRAVITONBEAM_GRAVITONBEAM)
+        beaming_phoenixes = units.filter(
+            lambda p: p.orders and p.orders[0].ability.id == AbilityId.GRAVITONBEAM_GRAVITONBEAM
+        )
         if beaming_phoenixes and len(beaming_phoenixes) > len(units) * 0.5:
             self.allow_lift = False
         else:
@@ -120,7 +119,9 @@ class MicroPhoenixes(MicroStep):
                     self.print(f"Phoenix at {unit.position} lifting {best_target.type_id} at {best_target.position}")
 
                     if unit.distance_to(best_target) > 8:
-                        destination = self.knowledge.pathing_manager.find_influence_air_path(unit.position, best_target.position)
+                        destination = self.knowledge.pathing_manager.find_influence_air_path(
+                            unit.position, best_target.position
+                        )
                         return Action(destination, False)
                     return Action(best_target, False, AbilityId.GRAVITONBEAM_GRAVITONBEAM)
 
@@ -139,7 +140,6 @@ class MicroPhoenixes(MicroStep):
             return Action(best_position, False)
 
         return current_command
-
 
     def print(self, msg):
         self.knowledge.print(f"[MicroPhoenixes] {msg}")

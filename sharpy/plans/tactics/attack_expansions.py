@@ -13,7 +13,7 @@ class PlanFinishEnemy(ActBase):
 
     async def execute(self):
         target = await self.find_attack_position(self.ai)
-        for unit in self.ai.units.idle: # type: Unit
+        for unit in self.ai.units.idle:  # type: Unit
             if self.knowledge.should_attack(unit):
                 self.do(unit.attack(target))
                 self.knowledge.roles.set_task(UnitTask.Attacking, unit)
@@ -35,9 +35,3 @@ class PlanFinishEnemy(ActBase):
                         last_distance2 = current_distance2
                         target_known = True
         return target
-
-
-
-
-
-

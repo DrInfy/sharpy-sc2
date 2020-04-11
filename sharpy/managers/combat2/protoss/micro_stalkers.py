@@ -29,10 +29,8 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.LIBERATOR: 5,
     UnitTypeId.RAVEN: 10,
     UnitTypeId.BATTLECRUISER: 8,
-
     UnitTypeId.MISSILETURRET: 1,
     UnitTypeId.BUNKER: 2,
-
     # Zerg
     UnitTypeId.DRONE: 4,
     UnitTypeId.ZERGLING: 3,
@@ -50,11 +48,9 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.MUTALISK: 6,
     UnitTypeId.CORRUPTOR: 8,
     UnitTypeId.INFESTEDTERRAN: 1,
-
     UnitTypeId.LARVA: -1,
     UnitTypeId.EGG: -1,
     UnitTypeId.LOCUSTMP: -1,
-
     # Protoss
     UnitTypeId.SENTRY: 8,
     UnitTypeId.PROBE: 4,
@@ -66,12 +62,10 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.IMMORTAL: 9,
     UnitTypeId.COLOSSUS: 10,
     UnitTypeId.ARCHON: 6,
-
     UnitTypeId.SHIELDBATTERY: 1,
     UnitTypeId.PHOTONCANNON: 1,
     UnitTypeId.PYLON: 2,
     UnitTypeId.FLEETBEACON: 3,
-
 }
 
 
@@ -93,8 +87,9 @@ class MicroStalkers(GenericMicro):
                     backstep = self.pather.find_weak_influence_ground(backstep, 4)
                     return Action(backstep, False, AbilityId.EFFECT_BLINK_STALKER)
 
-            if self.model == CombatModel.StalkerToSiege and \
-                    (self.move_type == MoveType.Assault or self.move_type == MoveType.SearchAndDestroy):
+            if self.model == CombatModel.StalkerToSiege and (
+                self.move_type == MoveType.Assault or self.move_type == MoveType.SearchAndDestroy
+            ):
                 siege_units = self.enemies_near_by.of_type(siege)
                 if siege_units:
                     target = siege_units.closest_to(unit)
@@ -113,4 +108,3 @@ class MicroStalkers(GenericMicro):
                     return Action(target, False, AbilityId.EFFECT_BLINK_STALKER)
 
         return super().unit_solve_combat(unit, current_command)
-

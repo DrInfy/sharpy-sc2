@@ -6,15 +6,15 @@ from sc2 import Race, UnitTypeId
 
 
 class CompositionGuesser:
-    def __init__(self, knowledge: 'Knowledge'):
+    def __init__(self, knowledge: "Knowledge"):
         self.knowledge = knowledge
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.unit_values: "UnitValue" = knowledge.unit_values
         self.left_minerals = 0
         self.left_gas = 0
 
     def predict_enemy_composition(self) -> List[UnitCount]:
         if self.knowledge.enemy_race == Race.Random:
-            return []# let's wait until we know the actual race.
+            return []  # let's wait until we know the actual race.
 
         additional_guess: List[UnitCount] = []
         # if self.knowledge.enemy_army_predicter.enemy_mined_gas < 150:
@@ -59,15 +59,18 @@ class CompositionGuesser:
             if self.knowledge.known_enemy_structures(UnitTypeId.ROBOTICSFACILITY).exists:
                 self.add_units(UnitTypeId.IMMORTAL, 4, additional_guess)
             if self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists:
-                if self.history(UnitTypeId.STALKER) > self.history(UnitTypeId.ADEPT) \
-                        and self.history(UnitTypeId.STALKER) > self.history(UnitTypeId.ZEALOT):
+                if self.history(UnitTypeId.STALKER) > self.history(UnitTypeId.ADEPT) and self.history(
+                    UnitTypeId.STALKER
+                ) > self.history(UnitTypeId.ZEALOT):
                     self.add_units(UnitTypeId.STALKER, 8, additional_guess)
                 elif self.history(UnitTypeId.ADEPT) > self.history(UnitTypeId.ZEALOT):
                     self.add_units(UnitTypeId.ADEPT, 9, additional_guess)
                 elif self.history(UnitTypeId.ZEALOT):
                     self.add_units(UnitTypeId.ZEALOT, 10, additional_guess)
-            if not self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists \
-                    and self.knowledge.known_enemy_structures(UnitTypeId.WARPGATE).exists:
+            if (
+                not self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
+                and self.knowledge.known_enemy_structures(UnitTypeId.WARPGATE).exists
+            ):
                 self.add_units(UnitTypeId.ZEALOT, 8, additional_guess)
             if len(additional_guess):
                 self.add_units(UnitTypeId.STALKER, 1, additional_guess)
@@ -92,17 +95,16 @@ class CompositionGuesser:
             if self.knowledge.known_enemy_structures(UnitTypeId.BARRACKS).amount > 2:
                 self.add_units(UnitTypeId.MARINE, 10, additional_guess)
 
-
         return additional_guess
 
     def history(self, type_id: UnitTypeId) -> int:
-        return self.knowledge.enemy_units_manager.unit_count(type_id) \
-               + self.knowledge.lost_units_manager.enemy_lost_type(type_id)
+        return self.knowledge.enemy_units_manager.unit_count(
+            type_id
+        ) + self.knowledge.lost_units_manager.enemy_lost_type(type_id)
 
     def add_units(self, type_id, count, additional_guess):
         mineral_price = self.unit_values.minerals(type_id)
         gas_price = self.unit_values.gas(type_id)
-        supply = self.unit_values.supply(type_id) # TODO: use this for something
 
         if mineral_price > 0:
             mineral_amount = self.left_minerals / mineral_price

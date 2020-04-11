@@ -14,6 +14,7 @@ import time
 
 class KnowledgeBot(BotAI):
     """Base class for bots that are built around Knowledge class."""
+
     def __init__(self, name: str):
         super().__init__()
         self.name = name
@@ -121,11 +122,14 @@ class KnowledgeBot(BotAI):
             ms_step = ns_step / 1000 / 1000
 
             if ms_step > 100:
-                self.knowledge.print(f"Step {self.state.game_loop} took {round(ms_step)} ms.",
-                                     "LAG", stats=False, log_level=logging.WARNING)
+                self.knowledge.print(
+                    f"Step {self.state.game_loop} took {round(ms_step)} ms.",
+                    "LAG",
+                    stats=False,
+                    log_level=logging.WARNING,
+                )
 
-
-        except:  # catch all exceptions
+        except:  # noqa, catch all exceptions
             e = sys.exc_info()[0]
             logging.exception(e)
 

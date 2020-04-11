@@ -18,10 +18,15 @@ class CombatModel:
     AssaultRamp = 3  # Push on narrow ramps
     RoachToStalker = 4  # Shorter range vs longer
 
+
 no_retreat_on_low_hp: Set[UnitTypeId] = {
-    UnitTypeId.ZEALOT, UnitTypeId.ZERGLING,
-    UnitTypeId.ULTRALISK, UnitTypeId.ROACH, UnitTypeId.CARRIER
+    UnitTypeId.ZEALOT,
+    UnitTypeId.ZERGLING,
+    UnitTypeId.ULTRALISK,
+    UnitTypeId.ROACH,
+    UnitTypeId.CARRIER,
 }
+
 
 class GenericMicro(MicroStep):
     def __init__(self, knowledge):

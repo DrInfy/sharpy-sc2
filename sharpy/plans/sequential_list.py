@@ -4,14 +4,19 @@ from sharpy.plans.build_step import Step
 from sharpy.plans.acts import ActBase
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
+
 class SequentialList(ActBase):
-    def __init__(self,
-                 orders: Union[Union[ActBase, Callable[['Knowledge'], bool]],
-                               List[Union[ActBase, Callable[['Knowledge'], bool]]]],
-                 *argv):
+    def __init__(
+        self,
+        orders: Union[
+            Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
+        ],
+        *argv,
+    ):
 
         is_act = isinstance(orders, ActBase) or isinstance(orders, Callable)
         assert orders is not None and (isinstance(orders, list) or is_act)
@@ -32,8 +37,8 @@ class SequentialList(ActBase):
     async def debug_draw(self):
         for order in self.orders:
             await order.debug_draw()
-            
-    async def start(self, knowledge: 'Knowledge'):
+
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for order in self.orders:
             await order.start(knowledge)
@@ -41,7 +46,7 @@ class SequentialList(ActBase):
     async def execute(self) -> bool:
         for order in self.orders:
             result = await order.execute()
-            if (not result):
+            if not result:
                 return result
 
         return True

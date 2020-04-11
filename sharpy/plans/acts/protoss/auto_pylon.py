@@ -6,6 +6,7 @@ from sc2 import UnitTypeId
 
 class AutoPylon(GridBuilding):
     """Builds pylons automatically when needed based on predicted supply growth speed."""
+
     def __init__(self):
         super().__init__(UnitTypeId.PYLON, 0)
 

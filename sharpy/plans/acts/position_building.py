@@ -11,8 +11,13 @@ from sc2.position import Point2
 class PositionBuilding(ActBuilding):
     """Act of building buildings for mostly zerg and terran in more exact positions"""
 
-    def __init__(self, unit_type: UnitTypeId, position_type: DefensePosition, to_base_index: Optional[int] = None,
-             to_count: int = 1):
+    def __init__(
+        self,
+        unit_type: UnitTypeId,
+        position_type: DefensePosition,
+        to_base_index: Optional[int] = None,
+        to_count: int = 1,
+    ):
         super().__init__(unit_type, to_count)
         self.position_type = position_type
         self.to_base_index = to_base_index
@@ -42,14 +47,18 @@ class PositionBuilding(ActBuilding):
                 for x in range(-2, 2):
                     for y in range(-2, 2):
                         pos = int_pos + Point2((x, y))
-                        if pos.x > 0 and pos.x < self.ai.state.creep.width and \
-                                pos.y > 0 and pos.y < self.ai.state.creep.height and \
-                                self.ai.state.creep.is_set(pos):
+                        if (
+                            pos.x > 0
+                            and pos.x < self.ai.state.creep.width
+                            and pos.y > 0
+                            and pos.y < self.ai.state.creep.height
+                            and self.ai.state.creep.is_set(pos)
+                        ):
                             can_build = True
                             break
 
             if can_build and self.knowledge.can_afford(self.unit_type):
-                self.print(f'building of type {self.unit_type} near {position}')
+                self.print(f"building of type {self.unit_type} near {position}")
                 await self.ai.build(self.unit_type, near=position)
 
             self.knowledge.reserve_costs(self.unit_type)

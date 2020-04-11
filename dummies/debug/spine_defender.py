@@ -16,37 +16,40 @@ class SpineDefender(KnowledgeBot):
         super().__init__("Spine defender")
 
     async def create_plan(self) -> BuildOrder:
-        tactics = SequentialList([
-            # TauntEnemy(),
-            # worker_scout,
-            InjectLarva(),
-            PlanHeatOverseer(),
+        tactics = SequentialList(
+            [
+                # TauntEnemy(),
+                # worker_scout,
+                InjectLarva(),
+                PlanHeatOverseer(),
+                PlanWorkerOnlyDefense(),
+                PlanZoneDefense(),
+                PlanZoneGather(),
+                PlanZoneAttack(),
+                PlanFinishEnemy(),
+            ]
+        )
 
-            PlanWorkerOnlyDefense(),
-            PlanZoneDefense(),
-            PlanZoneGather(),
-            PlanZoneAttack(),
-            PlanFinishEnemy(),
-        ])
-
-        return BuildOrder([
+        return BuildOrder(
             [
-                ZergUnit(UnitTypeId.DRONE, 14),
-                ZergUnit(UnitTypeId.OVERLORD, 2),
-                ActBuilding(UnitTypeId.SPAWNINGPOOL),
-                ZergUnit(UnitTypeId.DRONE, 20),
-                ZergUnit(UnitTypeId.ZERGLING, 20)
-            ],
-            [
-                Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
-                     DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance, 0)),
-                ZergUnit(UnitTypeId.QUEEN, 2)
-            ],
-            [
-                Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL), AutoOverLord()),
-            ],
-            tactics
-        ])
+                [
+                    ZergUnit(UnitTypeId.DRONE, 14),
+                    ZergUnit(UnitTypeId.OVERLORD, 2),
+                    ActBuilding(UnitTypeId.SPAWNINGPOOL),
+                    ZergUnit(UnitTypeId.DRONE, 20),
+                    ZergUnit(UnitTypeId.ZERGLING, 20),
+                ],
+                [
+                    Step(
+                        RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
+                        DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance, 0),
+                    ),
+                    ZergUnit(UnitTypeId.QUEEN, 2),
+                ],
+                [Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL), AutoOverLord())],
+                tactics,
+            ]
+        )
 
 
 class LadderBot(SpineDefender):

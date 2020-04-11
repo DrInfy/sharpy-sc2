@@ -9,7 +9,7 @@ class RequiredSupplyLeft(RequireBase):
         super().__init__()
 
         # if less than supply amount of free supply left
-        self.supplyAmount  = supply_amount
+        self.supplyAmount = supply_amount
 
     def check(self) -> bool:
         if self.ai.supply_left <= self.supplyAmount and self.ai.supply_cap < 200:

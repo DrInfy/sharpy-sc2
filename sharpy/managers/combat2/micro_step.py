@@ -25,9 +25,10 @@ changelings = {
     UnitTypeId.CHANGELINGZERGLINGWINGS,
 }
 
+
 class MicroStep(ABC):
     def __init__(self, knowledge):
-        self.knowledge: 'Knowledge' = knowledge
+        self.knowledge: "Knowledge" = knowledge
         self.ai: sc2.BotAI = knowledge.ai
         self.unit_values: UnitValue = knowledge.unit_values
         self.cd_manager: CooldownManager = knowledge.cooldown_manager
@@ -50,7 +51,6 @@ class MicroStep(ABC):
         self.enemy_attack_range = 0
 
         self.focus_fired: Dict[int, float] = dict()
-
 
     def init_group(self, group: CombatUnits, units: Units, enemy_groups: List[CombatUnits], move_type: MoveType):
         self.focus_fired.clear()
@@ -126,7 +126,6 @@ class MicroStep(ABC):
             if self.cd_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
                 return False
 
-
         if unit.type_id == UnitTypeId.DISRUPTOR:
             return self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_PURIFICATIONNOVA)
 
@@ -148,7 +147,6 @@ class MicroStep(ABC):
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         pass
 
-
     def focus_fire(self, unit: Unit, current_command: Action, prio: Optional[Dict[UnitTypeId, int]]) -> Action:
         shoot_air = self.unit_values.can_shoot_air(unit)
         shoot_ground = self.unit_values.can_shoot_ground(unit)
@@ -164,13 +162,17 @@ class MicroStep(ABC):
             # No enemies to shoot at
             return current_command
 
-        value_func: Callable[[Unit],  float]
+        value_func: Callable[[Unit], float]
         if prio:
-            value_func = lambda u: 1 if u.type_id in changelings else prio.get(u.type_id, -1) \
-                  * (1 - u.shield_health_percentage)
+            value_func = (
+                lambda u: 1 if u.type_id in changelings else prio.get(u.type_id, -1) * (1 - u.shield_health_percentage)
+            )
         else:
-            value_func = lambda u: 1 if u.type_id in changelings else 2 \
-                  * self.unit_values.power_by_type(u.type_id, 1 - u.shield_health_percentage)
+            value_func = (
+                lambda u: 1
+                if u.type_id in changelings
+                else 2 * self.unit_values.power_by_type(u.type_id, 1 - u.shield_health_percentage)
+            )
 
         best_target: Optional[Unit] = None
         best_score: float = 0
@@ -197,8 +199,9 @@ class MicroStep(ABC):
                 best_score = score
 
         if best_target:
-            self.focus_fired[best_target.tag] = self.focus_fired.get(best_target.tag, 0) + \
-                                                unit.calculate_damage_vs_target(best_target)[0]
+            self.focus_fired[best_target.tag] = (
+                self.focus_fired.get(best_target.tag, 0) + unit.calculate_damage_vs_target(best_target)[0]
+            )
 
             return Action(best_target, True)
 

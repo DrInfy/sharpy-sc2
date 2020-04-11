@@ -4,10 +4,11 @@ from sc2 import BotAI, List, Set
 from sc2.unit import Unit
 
 
-class ActionIssued():
+class ActionIssued:
     """
     Individual action that is assigned to a unit. Used for preventing duplicate build orders.
     """
+
     def __init__(self, ai: BotAI, unit_tag: int) -> None:
         self.ai = ai
         self.delay = 1
@@ -27,6 +28,7 @@ class ActionHandler(ManagerBase):
     """
     Handles and allows preventing duplicate actions especially when using real time.
     """
+
     def __init__(self):
         self.actions: List[ActionIssued] = []
         self.blocked: Set[int] = set()

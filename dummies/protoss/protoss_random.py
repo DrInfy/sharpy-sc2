@@ -22,5 +22,7 @@ elif val == 8:
     from .one_base_tempests import LadderBot
 elif val == 9:
     from .disruptor import LadderBot
+
+
 class RandomProtossBot(LadderBot):
     pass

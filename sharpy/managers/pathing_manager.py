@@ -27,7 +27,7 @@ class PathingManager(ManagerBase):
         self.found_points = []
         self.found_points_air = []
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         game_info: GameInfo = self.ai.game_info
@@ -50,10 +50,12 @@ class PathingManager(ManagerBase):
         air_data = [[1 for y in range(path_grid.height)] for x in range(path_grid.width)]
         for x in range(0, path_grid.width):
             for y in range(0, path_grid.height):
-                if x < game_info.playable_area.x \
-                        or x > game_info.playable_area.x + game_info.playable_area.width\
-                        or y < game_info.playable_area.y \
-                        or y > game_info.playable_area.y + game_info.playable_area.height:
+                if (
+                    x < game_info.playable_area.x
+                    or x > game_info.playable_area.x + game_info.playable_area.width
+                    or y < game_info.playable_area.y
+                    or y > game_info.playable_area.y + game_info.playable_area.height
+                ):
                     air_data[x][y] = 0
         self.path_finder_air = sc2pathlibp.PathFinder(air_data)
 
@@ -156,7 +158,7 @@ class PathingManager(ManagerBase):
             power.add_unit(enemy_type, 100)
 
             if self.unit_values.can_shoot_air(example_enemy):
-                positions: List[Point2] = map(lambda u: u.position, enemies)   # need to be specified in both places
+                positions: List[Point2] = map(lambda u: u.position, enemies)  # need to be specified in both places
                 s_range = self.unit_values.air_range(example_enemy)
 
                 if example_enemy.type_id == UnitTypeId.CYCLONE:

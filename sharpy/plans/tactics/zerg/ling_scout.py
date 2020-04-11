@@ -8,12 +8,13 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit
 
+
 class LingScoutMain(ActBase):
     def __init__(self):
         self.scout_tags: List[int] = []
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         return await super().start(knowledge)
 
     async def execute(self) -> bool:

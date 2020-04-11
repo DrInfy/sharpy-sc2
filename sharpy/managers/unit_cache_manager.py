@@ -16,6 +16,7 @@ from sc2.unit import Unit
 
 class UnitCacheManager(ManagerBase):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""
+
     def __init__(self):
         super().__init__()
         self.tag_cache: Dict[int, Unit] = {}
@@ -28,7 +29,7 @@ class UnitCacheManager(ManagerBase):
         self.all_own: Units = Units([], self.ai)
         self.mineral_fields: Dict[Point2, Unit] = {}
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.empty_units: Units = Units([], self.ai)
 
@@ -57,7 +58,7 @@ class UnitCacheManager(ManagerBase):
             return self.enemy_unit_cache.get(type_id, self.empty_units)
 
         units = Units([], self.ai)
-        for single_type in type_id: # type: UnitTypeId
+        for single_type in type_id:  # type: UnitTypeId
             units.extend(self.enemy_unit_cache.get(single_type, self.empty_units))
         return units
 
@@ -77,7 +78,7 @@ class UnitCacheManager(ManagerBase):
 
         return units
 
-    def enemy_in_range(self, position: Point2, range: Union[int, float], only_targetable = True) -> Units:
+    def enemy_in_range(self, position: Point2, range: Union[int, float], only_targetable=True) -> Units:
         units = Units([], self.ai)
         if self.enemy_tree is None:
             return units

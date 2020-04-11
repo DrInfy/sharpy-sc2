@@ -21,45 +21,44 @@ class LingSpeedBuild(BuildOrder):
             StepBuildGas(1, RequiredUnitExists(UnitTypeId.HATCHERY, 2)),
             Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
-
         ]
         buildings = [
             Step(RequiredUnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
             Step(None, ActExpand(2)),
             Step(RequiredUnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
-            Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2), skip_until=RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1)),
-
+            Step(
+                None,
+                ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
+                skip_until=RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+            ),
             Step(RequiredUnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
             Step(RequiredUnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
-            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)), # anti air defense!
+            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
         ]
 
         units = [
             Step(RequiredUnitExists(UnitTypeId.HATCHERY, 1), None),
-
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 20)),
-
             # Early zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12),
-                 None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12), None
+            ),
             # Queen for more larvae
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
             Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=RequiredGas(25)),
-
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40), None),
             Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
             Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 10), skip_until=RequiredGas(25)),
-
             # Endless zerglings
-            Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None)
+            Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
         super().__init__([self.overlords, buildings, gas_related, units])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.knowledge.print(f"LingSpeed", "Build")
 
@@ -80,7 +79,6 @@ class LingFloodBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
             Step(RequiredUnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
-
         ]
 
         spire_end_game = [
@@ -90,41 +88,47 @@ class LingFloodBuild(BuildOrder):
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
             StepBuildGas(3, None),
             ActBuilding(UnitTypeId.SPIRE, 1),
-            ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA, 10, priority=True)
+            ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA, 10, priority=True),
         ]
 
         units = [
             Step(None, None, RequiredUnitExists(UnitTypeId.HATCHERY, 1)),
-
             # 12 Pool followed by overlord
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
-                 RequiredUnitExists(UnitTypeId.OVERLORD, 2)),
-
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
+                RequiredUnitExists(UnitTypeId.OVERLORD, 2),
+            ),
             # TheMusZero
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
-                 RequiredUnitExists(UnitTypeId.DRONE, 14)),
-
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
+                RequiredUnitExists(UnitTypeId.DRONE, 14),
+            ),
             # Early zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4),
-                 None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4), None
+            ),
             # Queen for more larvae
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1),
-                 RequiredUnitExists(UnitTypeId.QUEEN, 1)),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 20),
-                 None),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12),
-                 None),
-
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30),
-                 None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1),
+                RequiredUnitExists(UnitTypeId.QUEEN, 1),
+            ),
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 20), None),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12),
+                None,
+            ),
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30), None),
             # Endless zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA),
-                 None)
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
         super().__init__([self.overlords, buildings, spire_end_game, gas_related, units])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.knowledge.print(f"LingFlood", "Build")
 
@@ -146,7 +150,9 @@ class DummyZergAttack(ActBase):
 
                 if zone.known_enemy_power.ground_presence > 0 and ground_units:
                     defend = True
-                    for zl in self.ai.units.of_type([UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]):
+                    for zl in self.ai.units.of_type(
+                        [UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]
+                    ):
                         self.combat.add_unit(zl)
                 elif zone.known_enemy_units:
                     for zl in self.cache.own(UnitTypeId.QUEEN):
@@ -219,39 +225,41 @@ class LingFlood(KnowledgeBot):
         return self.aggressive()
 
     def macro(self) -> BuildOrder:
-        worker_scout = Step(None, WorkerScout(), skip_until=RequireCustom(
-            lambda k: len(self.enemy_start_locations) > 1))
+        worker_scout = Step(
+            None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
+        )
         distribute = PlanDistributeWorkers()
 
-        return BuildOrder([
-            LingSpeedBuild(),
-            SequentialList([
-                worker_scout,
-                SpreadCreep(),
-                InjectLarva(),
-                distribute,
-                DummyZergAttack()
-            ]),
-        ])
+        return BuildOrder(
+            [
+                LingSpeedBuild(),
+                SequentialList([worker_scout, SpreadCreep(), InjectLarva(), distribute, DummyZergAttack()]),
+            ]
+        )
 
     def aggressive(self) -> BuildOrder:
-        worker_scout = Step(None, WorkerScout(), skip_until=RequireCustom(
-            lambda k: len(self.enemy_start_locations) > 1))
+        worker_scout = Step(
+            None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
+        )
         stop_gas = RequiredAny([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
         end_game = RequiredAny([RequiredSupply(90), RequiredUnitExists(UnitTypeId.LAIR, 1)])
 
-        return BuildOrder([
-            LingFloodBuild(),
-            SequentialList([
-                worker_scout,
-                SpreadCreep(),
-                InjectLarva(),
-                Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
-                Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
-                Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
-                DummyZergAttack()
-            ]),
-        ])
+        return BuildOrder(
+            [
+                LingFloodBuild(),
+                SequentialList(
+                    [
+                        worker_scout,
+                        SpreadCreep(),
+                        InjectLarva(),
+                        Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
+                        Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
+                        Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
+                        DummyZergAttack(),
+                    ]
+                ),
+            ]
+        )
 
 
 class LadderBot(LingFlood):

@@ -9,6 +9,7 @@ from aiohttp.web_ws import WebSocketResponse
 from bot_loader.killable_process import KillableProcess
 from bot_loader.ladder_bot import BotLadder
 from sc2 import run_game
+
 # noinspection PyProtectedMember
 from sc2.main import _host_game
 from sc2.paths import Paths
@@ -18,7 +19,7 @@ import asyncio
 from sc2.portconfig import Portconfig
 
 
-class MatchRunner():
+class MatchRunner:
     def __init__(self) -> None:
         self.ladder_player2_port = None
         self.process = None
@@ -28,9 +29,9 @@ class MatchRunner():
 
         super().__init__()
 
-    def run_game(self, map_settings: str,  players: List[AbstractPlayer], player1_id: str, **kwargs):
+    def run_game(self, map_settings: str, players: List[AbstractPlayer], player1_id: str, **kwargs):
         if isinstance(players[0], BotLadder):
-            raise Exception('Player 1 cannot be a ladder bot!')
+            raise Exception("Player 1 cannot be a ladder bot!")
         if len(players) > 1 and isinstance(players[1], BotLadder):
             # host_only_args = ["save_replay_as", "rgb_render_config", "random_seed", "sc2_version"]
 
@@ -60,14 +61,14 @@ class MatchRunner():
             return run_game(map_settings, players, **kwargs)
 
     async def join_game(
-            self,
-            ladder_bot: BotLadder,
-            realtime,
-            portconfig: Portconfig,
-            opponent_id,
-            save_replay_as=None,
-            step_time_limit=None,
-            game_time_limit=None,
+        self,
+        ladder_bot: BotLadder,
+        realtime,
+        portconfig: Portconfig,
+        opponent_id,
+        save_replay_as=None,
+        step_time_limit=None,
+        game_time_limit=None,
     ):
         port = self.ladder_player2_port
         self.print(f"Staring client server with port {port}")
@@ -76,7 +77,6 @@ class MatchRunner():
         KillableProcess(await ladder_bot.join_game(opponent_id, portconfig=portconfig))
 
         # We'll have to host handle the rest
-
 
     async def _launch(self, host: str, port: int = None, full_screen: bool = False) -> Any:
         """
@@ -105,7 +105,7 @@ class MatchRunner():
             str(Paths.BASE),
             "-tempDir",
             tmp_dir,
-            "--verbose"
+            "--verbose",
         ]
 
         return subprocess.Popen(args, cwd=(str(Paths.CWD) if Paths.CWD else None))

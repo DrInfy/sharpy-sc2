@@ -12,7 +12,6 @@ from sc2.units import Units
 
 
 class PlanZoneAttack2(PlanZoneAttack):
-
     def _start_attack(self, power: ExtendedPower, attackers: Units):
         drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.knowledge.enemy_start_location, 10)
         self.retreat_multiplier = 0  # never retreat, never surrender
@@ -36,33 +35,35 @@ class TwelvePool(KnowledgeBot):
         ]
 
         finish = [
-            Step(RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30),
-                 StepBuildGas(2)),
+            Step(
+                RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30), StepBuildGas(2)
+            ),
             ActExpand(2),
             RequiredUnitExists(UnitTypeId.DRONE, 20),
             MorphLair(),
             RequiredUnitExists(UnitTypeId.DRONE, 30),
             StepBuildGas(4),
             ActBuilding(UnitTypeId.SPIRE),
-            ZergUnit(UnitTypeId.MUTALISK, 10, priority=True)
+            ZergUnit(UnitTypeId.MUTALISK, 10, priority=True),
         ]
 
         build_step_units = [
-
             # 12 Pool followed by overlord
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
-                 RequiredUnitExists(UnitTypeId.OVERLORD, 2)),
-
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
+                RequiredUnitExists(UnitTypeId.OVERLORD, 2),
+            ),
             # TheMusZero
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
-                 RequiredUnitExists(UnitTypeId.DRONE, 14)),
+            Step(
+                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
+                RequiredUnitExists(UnitTypeId.DRONE, 14),
+            ),
             # Queen for more larvae
             # BuildStep(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1), RequiredUnitExists(UnitTypeId.QUEEN, 1)),
-
             # Endless zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA),
-                 None),
-
+            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
         return BuildOrder(

@@ -16,7 +16,7 @@ class ChronoTech(ActBase):
         super().__init__()
 
     async def execute(self):
-        #if ai.already_pending_upgrade(self.name):
+        # if ai.already_pending_upgrade(self.name):
         target: Unit
         for target in self.cache.own(self.from_building).ready:
             for order in target.orders:
@@ -27,5 +27,5 @@ class ChronoTech(ActBase):
                             abilities = await self.ai.get_available_abilities(nexus)
                             if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
                                 self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                                self.print(f'Chrono to {self.name}!')
-        return True # Never block
+                                self.print(f"Chrono to {self.name}!")
+        return True  # Never block

@@ -4,7 +4,6 @@ from bot_loader.ladder_zip import LadderZip
 
 
 class DummyZip(LadderZip):
-
     def __init__(self, archive_name: str, race: str, file: str, build: str = None):
         root_dir = os.getcwd()
         self.dummy_file = file
@@ -19,7 +18,7 @@ class DummyZip(LadderZip):
 
     def pre_zip(self):
         if self.build:
-            with open("config.ini", 'a', newline='\n') as handle:
+            with open("config.ini", "a", newline="\n") as handle:
                 handle.writelines([self.build, ""])
         shutil.copy(self.dummy_file, self.new_dummy_file)
 

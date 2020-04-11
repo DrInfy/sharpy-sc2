@@ -41,7 +41,6 @@ class Knowledge:
 
         self._all_own: Units = None
 
-
         # Base building related
         self.reserved_minerals = 0
         self.reserved_gas = 0
@@ -124,7 +123,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "builds.edge_protoss" for "edge_protoss" setting under [builds].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].get(key[1])
 
     def get_int_setting(self, key: str) -> int:
@@ -133,7 +132,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "gameplay.disruptor_max_count" for "disruptor_max_count" setting under [gameplay].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getint(key[1])
 
     def get_boolean_setting(self, key: str) -> str:
@@ -142,7 +141,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "general.chat" for "chat" setting under [general].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getboolean(key[1])
 
     @property
@@ -215,20 +214,26 @@ class Knowledge:
     async def update(self, iteration: int):
         if self.close_gates:
             lings = self.enemy_units_manager.unit_count(UnitTypeId.ZERGLING)
-            if self.enemy_units_manager.unit_count(UnitTypeId.ROACH) > lings\
-                    or self.enemy_units_manager.unit_count(UnitTypeId.HYDRALISK) > lings:
+            if (
+                self.enemy_units_manager.unit_count(UnitTypeId.ROACH) > lings
+                or self.enemy_units_manager.unit_count(UnitTypeId.HYDRALISK) > lings
+            ):
                 self.close_gates = False
 
         self._all_own: Units = self.ai.units + self.ai.structures
         memory_units = self.memory_manager.ghost_units
         self._known_enemy_structures: Units = self.ai.enemy_structures.filter(
-            lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure)
+            lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure
+        )
         self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures + memory_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units + memory_units
 
-        self._known_enemy_units_workers: Units =\
-            Units(self._known_enemy_units_mobile.of_type([UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]),
-                  self.ai)
+        self._known_enemy_units_workers: Units = Units(
+            self._known_enemy_units_mobile.of_type(
+                [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
+            ),
+            self.ai,
+        )
 
         self.iteration = iteration
 
@@ -290,7 +295,7 @@ class Knowledge:
             cost = self.ai._game_data.calculate_ability_cost(item_id)
         minerals = self.ai.minerals - self.reserved_minerals
         gas = self.ai.vespene - self.reserved_gas
-        return cost.minerals <= minerals and cost.vespene <= max(0,gas) and enough_supply
+        return cost.minerals <= minerals and cost.vespene <= max(0, gas) and enough_supply
 
     def should_attack(self, unit: Unit):
         """Returns boolean whether unit should participate in an attack. Ignores structures, workers and other non attacking types."""
@@ -298,7 +303,11 @@ class Knowledge:
             return False
         if self.my_race == Race.Zerg and unit.type_id == UnitTypeId.QUEEN:
             return False
-        if unit.type_id == UnitTypeId.INTERCEPTOR or unit.type_id == UnitTypeId.ADEPTPHASESHIFT or unit.type_id == UnitTypeId.MULE:
+        if (
+            unit.type_id == UnitTypeId.INTERCEPTOR
+            or unit.type_id == UnitTypeId.ADEPTPHASESHIFT
+            or unit.type_id == UnitTypeId.MULE
+        ):
             return False
         return not unit.is_structure and self.my_worker_type != unit.type_id
 
@@ -320,6 +329,7 @@ class Knowledge:
         expansions = {}
 
         for exp_loc in self.ai.expansion_locations:
+
             def is_near_to_expansion(th: Unit):
                 return th.position.distance_to(exp_loc) < sc2.BotAI.EXPANSION_GAP_THRESHOLD
 
@@ -423,12 +433,10 @@ class Knowledge:
         pass
 
     async def on_building_construction_started(self, unit: Unit):
-        self._print(f"Started {unit.type_id.name} at {unit.position}"
-        )
+        self._print(f"Started {unit.type_id.name} at {unit.position}")
 
     async def on_building_construction_complete(self, unit: Unit):
-        self._print(f"Completed {unit.type_id.name} at {unit.position}"
-        )
+        self._print(f"Completed {unit.type_id.name} at {unit.position}")
 
     async def on_end(self, game_result: Result):
         self._print(f"Result: {game_result.name}", stats=False)
@@ -450,7 +458,7 @@ class Knowledge:
         for manager in self.managers:
             await manager.on_end(game_result)
 
-# region Knowledge event handlers
+    # region Knowledge event handlers
 
     # todo: if this is useful, it should be refactored as a more general solution
 
@@ -459,14 +467,14 @@ class Knowledge:
         self._on_unit_destroyed_listeners.append(func)
 
     def unregister_on_unit_destroyed_listener(self, func):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @staticmethod
     def fire_event(listeners, event):
         for listener in listeners:
             listener(event)
 
-# endregion
+    # endregion
 
     #
     # Printing
@@ -497,9 +505,11 @@ class Knowledge:
         if stats:
             last_step_time = round(self.ai.step_time[3])
 
-            message = f"{self.ai.time_formatted.rjust(5)} {str(last_step_time).rjust(4)}ms " \
-                f"{str(self.ai.minerals).rjust(4)}M {str(self.ai.vespene).rjust(4)}G " \
+            message = (
+                f"{self.ai.time_formatted.rjust(5)} {str(last_step_time).rjust(4)}ms "
+                f"{str(self.ai.minerals).rjust(4)}M {str(self.ai.vespene).rjust(4)}G "
                 f"{str(self.ai.supply_used).rjust(3)}/{str(self.ai.supply_cap).rjust(3)}U {message}"
+            )
 
         # noinspection PyUnresolvedReferences
         if not self.ai.run_custom or self.ai.player_id == 1 or self.ai.realtime:
@@ -526,7 +536,9 @@ class Knowledge:
                 self.gather_point = zone.gather_point
             elif zone.is_ours:
                 if len(self.zone_manager.gather_points) > i:
-                    self.gather_point = self.zone_manager.expansion_zones[self.zone_manager.gather_points[i]].gather_point
+                    self.gather_point = self.zone_manager.expansion_zones[
+                        self.zone_manager.gather_points[i]
+                    ].gather_point
 
     def get_z(self, point: Point2):
         return self.terrain_to_z_height(self.ai.get_terrain_height(point))

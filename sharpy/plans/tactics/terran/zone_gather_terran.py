@@ -12,7 +12,7 @@ class PlanZoneGatherTerran(ActBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.unit_values: UnitValue = knowledge.unit_values
         self.gather_point = self.knowledge.gather_point
@@ -27,8 +27,7 @@ class PlanZoneGatherTerran(ActBase):
             self.gather_point = self.knowledge.gather_point
 
         unit: Unit
-        for unit in self.cache.own([sc2.UnitTypeId.BARRACKS, sc2.UnitTypeId.FACTORY]) \
-                .tags_not_in(self.gather_set):
+        for unit in self.cache.own([sc2.UnitTypeId.BARRACKS, sc2.UnitTypeId.FACTORY]).tags_not_in(self.gather_set):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
             pos = pos.towards(self.knowledge.gather_point, 3)
@@ -41,7 +40,7 @@ class PlanZoneGatherTerran(ActBase):
         for unit in units:
             if self.knowledge.should_attack(unit):
                 d = unit.position.distance_to(self.gather_point)
-                if (unit.type_id == UnitTypeId.SIEGETANK and d < random_variable):
+                if unit.type_id == UnitTypeId.SIEGETANK and d < random_variable:
                     ramp = self.knowledge.base_ramp
                     if unit.distance_to(ramp.bottom_center) > 5 and unit.distance_to(ramp.top_center) > 4:
                         self.ai.do(unit(AbilityId.SIEGEMODE_SIEGEMODE))
@@ -49,4 +48,4 @@ class PlanZoneGatherTerran(ActBase):
                     self.combat.add_unit(unit)
 
         self.combat.execute(self.gather_point)
-        return True # Always non blocking
+        return True  # Always non blocking

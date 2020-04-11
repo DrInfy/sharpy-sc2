@@ -41,4 +41,3 @@ class ChatManager(ManagerBase):
 
     async def post_update(self):
         pass
-

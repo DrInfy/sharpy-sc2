@@ -5,7 +5,8 @@ from typing import Optional, List, Dict
 from aiohttp import web
 from .ladder_bot import BotLadder
 
-class BotLoader():
+
+class BotLoader:
     bots: Dict[str, BotLadder]
 
     def __init__(self) -> None:
@@ -35,8 +36,7 @@ class BotLoader():
 
         for x in os.listdir(path):
             full_path = os.path.join(path, x)
-            json_path = os.path.join(full_path, 'ladderbots.json')
+            json_path = os.path.join(full_path, "ladderbots.json")
             if os.path.isfile(json_path):
                 bot = BotLadder(full_path, json_path)
                 self.bots[bot.name] = bot
-

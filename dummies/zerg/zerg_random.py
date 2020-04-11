@@ -15,5 +15,6 @@ elif val == 4:
 elif val == 5:
     from .twelve_pool import LadderBot
 
+
 class RandomZergBot(LadderBot):
     pass

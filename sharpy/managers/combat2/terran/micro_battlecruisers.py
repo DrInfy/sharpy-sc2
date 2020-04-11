@@ -41,7 +41,7 @@ class MicroBattleCruisers(GenericMicro):
                     score = enemy.health
                     # TODO: Needs proper target locking in order to not fire at the same target
                     # Simple and stupid way in an attempt to not use yamato gun on same target:
-                    score += (enemy.tag % (shuffler + 2))
+                    score += enemy.tag % (shuffler + 2)
 
                     if score > best_score:
                         target = enemy

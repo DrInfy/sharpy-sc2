@@ -25,28 +25,34 @@ from sharpy.general.extended_ramp import RampPosition
 
 from .grids import *
 
+
 class WallType(enum.IntEnum):
-    Auto = 0,
-    ProtossNaturalOneUnit = 1,
-    ProtossMainZerg = 2,
-    ProtossMainProtoss = 3,
-    NoWall = 4,
-    TerranMainDepots = 5,
+    Auto = (0,)
+    ProtossNaturalOneUnit = (1,)
+    ProtossMainZerg = (2,)
+    ProtossMainProtoss = (3,)
+    NoWall = (4,)
+    TerranMainDepots = (5,)
 
 
 def is_empty(cell: GridArea) -> bool:
     return cell.Area == BuildArea.Empty
 
+
 def is_free(cell: GridArea) -> bool:
     return cell.Area == BuildArea.Empty or cell.Area == BuildArea.BuildingPadding
+
 
 def fill_padding(cell: GridArea, point: Point2 = None) -> GridArea:
     if cell.Area == BuildArea.Empty:
         cell.Area = BuildArea.BuildingPadding
     return cell
 
-class WallFinder():
-    def __init__(self, b1: Point2, b2: Point2, check_from_b1: Point2, check_from_b2: Point2, zealot: Point2, score: int=2):
+
+class WallFinder:
+    def __init__(
+        self, b1: Point2, b2: Point2, check_from_b1: Point2, check_from_b2: Point2, zealot: Point2, score: int = 2
+    ):
         assert isinstance(b1, Point2)
         assert isinstance(b2, Point2)
         assert isinstance(check_from_b1, Point2)
@@ -82,6 +88,7 @@ class WallFinder():
             list.append(position + building)
         return list
 
+
 class BuildingSolver(ManagerBase):
     def __init__(self):
         super().__init__()
@@ -97,23 +104,17 @@ class BuildingSolver(ManagerBase):
         self.wall_finders_v = [
             # Pure vertical walls
             WallFinder(Point2((0, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2)), 5),
-
             WallFinder(Point2((1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
             WallFinder(Point2((-1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
-
             WallFinder(Point2((1, -3)), Point2((-1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
             WallFinder(Point2((-1, -3)), Point2((1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
-
             # Hybrid vertical walls
             WallFinder(Point2((2, -3)), Point2((-1, 4)), Point2((1, 0)), Point2((0, 1)), Point2((0, 2))),
             WallFinder(Point2((-2, -3)), Point2((1, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((0, 2))),
-
             WallFinder(Point2((2, 3)), Point2((-1, -4)), Point2((1, 0)), Point2((0, -1)), Point2((0, -2))),
             WallFinder(Point2((-2, 3)), Point2((1, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((0, -2))),
-
             WallFinder(Point2((2, -3)), Point2((-2, 4)), Point2((1, 0)), Point2((0, 1)), Point2((-1, 2)), 1),
             WallFinder(Point2((-2, -3)), Point2((2, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((1, 2)), 1),
-
             WallFinder(Point2((2, 3)), Point2((-2, -4)), Point2((1, 0)), Point2((0, -1)), Point2((-1, -2)), 1),
             WallFinder(Point2((-2, 3)), Point2((2, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((1, -2)), 1),
         ]
@@ -121,23 +122,17 @@ class BuildingSolver(ManagerBase):
         self.wall_finders_h = [
             # Pure horizontal walls
             WallFinder(Point2((-3, 0)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-
             WallFinder(Point2((-3, 1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
             WallFinder(Point2((-3, -1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-
             WallFinder(Point2((-3, 1)), Point2((4, -1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
             WallFinder(Point2((-3, -1)), Point2((4, 1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-
             # Hybrid horizontal walls
             WallFinder(Point2((-3, 2)), Point2((4, -1)), Point2((0, 1)), Point2((1, 0)), Point2((2, 0))),
             WallFinder(Point2((-3, -2)), Point2((4, 1)), Point2((0, -1)), Point2((1, 0)), Point2((2, 0))),
-
             WallFinder(Point2((3, 2)), Point2((-4, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, 0))),
             WallFinder(Point2((3, -2)), Point2((-4, 1)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 0))),
-
             WallFinder(Point2((-3, 2)), Point2((4, -2)), Point2((0, 1)), Point2((1, 0)), Point2((2, -1)), 1),
             WallFinder(Point2((-3, -2)), Point2((4, 2)), Point2((0, -1)), Point2((1, 0)), Point2((2, 1)), 1),
-
             WallFinder(Point2((3, 2)), Point2((-4, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, -1)), 1),
             WallFinder(Point2((3, -2)), Point2((-4, 2)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 1)), 1),
         ]
@@ -146,13 +141,10 @@ class BuildingSolver(ManagerBase):
             # Dioganal / ramp walls
             WallFinder(Point2((2, 4)), Point2((-3, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
             WallFinder(Point2((-2, -4)), Point2((3, 2)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
-
             WallFinder(Point2((4, 2)), Point2((-2, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
             WallFinder(Point2((-4, -2)), Point2((2, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
-
             WallFinder(Point2((2, 4)), Point2((-3, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
             WallFinder(Point2((-2, -4)), Point2((3, 1)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
-
             WallFinder(Point2((4, 2)), Point2((-1, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
             WallFinder(Point2((-4, -2)), Point2((1, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
         ]
@@ -165,7 +157,7 @@ class BuildingSolver(ManagerBase):
     def building_position(self) -> List[Point2]:
         return self._building_positions.get(BuildArea.Building, [])
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.grid = BuildGrid(self.knowledge)
 
@@ -185,7 +177,7 @@ class BuildingSolver(ManagerBase):
                 x = self.zealot_position.x
                 y = self.zealot_position.y
                 z = self.knowledge.get_z(Point2((x, y)))
-                c1 = Point3((x - 0.25, y- 0.25, z))
+                c1 = Point3((x - 0.25, y - 0.25, z))
                 c2 = Point3((x + 0.25, y + 0.25, z + 2))
                 client.debug_box_out(c1, c2)
 
@@ -204,7 +196,7 @@ class BuildingSolver(ManagerBase):
                         color = self.grid.mineral_color
                     elif cell.Area == BuildArea.Gas:
                         color = self.grid.gas_color
-                    #elif cell.Area == BuildArea.Empty:
+                    # elif cell.Area == BuildArea.Empty:
                     #    color = self.grid.gas_color
 
                     if color:
@@ -314,7 +306,6 @@ class BuildingSolver(ManagerBase):
 
                         self.massive_grid(pos)
 
-
             for x in x_range:
                 for y in y_range:
                     pos = Point2((x + center.x, y + center.y))
@@ -329,21 +320,19 @@ class BuildingSolver(ManagerBase):
         rect = Rectangle(pos.x, pos.y, 6, 9)
         unit_exit_rect = Rectangle(pos.x - 2, pos.y + 4, 2, 2)
         unit_exit_rect2 = Rectangle(pos.x + 6, pos.y + 4, 2, 2)
-        padding = Rectangle(pos.x - 2, pos.y -2, 10, 12)
+        padding = Rectangle(pos.x - 2, pos.y - 2, 10, 12)
 
-        if (self.grid.query_rect(rect, is_empty)
-                and self.grid.query_rect(unit_exit_rect, is_free)
-                and self.grid.query_rect(unit_exit_rect2, is_free)):
-            pylons = [
-                pos + Point2((1, 1)),
-                pos + Point2((1+2, 1)),
-                pos + Point2((1+4, 1))
-            ]
+        if (
+            self.grid.query_rect(rect, is_empty)
+            and self.grid.query_rect(unit_exit_rect, is_free)
+            and self.grid.query_rect(unit_exit_rect2, is_free)
+        ):
+            pylons = [pos + Point2((1, 1)), pos + Point2((1 + 2, 1)), pos + Point2((1 + 4, 1))]
             gates = [
                 pos + Point2((1.5, 3.5)),
                 pos + Point2((4.5, 3.5)),
                 pos + Point2((1.5, 6.5)),
-                pos + Point2((4.5, 6.5))
+                pos + Point2((4.5, 6.5)),
             ]
 
             pylon_check = pylons[0].offset(Point2((0, -1)))
@@ -362,12 +351,8 @@ class BuildingSolver(ManagerBase):
         rect = Rectangle(pos.x, pos.y, 6, 5)
         padding = Rectangle(pos.x, pos.y, 7, 5)
 
-        if (self.grid.query_rect(rect, is_empty)):
-            pylons = [
-                pos + Point2((1, 4)),
-                pos + Point2((1 + 2, 4)),
-                pos + Point2((1 + 4, 4))
-            ]
+        if self.grid.query_rect(rect, is_empty):
+            pylons = [pos + Point2((1, 4)), pos + Point2((1 + 2, 4)), pos + Point2((1 + 4, 4))]
             gates = [
                 pos + Point2((1.5, 1.5)),
             ]
@@ -383,12 +368,8 @@ class BuildingSolver(ManagerBase):
         rect = Rectangle(pos.x, pos.y, 7, 8)
         # padding = Rectangle(pos.x, pos.y - 2, 7, 8)
 
-        if (self.grid.query_rect(rect, is_empty)):
-            pylons = [
-                pos + Point2((1, 3)),
-                pos + Point2((6, 4)),
-                pos + Point2((6, 6))
-            ]
+        if self.grid.query_rect(rect, is_empty):
+            pylons = [pos + Point2((1, 3)), pos + Point2((6, 4)), pos + Point2((6, 6))]
             gates = [
                 pos + Point2((1.5, 5.5)),
                 pos + Point2((3.5, 2.5)),
@@ -422,16 +403,16 @@ class BuildingSolver(ManagerBase):
             self.grid.fill_area(gate_pos, BlockerType.Building5x5, fill_padding)
 
     def protoss_wall(self):
-        ramp: 'ExtendedRamp' = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.knowledge.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
-            zealot = ramp.positions.get(RampPosition.GateZealot) # TODO: Incorrect!
+            zealot = ramp.positions.get(RampPosition.GateZealot)  # TODO: Incorrect!
             gate = ramp.positions.get(RampPosition.GateVsProtoss)
             core = ramp.positions.get(RampPosition.CoreVsProtoss)
             self.wall_save(pylon, zealot, [gate, core])
 
     def zerg_wall(self):
-        ramp: 'ExtendedRamp' = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.knowledge.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
             zealot = ramp.positions.get(RampPosition.GateZealot)
@@ -485,7 +466,9 @@ class BuildingSolver(ManagerBase):
             return False
         return True
 
-    async def find_wall_in_direction(self, center: Point2, perpendicular: Point2, search_vector: Point2, wall_finders: List[WallFinder]):
+    async def find_wall_in_direction(
+        self, center: Point2, perpendicular: Point2, search_vector: Point2, wall_finders: List[WallFinder]
+    ):
         zone_height = self.ai.get_terrain_height(center)
         enemy_natural: Point2 = self.knowledge.expansion_zones[-2].center_location
 
@@ -502,16 +485,27 @@ class BuildingSolver(ManagerBase):
                 for finder in wall_finders:
 
                     if finder.query(self.grid, lookup, ZoneArea.OwnNaturalZone):
-                        if not self.grid.query_area(lookup + search_vector * 5, BlockerType.Building1x1, self.is_pathable) \
-                            or not self.grid.query_area(lookup - search_vector * 5, BlockerType.Building1x1, self.is_pathable):
+                        if not self.grid.query_area(
+                            lookup + search_vector * 5, BlockerType.Building1x1, self.is_pathable
+                        ) or not self.grid.query_area(
+                            lookup - search_vector * 5, BlockerType.Building1x1, self.is_pathable
+                        ):
                             # Wall was found, it seems like it's not towards open area
-                            self.print(f"Wall was found at {lookup}, but disregarded due to not free area check", stats=False, log_level=logging.DEBUG)
+                            self.print(
+                                f"Wall was found at {lookup}, but disregarded due to not free area check",
+                                stats=False,
+                                log_level=logging.DEBUG,
+                            )
                             continue
 
                         lookup_distance = await self.client.query_pathing(lookup, enemy_natural)
                         wall_distance = await self.client.query_pathing(lookup + search_vector * 5, enemy_natural)
                         if wall_distance > lookup_distance:
-                            self.print(f"Wall was found at {lookup}, but disregarded due to distance check", stats=False, log_level=logging.DEBUG)
+                            self.print(
+                                f"Wall was found at {lookup}, but disregarded due to distance check",
+                                stats=False,
+                                log_level=logging.DEBUG,
+                            )
                             continue
 
                         pylon = lookup - 2.5 * search_vector
@@ -519,13 +513,15 @@ class BuildingSolver(ManagerBase):
                         gates = finder.positions(lookup)
 
                         if wall is None:
-                            self.print(f'Natural wall found! ({lookup})', stats=False, log_level=logging.DEBUG)
+                            self.print(f"Natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
                             wall = (finder.score, pylon, zealot, gates)
                         elif wall[0] < finder.score:
-                            self.print(f'Better natural wall found! ({lookup})', stats=False, log_level=logging.DEBUG)
+                            self.print(f"Better natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
                             wall = (finder.score, pylon, zealot, gates)
                         else:
-                            self.print(f'Natural wall found, but disregarded! ({lookup})', stats=False, log_level=logging.DEBUG)
+                            self.print(
+                                f"Natural wall found, but disregarded! ({lookup})", stats=False, log_level=logging.DEBUG
+                            )
                             wall = (finder.score, pylon, zealot, gates)
 
         if wall is not None:
@@ -542,10 +538,10 @@ class BuildingSolver(ManagerBase):
         for position in sc2math.spiral(7, 7):
             pylon_check = pylon + position
             if (
-                    self.grid.query_area(pylon_check, BlockerType.Building2x2, is_empty)
-                    and pylon_check.distance_to(gates[0]) < Constants.PYLON_POWERED_DISTANCE
-                    and pylon_check.distance_to(gates[1]) < Constants.PYLON_POWERED_DISTANCE
-                    and pylon_check.distance_to(gates[2]) < Constants.PYLON_POWERED_DISTANCE
+                self.grid.query_area(pylon_check, BlockerType.Building2x2, is_empty)
+                and pylon_check.distance_to(gates[0]) < Constants.PYLON_POWERED_DISTANCE
+                and pylon_check.distance_to(gates[1]) < Constants.PYLON_POWERED_DISTANCE
+                and pylon_check.distance_to(gates[2]) < Constants.PYLON_POWERED_DISTANCE
             ):
                 # That position is free to build on
                 pylon = pylon_check
@@ -602,11 +598,14 @@ class BuildingSolver(ManagerBase):
         height = self.ai.get_terrain_height(center)
 
         def fill_circle(cell: GridArea, point: Point2) -> GridArea:
-            if cell.Area == BuildArea.Empty and height == self.ai.get_terrain_height(point)\
-                    and point.distance_to_point2(center) <= zone.radius:
+            if (
+                cell.Area == BuildArea.Empty
+                and height == self.ai.get_terrain_height(point)
+                and point.distance_to_point2(center) <= zone.radius
+            ):
                 cell.ZoneIndex = zone_type
 
             return cell
 
-        rect = Rectangle(center.x - radius, center.y -radius, radius * 2, radius * 2)
+        rect = Rectangle(center.x - radius, center.y - radius, radius * 2, radius * 2)
         self.grid.fill_rect_func(rect, fill_circle)

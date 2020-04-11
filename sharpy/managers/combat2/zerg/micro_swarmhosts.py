@@ -41,12 +41,7 @@ class MicroSwarmHosts(MicroStep):
         if self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_SPAWNLOCUSTS):
             distance = self.pather.walk_distance(unit.position, center)
             if distance < HOST_RANGE:
-                return Action(
-                    center,
-                    False,
-                    AbilityId.EFFECT_SPAWNLOCUSTS,
-                    debug_comment="Spawning Locusts",
-                )
+                return Action(center, False, AbilityId.EFFECT_SPAWNLOCUSTS, debug_comment="Spawning Locusts",)
             else:
                 return Action(center, False)
 

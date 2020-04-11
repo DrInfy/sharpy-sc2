@@ -19,12 +19,15 @@ class PlanHeatDefender(ActBase):
 
         self.phaseshift_tags: List[int] = []
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.roles = self.knowledge.roles
         self.combat.use_unit_micro = False
-        self.check_zones = [self.knowledge.expansion_zones[0], self.knowledge.expansion_zones[1],
-                            self.knowledge.expansion_zones[2]]
+        self.check_zones = [
+            self.knowledge.expansion_zones[0],
+            self.knowledge.expansion_zones[1],
+            self.knowledge.expansion_zones[2],
+        ]
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
 
     async def execute(self) -> bool:
@@ -45,7 +48,7 @@ class PlanHeatDefender(ActBase):
 
         self.combat.execute()
 
-        return True # never block
+        return True  # never block
 
     async def assault_hot_spot(self, adept):
         ground_enemies = self.knowledge.known_enemy_units_mobile.not_flying
@@ -61,7 +64,7 @@ class PlanHeatDefender(ActBase):
                 for shade in shades.tags_in(self.phaseshift_tags):
                     self.combat.add_unit(shade)
 
-                for shade in shades.tags_not_in(self.phaseshift_tags) .closer_than(6, adept):
+                for shade in shades.tags_not_in(self.phaseshift_tags).closer_than(6, adept):
                     self.phaseshift_tags.append(shade.tag)
                     self.combat.add_unit(shade)
 

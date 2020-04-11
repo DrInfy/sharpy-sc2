@@ -23,7 +23,6 @@ class PlanZoneDefense(ActBase):
         self.defender_secondary_tags: Dict[int, List[int]] = dict()
         self.zone_seen_enemy: Dict[int, float] = dict()
 
-
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.worker_type: UnitTypeId = knowledge.my_worker_type
@@ -43,7 +42,7 @@ class PlanZoneDefense(ActBase):
         all_defenders = self.knowledge.roles.all_from_task(UnitTask.Defending)
 
         for i in range(0, len(self.knowledge.expansion_zones)):
-            zone: 'Zone' = self.knowledge.expansion_zones[i]
+            zone: "Zone" = self.knowledge.expansion_zones[i]
             zone_tags = self.defender_tags[i]
 
             zone_defenders_all = all_defenders.tags_in(zone_tags)
@@ -56,8 +55,10 @@ class PlanZoneDefense(ActBase):
             if zone_defenders.exists or zone.is_ours or zone == self.knowledge.own_main_zone:
                 if not self.defense_required(enemies):
                     # Delay before removing defenses in case we just lost visibility of the enemies
-                    if zone.last_scouted_center == self.knowledge.ai.time \
-                            or self.zone_seen_enemy[i] + PlanZoneDefense.ZONE_CLEAR_TIMEOUT < self.ai.time:
+                    if (
+                        zone.last_scouted_center == self.knowledge.ai.time
+                        or self.zone_seen_enemy[i] + PlanZoneDefense.ZONE_CLEAR_TIMEOUT < self.ai.time
+                    ):
                         self.knowledge.roles.clear_tasks(zone_defenders_all)
                         zone_defenders.clear()
                         zone_tags.clear()
@@ -72,7 +73,7 @@ class PlanZoneDefense(ActBase):
                     enemy_center = zone.assaulting_enemies.closest_to(zone.center_location).position
                 else:
                     enemy_center = zone.gather_point
-                
+
                 defense_required = ExtendedPower(self.unit_values)
                 defense_required.add_power(zone.assaulting_enemy_power)
                 defense_required.multiply(1.5)
@@ -112,17 +113,18 @@ class PlanZoneDefense(ActBase):
                                 zone_tags.remove(unit.tag)
                         # Zone is well under control without worker defense.
                     else:
-                        await self.worker_defence(defenders.power, defense_required, enemy_center, zone, zone_tags,
-                                              zone_worker_defenders)
+                        await self.worker_defence(
+                            defenders.power, defense_required, enemy_center, zone, zone_tags, zone_worker_defenders
+                        )
 
                 self.combat.execute(enemy_center, MoveType.SearchAndDestroy)
         return True  # never block
 
-
-    async def worker_defence(self, defenders: float, defense_required, enemy_center, zone: 'Zone', zone_tags,
-                             zone_worker_defenders):
+    async def worker_defence(
+        self, defenders: float, defense_required, enemy_center, zone: "Zone", zone_tags, zone_worker_defenders
+    ):
         ground_enemies: Units = zone.known_enemy_units.not_flying
-        
+
         # Enemy value on same level and not on ramp
         hostiles_inside = 0
         for unit in ground_enemies:
@@ -143,7 +145,7 @@ class PlanZoneDefense(ActBase):
                 threshold = 8
             else:
                 defense_count_panic = hostiles_inside * 1.3
-                threshold = 6 # probably a worker fight?
+                threshold = 6  # probably a worker fight?
         else:
             defense_count_panic = hostiles_inside * 1.1
             threshold = 16
@@ -154,7 +156,6 @@ class PlanZoneDefense(ActBase):
         else:
             # No ground enemies near workers. There could be eg. a banshee though.
             killing_probes = False
-
 
         # Loop currently defending workers
         for unit in zone_worker_defenders:
@@ -171,7 +172,7 @@ class PlanZoneDefense(ActBase):
             return
 
         if defense_required.power < 1 and not killing_probes:
-            return # Probably a single scout, don't pull workers
+            return  # Probably a single scout, don't pull workers
 
         if zone.our_wall() and self.ai.time < 200:
             possible_defender_workers = self.ai.workers
@@ -200,4 +201,3 @@ class PlanZoneDefense(ActBase):
                 if unit:
                     text = f"Defending {zone}"
                     self._client.debug_text_world(text, unit.position3d)
-

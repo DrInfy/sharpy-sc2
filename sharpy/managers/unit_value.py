@@ -43,7 +43,6 @@ buildings_3x3 = {
     UnitTypeId.STARGATE,
     UnitTypeId.FLEETBEACON,
     UnitTypeId.ASSIMILATOR,
-
     UnitTypeId.SPAWNINGPOOL,
     UnitTypeId.ROACHWARREN,
     UnitTypeId.HYDRALISKDEN,
@@ -54,7 +53,6 @@ buildings_3x3 = {
     UnitTypeId.EXTRACTOR,
     UnitTypeId.INFESTATIONPIT,
     UnitTypeId.ULTRALISKCAVERN,
-
     UnitTypeId.BARRACKS,
     UnitTypeId.ENGINEERINGBAY,
     UnitTypeId.FACTORY,
@@ -77,8 +75,15 @@ buildings_5x5 = {
 
 
 class UnitData:
-    def __init__(self, minerals: int, gas: int, supply: float, combat_value: float,
-                 build_time: Optional[int] = None, features: Optional[List[UnitFeature]] = None):
+    def __init__(
+        self,
+        minerals: int,
+        gas: int,
+        supply: float,
+        combat_value: float,
+        build_time: Optional[int] = None,
+        features: Optional[List[UnitFeature]] = None,
+    ):
         self.minerals = minerals
         self.gas = gas
         self.supply = supply
@@ -92,12 +97,7 @@ class UnitData:
 
 
 class UnitValue(ManagerBase):
-    worker_types = {
-            UnitTypeId.SCV,
-            UnitTypeId.MULE,
-            UnitTypeId.DRONE,
-            UnitTypeId.PROBE
-        }
+    worker_types = {UnitTypeId.SCV, UnitTypeId.MULE, UnitTypeId.DRONE, UnitTypeId.PROBE}
 
     gate_types = {
         UnitTypeId.ZEALOT,
@@ -113,46 +113,38 @@ class UnitValue(ManagerBase):
     builders = {
         UnitTypeId.PROBE: {UnitTypeId.NEXUS},
         UnitTypeId.MOTHERSHIP: {UnitTypeId.NEXUS},
-
         UnitTypeId.ZEALOT: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
         UnitTypeId.STALKER: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
         UnitTypeId.ADEPT: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
         UnitTypeId.HIGHTEMPLAR: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
         UnitTypeId.DARKTEMPLAR: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
         UnitTypeId.SENTRY: {UnitTypeId.WARPGATE, UnitTypeId.GATEWAY},
-
         UnitTypeId.IMMORTAL: {UnitTypeId.ROBOTICSFACILITY},
         UnitTypeId.COLOSSUS: {UnitTypeId.ROBOTICSFACILITY},
         UnitTypeId.DISRUPTOR: {UnitTypeId.ROBOTICSFACILITY},
         UnitTypeId.WARPPRISM: {UnitTypeId.ROBOTICSFACILITY},
         UnitTypeId.OBSERVER: {UnitTypeId.ROBOTICSFACILITY},
-
         UnitTypeId.PHOENIX: {UnitTypeId.STARGATE},
         UnitTypeId.VOIDRAY: {UnitTypeId.STARGATE},
         UnitTypeId.ORACLE: {UnitTypeId.STARGATE},
         UnitTypeId.TEMPEST: {UnitTypeId.STARGATE},
         UnitTypeId.CARRIER: {UnitTypeId.STARGATE},
-
         UnitTypeId.SCV: {UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS},
-
         UnitTypeId.MARINE: {UnitTypeId.BARRACKS},
         UnitTypeId.MARAUDER: {UnitTypeId.BARRACKS},
         UnitTypeId.REACTOR: {UnitTypeId.BARRACKS},
         UnitTypeId.GHOST: {UnitTypeId.BARRACKS},
-
         UnitTypeId.HELLION: {UnitTypeId.FACTORY},
         UnitTypeId.WIDOWMINE: {UnitTypeId.FACTORY},
         UnitTypeId.SIEGETANK: {UnitTypeId.FACTORY},
         UnitTypeId.CYCLONE: {UnitTypeId.FACTORY},
         UnitTypeId.THOR: {UnitTypeId.FACTORY},
-
         UnitTypeId.VIKING: {UnitTypeId.STARPORT},
         UnitTypeId.MEDIVAC: {UnitTypeId.STARPORT},
         UnitTypeId.LIBERATOR: {UnitTypeId.STARPORT},
         UnitTypeId.RAVEN: {UnitTypeId.STARPORT},
         UnitTypeId.BANSHEE: {UnitTypeId.STARPORT},
         UnitTypeId.BATTLECRUISER: {UnitTypeId.STARPORT},
-
         UnitTypeId.DRONE: {UnitTypeId.EGG},
         UnitTypeId.ZERGLING: {UnitTypeId.EGG},
         UnitTypeId.ROACH: {UnitTypeId.EGG},
@@ -160,7 +152,7 @@ class UnitValue(ManagerBase):
         UnitTypeId.MUTALISK: {UnitTypeId.EGG},
         UnitTypeId.INFESTOR: {UnitTypeId.EGG},
         UnitTypeId.CORRUPTOR: {UnitTypeId.EGG},
-        UnitTypeId.OVERLORD: {UnitTypeId.EGG}
+        UnitTypeId.OVERLORD: {UnitTypeId.EGG},
     }
 
     not_really_structure = {
@@ -168,16 +160,13 @@ class UnitValue(ManagerBase):
         UnitTypeId.CREEPTUMORBURROWED,
         UnitTypeId.CREEPTUMORQUEEN,
         UnitTypeId.CREEPTUMORMISSILE,
-        UnitTypeId.EGG
+        UnitTypeId.EGG,
     }
 
     def __init__(self):
         # By storing data in the instance, can skip import conflicts.
         super().__init__()
-        self.combat_ignore = {
-            UnitTypeId.OVERLORD,
-            UnitTypeId.LARVA
-        } | self.not_really_structure
+        self.combat_ignore = {UnitTypeId.OVERLORD, UnitTypeId.LARVA} | self.not_really_structure
 
         self.unit_data = {
             # Units
@@ -190,21 +179,34 @@ class UnitValue(ManagerBase):
             UnitTypeId.GHOST: UnitData(150, 125, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
             UnitTypeId.HELLION: UnitData(100, 0, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.HELLIONTANK: UnitData(100, 0, 2, 2, features=[UnitFeature.HitsGround]),
-
             UnitTypeId.WIDOWMINE: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.SIEGETANK: UnitData(150, 125, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.SIEGETANKSIEGED: UnitData(150, 125, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.CYCLONE: UnitData(150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.THOR: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.VIKING: UnitData(150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.VIKINGASSAULT: UnitData(150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.VIKINGFIGHTER: UnitData(150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
+            UnitTypeId.VIKING: UnitData(
+                150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.VIKINGASSAULT: UnitData(
+                150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.VIKINGFIGHTER: UnitData(
+                150, 75, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
             UnitTypeId.MEDIVAC: UnitData(100, 100, 2, 2, features=[UnitFeature.Flying]),
-            UnitTypeId.LIBERATOR: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.BANSHEE: UnitData(150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying, UnitFeature.Cloak]),
+            UnitTypeId.LIBERATOR: UnitData(
+                150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.BANSHEE: UnitData(
+                150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying, UnitFeature.Cloak]
+            ),
             UnitTypeId.RAVEN: UnitData(100, 200, 2, 2, features=[UnitFeature.Flying, UnitFeature.Detector]),
-            UnitTypeId.BATTLECRUISER: UnitData(400, 300, 6, 7, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.POINTDEFENSEDRONE: UnitData(0, 0, 0, 1, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.BATTLECRUISER: UnitData(
+                400, 300, 6, 7, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.POINTDEFENSEDRONE: UnitData(
+                0, 0, 0, 1, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
+            ),
             # Protoss
             UnitTypeId.PROBE: UnitData(50, 0, 1, 0.5, 12, features=[UnitFeature.HitsGround]),
             UnitTypeId.ZEALOT: UnitData(100, 0, 2, 2, features=[UnitFeature.HitsGround]),
@@ -220,12 +222,22 @@ class UnitValue(ManagerBase):
             UnitTypeId.COLOSSUS: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
             UnitTypeId.DISRUPTOR: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.PHOENIX: UnitData(150, 100, 2, 2, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.VOIDRAY: UnitData(250, 150, 4, 4, features=[UnitFeature.Flying, UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.VOIDRAY: UnitData(
+                250, 150, 4, 4, features=[UnitFeature.Flying, UnitFeature.HitsGround, UnitFeature.ShootsAir]
+            ),
             UnitTypeId.ORACLE: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying]),
-            UnitTypeId.TEMPEST: UnitData(250, 175, 5, 5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.CARRIER: UnitData(350, 250, 6, 8, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.INTERCEPTOR: UnitData(15, 0, 0, 0.01, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.MOTHERSHIP: UnitData(300, 300, 8, 8, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
+            UnitTypeId.TEMPEST: UnitData(
+                250, 175, 5, 5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.CARRIER: UnitData(
+                350, 250, 6, 8, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.INTERCEPTOR: UnitData(
+                15, 0, 0, 0.01, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
+            UnitTypeId.MOTHERSHIP: UnitData(
+                300, 300, 8, 8, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
             # Zerg
             UnitTypeId.LARVA: UnitData(0, 0, 0, 0),
             UnitTypeId.EGG: UnitData(0, 0, 0, 0),
@@ -244,11 +256,15 @@ class UnitValue(ManagerBase):
             UnitTypeId.RAVAGERBURROWED: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.RAVAGERCOCOON: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.HYDRALISK: UnitData(100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.HYDRALISKBURROWED: UnitData(100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.HYDRALISKBURROWED: UnitData(
+                100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
+            ),
             UnitTypeId.LURKERMP: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
             UnitTypeId.LURKERMPBURROWED: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
             UnitTypeId.INFESTOR: UnitData(100, 150, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.INFESTORBURROWED: UnitData(100, 150, 2, 0, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.INFESTORBURROWED: UnitData(
+                100, 150, 2, 0, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
+            ),
             UnitTypeId.INFESTEDTERRAN: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.INFESTEDCOCOON: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.SWARMHOSTMP: UnitData(100, 75, 3, 3, features=[UnitFeature.HitsGround]),
@@ -268,11 +284,15 @@ class UnitValue(ManagerBase):
             UnitTypeId.CHANGELINGZEALOT: UnitData(0, 0, 0, 0.01),
             UnitTypeId.CHANGELINGZERGLING: UnitData(25, 0, 0, 0.01),
             UnitTypeId.CHANGELINGZERGLINGWINGS: UnitData(25, 0, 0, 0.01),
-            UnitTypeId.MUTALISK: UnitData(100, 100, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]),
+            UnitTypeId.MUTALISK: UnitData(
+                100, 100, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
+            ),
             UnitTypeId.MUTALISKEGG: UnitData(100, 100, 2, 0),
             UnitTypeId.CORRUPTOR: UnitData(150, 100, 2, 2, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.VIPER: UnitData(100, 200, 3, 3, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
-            UnitTypeId.BROODLORD: UnitData(150 + 150, 150 + 100, 4, 6, features=[UnitFeature.HitsGround, UnitFeature.Flying]),
+            UnitTypeId.BROODLORD: UnitData(
+                150 + 150, 150 + 100, 4, 6, features=[UnitFeature.HitsGround, UnitFeature.Flying]
+            ),
             UnitTypeId.BROODLORDCOCOON: UnitData(150 + 150, 150 + 100, 4, 4, features=[UnitFeature.Flying]),
             UnitTypeId.BROODLING: UnitData(0, 0, 0, 0.01),
             # Buildings
@@ -281,16 +301,24 @@ class UnitValue(ManagerBase):
             UnitTypeId.COMMANDCENTERFLYING: UnitData(400, 0, 0, 0, None, features=[UnitFeature.Structure]),
             UnitTypeId.ORBITALCOMMAND: UnitData(150, 0, 0, 0, 25, features=[UnitFeature.Structure]),
             UnitTypeId.ORBITALCOMMANDFLYING: UnitData(150, 0, 0, 0, None, features=[UnitFeature.Structure]),
-            UnitTypeId.PLANETARYFORTRESS: UnitData(150, 150, 0, 5, 36, features=[UnitFeature.Structure, UnitFeature.HitsGround]),
+            UnitTypeId.PLANETARYFORTRESS: UnitData(
+                150, 150, 0, 5, 36, features=[UnitFeature.Structure, UnitFeature.HitsGround]
+            ),
             UnitTypeId.SUPPLYDEPOT: UnitData(100, 0, 0, 0, 21, features=[UnitFeature.Structure]),
             UnitTypeId.REFINERY: UnitData(75, 0, 0, 0, 21, features=[UnitFeature.Structure]),
             UnitTypeId.BARRACKS: UnitData(150, 0, 0, 0, 46, features=[UnitFeature.Structure]),
             UnitTypeId.BARRACKSFLYING: UnitData(150, 0, 0, 0, None, features=[UnitFeature.Structure]),
             UnitTypeId.ENGINEERINGBAY: UnitData(125, 0, 0, 0, 25, features=[UnitFeature.Structure]),
             # Presume that the bunker is full of marines
-            UnitTypeId.BUNKER: UnitData(100, 0, 0, 5, 29, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround]),
-            UnitTypeId.MISSILETURRET: UnitData(100, 0, 0, 1, 18, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.Detector]),
-            UnitTypeId.AUTOTURRET: UnitData(0, 0, 0, 1, None, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround]),
+            UnitTypeId.BUNKER: UnitData(
+                100, 0, 0, 5, 29, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround]
+            ),
+            UnitTypeId.MISSILETURRET: UnitData(
+                100, 0, 0, 1, 18, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.Detector]
+            ),
+            UnitTypeId.AUTOTURRET: UnitData(
+                0, 0, 0, 1, None, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround]
+            ),
             UnitTypeId.SENSORTOWER: UnitData(125, 100, 0, 0, 18, features=[UnitFeature.Structure]),
             UnitTypeId.FACTORY: UnitData(150, 100, 0, 0, 43, features=[UnitFeature.Structure]),
             UnitTypeId.FACTORYFLYING: UnitData(150, 100, 0, 0, None, features=[UnitFeature.Structure]),
@@ -314,7 +342,14 @@ class UnitValue(ManagerBase):
             UnitTypeId.ASSIMILATOR: UnitData(75, 0, 0, 0, 21, features=[UnitFeature.Structure]),
             UnitTypeId.GATEWAY: UnitData(150, 0, 0, 0, 46, features=[UnitFeature.Structure]),
             UnitTypeId.FORGE: UnitData(150, 0, 0, 0, 32, features=[UnitFeature.Structure]),
-            UnitTypeId.PHOTONCANNON: UnitData(150, 0, 0, 3, 29, features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround, UnitFeature.Detector]),
+            UnitTypeId.PHOTONCANNON: UnitData(
+                150,
+                0,
+                0,
+                3,
+                29,
+                features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround, UnitFeature.Detector],
+            ),
             UnitTypeId.SHIELDBATTERY: UnitData(100, 0, 0, 2, 29, features=[UnitFeature.Structure]),
             UnitTypeId.WARPGATE: UnitData(0, 0, 0, 0, None, features=[UnitFeature.Structure]),
             UnitTypeId.CYBERNETICSCORE: UnitData(150, 0, 0, 0, 36, features=[UnitFeature.Structure]),
@@ -330,14 +365,20 @@ class UnitValue(ManagerBase):
             UnitTypeId.EXTRACTOR: UnitData(25 + 50, 0, 0, 0, 21, features=[UnitFeature.Structure]),
             UnitTypeId.SPAWNINGPOOL: UnitData(200 + 50, 0, 0, 0, 46, features=[UnitFeature.Structure]),
             UnitTypeId.EVOLUTIONCHAMBER: UnitData(75 + 50, 0, 0, 0, 25, features=[UnitFeature.Structure]),
-            UnitTypeId.SPINECRAWLER: UnitData(100 + 50, 0, 0, 3, 36, features=[UnitFeature.Structure, UnitFeature.HitsGround]),
-            UnitTypeId.SPORECRAWLER: UnitData(75 + 50, 0, 0, 3, 21, features=[UnitFeature.Structure, UnitFeature.Detector, UnitFeature.ShootsAir]),
+            UnitTypeId.SPINECRAWLER: UnitData(
+                100 + 50, 0, 0, 3, 36, features=[UnitFeature.Structure, UnitFeature.HitsGround]
+            ),
+            UnitTypeId.SPORECRAWLER: UnitData(
+                75 + 50, 0, 0, 3, 21, features=[UnitFeature.Structure, UnitFeature.Detector, UnitFeature.ShootsAir]
+            ),
             UnitTypeId.ROACHWARREN: UnitData(150 + 50, 0, 0, 0, 39, features=[UnitFeature.Structure]),
             UnitTypeId.BANELINGNEST: UnitData(100 + 50, 50, 0, 0, 50, features=[UnitFeature.Structure]),
             UnitTypeId.LAIR: UnitData(450 + 50, 100, 0, 0, 57, features=[UnitFeature.Structure]),
             UnitTypeId.HYDRALISKDEN: UnitData(100 + 50, 100, 0, 0, 29, features=[UnitFeature.Structure]),
             UnitTypeId.LURKERDEN: UnitData(150 + 50, 150, 0, 0, 86, features=[UnitFeature.Structure]),
-            UnitTypeId.LURKERDENMP: UnitData(150 + 50, 150, 0, 0, 86, features=[UnitFeature.Structure]),  # MP = multi-player?
+            UnitTypeId.LURKERDENMP: UnitData(
+                150 + 50, 150, 0, 0, 86, features=[UnitFeature.Structure]
+            ),  # MP = multi-player?
             UnitTypeId.INFESTATIONPIT: UnitData(100 + 50, 100, 0, 0, 36, features=[UnitFeature.Structure]),
             UnitTypeId.SPIRE: UnitData(200 + 50, 200, 0, 0, 71, features=[UnitFeature.Structure]),
             UnitTypeId.NYDUSNETWORK: UnitData(150 + 50, 200, 0, 0, 36, features=[UnitFeature.Structure]),
@@ -348,11 +389,7 @@ class UnitValue(ManagerBase):
             UnitTypeId.CREEPTUMOR: UnitData(0, 0, 0, 0.1, 11, features=[UnitFeature.Structure, UnitFeature.Cloak]),
         }
 
-        self.gas_miners = {
-            UnitTypeId.ASSIMILATOR,
-            UnitTypeId.EXTRACTOR,
-            UnitTypeId.REFINERY
-        }
+        self.gas_miners = {UnitTypeId.ASSIMILATOR, UnitTypeId.EXTRACTOR, UnitTypeId.REFINERY}
 
         self.detectors: List[UnitTypeId] = []
         for unit_data_key in self.unit_data:
@@ -531,12 +568,7 @@ class UnitValue(ManagerBase):
         else:
             unit_type = unit
 
-        return unit_type in {
-            UnitTypeId.SCV,
-            UnitTypeId.MULE,
-            UnitTypeId.DRONE,
-            UnitTypeId.PROBE
-        }
+        return unit_type in {UnitTypeId.SCV, UnitTypeId.MULE, UnitTypeId.DRONE, UnitTypeId.PROBE}
 
     @staticmethod
     def is_static_ground_defense(unit: Union[Unit, UnitTypeId]):
@@ -614,8 +646,10 @@ class UnitValue(ManagerBase):
 
         for unit in units:
             if first_owner_id and unit.owner_id and not unit.owner_id == first_owner_id:
-                logging.warning(f"Unit owner id does not match. tag: {unit.tag} type: {unit.type_id} " +
-                                f"owner id: {unit.type_id} (expected {first_owner_id}")
+                logging.warning(
+                    f"Unit owner id does not match. tag: {unit.tag} type: {unit.type_id} "
+                    + f"owner id: {unit.type_id} (expected {first_owner_id}"
+                )
                 continue
             if unit.can_be_attacked:
                 first_owner_id = unit.owner_id
@@ -643,7 +677,6 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.INFESTORBURROWED: UnitTypeId.INFESTOR,
     UnitTypeId.SPINECRAWLERUPROOTED: UnitTypeId.SPINECRAWLER,
     UnitTypeId.SPORECRAWLERUPROOTED: UnitTypeId.SPORECRAWLER,
-
     # Terran
     UnitTypeId.SIEGETANKSIEGED: UnitTypeId.SIEGETANK,
     UnitTypeId.VIKINGASSAULT: UnitTypeId.VIKINGFIGHTER,
@@ -656,7 +689,6 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.BARRACKSTECHLAB: UnitTypeId.TECHLAB,
     UnitTypeId.FACTORYTECHLAB: UnitTypeId.TECHLAB,
     UnitTypeId.STARPORTTECHLAB: UnitTypeId.TECHLAB,
-
     # Protoss
     UnitTypeId.WARPPRISMPHASING: UnitTypeId.WARPPRISM,
     UnitTypeId.OBSERVERSIEGEMODE: UnitTypeId.OBSERVER,

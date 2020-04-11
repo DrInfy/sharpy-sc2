@@ -17,7 +17,6 @@ from sc2.position import Point2, Point3
 from sc2.unit import Unit
 
 
-
 class BuildGrid(Grid):
     def __init__(self, knowledge):
         """
@@ -28,7 +27,7 @@ class BuildGrid(Grid):
         self.game_info: GameInfo = ai.game_info
         super().__init__(self.game_info.placement_grid.width, self.game_info.placement_grid.height)
         # noinspection PyUnresolvedReferences
-        self.knowledge = knowledge # type: Knowledge
+        self.knowledge = knowledge  # type: Knowledge
         self.Generate(ai)
         self.SolveCliffs(ai)
         self.townhall_color = Point3((200, 170, 55))
@@ -49,7 +48,7 @@ class BuildGrid(Grid):
 
         for ramp in self.game_info.map_ramps:
             is_ramp = len(ramp.lower) != len(ramp.points)
-            for point in ramp.points: # type: Point2
+            for point in ramp.points:  # type: Point2
                 x = point.x
                 y = point.y
                 cell: GridArea = self.get(x, y)
@@ -66,7 +65,7 @@ class BuildGrid(Grid):
             cell.Area = BuildArea.HighRock
             return cell
 
-        for low_blocker in ai.all_units: # type: Unit
+        for low_blocker in ai.all_units:  # type: Unit
             type_id = low_blocker.type_id
             if type_id in unbuildable_rocks:
                 self.fill_area(low_blocker.position, BlockerType.Building2x2, low_rock_filler)
@@ -100,11 +99,11 @@ class BuildGrid(Grid):
         for zone in self.knowledge.expansion_zones:
             self.fill_area(zone.center_location, BlockerType.Building5x5, building_filler)
 
-        for neutral_unit in ai.mineral_field: # type: Unit
+        for neutral_unit in ai.mineral_field:  # type: Unit
             self.fill_area(neutral_unit.position, BlockerType.Minerals, mineral_filler)
             self.fill_line(ai, mining_filler, neutral_unit)
-            
-        for neutral_unit in ai.vespene_geyser: # type: Unit
+
+        for neutral_unit in ai.vespene_geyser:  # type: Unit
             self.fill_area(neutral_unit.position, BlockerType.Building3x3, vespene_filler)
             self.fill_line(ai, mining_filler, neutral_unit)
 
@@ -118,7 +117,7 @@ class BuildGrid(Grid):
             self.fill_area(neutral_unit.position + direction * i, BlockerType.Building2x2, mining_filler)
             i += 1
 
-    def copy_build_map(self, buildGrid:PixelMap):
+    def copy_build_map(self, buildGrid: PixelMap):
         for x in range(0, buildGrid.width):
             for y in range(0, buildGrid.height):
                 if buildGrid.is_set((x, y)):
@@ -137,7 +136,12 @@ class BuildGrid(Grid):
             while y < self.height - 3:
                 pos = Point2((x, y))
                 h = hMap[pos + correction]
-                possibles = [Point2((x - 2, y - 2)), Point2((x + 2, y - 2)), Point2((x - 2, y + 2)), Point2((x + 2, y + 2))]
+                possibles = [
+                    Point2((x - 2, y - 2)),
+                    Point2((x + 2, y - 2)),
+                    Point2((x - 2, y + 2)),
+                    Point2((x + 2, y + 2)),
+                ]
 
                 for possible in possibles:
                     # To ensure rounding errors don't drop it to previous pixel.
