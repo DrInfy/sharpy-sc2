@@ -1,7 +1,12 @@
-# sc2-sharpy
-Python framework for rapid development of Starcraft 2 AI bots
+# sharpy-sc2
 
-Sharpy uses [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the framework used by [Sharpened Edge](https://ai-arena.net/bots/40/).
+Sharpy is a Python framework for rapid development of Starcraft 2 AI bots.
+
+Sharpy is built on top of [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the framework used by [Sharpened Edge](https://ai-arena.net/bots/40/) bot.
+
+Sharpy was created to make it as easy as possible to create practice dummies for testing against Sharpened Edge. Sharpy contains everything needed to run all the practise dummies, as well as means to create more.
+
+Sharpy is a work in progress. The folder structure and classes are subject to change.
 
 **Build statuses**
 
@@ -9,17 +14,15 @@ Master branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20action
 
 Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actions/badge.svg?branch=develop)
 
-## Work in progress
-The framework has all the necessary components to run the dummy bots that are used for testing against Sharpened Edge.
-The folder structure is subject to change.
+### Requirements
 
-## Requirements
 Python 3.7 (>=3.8 is not supported yet)
 
-## Ladder Dummy Bots
-To build dummy bot for ladder, run ladder_zip.py. Bots will appear as individual zip files in publish folder.
+### Ladder Dummy Bots
 
-## Getting started
+To build dummy bots for ladder, run ladder_zip.py. Bots will appear as individual zip files in publish folder.
+
+### Getting started
 
 Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/1.-Getting-Started) guide in wiki.
 
