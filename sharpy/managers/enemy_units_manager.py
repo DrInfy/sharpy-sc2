@@ -184,7 +184,7 @@ class EnemyUnitsManager(ManagerBase):
         pass
 
 
-ignored_types: Set[UnitTypeId] = (
+ignored_types: Set[UnitTypeId] = {
     # Zerg
     UnitTypeId.EGG,
     UnitTypeId.LARVA,
@@ -208,4 +208,4 @@ ignored_types: Set[UnitTypeId] = (
     # it should still be counted as an adept. just not twice.
     UnitTypeId.ADEPTPHASESHIFT,
     UnitTypeId.DISRUPTORPHASED,
-)
+}
