@@ -26,7 +26,7 @@ class BuildTanks(BuildOrder):
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
-                skip=RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2),
+                skip=UnitExists(UnitTypeId.COMMANDCENTER, 2),
             ),
             Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 32 + 12)),
         ]
@@ -85,13 +85,13 @@ class BuildTanks(BuildOrder):
                 ),
             ),
             StepBuildGas(1, RequiredSupply(18)),
-            Step(RequiredUnitExists(UnitTypeId.MARINE, 1), ActExpand(2)),
+            Step(UnitExists(UnitTypeId.MARINE, 1), ActExpand(2)),
             StepBuildGas(2, RequiredSupply(20)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1)),
             Step(None, ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
-            Step(RequiredUnitExists(UnitTypeId.SIEGETANK, 1, include_killed=True), GridBuilding(UnitTypeId.FACTORY, 2)),
+            Step(UnitExists(UnitTypeId.SIEGETANK, 1, include_killed=True), GridBuilding(UnitTypeId.FACTORY, 2)),
             StepBuildGas(4),
             Step(None, ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
@@ -107,7 +107,7 @@ class BuildTanks(BuildOrder):
 
         mech = [
             Step(
-                RequiredUnitExists(UnitTypeId.FACTORY, 1),
+                UnitExists(UnitTypeId.FACTORY, 1),
                 ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 2),
                 skip=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1),
             ),
@@ -148,7 +148,7 @@ class Rusty(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         self.attack = Step(None, PlanZoneAttack(random.randint(50, 80)))
-        worker_scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.SUPPLYDEPOT, 1))
+        worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
 
         tactics = [
             PlanCancelBuilding(),

@@ -20,7 +20,7 @@ class TwoBaseTanks(KnowledgeBot):
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
-                skip=RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2),
+                skip=UnitExists(UnitTypeId.COMMANDCENTER, 2),
             ),
             Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 32 + 12)),
         ]
@@ -31,7 +31,7 @@ class TwoBaseTanks(KnowledgeBot):
             StepBuildGas(1, RequiredSupply(16)),
             ActExpand(2),
             Step(RequiredSupply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-            StepBuildGas(2, RequiredUnitExists(UnitTypeId.MARINE, 1, include_pending=True)),
+            StepBuildGas(2, UnitExists(UnitTypeId.MARINE, 1, include_pending=True)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
                 None,
@@ -67,7 +67,7 @@ class TwoBaseTanks(KnowledgeBot):
         ]
 
         build_steps_mech = [
-            # Step(RequiredUnitExists(UnitTypeId.FACTORY, 1), ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 2)),
+            # Step(UnitExists(UnitTypeId.FACTORY, 1), ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 2)),
             Step(RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1), ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 20))
         ]
 
@@ -87,7 +87,7 @@ class TwoBaseTanks(KnowledgeBot):
             ]
         )
 
-        scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.BARRACKS, 1))
+        scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.BARRACKS, 1))
 
         self.attack = PlanZoneAttack(60)
         tactics = [

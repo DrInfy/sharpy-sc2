@@ -24,7 +24,7 @@ class Banshees(KnowledgeBot):
 
         self.knowledge.print(f"Att at {attack_value}", "Build")
 
-        worker_scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.SUPPLYDEPOT, 1))
+        worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         self.distribute_workers = PlanDistributeWorkers(4)
         tactics = [
             PlanCancelBuilding(),
@@ -63,9 +63,7 @@ class Banshees(KnowledgeBot):
                 # Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), GridBuilding(UnitTypeId.FUSIONCORE, 1)),
                 Step(None, ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
                 StepBuildGas(4, None, RequiredGas(100)),
-                Step(
-                    RequiredUnitExists(UnitTypeId.BANSHEE, 1, include_killed=True), GridBuilding(UnitTypeId.BARRACKS, 3)
-                ),
+                Step(UnitExists(UnitTypeId.BANSHEE, 1, include_killed=True), GridBuilding(UnitTypeId.BARRACKS, 3)),
                 Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
                 Step(None, ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),

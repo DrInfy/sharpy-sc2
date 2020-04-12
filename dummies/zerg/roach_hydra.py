@@ -16,31 +16,31 @@ class RoachHydraBuild(BuildOrder):
 
         gas_related = [
             Step(
-                RequiredUnitExists(UnitTypeId.HATCHERY, 2),
+                UnitExists(UnitTypeId.HATCHERY, 2),
                 ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED),
                 skip_until=RequiredGas(100),
             ),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60), RequiredGas(100)),
-            StepBuildGas(3, RequiredUnitExists(UnitTypeId.HYDRALISKDEN, 1), RequiredGas(50)),
+            StepBuildGas(3, UnitExists(UnitTypeId.HYDRALISKDEN, 1), RequiredGas(50)),
             StepBuildGas(4, RequiredSupply(60, SupplyType.Workers), RequiredGas(25)),
             StepBuildGas(6, RequiredMinerals(749), RequiredGas(25)),
             StepBuildGas(8, RequiredMinerals(1000), RequiredGas(25)),
         ]
         buildings = [
-            Step(RequiredUnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
+            Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
             Step(RequiredSupply(16), ActExpand(2)),
             Step(RequiredSupply(18), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             StepBuildGas(1, RequiredSupply(20)),
             Step(
                 None,
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
-                skip_until=RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
-            Step(RequiredUnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(None, MorphLair(), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
-            Step(RequiredUnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
             Step(RequiredUnitReady(UnitTypeId.LAIR, 1), ActBuilding(UnitTypeId.HYDRALISKDEN, 1)),
             MorphOverseer(1),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
@@ -51,16 +51,12 @@ class RoachHydraBuild(BuildOrder):
         ]
 
         units = [
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 1), None),
+            Step(UnitExists(UnitTypeId.HATCHERY, 1), None),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 23)),
             # Early zerglings
-            Step(
-                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4), None
-            ),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4), None),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 28)),
-            Step(
-                RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12), None
-            ),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 12), None),
             # Queen for more larvae
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35), None),

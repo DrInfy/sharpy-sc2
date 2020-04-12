@@ -46,7 +46,7 @@ class BuildBio(BuildOrder):
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
-                skip=RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2),
+                skip=UnitExists(UnitTypeId.COMMANDCENTER, 2),
             ),
             Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 32 + 12)),
         ]
@@ -93,7 +93,7 @@ class BuildBio(BuildOrder):
                 skip_until=RequiredAny(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
-                        RequiredUnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
+                        UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
                     ]
                 ),
             ),
@@ -103,7 +103,7 @@ class BuildBio(BuildOrder):
                 skip=RequiredAny(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
-                        RequiredUnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
+                        UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
                     ]
                 ),
             ),
@@ -158,7 +158,7 @@ class BuildBio(BuildOrder):
         ]
 
         marines = [
-            Step(RequiredUnitExists(UnitTypeId.REAPER, 1, include_killed=True), TerranUnit(UnitTypeId.MARINE, 2)),
+            Step(UnitExists(UnitTypeId.REAPER, 1, include_killed=True), TerranUnit(UnitTypeId.MARINE, 2)),
             BuildOrder(
                 [
                     TerranUnit(UnitTypeId.MARAUDER, 20, priority=True),
@@ -198,7 +198,7 @@ class BioBot(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         self.knowledge.data_manager.set_build("bio")
-        worker_scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.SUPPLYDEPOT, 1))
+        worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         tactics = [
             PlanCancelBuilding(),
             LowerDepots(),

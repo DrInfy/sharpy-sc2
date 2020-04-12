@@ -133,7 +133,7 @@ class LurkerBuild(BuildOrder):
         super().__init__(
             SequentialList(
                 # Overlords
-                Step(RequiredUnitExists(UnitTypeId.DRONE, 13), ZergUnit(UnitTypeId.OVERLORD, 2, priority=True)),
+                Step(UnitExists(UnitTypeId.DRONE, 13), ZergUnit(UnitTypeId.OVERLORD, 2, priority=True)),
                 AutoOverLord(),
             ),
             SequentialList(

@@ -17,26 +17,26 @@ class DistruptorBuild(BuildOrder):
             Step(
                 RequiredUnitReady(UnitTypeId.PYLON),
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 19),
+                skip=UnitExists(UnitTypeId.PROBE, 19),
             ),
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
-                skip=RequiredUnitExists(UnitTypeId.IMMORTAL, 1, include_killed=True),
+                skip=UnitExists(UnitTypeId.IMMORTAL, 1, include_killed=True),
             ),
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY),
-                skip=RequiredUnitExists(UnitTypeId.OBSERVER, 1, include_killed=True),
+                skip=UnitExists(UnitTypeId.OBSERVER, 1, include_killed=True),
             ),
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.DISRUPTOR, UnitTypeId.ROBOTICSFACILITY),
-                skip=RequiredUnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True),
+                skip=UnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True),
             ),
             SequentialList(
                 ProtossUnit(UnitTypeId.PROBE, 16 + 6),  # One base
-                Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ProtossUnit(UnitTypeId.PROBE, 44)),
+                Step(UnitExists(UnitTypeId.NEXUS, 2), ProtossUnit(UnitTypeId.PROBE, 44)),
             ),
             Step(RequiredUnitReady(UnitTypeId.PYLON, 1), AutoPylon()),
             SequentialList(
@@ -47,10 +47,7 @@ class DistruptorBuild(BuildOrder):
                 GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
                 ActTech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
                 GridBuilding(UnitTypeId.ROBOTICSBAY, 1, priority=True),
-                Step(
-                    RequiredUnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True, include_not_ready=False),
-                    ActExpand(2),
-                ),
+                Step(UnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True, include_not_ready=False), ActExpand(2),),
                 StepBuildGas(4),
             ),
             BuildOrder(
@@ -73,7 +70,7 @@ class DistruptorBuild(BuildOrder):
             PlanWorkerOnlyDefense(),  # Counter worker rushes
             PlanZoneDefense(),
             PlanZoneGather(),
-            Step(RequiredUnitExists(UnitTypeId.DISRUPTOR, include_killed=True), PlanZoneAttack()),
+            Step(UnitExists(UnitTypeId.DISRUPTOR, include_killed=True), PlanZoneAttack()),
             PlanFinishEnemy(),
         ]
 

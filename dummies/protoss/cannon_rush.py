@@ -209,7 +209,7 @@ class CannonRush(KnowledgeBot):
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 16),
+                skip=UnitExists(UnitTypeId.PROBE, 16),
                 skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1),
             ),
             ChronoAnyTech(0),
@@ -221,7 +221,7 @@ class CannonRush(KnowledgeBot):
                     [
                         ActExpand(2),
                         ProtossUnit(UnitTypeId.PROBE, 30),
-                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                     ],
                     GridBuilding(UnitTypeId.GATEWAY, 2),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
@@ -234,7 +234,7 @@ class CannonRush(KnowledgeBot):
                     Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
-                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                         StepBuildGas(3, skip=RequiredGas(300)),
                     ],
                     [ProtossUnit(UnitTypeId.STALKER, 100)],
@@ -345,7 +345,7 @@ class CannonRush(KnowledgeBot):
                 ]
             ),
             # Skip cannon rushing if we started nexus, or have over 750 minerals, the build is probably stuck
-            skip=RequiredAny([RequiredUnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]),
+            skip=RequiredAny([UnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]),
         )
 
     def cannon_rush(self) -> ActBase:
@@ -358,7 +358,7 @@ class CannonRush(KnowledgeBot):
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 [
                     Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
-                    Step(RequiredMinerals(700), ActExpand(2), skip=RequiredUnitExists(UnitTypeId.NEXUS, 2)),
+                    Step(RequiredMinerals(700), ActExpand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ],
             ]

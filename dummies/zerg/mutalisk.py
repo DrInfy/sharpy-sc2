@@ -15,39 +15,37 @@ class MutaliskBuild(BuildOrder):
     def __init__(self):
 
         gas_related = [
-            StepBuildGas(1, RequiredUnitExists(UnitTypeId.HATCHERY, 2)),
+            StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
             Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60)),
-            StepBuildGas(3, RequiredUnitExists(UnitTypeId.LAIR, 1)),
+            StepBuildGas(3, UnitExists(UnitTypeId.LAIR, 1)),
             StepBuildGas(5, None, RequiredGas(100)),
             StepBuildGas(8, RequiredSupply(50, supply_type=SupplyType.Workers)),
         ]
         buildings = [
-            Step(RequiredUnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
+            Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
             Step(RequiredSupply(16), ActExpand(2)),
-            Step(RequiredUnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
+            Step(UnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
-                skip_until=RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
             Step(
                 RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
                 DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance, 1),
             ),
-            # Step(RequiredUnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
-            Step(None, MorphLair(), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
-            Step(RequiredUnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(3)),
+            # Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
+            Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(3)),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 3)),
-            Step(RequiredUnitExists(UnitTypeId.LAIR, 1), ActBuilding(UnitTypeId.SPIRE, 1)),
+            Step(UnitExists(UnitTypeId.LAIR, 1), ActBuilding(UnitTypeId.SPIRE, 1)),
             MorphOverseer(1),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 5)),
-            Step(RequiredUnitExists(UnitTypeId.SPIRE), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.SPIRE), ActExpand(4)),
             ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
-            Step(
-                RequiredUnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)
-            ),
+            Step(UnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
             MorphGreaterSpire(),
             ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2),
@@ -66,12 +64,12 @@ class MutaliskBuild(BuildOrder):
         ]
 
         units = [
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 1), None),
+            Step(UnitExists(UnitTypeId.HATCHERY, 1), None),
             Step(None, ZergUnit(UnitTypeId.DRONE, 20)),
             # Early zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ZergUnit(UnitTypeId.ZERGLING, 4), None),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ZergUnit(UnitTypeId.ZERGLING, 4), None),
             Step(None, ZergUnit(UnitTypeId.DRONE, 25)),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ZergUnit(UnitTypeId.ZERGLING, 12), None),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ZergUnit(UnitTypeId.ZERGLING, 12), None),
             # Queen for more larvae
             Step(None, ZergUnit(UnitTypeId.QUEEN, 1)),
             Step(None, ZergUnit(UnitTypeId.DRONE, 30), None),

@@ -36,7 +36,7 @@ class OneBaseTempests(KnowledgeBot):
                             Step(RequiredUnitReady(UnitTypeId.STARGATE, 1), GridBuilding(UnitTypeId.FLEETBEACON, 1)),
                         ),
                         [ProtossUnit(UnitTypeId.TEMPEST, 100, priority=True)],
-                        [Step(RequiredUnitExists(UnitTypeId.FLEETBEACON, 1), GridBuilding(UnitTypeId.STARGATE, 2))],
+                        [Step(UnitExists(UnitTypeId.FLEETBEACON, 1), GridBuilding(UnitTypeId.STARGATE, 2))],
                     ),
                 ),
                 ActDefensiveCannons(4, 2, 0),
@@ -45,7 +45,7 @@ class OneBaseTempests(KnowledgeBot):
                     RestorePower(),
                     PlanDistributeWorkers(),
                     PlanZoneGather(),
-                    Step(RequiredUnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
+                    Step(UnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
                     PlanFinishEnemy(),
                 ),
             ]

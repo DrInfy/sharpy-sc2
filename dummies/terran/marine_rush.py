@@ -113,7 +113,7 @@ class MarineRushBot(KnowledgeBot):
 
         empty = BuildOrder([])
 
-        worker_scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.SUPPLYDEPOT, 1))
+        worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         self.distribute_workers = PlanDistributeWorkers()
 
         tactics = [

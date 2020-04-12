@@ -23,7 +23,7 @@ class CycloneBot(KnowledgeBot):
             Step(RequiredSupply(18), GridBuilding(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(1),
             Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-            Step(None, StepBuildGas(2), skip_until=RequiredUnitExists(UnitTypeId.MARINE, 2)),
+            Step(None, StepBuildGas(2), skip_until=UnitExists(UnitTypeId.MARINE, 2)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             GridBuilding(UnitTypeId.FACTORY, 1),
             ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
@@ -64,7 +64,7 @@ class CycloneBot(KnowledgeBot):
 
         self.attack = PlanZoneAttack(40)
 
-        worker_scout = Step(None, WorkerScout(), skip_until=RequiredUnitExists(UnitTypeId.SUPPLYDEPOT, 1))
+        worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         self.distribute_workers = PlanDistributeWorkers()
 
         tactics = [
@@ -85,10 +85,10 @@ class CycloneBot(KnowledgeBot):
         ]
 
         return BuildOrder(
-            Step(RequiredUnitExists(UnitTypeId.BARRACKS, 1), SequentialList(self.depots)),
+            Step(UnitExists(UnitTypeId.BARRACKS, 1), SequentialList(self.depots)),
             [
                 Step(
-                    RequiredUnitExists(UnitTypeId.COMMANDCENTER, 2),
+                    UnitExists(UnitTypeId.COMMANDCENTER, 2),
                     MorphOrbitals(3),
                     skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1),
                 ),
@@ -96,10 +96,7 @@ class CycloneBot(KnowledgeBot):
             ],
             [
                 Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 40)),
-                Step(
-                    RequiredUnitExists(UnitTypeId.COMMANDCENTER, 3),
-                    ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 70),
-                ),
+                Step(UnitExists(UnitTypeId.COMMANDCENTER, 3), ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 70),),
             ],
             upgrades,
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 4),

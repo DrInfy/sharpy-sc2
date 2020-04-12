@@ -18,8 +18,8 @@ class MacroStalkers(KnowledgeBot):
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 40, include_pending=True),
-                skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1),
+                skip=UnitExists(UnitTypeId.PROBE, 40, include_pending=True),
+                skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
@@ -39,7 +39,7 @@ class MacroStalkers(KnowledgeBot):
                     ActTech(UpgradeId.WARPGATERESEARCH),
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
-                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                         StepBuildGas(3, skip=RequiredGas(300)),
                     ],
                     [GateUnit(UnitTypeId.STALKER, 100)],

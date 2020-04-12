@@ -13,14 +13,14 @@ from sc2.ids.upgrade_id import UpgradeId
 class MacroBuild(BuildOrder):
     def __init__(self):
         ultras = [
-            Step(RequiredUnitExists(UnitTypeId.ULTRALISKCAVERN, 1), None),
+            Step(UnitExists(UnitTypeId.ULTRALISKCAVERN, 1), None),
             Step(RequiredGas(500), ActUnit(UnitTypeId.ULTRALISK, UnitTypeId.LARVA, priority=True)),
         ]
 
         units = [
-            Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 100), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
+            Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 100), skip=UnitExists(UnitTypeId.HIVE, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 50)),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
         build_step_expansions = [
@@ -28,7 +28,7 @@ class MacroBuild(BuildOrder):
         ]
 
         queens = [
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), None),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), None),
             Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 5)),
         ]
 
@@ -37,9 +37,9 @@ class MacroBuild(BuildOrder):
             StepBuildGas(2, None),
             Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
             Step(RequiredGas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
-            Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
+            Step(UnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
             Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
-            Step(None, MorphLair(), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
+            Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
             StepBuildGas(4, None),
             Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL2)),
             Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),

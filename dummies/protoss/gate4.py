@@ -18,8 +18,8 @@ class Stalkers4Gate(KnowledgeBot):
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 20, include_pending=True),
-                skip_until=RequiredUnitExists(UnitTypeId.ASSIMILATOR, 1),
+                skip=UnitExists(UnitTypeId.PROBE, 20, include_pending=True),
+                skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
             ChronoTech(AbilityId.RESEARCH_BLINK, UnitTypeId.TWILIGHTCOUNCIL),
             SequentialList(
@@ -54,7 +54,7 @@ class Stalkers4Gate(KnowledgeBot):
                         ActTech(UpgradeId.WARPGATERESEARCH),
                         GateUnit(UnitTypeId.STALKER, 100),
                     ),
-                    Step(RequiredUnitExists(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 4)),
+                    Step(UnitExists(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 4)),
                 ),
             ),
             SequentialList(

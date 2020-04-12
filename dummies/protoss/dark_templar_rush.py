@@ -58,20 +58,20 @@ class DarkTemplarRush(KnowledgeBot):
         ]
 
         build_steps_workers = [
-            Step(None, ActBuilding(UnitTypeId.NEXUS, 1), RequiredUnitExists(UnitTypeId.NEXUS, 1)),
+            Step(None, ActBuilding(UnitTypeId.NEXUS, 1), UnitExists(UnitTypeId.NEXUS, 1)),
             # Build to 14 probes and stop until pylon is building
-            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), RequiredUnitExists(UnitTypeId.PROBE, 14)),
-            Step(None, None, RequiredUnitExists(UnitTypeId.PYLON, 1)),
-            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), RequiredUnitExists(UnitTypeId.PROBE, 16 + 3 + 3)),
+            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 14)),
+            Step(None, None, UnitExists(UnitTypeId.PYLON, 1)),
+            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 16 + 3 + 3)),
             Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), ActExpand(2)),
-            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), RequiredUnitExists(UnitTypeId.PROBE, 30)),
+            Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 30)),
             GridBuilding(UnitTypeId.GATEWAY, 5),
             StepBuildGas(3),
             GridBuilding(UnitTypeId.GATEWAY, 6),
         ]
 
         build_steps_buildings = [
-            Step(RequiredSupply(14), GridBuilding(UnitTypeId.PYLON, 1), RequiredUnitExists(UnitTypeId.PYLON, 1)),
+            Step(RequiredSupply(14), GridBuilding(UnitTypeId.PYLON, 1), UnitExists(UnitTypeId.PYLON, 1)),
             StepBuildGas(1, RequiredSupply(16)),
             Step(
                 RequiredSupply(16),
@@ -79,7 +79,7 @@ class DarkTemplarRush(KnowledgeBot):
                 RequiredTotalUnitExists([UnitTypeId.GATEWAY, UnitTypeId.WARPGATE], 1),
             ),
             StepBuildGas(2),
-            Step(RequiredSupply(21), GridBuilding(UnitTypeId.PYLON, 2), RequiredUnitExists(UnitTypeId.PYLON, 2)),
+            Step(RequiredSupply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),
             Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), ActTech(UpgradeId.WARPGATERESEARCH)),
             GridBuilding(UnitTypeId.GATEWAY, 3),
@@ -101,7 +101,7 @@ class DarkTemplarRush(KnowledgeBot):
         ]
         build_steps_units2 = [
             Step(
-                RequiredUnitExists(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                UnitExists(UnitTypeId.TWILIGHTCOUNCIL, 1),
                 ProtossUnit(UnitTypeId.STALKER, 3),
                 RequiredTechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
@@ -112,7 +112,7 @@ class DarkTemplarRush(KnowledgeBot):
             Step(
                 None,
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 20, include_killed=True),
+                skip=UnitExists(UnitTypeId.PROBE, 20, include_killed=True),
                 skip_until=RequiredUnitReady(UnitTypeId.PYLON),
             ),
             ChronoAnyTech(0),

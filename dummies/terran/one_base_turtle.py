@@ -66,7 +66,7 @@ class OneBaseTurtle(KnowledgeBot):
             ContinueBuilding(),
             PlanZoneGatherTerran(),
             # once enough marines to guard the tanks, attack
-            Step(RequiredUnitExists(UnitTypeId.MARINE, 18, include_killed=True), attack),
+            Step(UnitExists(UnitTypeId.MARINE, 18, include_killed=True), attack),
             PlanFinishEnemy(),
         ]
         return BuildOrder(build_order, tactics)
