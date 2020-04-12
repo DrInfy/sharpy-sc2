@@ -13,7 +13,7 @@ from sharpy.plans.require import (
     RequiredTechReady,
     RequiredAll,
     RequiredAny,
-    RequiredEnemyUnitExists,
+    EnemyUnitExists,
 )
 from sharpy.plans.sequential_list import SequentialList
 from typing import TYPE_CHECKING
@@ -65,7 +65,7 @@ class BuildOrder(ActBase):
     def RequireAnyEnemyUnits(self, unit_types: List[UnitTypeId], count: int) -> RequiredAny:
         require_list = []
         for unit_type in unit_types:
-            require_list.append(RequiredEnemyUnitExists(unit_type, count))
+            require_list.append(EnemyUnitExists(unit_type, count))
         return RequiredAny(require_list)
 
     @property
