@@ -9,8 +9,8 @@ from .required_supply_left import RequiredSupplyLeft
 from .required_tech_ready import RequiredTechReady
 from .required_time import RequiredTime
 from .required_total_unit_exists import RequiredTotalUnitExists
-from .required_enemy_unit_exists import RequiredEnemyUnitExists
 from .unit_exists import UnitExists, RequiredUnitExists
+from .enemy_unit_exists import EnemyUnitExists, RequiredEnemyUnitExists
 from .required_less_unit_exists import RequiredLessUnitExists
 from .required_unit_ready import RequiredUnitReady
 from .required_enemy_unit_exists_after import RequiredEnemyUnitExistsAfter
