@@ -120,32 +120,30 @@ Builds:
         )
 
         parser.add_argument(
-            "-map",
-            help="Name of the map. The script works with any map present in Starcraft 2 Maps directory.",
+            "-m",
+            "--map",
+            help="Name of the map. Defaults to random. The script works with any map present in Starcraft 2 Maps directory.",
             default="random",
         )
-        parser.add_argument("-p1", "--player1", help="Name of player 1 human / bot.")
-        parser.add_argument("-p2", "--player2", help="Name of the enemy bot.", default="random")
-        parser.add_argument("-rt", "--real-time", help="Use real-time mode.", action="store_true")
-        parser.add_argument("-human", "--human", help="Human vs bot mode. Specify race with lower case")
         parser.add_argument(
-            "-release", "--release", help="Uses only release config and ignore config local", action="store_true"
+            "-p1", "--player1", help="Name of player 1 bot or human. Defaults to random.", default="random"
+        )
+        parser.add_argument("-p2", "--player2", help="Name of player 2 bot. Defaults to random.", default="random")
+        parser.add_argument("-rt", "--real-time", help="Use real-time mode.", action="store_true")
+        parser.add_argument(
+            "-r", "--release", help="Use only release config and ignore config local.", action="store_true"
         )
         parser.add_argument("-raw", "--raw_selection", help="Raw affects selection.", action="store_true")
 
         args = parser.parse_args()
 
-        bot_text = "random"
+        player1: str = args.player1
 
-        if args.human:
-            bot_text = "human." + args.human
+        if player1 == "random":
+            player1 = random.choice(list(self.random_bots.keys()))
+        elif "human" in player1:
             args.real_time = True
             args.release = True
-
-        if args.player1:
-            bot_text = args.player1
-        elif bot_text == "random":
-            bot_text = random.choice(list(self.random_bots.keys()))
 
         map_name = args.map
         if map_name == "random":
@@ -155,38 +153,38 @@ Builds:
             print(f"map not in Maps:{new_line}{new_line.join(self.maps)}")
             return
 
-        enemy_text = args.player2
-        if enemy_text == "random":
-            enemy_text = random.choice(list(self.random_bots.keys()))
+        player2: str = args.player2
+        if player2 == "random":
+            player2 = random.choice(list(self.random_bots.keys()))
 
-        enemy_split: List[str] = enemy_text.split(".")
-        enemy_type = enemy_split.pop(0)
+        player2_split: List[str] = player2.split(".")
+        player2_type: str = player2_split.pop(0)
 
-        bot_split: List[str] = bot_text.split(".")
-        bot_type = bot_split.pop(0)
+        player1_split: List[str] = player1.split(".")
+        player1_type: str = player1_split.pop(0)
 
-        if bot_type not in self.definitions.player1:
+        if player1_type not in self.definitions.player1:
             keys = list(self.definitions.player1.keys())
-            print(f"Player1 type {bot_text} not found in:{new_line} {new_line.join(keys)}")
+            print(f"Player1 type {player1} not found in:{new_line} {new_line.join(keys)}")
             return
 
         enemy: Optional[AbstractPlayer]
 
-        if enemy_type not in self.definitions.player2:
+        if player2_type not in self.definitions.player2:
             # loader = BotLoader()
             # root_dir = os.path.dirname(os.path.abspath(__file__))
             # path = os.path.join("Bots")
             # path = os.path.join(root_dir, path)
             # loader.get_bots(path)
-            # enemy = loader.get_bot(enemy_type)
+            # enemy = loader.get_bot(player2_type)
             # if not enemy:
             keys = list(self.definitions.player2.keys())
-            print(f"Enemy type {enemy_type} not found in player types:{new_line}{new_line.join(keys)}")
+            print(f"Enemy type {player2_type} not found in player types:{new_line}{new_line.join(keys)}")
             return
         else:
-            enemy = self.players[enemy_type](enemy_split)
+            enemy = self.players[player2_type](player2_split)
 
-        bot: AbstractPlayer = self.players[bot_type](bot_split)
+        bot: AbstractPlayer = self.players[player1_type](player1_split)
 
         folder = "games"
         if not os.path.isdir(folder):
@@ -194,24 +192,24 @@ Builds:
 
         time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
         randomizer = random.randint(0, 999999)
-        # Randomizer is to make it less likely that games started at the same time have same neme
-        file_name = f"{enemy_text}_{map_name}_{time}_{randomizer}"
+        # Randomizer is to make it less likely that games started at the same time have same name
+        file_name = f"{player2}_{map_name}_{time}_{randomizer}"
         path = f"{folder}/{file_name}.log"
 
         handler = logging.FileHandler(path)
         self.root_logger.addHandler(handler)
 
-        GameStarter.setup_bot(bot, bot_text, enemy_text, args)
-        GameStarter.setup_bot(enemy, enemy_text, bot_text, args)
+        GameStarter.setup_bot(bot, player1, player2, args)
+        GameStarter.setup_bot(enemy, player2, player1, args)
 
         print(f"Starting game in {map_name}.")
-        print(f"{bot_text} vs {enemy_text}")
+        print(f"{player1} vs {player2}")
 
         runner = MatchRunner()
         runner.run_game(
             maps.get(map_name),
             [bot, enemy],
-            player1_id=bot_text,
+            player1_id=player1,
             realtime=args.real_time,
             game_time_limit=(30 * 60),
             save_replay_as=f"{folder}/{file_name}.SC2Replay",
