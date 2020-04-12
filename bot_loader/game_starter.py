@@ -168,16 +168,16 @@ Builds:
             print(f"Player1 type {player1} not found in:{new_line} {new_line.join(keys)}")
             return
 
-        enemy: Optional[AbstractPlayer]
+        player2_bot: Optional[AbstractPlayer]
 
         if player2_type not in self.definitions.player2:
             keys = list(self.definitions.player2.keys())
             print(f"Enemy type {player2_type} not found in player types:{new_line}{new_line.join(keys)}")
             return
         else:
-            enemy = self.players[player2_type](player2_split)
+            player2_bot = self.players[player2_type](player2_split)
 
-        bot: AbstractPlayer = self.players[player1_type](player1_split)
+        player1_bot: AbstractPlayer = self.players[player1_type](player1_split)
 
         folder = "games"
         if not os.path.isdir(folder):
@@ -192,8 +192,8 @@ Builds:
         handler = logging.FileHandler(path)
         self.root_logger.addHandler(handler)
 
-        GameStarter.setup_bot(bot, player1, player2, args)
-        GameStarter.setup_bot(enemy, player2, player1, args)
+        GameStarter.setup_bot(player1_bot, player1, player2, args)
+        GameStarter.setup_bot(player2_bot, player2, player1, args)
 
         print(f"Starting game in {map_name}.")
         print(f"{player1} vs {player2}")
@@ -201,7 +201,7 @@ Builds:
         runner = MatchRunner()
         runner.run_game(
             maps.get(map_name),
-            [bot, enemy],
+            [player1_bot, player2_bot],
             player1_id=player1,
             realtime=args.real_time,
             game_time_limit=(30 * 60),
