@@ -171,13 +171,6 @@ Builds:
         enemy: Optional[AbstractPlayer]
 
         if player2_type not in self.definitions.player2:
-            # loader = BotLoader()
-            # root_dir = os.path.dirname(os.path.abspath(__file__))
-            # path = os.path.join("Bots")
-            # path = os.path.join(root_dir, path)
-            # loader.get_bots(path)
-            # enemy = loader.get_bot(player2_type)
-            # if not enemy:
             keys = list(self.definitions.player2.keys())
             print(f"Enemy type {player2_type} not found in player types:{new_line}{new_line.join(keys)}")
             return
