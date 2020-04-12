@@ -98,13 +98,11 @@ class GameStarter:
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description="Run a game with custom parameters.",
             epilog=f"""\
-Maps:
-random
-{new_line.join(self.maps)}
+Installed maps:
+{new_line.join(sorted(self.maps))}
 
-Enemies:
-random
-{new_line.join(self.players.keys())}
+Bots:
+{new_line.join(sorted(self.players.keys()))}
 
 
 For ingame ai, use ai.race.difficulty.build where all arguments are optional
