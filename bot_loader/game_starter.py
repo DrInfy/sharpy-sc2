@@ -106,7 +106,7 @@ Bots:
 
 
 For ingame ai, use ai.race.difficulty.build where all arguments are optional
-ingame ai defaults to ai.random.veryhard
+ingame ai defaults to ai.random.veryhard.random
 
 Races:
 {new_line.join(races.keys())}
