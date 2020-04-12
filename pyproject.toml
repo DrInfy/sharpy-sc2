@@ -7,5 +7,6 @@ exclude = '''
   | __pycache__
   |  python-sc2
   | jsonpickle
+  | Bots
 )/
 '''
