@@ -547,6 +547,11 @@ class Knowledge:
         """Gets correct z from versions 4.9.0+"""
         return -16 + 32 * h / 255
 
+    def z_height_to_terrain(self, z):
+        """Gets correct height from versions 4.9.0+"""
+        h = (z + 16) / 32 * 255
+        return h
+
     async def post_update(self):
         for manager in self.managers:
             await manager.post_update()
