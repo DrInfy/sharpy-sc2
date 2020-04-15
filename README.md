@@ -85,6 +85,22 @@ To install all development dependencies, use
 pip install -r requirements.dev.txt
 ```
 
+#### Pre-commit hooks
+
+To install git pre-commit hooks that will run black and flake8 (see below), use
+
+```
+pre-commit install
+```
+
+If you ever want to uninstall the hooks, use
+
+```
+pre-commit uninstall
+```
+
+or simply uninstall the `.git\hooks\pre-commit` file.
+
 ### Code Formatting
 
 sharpy-sc2 uses [Black](https://pypi.org/project/black/) for automatic Python source code formatting.
