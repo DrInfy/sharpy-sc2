@@ -63,10 +63,8 @@ class DefensiveBuilding(ActBase):
                     for y in range(-2, 2):
                         pos = int_pos + Point2((x, y))
                         if (
-                            pos.x > 0
-                            and pos.x < self.ai.state.creep.width
-                            and pos.y > 0
-                            and pos.y < self.ai.state.creep.height
+                            0 < pos.x < self.ai.state.creep.width
+                            and 0 < pos.y < self.ai.state.creep.height
                             and self.ai.state.creep.is_set(pos)
                         ):
                             can_build = True
