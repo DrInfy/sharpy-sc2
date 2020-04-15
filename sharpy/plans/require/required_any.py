@@ -1,13 +1,39 @@
-from typing import List
+from typing import List, Callable, Union
 
+from sharpy.plans import Step
 from sharpy.plans.require import RequireBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
 
 class RequiredAny(RequireBase):
     """Check passes if any of the conditions are true."""
 
-    def __init__(self, conditions: List[RequireBase]):
+    def __init__(
+        self,
+        conditions: Union[RequireBase, Callable[["Knowledge"], bool], List[RequireBase]],
+        *args: Union[RequireBase, Callable[["Knowledge"], bool]]
+    ):
         super().__init__()
+
+        is_act = isinstance(conditions, RequireBase) or isinstance(conditions, Callable)
+        assert conditions is not None and (isinstance(conditions, list) or is_act)
+        super().__init__()
+
+        if is_act:
+            self.conditions: List[RequireBase] = [Step.merge_to_require(conditions)]
+        else:
+            self.conditions: List[RequireBase] = []
+            for order in conditions:
+                assert order is not None
+                self.conditions.append(Step.merge_to_require(order))
+
+        for order in args:
+            assert order is not None
+            self.conditions.append(Step.merge_to_require(order))
+
         assert conditions is not None and isinstance(conditions, List)
         self.conditions: List[RequireBase] = conditions
 
