@@ -6,17 +6,21 @@ from sc2 import Result, UnitTypeId
 
 import sc2
 from sc2.client import Client
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
+    from sharpy.managers import UnitCacheManager, UnitValue
 
 class ManagerBase(ABC):
-    def __init__(self):
-        self.knowledge: "Knowledge" = None
-        self.ai: sc2.BotAI = None
-        self.unit_values: "UnitValue" = None
-        self._debug: bool = False
+    ai: sc2.BotAI
+    knowledge: "Knowledge"
+    unit_values: "UnitValue"
+    cache: "UnitCacheManager"
+    client: Client
 
-        self.client: Client = None
-        self.cache: "UnitCacheManager" = None
+    def __init__(self):
+        self._debug: bool = False
 
     @property
     def debug(self):
