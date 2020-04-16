@@ -4,7 +4,7 @@ import sc2
 from sc2 import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 
-from sharpy.plans.acts import ActTech, ActUnit, ActBase
+from sharpy.plans.acts import ActTech, ActUnit, ActBase, merge_to_act
 from sharpy.plans.acts.grid_building import GridBuilding
 from sharpy.plans.build_step import Step
 from sharpy.plans.require import (
@@ -52,7 +52,7 @@ class BuildOrder(ActBase):
             if isinstance(order, list):
                 self.orders.append(SequentialList(order))
             else:
-                self.orders.append(Step.merge_to_act(order))
+                self.orders.append(merge_to_act(order))
 
     async def debug_draw(self):
         for order in self.orders:

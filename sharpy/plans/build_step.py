@@ -1,8 +1,8 @@
 from typing import Optional, Callable, Union
 
 # Singular step of action
-from sharpy.plans.acts import ActCustom
-from sharpy.plans.require import RequireCustom
+from sharpy.plans.acts import merge_to_act
+from sharpy.plans.require import merge_to_require
 from sharpy.plans.require.require_base import RequireBase
 from sharpy.plans.acts.act_base import ActBase
 from typing import TYPE_CHECKING
@@ -25,24 +25,10 @@ class Step(ActBase):
         assert skip_until is None or isinstance(skip_until, RequireBase) or isinstance(skip_until, Callable)
         super().__init__()
 
-        self.requirement = Step.merge_to_require(requirement)
-        self.action = Step.merge_to_act(action)
-        self.skip = Step.merge_to_require(skip)
-        self.skip_until = Step.merge_to_require(skip_until)
-
-    @staticmethod
-    def merge_to_act(obj: Optional[Union[ActBase, Callable[["Knowledge"], bool]]]) -> Optional[ActBase]:
-        if isinstance(obj, ActBase) or obj is None:
-            return obj
-        assert isinstance(obj, Callable)
-        return ActCustom(obj)
-
-    @staticmethod
-    def merge_to_require(obj: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]]) -> Optional[RequireBase]:
-        if isinstance(obj, RequireBase) or obj is None:
-            return obj
-        assert isinstance(obj, Callable)
-        return RequireCustom(obj)
+        self.requirement = merge_to_require(requirement)
+        self.action = merge_to_act(action)
+        self.skip = merge_to_require(skip)
+        self.skip_until = merge_to_require(skip_until)
 
     async def debug_draw(self):
         if self.requirement is not None:

@@ -5,6 +5,8 @@ from sharpy.plans.acts import ActBase
 
 from typing import TYPE_CHECKING
 
+from sharpy.plans.acts import merge_to_act
+
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
@@ -23,16 +25,16 @@ class SubActs(ActBase):
         super().__init__()
 
         if is_act:
-            self.orders: List[ActBase] = [Step.merge_to_act(orders)]
+            self.orders: List[ActBase] = [merge_to_act(orders)]
         else:
             self.orders: List[ActBase] = []
             for order in orders:
                 assert order is not None
-                self.orders.append(Step.merge_to_act(order))
+                self.orders.append(merge_to_act(order))
 
         for order in argv:
             assert order is not None
-            self.orders.append(Step.merge_to_act(order))
+            self.orders.append(merge_to_act(order))
 
     async def debug_draw(self):
         for order in self.orders:

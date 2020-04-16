@@ -1,6 +1,5 @@
 from typing import List, Callable, Union
-
-from sharpy.plans import Step
+from sharpy.plans.require.methods import merge_to_require
 from sharpy.plans.require import RequireBase
 from typing import TYPE_CHECKING
 
@@ -23,19 +22,16 @@ class RequiredAll(RequireBase):
         super().__init__()
 
         if is_act:
-            self.conditions: List[RequireBase] = [Step.merge_to_require(conditions)]
+            self.conditions: List[RequireBase] = [merge_to_require(conditions)]
         else:
             self.conditions: List[RequireBase] = []
             for order in conditions:
                 assert order is not None
-                self.conditions.append(Step.merge_to_require(order))
+                self.conditions.append(merge_to_require(order))
 
         for order in args:
             assert order is not None
-            self.conditions.append(Step.merge_to_require(order))
-
-        assert conditions is not None and isinstance(conditions, List)
-        self.conditions: List[RequireBase] = conditions
+            self.conditions.append(merge_to_require(order))
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
