@@ -130,7 +130,7 @@ class Scout(SubActs):
         Scout act for all races, loops the given scout actions
         @param unit_types: Types of units accepted as scouts
         @param unit_count: Units required to be used in scouting, scouting will only start after all are available
-        @param args: Scout actions, cen be to scout a certain location, or to move around in certain way
+        @param args: Scout actions, cen be to scout a certain location, or to move around in certain way. Defaults to scouting enemy main
         """
         if isinstance(unit_types, UnitTypeId):
             self.unit_types = set()

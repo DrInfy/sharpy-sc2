@@ -221,8 +221,8 @@ class LurkerBot(KnowledgeBot):
             SequentialList(
                 PlanZoneDefense(),
                 OverlordScout(),
-                Step(None, LingScoutMain(), skip_until=RequiredTime(4 * 60)),
-                Step(None, LingScoutMain(), skip_until=RequiredTime(8 * 60)),
+                Step(None, LingScout(), skip_until=RequiredTime(4 * 60)),
+                Step(None, LingScout(), skip_until=RequiredTime(8 * 60)),
                 PlanCancelBuilding(),
                 PlanZoneGather(),
                 Step(None, WorkerScout(), skip_until=RequiredSupply(20)),
