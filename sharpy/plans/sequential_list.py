@@ -12,9 +12,13 @@ if TYPE_CHECKING:
 
 
 class SequentialList(SubActs):
-    def __init__(self, orders: Union[
-        Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
-    ], *argv):
+    def __init__(
+        self,
+        orders: Union[
+            Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
+        ],
+        *argv
+    ):
 
         super().__init__(orders, *argv)
 

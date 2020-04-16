@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 class UnitCacheManager(ManagerBase):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""
+
     all_own: Units
     empty_units: Units
 

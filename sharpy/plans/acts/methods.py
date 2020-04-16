@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
+
 def merge_to_act(obj: Optional[Union[ActBase, Callable[["Knowledge"], bool]]]) -> Optional[ActBase]:
     if isinstance(obj, ActBase) or obj is None:
         return obj

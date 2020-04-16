@@ -121,6 +121,7 @@ class ScoutLocation(ScoutBaseAction):
     def scout_own7() -> ScoutBaseAction:
         return ScoutLocation(lambda k: k.expansion_zones[6].center_location)
 
+
 class Scout(SubActs):
     units: Units
 

@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
 
-
 def merge_to_require(obj: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]]) -> Optional[RequireBase]:
     if isinstance(obj, RequireBase) or obj is None:
         return obj

@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
     from sharpy.managers import UnitCacheManager, UnitValue
 
+
 class ManagerBase(ABC):
     ai: sc2.BotAI
     knowledge: "Knowledge"
