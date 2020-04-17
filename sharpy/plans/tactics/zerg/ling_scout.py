@@ -1,6 +1,6 @@
 from sc2 import UnitTypeId
 from sharpy.plans.tactics import Scout
-from sharpy.plans.tactics.scout import ScoutBaseAction
+from sharpy.plans.tactics.scouting import ScoutBaseAction
 
 
 class LingScout(Scout):
