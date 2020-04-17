@@ -8,6 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      # Run all steps regardless of failures
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
         python-version: [3.7]
