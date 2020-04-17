@@ -18,3 +18,4 @@ from .defensive_building import DefensePosition
 from .reserve import Reserve
 from .act_custom import ActCustom
 from .position_building import PositionBuilding
+from .methods import merge_to_act

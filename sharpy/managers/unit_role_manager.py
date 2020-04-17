@@ -97,11 +97,24 @@ class UnitRoleManager(ManagerBase):
     @property
     def attacking_units(self) -> Units:
         """Returns all units that are currently attacking."""
-        attacking_units = self.roles[UnitTask.Attacking.value].units.copy()
+        attacking_units = Units(self.roles[UnitTask.Attacking.value].units.copy(), self.ai)
         moving_units = self.roles[UnitTask.Moving.value].units.copy()
         # Combine lists
         attacking_units.extend(moving_units)
         return attacking_units
+
+    def get_types_from(self, types: Set[UnitTypeId], *args: UnitTask) -> Units:
+        units = self.cache.own(types)
+        all_tags: List[int] = []
+
+        if len(args) == 0:
+            all_tags = self.roles[UnitTask.Idle].tags
+        else:
+            for task in args:
+                tags = self.roles[task].tags
+                all_tags += tags
+
+        return units.tags_in(all_tags)
 
     @property
     def hallucinated_units(self) -> Units:

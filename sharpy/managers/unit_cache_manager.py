@@ -12,25 +12,32 @@ from sc2.units import Units
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId
 from sc2.unit import Unit
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
 
 class UnitCacheManager(ManagerBase):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""
+
+    all_own: Units
+    empty_units: Units
 
     def __init__(self):
         super().__init__()
         self.tag_cache: Dict[int, Unit] = {}
         self.own_unit_cache: Dict[UnitTypeId, Units] = {}
         self.enemy_unit_cache: Dict[UnitTypeId, Units] = {}
-        self.empty_units: Units = None
         self.own_tree: Optional[cKDTree] = None
         self.enemy_tree: Optional[cKDTree] = None
         self.force_fields: List[EffectData] = []
-        self.all_own: Units = Units([], self.ai)
+
         self.mineral_fields: Dict[Point2, Unit] = {}
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        self.all_own: Units = Units([], self.ai)
         self.empty_units: Units = Units([], self.ai)
 
     def by_tag(self, tag: int) -> Optional[Unit]:

@@ -311,16 +311,6 @@ class Knowledge:
             return False
         return not unit.is_structure and self.my_worker_type != unit.type_id
 
-    def building_going_down(self, building: Unit) -> bool:
-        """Returns boolean indicating whether a building is low on health and under attack."""
-        if building.tag in self.previous_units_manager.previous_units:
-            previous_building = self.previous_units_manager.previous_units[building.tag]
-            health = building.health
-            compare_health = max(70, building.health_max * 0.09)
-            if health < previous_building.health < compare_health:
-                return True
-        return False
-
     @property
     def enemy_expansions_dict(self) -> Dict[Point2, Unit]:
         """Dictionary of known expansion locations that have an enemy townhall present."""
@@ -546,6 +536,11 @@ class Knowledge:
     def terrain_to_z_height(self, h):
         """Gets correct z from versions 4.9.0+"""
         return -16 + 32 * h / 255
+
+    def z_height_to_terrain(self, z):
+        """Gets correct height from versions 4.9.0+"""
+        h = (z + 16) / 32 * 255
+        return h
 
     async def post_update(self):
         for manager in self.managers:
