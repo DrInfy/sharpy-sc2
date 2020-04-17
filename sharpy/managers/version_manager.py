@@ -10,6 +10,7 @@ VERSION_4_11_4 = 78285
 VERSION_4_11_0 = 77379
 VERSION_4_10_0 = 75689
 
+
 class VersionManager(ManagerBase):
     def __init__(self):
         self.short_version = "0.0.0"
@@ -41,7 +42,8 @@ class VersionManager(ManagerBase):
 
     def configure_enums(self):
         if self.base_version == VERSION_4_10_0:
-            self._set_enum_mapping(UnitTypeId,
+            self._set_enum_mapping(
+                UnitTypeId,
                 {
                     UnitTypeId.ASSIMILATORRICH: 1955,
                     UnitTypeId.EXTRACTORRICH: 1956,
@@ -49,8 +51,8 @@ class VersionManager(ManagerBase):
                     UnitTypeId.INHIBITORZONEMEDIUM: 1958,
                     UnitTypeId.INHIBITORZONELARGE: 1959,
                     UnitTypeId.REFINERYRICH: 1960,
-                    UnitTypeId.MINERALFIELD450: 1961
-                }
+                    UnitTypeId.MINERALFIELD450: 1961,
+                },
             )
 
     def _set_enum_mapping(self, enum: Any, items: Dict[Any, int]):
