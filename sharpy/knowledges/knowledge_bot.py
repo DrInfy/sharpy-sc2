@@ -28,6 +28,7 @@ class KnowledgeBot(BotAI):
         self.realtime_split = True
         self.last_game_loop = -1
         self.distance_calculation_method = 0
+        self.unit_command_uses_self_do = True
 
     async def real_init(self):
         self.knowledge.pre_start(self)
