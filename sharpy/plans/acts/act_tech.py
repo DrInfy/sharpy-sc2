@@ -5,6 +5,7 @@ from sc2.units import Units
 from .act_base import ActBase
 
 from sc2.dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
+from ...managers import VersionManager
 
 
 class ActTech(ActBase):
@@ -33,16 +34,39 @@ class ActTech(ActBase):
         if from_building is None:
             from_building = UPGRADE_RESEARCHED_FROM[self.upgrade_type]
 
-        assert isinstance(from_building, UnitTypeId)
+        assert isinstance(from_building, UnitTypeId) or from_building is None
 
-        if from_building in self.equivalent_structures:
-            self.from_buildings: Set[UnitTypeId] = self.equivalent_structures[from_building]
-        else:
-            self.from_buildings: Set[UnitTypeId] = {from_building}
+        self._from_building = from_building
+        # This is used to determine if the upgrade actually exists in the current version of the game
+        self.enabled = True
+        self.from_buildings: Set[UnitTypeId] = set()
 
         super().__init__()
 
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+
+        if self.upgrade_type in self.knowledge.version_manager.disabled_upgrades:
+            # Upgrade not available in this version of the game
+            self.enabled = False
+            return
+
+        version_manager: VersionManager = knowledge.version_manager
+
+        if self._from_building is None:
+            self._from_building = version_manager.moved_upgrades.get(
+                self.upgrade_type, UPGRADE_RESEARCHED_FROM[self.upgrade_type]
+            )
+
+        if self._from_building in self.equivalent_structures:
+            self.from_buildings = self.equivalent_structures[self._from_building]
+        else:
+            self.from_buildings = {self._from_building}
+
     async def execute(self) -> bool:
+        if not self.enabled:
+            return True
+
         builders = self.cache.own(self.from_buildings).ready
 
         if self.already_pending_upgrade(builders) > 0:

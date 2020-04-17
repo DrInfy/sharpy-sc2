@@ -68,8 +68,10 @@ class Knowledge:
         self.chat_manager: ChatManager = ChatManager()
         self.memory_manager: MemoryManager = MemoryManager()
         self.action_handler: ActionHandler = ActionHandler()
+        self.version_manager: VersionManager = VersionManager()
 
         self.managers: List[ManagerBase] = [
+            self.version_manager,
             self.unit_values,
             self.unit_cache,
             self.action_handler,
