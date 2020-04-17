@@ -10,4 +10,4 @@ from .worker_scout import WorkerScout
 from .warn_build_macro import WarnBuildMacro
 from .worker_counterattack import WorkerCounterAttack
 from .worker_rally_point import WorkerRallyPoint
-from .scout import Scout, ScoutLocation
+from .scouting import Scout, ScoutLocation

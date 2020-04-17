@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from sc2.position import Point2
 from sc2 import UnitTypeId, AbilityId
-from sharpy.plans.tactics.scout import ScoutBaseAction, Scout
+from sharpy.plans.tactics.scouting import ScoutBaseAction, Scout
 
 
 class OverlordScout(Scout):
