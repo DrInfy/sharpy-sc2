@@ -78,7 +78,7 @@ class MatchRunner:
 
         # We'll have to host handle the rest
 
-    async def _launch(self, host: str, port: int = None, full_screen: bool = False) -> Any:
+    async def _launch(self, host: str, port: int, full_screen: bool = False) -> Any:
         """
         Launches SC2 with the relevant arguments and returns a Popen process.This method also populates self.port if it
         isn't populated already.
@@ -88,10 +88,6 @@ class MatchRunner:
         :return:
         """
 
-        if port is None:
-            port = portpicker.pick_unused_port()
-        else:
-            port = port
         tmp_dir = tempfile.mkdtemp(prefix="SC2_")
         args = [
             str(Paths.EXECUTABLE),
