@@ -29,4 +29,6 @@ exclude =
     python-sc2
     # external library code
     jsonpickle
+    # external library code
+    sc2pathlibp
 

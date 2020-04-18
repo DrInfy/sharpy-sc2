@@ -8,5 +8,6 @@ exclude = '''
   |  python-sc2
   | jsonpickle
   | Bots
+  | sc2pathlibp
 )/
 '''
