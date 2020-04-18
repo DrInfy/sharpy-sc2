@@ -8,6 +8,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 from . import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
+from .version_manager import GameVersion
 
 buildings_2x2 = {
     UnitTypeId.SUPPLYDEPOT,
@@ -486,6 +487,15 @@ class UnitValue(ManagerBase):
             return 6
         if unit.type_id == UnitTypeId.DISRUPTOR:
             return 10
+        if unit.type_id == UnitTypeId.BANELING:
+            return 0.1
+        if unit.type_id == UnitTypeId.LURKERMP or unit.type_id == UnitTypeId.LURKERMPBURROWED:
+            if self.knowledge.version_manager.base_version < GameVersion.V_4_11_0:
+                return 8
+            else:
+                if self.ai.already_pending_upgrade(UpgradeId.LURKERRANGE) >= 1:
+                    return 10
+                return 8
         if unit.type_id == UnitTypeId.COLOSSUS:
             if not unit.is_mine:
                 return 9  # Let's assume the worst, enemy has the upgrade!

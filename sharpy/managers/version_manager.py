@@ -1,14 +1,15 @@
-from enum import Enum
-from typing import Set, Dict, Any, Type
+from enum import IntEnum
+from typing import Set, Dict, Any
 
 from sc2 import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
-from sc2.protocol import Protocol
 from sharpy.managers import ManagerBase
 
-VERSION_4_11_4 = 78285
-VERSION_4_11_0 = 77379
-VERSION_4_10_0 = 75689
+
+class GameVersion(IntEnum):
+    V_4_11_4 = 78285
+    V_4_11_0 = 77379
+    V_4_10_0 = 75689
 
 
 class VersionManager(ManagerBase):
@@ -41,7 +42,7 @@ class VersionManager(ManagerBase):
         pass
 
     def configure_enums(self):
-        if self.base_version == VERSION_4_10_0:
+        if self.base_version == GameVersion.V_4_10_0:
             self._set_enum_mapping(
                 UnitTypeId,
                 {
@@ -63,7 +64,7 @@ class VersionManager(ManagerBase):
             self.print(f"Setting {enum_key.name} to {enum_key.value}")
 
     def configure_upgrades(self):
-        if self.base_version < VERSION_4_11_0:
+        if self.base_version < GameVersion.V_4_11_0:
             self.disabled_upgrades.add(UpgradeId.LURKERRANGE)
             self.disabled_upgrades.add(UpgradeId.MICROBIALSHROUD)
             self.disabled_upgrades.add(UpgradeId.VOIDRAYSPEEDUPGRADE)
