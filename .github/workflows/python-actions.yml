@@ -80,4 +80,6 @@ jobs:
         # travis_test_script.py is a wrapper for SC2 bots to set a timeout
         # docker exec --interactive app1 bash -c "python python-sc2/test/travis_test_script.py"
         # could use matrix here to provide the bots and map
-        docker exec --interactive app1 bash -c "python run_custom.py -p1 12pool -p2 zealot --map AcolyteLE"
+        docker exec -i app1 bash -c "python run_custom.py -p1 12pool -p2 zealot --map AcolyteLE"
+        docker exec -i app1 bash -c "tree"
+        docker rm -f app1
