@@ -1,3 +1,10 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
+# All text files are normalized to LF line endings when committing.
+# On Windows, core.autocrlf should be true so line endings are converted to CRLF on checkout.
 * text=auto
+
+# Always use LF line endings for .sh scripts, even on Windows.
 *.sh -lf
+
+# These files should be treated as binary
+*.so binary
+*.pyd binary
