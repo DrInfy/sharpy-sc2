@@ -6,6 +6,7 @@ from sc2.ids.upgrade_id import UpgradeId
 
 from .act_tech import ActTech
 
+
 def mock_knowledge() -> mock.Mock:
     knowledge_mock = mock.Mock()
     knowledge_mock.get_boolean_setting = lambda x: False
@@ -13,6 +14,7 @@ def mock_knowledge() -> mock.Mock:
     knowledge_mock.version_manager.moved_upgrades = {}
     knowledge_mock.version_manager.disabled_upgrades = {UpgradeId.LURKERRANGE}
     return knowledge_mock
+
 
 class TestActTech:
     @pytest.mark.asyncio
