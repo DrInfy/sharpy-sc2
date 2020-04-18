@@ -17,13 +17,17 @@ from sc2.data import Result
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import KnowledgeBot
 
 root_logger = logging.getLogger()
 
 
 class Knowledge:
     def __init__(self):
-        self.ai: sc2.BotAI = None
+        self.ai: "KnowledgeBot" = None
         self.config: ConfigParser = None
         self._debug: bool = False
 
@@ -69,7 +73,14 @@ class Knowledge:
         self.memory_manager: MemoryManager = MemoryManager()
         self.action_handler: ActionHandler = ActionHandler()
         self.version_manager: VersionManager = VersionManager()
+        self.managers: List[ManagerBase] = []
 
+    def set_managers(self, additional_managers: Optional[List[ManagerBase]]):
+        """
+        Sets managers to be updated
+        @param additional_managers: Additional list of custom managers
+        @return: None
+        """
         self.managers: List[ManagerBase] = [
             self.version_manager,
             self.unit_values,
@@ -93,9 +104,14 @@ class Knowledge:
             self.memory_manager,
         ]
 
+        if additional_managers:
+            self.managers.extend(additional_managers)
+
     # noinspection PyAttributeOutsideInit
-    def pre_start(self, ai: sc2.BotAI):
-        self.ai: sc2.BotAI = ai
+    def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
+        assert isinstance(ai, sc2.BotAI)
+        self.ai: "KnowledgeBot" = ai
+        self.set_managers(additional_managers)
         self._all_own: Units = Units([], self.ai)
         self.config: ConfigParser = self.ai.config
         self.logger = sc2.main.logger
