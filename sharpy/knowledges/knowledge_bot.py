@@ -5,9 +5,10 @@ from abc import abstractmethod
 
 from sc2.units import Units
 from sharpy.knowledges import Knowledge
+from sharpy.managers import ManagerBase
 from sharpy.plans import BuildOrder
 from config import get_config, get_version
-from sc2 import BotAI, Result, Optional, UnitTypeId
+from sc2 import BotAI, Result, Optional, UnitTypeId, List
 from sc2.unit import Unit
 import time
 
@@ -31,13 +32,21 @@ class KnowledgeBot(BotAI):
         self.unit_command_uses_self_do = True
 
     async def real_init(self):
-        self.knowledge.pre_start(self)
+        self.knowledge.pre_start(self, self.configure_managers())
         await self.knowledge.start()
         self.plan = await self.create_plan()
         if self.start_plan:
             await self.plan.start(self.knowledge)
 
         self._log_start()
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        """
+        Override this for custom manager usage.
+        Use this to override managers in knowledge
+        @return: Optional list of new managers
+        """
+        return None
 
     async def chat_init(self):
         if self.knowledge.is_chat_allowed:

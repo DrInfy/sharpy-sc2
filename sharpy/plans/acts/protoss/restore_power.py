@@ -6,12 +6,21 @@ from sc2 import UnitTypeId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
 
-# These buildings do not need to be powered by pylons.
-ignored_building_types = (
-    UnitTypeId.PYLON,
-    UnitTypeId.NEXUS,
-    UnitTypeId.ASSIMILATOR,
-    UnitTypeId.ASSIMILATORRICH,
+# These buildings need to be powered by pylons.
+building_types = (
+    UnitTypeId.GATEWAY,
+    UnitTypeId.WARPGATE,
+    UnitTypeId.FORGE,
+    UnitTypeId.PHOTONCANNON,
+    UnitTypeId.SHIELDBATTERY,
+    UnitTypeId.CYBERNETICSCORE,
+    UnitTypeId.TWILIGHTCOUNCIL,
+    UnitTypeId.ROBOTICSFACILITY,
+    UnitTypeId.STARGATE,
+    UnitTypeId.TEMPLARARCHIVE,
+    UnitTypeId.DARKSHRINE,
+    UnitTypeId.ROBOTICSBAY,
+    UnitTypeId.FLEETBEACON,
 )
 
 
@@ -63,7 +72,7 @@ class RestorePower(ActBase):
         """Returns all of our unpowered buildings on the map."""
         structures = self.ai.structures
         unpowered = filter(
-            lambda s: not s.is_powered and s.build_progress == 1 and s.type_id not in ignored_building_types, structures
+            lambda s: not s.is_powered and s.build_progress == 1 and s.type_id in building_types, structures
         )
         return list(unpowered)
 
