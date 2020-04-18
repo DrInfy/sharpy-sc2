@@ -9,12 +9,12 @@ from sc2.client import Client
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import Knowledge
+    from sharpy.knowledges import Knowledge, KnowledgeBot
     from sharpy.managers import UnitCacheManager, UnitValue
 
 
 class ManagerBase(ABC):
-    ai: sc2.BotAI
+    ai: "KnowledgeBot"
     knowledge: "Knowledge"
     unit_values: "UnitValue"
     cache: "UnitCacheManager"
