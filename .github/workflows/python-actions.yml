@@ -59,6 +59,8 @@ jobs:
       fail-fast: true  # one failure is enough
       matrix:
         python-version: [3.7]
+        player1: [zealot, 12pool, bio]
+        player2: [ai.random.hard]
 
     steps:
     - uses: actions/checkout@v2
@@ -83,5 +85,5 @@ jobs:
         # docker exec --interactive app1 bash -c "python python-sc2/test/travis_test_script.py"
         
         # could use matrix here to provide the bots and map
-        docker exec -i app1 bash -c "python run_custom.py -p1 12pool -p2 zealot --map AcolyteLE"
+        docker exec -i app1 bash -c "python run_custom.py -p1 ${{ matrix.player1 }} -p2 ${{ matrix.player2 }} --map AcolyteLE"
         docker rm -f app1
