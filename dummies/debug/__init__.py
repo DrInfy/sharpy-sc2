@@ -4,3 +4,4 @@ from .spine_defender import SpineDefender
 from .use_neural_parasite_dummy import UseNeuralParasiteDummy
 from .detect_neural_parasite_dummy import DetectNeuralParasiteDummy
 from .idle_dummy import IdleDummy
+from .expand_bot import ExpandDummy

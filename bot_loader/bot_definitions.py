@@ -174,6 +174,7 @@ class BotDefinitions:
             "debugrestorepower": (lambda params: Bot(Race.Protoss, RestorePowerDummy())),
             "debuguseneural": (lambda params: Bot(Race.Zerg, UseNeuralParasiteDummy())),
             "debugdetectneural": (lambda params: Bot(Race.Protoss, DetectNeuralParasiteDummy())),
+            "debugexpanddummy": (lambda params: Bot(Race.Zerg, ExpandDummy())),
         }
 
         for key, func in debug_bots.items():
