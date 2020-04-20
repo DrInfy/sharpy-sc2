@@ -8,7 +8,7 @@ Sharpy was created to make it as easy as possible to create practice dummies for
 
 Sharpy is a work in progress. The folder structure and classes are subject to change.
 
-**Build statuses**
+### Build statuses
 
 Master branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actions/badge.svg?branch=master)
 
@@ -16,7 +16,11 @@ Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actio
 
 ### Requirements
 
-Python 3.7 (>=3.8 is not supported yet)
+1. Python 3.7 64-bit
+   * this is the basically the same requirement as for python-sc2. 3.8+ should that working when python-sc2 supports it.
+1. Windows or Linux
+   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib)
+   * macOS (and possibly others as well) may be supported after [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) is built for it.
 
 ### Ladder Dummy Bots
 

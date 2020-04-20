@@ -1,6 +1,14 @@
 name: Python actions
 
-on: [push, pull_request]
+on:
+  push:
+    branches: 
+      - master
+      - develop
+  pull_request:
+    branches: 
+      - master
+      - develop
 
 jobs:
   test:
@@ -11,16 +19,13 @@ jobs:
       # Run all steps regardless of failures
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Checkout submodules
-      uses: srt32/git-actions@v0.0.3
       with:
-        args: git submodule update --init --recursive
+        submodules: recursive
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
