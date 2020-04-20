@@ -13,16 +13,16 @@ def to_float2(original: Tuple[int, int]) -> Tuple[float, float]:
 
 class PathFinder:
     def __init__(self, maze: Union[List[List[int]], np.array]):
-        """
-        pathing values need to be integers to improve performance.
+        """ 
+        pathing values need to be integers to improve performance. 
         Initialization should be done with array consisting values of 0 and 1.
         """
         self._path_find = PathFind(maze)
         self.heuristic_accuracy = 1  # Octile distance
 
     def normalize_influence(self, value: int):
-        """
-        Normalizes influence to integral value.
+        """ 
+        Normalizes influence to integral value.    
         Influence does not need to be calculated each frame, but this quickly resets
         influence values to specified value without changing available paths.
         """
@@ -151,7 +151,7 @@ class PathFinder:
     def plot(self, path: List[Tuple[int, int]], image_name: str = "map", resize: int = 4):
         """
         Uses cv2 to draw current pathing grid.
-
+        
         requires opencv-python
 
         :param path: list of points to colorize

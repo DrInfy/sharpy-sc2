@@ -3,6 +3,11 @@ from typing import Callable
 from sc2.position import Point2
 from sharpy.plans.tactics.scouting.scout_base_action import ScoutBaseAction
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
+
 
 class ScoutLocation(ScoutBaseAction):
     def __init__(
@@ -93,3 +98,21 @@ class ScoutLocation(ScoutBaseAction):
     @staticmethod
     def scout_own7() -> ScoutBaseAction:
         return ScoutLocation(lambda k: k.expansion_zones[6].center_location)
+
+    @staticmethod
+    def scout_enemy_natural_ol_spot() -> ScoutBaseAction:
+        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[-2].center_location))
+
+    @staticmethod
+    def scout_own_natural_ol_spot() -> ScoutBaseAction:
+        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[1].center_location))
+
+    @staticmethod
+    def scout_center_ol_spot() -> ScoutBaseAction:
+        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.ai.game_info.map_center))
+
+    @staticmethod
+    def closest_overlord_spot_to(k: "Knowledge", target: Point2) -> Point2:
+        if k.pathing_manager.overlord_spots:
+            return target.closest(k.pathing_manager.overlord_spots)
+        return target
