@@ -17,12 +17,18 @@ def get_new_townhall_type(race: Race):
         return UnitTypeId.COMMANDCENTER
 
 
+train_worker_abilitites = {
+    AbilityId.NEXUSTRAIN_PROBE,
+    AbilityId.COMMANDCENTERTRAIN_SCV
+}
+
 class ActExpand(ActBase):
-    def __init__(self, to_count: int, priority: bool = False):
+    def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):
         assert isinstance(to_count, int)
         self.to_count: int = to_count
         self.builder_tag: Optional[int] = None
         self.priority = priority
+        self.consider_worker_production = consider_worker_production
 
         super().__init__()
 
@@ -83,16 +89,16 @@ class ActExpand(ActBase):
         unit = self.ai._game_data.units[self.townhall_type.value]
         cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
 
-        if self.knowledge.income_calculator.mineral_income > 0:
+        if self.knowledge.income_calculator.mineral_income > 0 and self.consider_worker_production:
             for town_hall in self.ai.townhalls:  # type: Unit
-                # TODO: Terran / Zerg(?)
+                # TODO: Zerg(?)
                 if town_hall.orders:
-                    starting_next_probe_in = -50 / self.knowledge.income_calculator.mineral_income
+                    starting_next_worker_in = -50 / self.knowledge.income_calculator.mineral_income
                     for order in town_hall.orders:  # type: UnitOrder
-                        if order.ability.id == AbilityId.NEXUSTRAIN_PROBE:
-                            starting_next_probe_in += 12 * (1 - order.progress)
+                        if order.ability.id in train_worker_abilitites:
+                            starting_next_worker_in += 12 * (1 - order.progress)
 
-                    if starting_next_probe_in < time:
+                    if starting_next_worker_in < time:
                         available_minerals -= 50  # should start producing workers soon now
                 else:
                     available_minerals -= 50  # should start producing workers soon now
