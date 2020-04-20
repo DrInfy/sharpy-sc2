@@ -17,10 +17,8 @@ def get_new_townhall_type(race: Race):
         return UnitTypeId.COMMANDCENTER
 
 
-train_worker_abilitites = {
-    AbilityId.NEXUSTRAIN_PROBE,
-    AbilityId.COMMANDCENTERTRAIN_SCV
-}
+train_worker_abilitites = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
+
 
 class ActExpand(ActBase):
     def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):

@@ -14,5 +14,3 @@ class ExpandDummy(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         return BuildOrder(ActExpand(2, priority=True, consider_worker_production=False), PlanDistributeWorkers())
-
-
