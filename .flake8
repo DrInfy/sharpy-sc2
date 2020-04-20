@@ -19,16 +19,11 @@ ignore =
     F821 # undefined name 'name' - these are hacks used to circumvent cyclic import problems
 
 exclude =
-    # git repository
     .git
-    # possible virtual environment
     .venv
-    # Python caches
     __pycache__
-    # external library code
     python-sc2
-    # external library code
     jsonpickle
-    # external library code
     sc2pathlibp
+    Bots
 
