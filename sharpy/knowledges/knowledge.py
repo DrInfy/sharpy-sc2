@@ -54,6 +54,7 @@ class Knowledge:
         self._on_unit_destroyed_listeners: List[Callable] = list()
 
         # Managers
+        self.manager_dict = {}
         self.unit_cache: UnitCacheManager = UnitCacheManager()
         self.zone_manager: ZoneManager = ZoneManager()
         self.enemy_units_manager: EnemyUnitsManager = EnemyUnitsManager()
@@ -81,31 +82,36 @@ class Knowledge:
         @param additional_managers: Additional list of custom managers
         @return: None
         """
-        self.managers: List[ManagerBase] = [
-            self.version_manager,
-            self.unit_values,
-            self.unit_cache,
-            self.action_handler,
-            self.pathing_manager,
-            self.zone_manager,
-            self.enemy_units_manager,
-            self.cooldown_manager,
-            self.building_solver,
-            self.income_calculator,
-            self.roles,
-            self.build_detector,
-            self.enemy_army_predicter,
-            self.lost_units_manager,
-            self.game_analyzer,
-            self.combat_manager,
-            self.chat_manager,
-            self.previous_units_manager,
-            self.data_manager,
-            self.memory_manager,
-        ]
+        if len(self.manager_dict) > 0:
+            self.managers = [manager for manager in self.manager_dict.values()]
+        else:
+            self.managers: List[ManagerBase] = [
+                self.version_manager,
+                self.unit_values,
+                self.unit_cache,
+                self.action_handler,
+                self.pathing_manager,
+                self.zone_manager,
+                self.enemy_units_manager,
+                self.cooldown_manager,
+                self.building_solver,
+                self.income_calculator,
+                self.roles,
+                self.build_detector,
+                self.enemy_army_predicter,
+                self.lost_units_manager,
+                self.game_analyzer,
+                self.combat_manager,
+                self.chat_manager,
+                self.previous_units_manager,
+                self.data_manager,
+                self.memory_manager,
+            ]
 
         if additional_managers:
             self.managers.extend(additional_managers)
+        for manager in self.managers:
+            self.manager_dict[manager] = manager
 
     # noinspection PyAttributeOutsideInit
     def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):

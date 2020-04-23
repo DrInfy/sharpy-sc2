@@ -1,3 +1,6 @@
+from typing import List, Optional
+
+from sharpy.managers import DataManager, ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -138,10 +141,54 @@ class BuildTanks(BuildOrder):
 
         super().__init__([scv, dt_counter, dt_counter2, self.depots, buildings, mech, air, marines])
 
+class LarvaManager(ManagerBase):
+    def __init__(self):
+        super().__init__()
+        self._larva = 0
+
+    @property
+    def larva_count(self) -> int:
+        return self._larva
+
+    async def update(self):
+        # This is being run each frame
+        self._larva = len(self.cache.own(UnitTypeId.LARVA))
+
+    async def post_update(self):
+        # This manager doesn't need to do anything at the end of the frame.
+        pass
+
+class MyDataManager(DataManager):
+    """ Simple replacement to data manager """
+
+    def select_build(self, available_builds: List[str]) -> str:
+        """ Selects last build if it won and another if it didn't win. """
+        if len(available_builds) == 1:
+            return available_builds[0]
+        assert len(available_builds) > 1
+
+        last = self.last_result
+        if last is not None and last.build_used in available_builds:
+            if last.result > 0:
+                return last
+            available_builds.remove(last)
+
+        return available_builds[random.randint(0, len(available_builds) - 1)]
 
 class Rusty(KnowledgeBot):
     def __init__(self):
         super().__init__("Old Rusty")
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        # override built in data manager
+        self.data_manager = MyDataManager()
+        self.knowledge.data_manager = self.data_manager
+
+        # add our own custom manager
+        self.larva_manager = LarvaManager()
+        self.knowledge.larva_manager = self.larva_manager
+        self.knowledge.set_managers(additional_managers=[self.larva_manager])
+
 
     async def pre_step_execute(self):
         pass
