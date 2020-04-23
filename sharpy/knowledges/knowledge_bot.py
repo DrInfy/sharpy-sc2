@@ -40,13 +40,13 @@ class KnowledgeBot(BotAI):
 
         self._log_start()
 
-    def configure_managers(self) -> Optional[List[ManagerBase]]:
+    def configure_managers(self) -> List[ManagerBase]:
         """
         Override this for custom manager usage.
         Use this to override managers in knowledge
         @return: Optional list of new managers
         """
-        return None
+        return list()
 
     async def chat_init(self):
         if self.knowledge.is_chat_allowed:

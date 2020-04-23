@@ -73,15 +73,17 @@ class Knowledge:
         self.memory_manager: MemoryManager = MemoryManager()
         self.action_handler: ActionHandler = ActionHandler()
         self.version_manager: VersionManager = VersionManager()
-        self.managers: List[ManagerBase] = []
+        self._managers_dict: Dict[type, ManagerBase] = dict()
 
-    def set_managers(self, additional_managers: Optional[List[ManagerBase]]):
+    def set_managers(self, additional_managers: List[ManagerBase] = ()):
         """
         Sets managers to be updated
         @param additional_managers: Additional list of custom managers
         @return: None
         """
-        self.managers: List[ManagerBase] = [
+
+        # these managers  are always active and many of them are required internally by sharpy.
+        sharpy_managers: List[ManagerBase] = [
             self.version_manager,
             self.unit_values,
             self.unit_cache,
@@ -104,11 +106,15 @@ class Knowledge:
             self.memory_manager,
         ]
 
-        if additional_managers:
-            self.managers.extend(additional_managers)
+        for manager in sharpy_managers:
+            assert isinstance(manager, ManagerBase)
+            self._managers_dict[type(manager)] = manager
 
-    # noinspection PyAttributeOutsideInit
-    def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
+        for manager in additional_managers:
+            assert isinstance(manager, ManagerBase)
+            self._managers_dict[type(manager)] = manager
+
+    def pre_start(self, ai: "KnowledgeBot", additional_managers: List[ManagerBase] = ()):
         assert isinstance(ai, sc2.BotAI)
         self.ai: "KnowledgeBot" = ai
         self.set_managers(additional_managers)
@@ -134,6 +140,15 @@ class Knowledge:
         self.heat_map = HeatMap(self.ai, self)
 
         self.my_worker_type = self.unit_values.get_worker_type(self.my_race)
+
+    # noinspection PyAttributeOutsideInit
+
+    @property
+    def managers(self) -> List[ManagerBase]:
+        """
+        Returns all registered managers.
+        """
+        return list(self._managers_dict.values())
 
     def get_str_setting(self, key: str) -> str:
         """
