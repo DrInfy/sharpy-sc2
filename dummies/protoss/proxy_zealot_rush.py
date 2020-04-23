@@ -1,3 +1,6 @@
+from typing import List
+
+from sharpy.managers import ManagerBase
 from sharpy.managers.building_solver import WallType
 from sharpy.managers.roles import UnitTask
 
@@ -13,6 +16,26 @@ from sc2.ids.upgrade_id import UpgradeId
 
 from sc2 import BotAI, run_game, maps, Race, Difficulty, UnitTypeId
 from sc2.position import Point2
+
+
+class MyManager(ManagerBase):
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.print("start!")
+
+    async def update(self):
+        # self.print("update!")
+        pass
+
+    async def post_update(self):
+        # self.print("post_update!")
+        pass
+
+    def on_end(self, game_result):
+        self.print("on_end!")
+
+    def my_method(self):
+        self.print("THIS IS MY METHOD, WIII!")
 
 
 class ProxyZealots(ActBase):
@@ -32,6 +55,9 @@ class ProxyZealots(ActBase):
         self.gather_point = self.pather.find_path(self.proxy_location, self.knowledge.enemy_start_location, 8)
 
     async def build_order(self):
+        my_mgr: MyManager = self.knowledge._managers_dict.get(MyManager)
+        my_mgr.my_method()
+
         if not self.ai.structures(UnitTypeId.NEXUS).ready.exists:
             # Nexus down, no build order to use.
             return
@@ -109,6 +135,9 @@ class ProxyZealots(ActBase):
 class ProxyZealotRushBot(KnowledgeBot):
     def __init__(self):
         super().__init__("Sharp Knives")
+
+    def configure_managers(self) -> List[ManagerBase]:
+        return [MyManager()]
 
     async def create_plan(self) -> BuildOrder:
         self.knowledge.building_solver.wall_type = WallType.ProtossMainProtoss
