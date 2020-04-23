@@ -54,7 +54,7 @@ class Knowledge:
         self._on_unit_destroyed_listeners: List[Callable] = list()
 
         # Managers
-        self.manager_dict = {}
+        self.manager_dict = dict()
         self.unit_cache: UnitCacheManager = UnitCacheManager()
         self.zone_manager: ZoneManager = ZoneManager()
         self.enemy_units_manager: EnemyUnitsManager = EnemyUnitsManager()
