@@ -23,7 +23,8 @@ if TYPE_CHECKING:
     from sharpy.knowledges import KnowledgeBot
 
 root_logger = logging.getLogger()
-TManager = TypeVar('TManager')
+TManager = TypeVar("TManager")
+
 
 class Knowledge:
     def __init__(self):
