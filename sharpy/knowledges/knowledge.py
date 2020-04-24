@@ -1,7 +1,7 @@
 import logging
 import string
 from configparser import ConfigParser
-from typing import Set, List, Optional, Dict, Callable
+from typing import Set, List, Optional, Dict, Callable, Type
 
 import sc2
 from sharpy.general.zone import Zone
@@ -17,13 +17,13 @@ from sc2.data import Result
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
     from sharpy.knowledges import KnowledgeBot
 
 root_logger = logging.getLogger()
-
+TManager = TypeVar('TManager')
 
 class Knowledge:
     def __init__(self):
@@ -106,6 +106,16 @@ class Knowledge:
 
         if additional_managers:
             self.managers.extend(additional_managers)
+
+    def get_manager(self, manager_type: Type[TManager]) -> TManager:
+        """
+
+        @param manager_type:
+        @return:
+        """
+        for manager in self.managers:
+            if issubclass(type(manager), manager_type):
+                return manager
 
     # noinspection PyAttributeOutsideInit
     def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
