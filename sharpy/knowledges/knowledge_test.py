@@ -7,7 +7,7 @@ from sharpy.managers import DataManager, ManagerBase
 
 class TestDataManager(DataManager):
     def should_be_true(self) -> bool:
-        return self.debug == False
+        return self.debug is False
 
 
 class CustomTestManager(ManagerBase):
