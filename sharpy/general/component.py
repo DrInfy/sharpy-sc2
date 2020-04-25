@@ -8,6 +8,13 @@ if TYPE_CHECKING:
 
 
 class Component:
+    """
+    Common component for all sharpy objects that contains shortcuts to managers
+
+    Attributes:
+    """
+
+    # Shortcuts to various managers
     knowledge: "Knowledge"
     ai: "KnowledgeBot"
     client: Client
