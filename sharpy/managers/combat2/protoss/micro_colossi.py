@@ -67,8 +67,8 @@ high_priority: Dict[UnitTypeId, int] = {
 
 
 class MicroColossi(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.prio_dict = high_priority
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:

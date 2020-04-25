@@ -8,9 +8,8 @@ from sc2.unit import Unit
 
 
 class MicroMedivacs(MicroStep):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
-        self.anti_armor_available = 0
+    def __init__(self):
+        super().__init__()
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         return current_command

@@ -5,8 +5,8 @@ from sc2.unit import Unit
 
 
 class MicroQueens(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         if self.cd_manager.is_ready(unit.tag, AbilityId.TRANSFUSION_TRANSFUSION):

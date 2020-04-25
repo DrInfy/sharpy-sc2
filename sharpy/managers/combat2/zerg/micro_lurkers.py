@@ -36,8 +36,8 @@ class SiegingStatus:
 
 
 class MicroLurkers(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.siege_status: Dict[int, SiegingStatus] = {}
 
     def get_siege_status(self, tank: Unit) -> SiegingStatus:

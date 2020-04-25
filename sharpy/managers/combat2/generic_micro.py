@@ -29,10 +29,10 @@ no_retreat_on_low_hp: Set[UnitTypeId] = {
 
 
 class GenericMicro(MicroStep):
-    def __init__(self, knowledge):
+    def __init__(self):
         self.prio_dict: Optional[Dict[UnitTypeId, int]] = None
         self.model = CombatModel.StalkerToRoach
-        super().__init__(knowledge)
+        super().__init__()
 
     def should_retreat(self, unit: Unit) -> bool:
         if unit.type_id in no_retreat_on_low_hp:

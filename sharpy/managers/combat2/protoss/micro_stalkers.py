@@ -70,8 +70,8 @@ high_priority: Dict[UnitTypeId, int] = {
 
 
 class MicroStalkers(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.prio_dict = high_priority
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:

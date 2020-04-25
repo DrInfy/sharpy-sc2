@@ -22,8 +22,8 @@ HALLUCINATION_ENERGY_COST = 75
 
 
 class MicroSentries(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.shield_up = False
         self.last_shield_up = 0  # Allows delay until another shield is used
         self.should_shield_up = False
@@ -31,12 +31,13 @@ class MicroSentries(GenericMicro):
         self.melee_power = 0
         self.upcoming_fields: List[Point2] = []
 
-        ramp_ff_movement = 2
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
 
+        ramp_ff_movement = 2
         self.main_ramp_position: Point2 = self.knowledge.base_ramp.bottom_center.towards(
             self.knowledge.base_ramp.top_center, ramp_ff_movement
         )
-        # self.main_ramp_position = self.main_ramp_position.offset((0.5, -0.5))
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         self.upcoming_fields.clear()

@@ -12,10 +12,10 @@ from sc2.units import Units
 
 
 class MicroWarpPrism(MicroStep):
-    def __init__(self, knowledge):
+    def __init__(self):
         self.release_tags: Dict[int, float] = dict()
         self.tag_unloading: Dict[int, float] = dict()
-        super().__init__(knowledge)
+        super().__init__()
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
 

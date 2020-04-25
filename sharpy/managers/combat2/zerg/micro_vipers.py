@@ -8,8 +8,8 @@ from sc2.unit import Unit
 
 
 class MicroVipers(MicroStep):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.blind_available = 0
         self.parasitic_bomb_available = 0
 
