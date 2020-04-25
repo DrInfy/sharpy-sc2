@@ -147,7 +147,7 @@ class ActExpand(ActBase):
                     if moving_status != "":
                         moving_status += ", "
                     moving_status += order.ability.id.name
-                self._client.debug_text_world(moving_status, worker.position3d)
+                self.client.debug_text_world(moving_status, worker.position3d)
 
     def expanding_in(self, zone: "Zone") -> bool:
         """ Are we already expanding to this location? """

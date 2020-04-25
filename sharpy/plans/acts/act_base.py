@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import sc2
+from sharpy.general.component import Component
 from sharpy.managers import UnitValue
 from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
@@ -62,22 +63,7 @@ build_commands = {
 }
 
 
-class ActBase(ABC):
-    knowledge: "Knowledge"
-    ai: sc2.BotAI
-    cache: UnitCacheManager
-    unit_values: UnitValue
-    pather: PathingManager
-    combat: GroupCombatManager
-    roles: UnitRoleManager
-
-    def __init__(self):
-        self._debug: bool = False
-
-    @property
-    def debug(self):
-        return self._debug and self.knowledge.debug
-
+class ActBase(Component, ABC):
     async def debug_draw(self):
         if self.debug:
             await self.debug_actions()
@@ -96,20 +82,6 @@ class ActBase(ABC):
         :return: True if it allowed
         """
         return self.knowledge.action_handler.allow_action(unit)
-
-    async def start(self, knowledge: "Knowledge"):
-        self.knowledge = knowledge
-        self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")
-        self.ai = knowledge.ai
-        self.cache = knowledge.unit_cache
-        self.unit_values = knowledge.unit_values
-        self._client: Client = self.ai._client
-        self.pather = self.knowledge.pathing_manager
-        self.combat = self.knowledge.combat_manager
-        self.roles = self.knowledge.roles
-
-    def print(self, msg: string, stats: bool = True):
-        self.knowledge.print(msg, type(self).__name__, stats)
 
     @abstractmethod
     async def execute(self) -> bool:

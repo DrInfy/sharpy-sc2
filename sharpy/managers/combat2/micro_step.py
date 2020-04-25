@@ -12,6 +12,7 @@ from sc2 import AbilityId, UnitTypeId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from ...general.component import Component
 
 if TYPE_CHECKING:
     from sharpy.managers import *
@@ -26,15 +27,12 @@ changelings = {
 }
 
 
-class MicroStep(ABC):
-    def __init__(self, knowledge):
-        self.knowledge: "Knowledge" = knowledge
-        self.ai: sc2.BotAI = knowledge.ai
-        self.unit_values: UnitValue = knowledge.unit_values
-        self.cd_manager: CooldownManager = knowledge.cooldown_manager
-        self.pather: PathingManager = knowledge.pathing_manager
-        self.cache: UnitCacheManager = knowledge.unit_cache
-        self.delay_to_shoot = self.ai._client.game_step + 1.5
+class MicroStep(ABC, Component):
+    engaged_power: ExtendedPower
+    our_power: ExtendedPower
+    delay_to_shoot: float
+
+    def __init__(self):
         self.enemy_groups: List[CombatUnits] = []
         self.ready_to_attack_ratio: float = 0.0
         self.center: Point2 = Point2((0, 0))
@@ -43,14 +41,19 @@ class MicroStep(ABC):
         self.can_engage_ratio = 0
         self.closest_group: CombatUnits
         self.engaged: Dict[int, List[int]] = dict()
-        self.engaged_power = ExtendedPower(knowledge.unit_values)
-        self.our_power = ExtendedPower(knowledge.unit_values)
+
         self.closest_units: Dict[int, Optional[Unit]] = dict()
         self.move_type = MoveType.Assault
         self.attack_range = 0
         self.enemy_attack_range = 0
 
         self.focus_fired: Dict[int, float] = dict()
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.engaged_power = ExtendedPower(knowledge.unit_values)
+        self.our_power = ExtendedPower(knowledge.unit_values)
+        self.delay_to_shoot = self.client.game_step + 1.5
 
     def init_group(self, group: CombatUnits, units: Units, enemy_groups: List[CombatUnits], move_type: MoveType):
         self.focus_fired.clear()

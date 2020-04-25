@@ -11,7 +11,7 @@ GRAVITON_BEAM_ENERGY = 50
 
 
 class MicroPhoenixes(MicroStep):
-    def __init__(self, knowledge):
+    def __init__(self):
         self.allow_lift = False
         # These unit types should be targets for graviton beam
         self.lift_priority: Dict[UnitTypeId, int] = {
@@ -61,7 +61,7 @@ class MicroPhoenixes(MicroStep):
             UnitTypeId.ARCHON: -1,
             UnitTypeId.COLOSSUS: -1,
         }
-        super().__init__(knowledge)
+        super().__init__()
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         beaming_phoenixes = units.filter(

@@ -4,9 +4,6 @@ from sc2.unit import Unit
 
 
 class MicroVikings(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
-
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         return self.final_solve(unit, super().unit_solve_combat(unit, current_command))
 

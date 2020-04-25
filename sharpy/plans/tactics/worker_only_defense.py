@@ -268,4 +268,4 @@ class PlanWorkerOnlyDefense(ActBase):
             units: Units = self.knowledge.roles.units(UnitTask.Defending)
             for unit in units:
                 text = f"Worker Defending"
-                self._client.debug_text_world(text, unit.position3d)
+                self.client.debug_text_world(text, unit.position3d)

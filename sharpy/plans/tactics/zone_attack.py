@@ -125,9 +125,9 @@ class PlanZoneAttack(ActBase):
             attacking_status = moving_status = "unknown attack task"
 
         for unit in self.knowledge.roles.units(UnitTask.Moving):
-            self._client.debug_text_world(moving_status, unit.position3d)
+            self.client.debug_text_world(moving_status, unit.position3d)
         for unit in self.knowledge.roles.units(UnitTask.Attacking):
-            self._client.debug_text_world(attacking_status, unit.position3d)
+            self.client.debug_text_world(attacking_status, unit.position3d)
 
     def handle_attack(self, target):
         already_attacking: Units = self.knowledge.roles.units(UnitTask.Attacking)
