@@ -1,7 +1,7 @@
 import logging
 import string
 from configparser import ConfigParser
-from typing import Set, List, Optional, Dict, Callable
+from typing import Set, List, Optional, Dict, Callable, Type
 
 import sc2
 from sharpy.general.zone import Zone
@@ -17,12 +17,13 @@ from sc2.data import Result
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:
     from sharpy.knowledges import KnowledgeBot
 
 root_logger = logging.getLogger()
+TManager = TypeVar("TManager")
 
 
 class Knowledge:
@@ -75,11 +76,13 @@ class Knowledge:
         self.version_manager: VersionManager = VersionManager()
         self.managers: List[ManagerBase] = []
 
-    def set_managers(self, additional_managers: Optional[List[ManagerBase]]):
+    def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
         """
-        Sets managers to be updated
+        Sets managers to be updated.
+        This is not intended to be used outside of Knowledge.
+        Use KnowledgeBot.configure_managers to configure your managers.
+
         @param additional_managers: Additional list of custom managers
-        @return: None
         """
         self.managers: List[ManagerBase] = [
             self.version_manager,
@@ -107,11 +110,23 @@ class Knowledge:
         if additional_managers:
             self.managers.extend(additional_managers)
 
+    def get_manager(self, manager_type: Type[TManager]) -> Optional[TManager]:
+        """
+        Get manager by its type. Because the implementation can pretty slow, it is recommended to
+        fetch the required manager types in Component `start` in order to not slow the bot down.
+
+        @param manager_type: type of manager to be requested. i.e. `DataManager`
+        @return: Manager of requested type, if one is found.
+        """
+        for manager in self.managers:
+            if issubclass(type(manager), manager_type):
+                return manager
+
     # noinspection PyAttributeOutsideInit
     def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
         assert isinstance(ai, sc2.BotAI)
         self.ai: "KnowledgeBot" = ai
-        self.set_managers(additional_managers)
+        self._set_managers(additional_managers)
         self._all_own: Units = Units([], self.ai)
         self.config: ConfigParser = self.ai.config
         self.logger = sc2.main.logger
