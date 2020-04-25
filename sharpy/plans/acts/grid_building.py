@@ -154,7 +154,7 @@ class GridBuilding(ActBuilding):
                     if moving_status != "":
                         moving_status += ", "
                     moving_status += order.ability.id.name
-                self._client.debug_text_world(moving_status, worker.position3d)
+                self.client.debug_text_world(moving_status, worker.position3d)
 
     def get_worker(self, position: Point2):
         worker: Unit = None

@@ -200,4 +200,4 @@ class PlanZoneDefense(ActBase):
                 unit = self.cache.by_tag(tag)
                 if unit:
                     text = f"Defending {zone}"
-                    self._client.debug_text_world(text, unit.position3d)
+                    self.client.debug_text_world(text, unit.position3d)
