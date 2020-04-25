@@ -134,10 +134,16 @@ To run flake8 linting, use
 
 Tests are written using [pytest framework](https://docs.pytest.org/en/latest/getting-started.html).
 
-To run the tests, use
+To run all tests, use
 
 ```
 pytest
+```
+
+To run tests from a single test file, use `pytest path-to-file` eg.
+
+```
+pytest sharpy\knowledges\knowledge_test.py
 ```
 
 pytest follows standard test discovery rules and will run all tests in the current directory and its subdirectories.
