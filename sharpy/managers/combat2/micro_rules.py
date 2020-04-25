@@ -17,10 +17,11 @@ from sharpy.managers.combat2.default_micro_methods import DefaultMicroMethods
 
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
+    from sharpy.managers.group_combat_manager import GroupCombatManager
 
 
 class MicroRules(Component):
-    regroup_func: Callable[[Point2, List[CombatUnits]], None]  # TODO: How will this work?
+    handle_groups_func: Callable[["GroupCombatManager", Point2, MoveType], None]
     init_group_func: Callable[[MicroStep, CombatUnits, Units, List[CombatUnits], MoveType], None]
     group_solve_combat_func: Callable[[MicroStep, Units, Action], Action]
     unit_solve_combat_func: Callable[[MicroStep, Unit, Action], Action]
@@ -46,6 +47,7 @@ class MicroRules(Component):
             await micro.start(knowledge)
 
     def load_default_methods(self):
+        self.handle_groups_func = DefaultMicroMethods.handle_groups
         self.init_group_func = DefaultMicroMethods.init_micro_group
         # Pass command
         self.group_solve_combat_func = lambda step, units, current_command: current_command

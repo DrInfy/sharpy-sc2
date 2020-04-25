@@ -96,76 +96,13 @@ class GroupCombatManager(ManagerBase):
 
         self.own_groups: List[CombatUnits] = self.group_own_units(our_units)
 
-        total_power = ExtendedPower(self.unit_values)
-
-        for group in self.own_groups:
-            total_power.add_power(group.power)
-
         if self.debug:
             fn = lambda group: group.center.distance_to(self.ai.start_location)
             sorted_list = sorted(self.own_groups, key=fn)
             for i in range(0, len(sorted_list)):
                 sorted_list[i].debug_index = i
 
-        for group in self.own_groups:
-            center = group.center
-            closest_enemies = group.closest_target_group(self.enemy_groups)
-            own_closest_group = self.closest_group(center, self.own_groups)
-
-            if closest_enemies is None:
-                if move_type == MoveType.PanicRetreat:
-                    self.move_to(group, target, move_type)
-                else:
-                    self.attack_to(group, target, move_type)
-            else:
-                power = group.power
-                enemy_power = ExtendedPower(closest_enemies)
-
-                is_in_combat = group.is_in_combat(closest_enemies)
-
-                if move_type == MoveType.DefensiveRetreat or move_type == MoveType.PanicRetreat:
-                    self.move_to(group, target, move_type)
-                    break
-
-                if power.power > self.regroup_threshold * total_power.power:
-                    # Most of the army is here
-                    if group.is_too_spread_out() and not is_in_combat:
-                        self.regroup(group, group.center)
-                    else:
-                        self.attack_to(group, target, move_type)
-
-                elif is_in_combat:
-                    if not power.is_enough_for(enemy_power, 0.75):
-                        # Regroup if possible
-
-                        if own_closest_group:
-                            self.move_to(group, own_closest_group.center, MoveType.ReGroup)
-                        else:
-                            # fight to bitter end
-                            self.attack_to(group, closest_enemies.center, move_type)
-                    else:
-                        self.attack_to(group, closest_enemies.center, move_type)
-                else:
-                    # if self.faster_group_should_regroup(group, own_closest_group):
-                    #     self.move_to(group, own_closest_group.center, MoveType.ReGroup)
-
-                    if group.power.is_enough_for(self.all_enemy_power, 0.85):
-                        # We have enough units here to crush everything the enemy has
-                        self.attack_to(group, closest_enemies.center, move_type)
-                    else:
-                        # Regroup if possible
-                        if move_type == MoveType.Assault:
-                            # Group towards attack target
-                            own_closest_group = self.closest_group(target, self.own_groups)
-                        else:
-                            # Group up with closest group
-                            own_closest_group = self.closest_group(center, self.own_groups)
-
-                        if own_closest_group:
-                            self.move_to(group, own_closest_group.center, MoveType.ReGroup)
-                        else:
-                            # fight to bitter end
-                            self.attack_to(group, closest_enemies.center, move_type)
+        self.rules.handle_groups_func(self, target, move_type)
 
         self.tags.clear()
 

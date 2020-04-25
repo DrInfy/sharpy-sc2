@@ -5,7 +5,13 @@ from sc2 import UnitTypeId, Race, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from sharpy.general.extended_power import ExtendedPower
 from sharpy.managers.combat2 import CombatUnits, MoveType, MicroStep, Action
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
+    from sharpy.managers.group_combat_manager import GroupCombatManager
 
 changelings = {
     UnitTypeId.CHANGELING,
@@ -18,6 +24,81 @@ changelings = {
 
 
 class DefaultMicroMethods:
+    @staticmethod
+    def handle_groups(combat: "GroupCombatManager", target: Point2, move_type=MoveType.Assault):
+        total_power = ExtendedPower(combat.unit_values)
+
+        for group in combat.own_groups:
+            total_power.add_power(group.power)
+
+        for group in combat.own_groups:
+            if not combat.rules.regroup or combat.regroup_threshold <= 0:
+                # Skip all regroup logic
+                if move_type == MoveType.PanicRetreat:
+                    combat.move_to(group, target, move_type)
+                else:
+                    combat.attack_to(group, target, move_type)
+                return
+
+            center = group.center
+            closest_enemies = group.closest_target_group(combat.enemy_groups)
+            own_closest_group = combat.closest_group(center, combat.own_groups)
+
+            if closest_enemies is None:
+                if move_type == MoveType.PanicRetreat:
+                    combat.move_to(group, target, move_type)
+                else:
+                    combat.attack_to(group, target, move_type)
+            else:
+                power = group.power
+                enemy_power = ExtendedPower(closest_enemies)
+
+                is_in_combat = group.is_in_combat(closest_enemies)
+
+                if move_type == MoveType.DefensiveRetreat or move_type == MoveType.PanicRetreat:
+                    combat.move_to(group, target, move_type)
+                    break
+
+                if power.power > combat.regroup_threshold * total_power.power:
+                    # Most of the army is here
+                    if group.is_too_spread_out() and not is_in_combat:
+                        combat.regroup(group, group.center)
+                    else:
+                        combat.attack_to(group, target, move_type)
+
+                elif is_in_combat:
+                    if not power.is_enough_for(enemy_power, 0.75):
+                        # Regroup if possible
+
+                        if own_closest_group:
+                            combat.move_to(group, own_closest_group.center, MoveType.ReGroup)
+                        else:
+                            # fight to bitter end
+                            combat.attack_to(group, closest_enemies.center, move_type)
+                    else:
+                        combat.attack_to(group, closest_enemies.center, move_type)
+                else:
+                    # if self.faster_group_should_regroup(group, own_closest_group):
+                    #     self.move_to(group, own_closest_group.center, MoveType.ReGroup)
+
+                    if group.power.is_enough_for(combat.all_enemy_power, 0.85):
+                        # We have enough units here to crush everything the enemy has
+                        combat.attack_to(group, closest_enemies.center, move_type)
+                    else:
+                        # Regroup if possible
+                        if move_type == MoveType.Assault:
+                            # Group towards attack target
+                            own_closest_group = combat.closest_group(target, combat.own_groups)
+                        else:
+                            # Group up with closest group
+                            own_closest_group = combat.closest_group(center, combat.own_groups)
+
+                        if own_closest_group:
+                            combat.move_to(group, own_closest_group.center, MoveType.ReGroup)
+                        else:
+                            # fight to bitter end
+                            combat.attack_to(group, closest_enemies.center, move_type)
+
     @staticmethod
     def init_micro_group(
         step: MicroStep, group: CombatUnits, units: Units, enemy_groups: List[CombatUnits], move_type: MoveType
