@@ -17,10 +17,13 @@ ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
 
 
 class GroupCombatManager(ManagerBase):
+    rules: MicroRules
+
     def __init__(self):
-        # How much distance must be between units to consider them to be in different groups
-        self.own_group_threshold = 7
         super().__init__()
+        self.default_rules = MicroRules()
+        self.default_rules.load_default_methods()
+        self.default_rules.load_default_micro()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -28,64 +31,29 @@ class GroupCombatManager(ManagerBase):
         self.pather: PathingManager = self.knowledge.pathing_manager
         self.tags: List[int] = []
 
-        self.unit_micros: Dict[UnitTypeId, MicroStep] = dict()
         self.all_enemy_power = ExtendedPower(self.unit_values)
 
-        # Micro controllers / handlers
-        self.unit_micros[UnitTypeId.DRONE] = MicroWorkers()
-        self.unit_micros[UnitTypeId.PROBE] = MicroWorkers()
-        self.unit_micros[UnitTypeId.SCV] = MicroWorkers()
+        await self.default_rules.start(knowledge)
 
-        # Protoss
-        self.unit_micros[UnitTypeId.ARCHON] = NoMicro()
-        self.unit_micros[UnitTypeId.ADEPT] = MicroAdepts()
-        self.unit_micros[UnitTypeId.CARRIER] = MicroCarriers()
-        self.unit_micros[UnitTypeId.COLOSSUS] = MicroColossi()
-        self.unit_micros[UnitTypeId.DARKTEMPLAR] = MicroZerglings()
-        self.unit_micros[UnitTypeId.DISRUPTOR] = MicroDisruptor()
-        self.unit_micros[UnitTypeId.DISRUPTORPHASED] = MicroPurificationNova()
-        self.unit_micros[UnitTypeId.HIGHTEMPLAR] = MicroHighTemplars()
-        self.unit_micros[UnitTypeId.OBSERVER] = MicroObservers()
-        self.unit_micros[UnitTypeId.ORACLE] = MicroOracles()
-        self.unit_micros[UnitTypeId.PHOENIX] = MicroPhoenixes()
-        self.unit_micros[UnitTypeId.SENTRY] = MicroSentries()
-        self.unit_micros[UnitTypeId.STALKER] = MicroStalkers()
-        self.unit_micros[UnitTypeId.WARPPRISM] = MicroWarpPrism()
-        self.unit_micros[UnitTypeId.VOIDRAY] = MicroVoidrays()
-        self.unit_micros[UnitTypeId.ZEALOT] = MicroZealots()
+    @property
+    def regroup_threshold(self) -> float:
+        """ Percentage 0 - 1 on how many of the attacking units should actually be together when attacking"""
+        return self.rules.regroup_threshold
 
-        # Zerg
-        self.unit_micros[UnitTypeId.ZERGLING] = MicroZerglings()
-        self.unit_micros[UnitTypeId.ULTRALISK] = NoMicro()
-        self.unit_micros[UnitTypeId.OVERSEER] = MicroOverseers()
-        self.unit_micros[UnitTypeId.QUEEN] = MicroQueens()
-        self.unit_micros[UnitTypeId.RAVAGER] = MicroRavagers()
+    @property
+    def own_group_threshold(self) -> float:
+        """
+        How much distance must be between units to consider them to be in different groups
+        """
+        return self.rules.own_group_threshold
 
-        self.unit_micros[UnitTypeId.LURKERMP] = MicroLurkers()
-        self.unit_micros[UnitTypeId.INFESTOR] = MicroInfestors()
-        self.unit_micros[UnitTypeId.SWARMHOSTMP] = MicroSwarmHosts()
-        self.unit_micros[UnitTypeId.LOCUSTMP] = NoMicro()
-        self.unit_micros[UnitTypeId.LOCUSTMPFLYING] = NoMicro()
-        self.unit_micros[UnitTypeId.VIPER] = MicroVipers()
+    @property
+    def unit_micros(self) -> Dict[UnitTypeId, MicroStep]:
+        return self.rules.unit_micros
 
-        # Terran
-        self.unit_micros[UnitTypeId.HELLIONTANK] = NoMicro()
-        self.unit_micros[UnitTypeId.SIEGETANK] = MicroTanks()
-        self.unit_micros[UnitTypeId.VIKINGFIGHTER] = MicroVikings()
-        self.unit_micros[UnitTypeId.MARINE] = MicroBio()
-        self.unit_micros[UnitTypeId.MARAUDER] = MicroBio()
-        self.unit_micros[UnitTypeId.BATTLECRUISER] = MicroBattleCruisers()
-        self.unit_micros[UnitTypeId.RAVEN] = MicroRavens()
-        self.unit_micros[UnitTypeId.MEDIVAC] = MicroMedivacs()
-
-        self.generic_micro = GenericMicro()
-
-        await self.generic_micro.start(knowledge)
-
-        for micro in self.unit_micros.values():
-            await micro.start(knowledge)
-
-        self.regroup_threshold = 0.75
+    @property
+    def generic_micro(self) -> MicroStep:
+        return self.rules.generic_micro
 
     async def update(self):
         self.enemy_groups: List[CombatUnits] = self.group_enemy_units()
@@ -119,10 +87,12 @@ class GroupCombatManager(ManagerBase):
                 units.append(unit)
         return units
 
-    def execute(self, target: Point2, move_type=MoveType.Assault):
+    def execute(self, target: Point2, move_type=MoveType.Assault, rules: Optional[MicroRules] = None):
         our_units = self.get_all_units()
         if len(our_units) < 1:
             return
+
+        self.rules = rules if rules else self.default_rules
 
         self.own_groups: List[CombatUnits] = self.group_own_units(our_units)
 
@@ -239,7 +209,7 @@ class GroupCombatManager(ManagerBase):
 
         for type_id, type_units in own_unit_cache.items():
             micro: MicroStep = self.unit_micros.get(type_id, self.generic_micro)
-            micro.init_group(group, type_units, self.enemy_groups, move_type)
+            micro.init_group(self.rules, group, type_units, self.enemy_groups, move_type)
             group_action = micro.group_solve_combat(type_units, Action(target, is_attack))
 
             for unit in type_units:

@@ -28,12 +28,14 @@ class Component:
 
     def __init__(self) -> None:
         self._debug: bool = False
+        self._started: bool = False
 
     @property
     def debug(self):
         return self._debug and self.knowledge.debug
 
     async def start(self, knowledge: "Knowledge"):
+        self._started = True
         self.knowledge = knowledge
         self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")
         self.ai = knowledge.ai
