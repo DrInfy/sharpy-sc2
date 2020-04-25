@@ -65,7 +65,7 @@ class KnowledgeBot(BotAI):
 
         return msg
 
-    async def chat_send(self, message: str):
+    async def chat_send(self, message: str, team_only: bool = False):
         # todo: refactor to use chat manager?
         self.knowledge.print(message, "Chat")
         await super().chat_send(message)

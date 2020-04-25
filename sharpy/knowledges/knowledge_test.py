@@ -26,7 +26,7 @@ class TestKnowledge:
     @pytest.mark.asyncio
     async def test_get_DataManager(self):
         knowledge = Knowledge()
-        knowledge.set_managers(None)
+        knowledge._set_managers(None)
 
         data_manager = knowledge.get_manager(DataManager)
 
@@ -37,7 +37,7 @@ class TestKnowledge:
     async def test_get_DataManager_from_override(self):
         knowledge = Knowledge()
         knowledge.data_manager = TestDataManager()
-        knowledge.set_managers(None)
+        knowledge._set_managers(None)
 
         data_manager = knowledge.get_manager(DataManager)
 
@@ -49,7 +49,7 @@ class TestKnowledge:
     async def test_get_TestDataManager_from_override(self):
         knowledge = Knowledge()
         knowledge.data_manager = TestDataManager()
-        knowledge.set_managers(None)
+        knowledge._set_managers(None)
 
         data_manager = knowledge.get_manager(TestDataManager)
 
@@ -61,7 +61,7 @@ class TestKnowledge:
     @pytest.mark.asyncio
     async def test_get_CustomManager_from_override(self):
         knowledge = Knowledge()
-        knowledge.set_managers([CustomTestManager()])
+        knowledge._set_managers([CustomTestManager()])
 
         custom_manager = knowledge.get_manager(CustomTestManager)
 
@@ -73,7 +73,7 @@ class TestKnowledge:
     @pytest.mark.asyncio
     async def test_get_None_CustomManager_not_set(self):
         knowledge = Knowledge()
-        knowledge.set_managers(None)
+        knowledge._set_managers(None)
 
         custom_manager = knowledge.get_manager(CustomTestManager)
 
