@@ -45,7 +45,7 @@ class UnitRoleManager(ManagerBase):
 
     def set_tasks(self, task: Union[int, UnitTask], units: Units):
         for i in range(0, self.role_count):
-            if i == task.value:
+            if i == task:
                 self.roles[i].register_units(units)
             else:
                 self.roles[i].remove_units(units)
@@ -61,7 +61,7 @@ class UnitRoleManager(ManagerBase):
         if unit.tag not in self.had_task_set:
             self.had_task_set.add(unit.tag)
         for i in range(0, self.role_count):
-            if i == task.value:
+            if i == task:
                 self.roles[i].register_unit(unit)
             else:
                 self.roles[i].remove_unit(unit)
@@ -90,7 +90,7 @@ class UnitRoleManager(ManagerBase):
     def attacking_units(self) -> Units:
         """Returns all units that are currently attacking."""
         attacking_units = Units(self.roles[UnitTask.Attacking].units.copy(), self.ai)
-        moving_units = self.roles[UnitTask.Moving.value].units.copy()
+        moving_units = self.roles[UnitTask.Moving].units.copy()
         # Combine lists
         attacking_units.extend(moving_units)
         return attacking_units
@@ -145,7 +145,7 @@ class UnitRoleManager(ManagerBase):
         exclude_types.extend(self.knowledge.unit_values.worker_types)
         exclude_types.extend(self.peace_unit_types)
 
-        role_units = self.roles[task.value].units.exclude_type(exclude_types)
+        role_units = self.roles[task].units.exclude_type(exclude_types)
 
         unit: Unit
         for unit in role_units.sorted_by_distance_to(position):
@@ -167,7 +167,7 @@ class UnitRoleManager(ManagerBase):
         return
 
     def all_from_task(self, task: Union[int, UnitTask]) -> Units:
-        return Units(self.roles[task.value].units, self.ai)
+        return Units(self.roles[task].units, self.ai)
 
     @property
     def free_units(self) -> Units:
@@ -203,12 +203,12 @@ class UnitRoleManager(ManagerBase):
 
         left_over = left_over.tags_not_in(self.had_task_set).exclude_type(UnitTypeId.ADEPTPHASESHIFT)
 
-        self.roles[UnitTask.Idle.value].clear()
+        self.roles[UnitTask.Idle].clear()
         gatherers = left_over.collecting
-        self.roles[UnitTask.Gathering.value].register_units(gatherers)
+        self.roles[UnitTask.Gathering].register_units(gatherers)
 
         # Everything else goes to idle
-        self.roles[UnitTask.Idle.value].register_units(left_over.tags_not_in(gatherers.tags))
+        self.roles[UnitTask.Idle].register_units(left_over.tags_not_in(gatherers.tags))
 
         # reassign overlords and other to reserved so that they're not used for defense
         peace_units = left_over.of_type(self.peace_unit_types)
