@@ -44,7 +44,7 @@ class UnitRoleManager(ManagerBase):
         self.roles[UnitTask.Attacking].clear()
 
     def set_tasks(self, task: Union[int, UnitTask], units: Units):
-        for i in range(0, UnitRoleManager.MAX_VALUE):
+        for i in range(0, self.role_count):
             if i == task.value:
                 self.roles[i].register_units(units)
             else:
@@ -60,7 +60,7 @@ class UnitRoleManager(ManagerBase):
     def set_task(self, task: Union[int, UnitTask], unit: Unit):
         if unit.tag not in self.had_task_set:
             self.had_task_set.add(unit.tag)
-        for i in range(0, UnitRoleManager.MAX_VALUE):
+        for i in range(0, self.role_count):
             if i == task.value:
                 self.roles[i].register_unit(unit)
             else:
@@ -77,7 +77,7 @@ class UnitRoleManager(ManagerBase):
             if unit is None:
                 return  # Unit doesn't exist, do nothing
 
-        for i in range(0, UnitRoleManager.MAX_VALUE):
+        for i in range(0, self.role_count):
             if i == UnitTask.Idle:
                 self.roles[i].register_unit(unit)
             else:
@@ -197,7 +197,7 @@ class UnitRoleManager(ManagerBase):
             left_over = left_over.exclude_type(UnitTypeId.LARVA)
             self.clear_tasks(left_over.of_type(UnitTypeId.OVERLORDCOCOON))
 
-        for i in range(1, UnitRoleManager.MAX_VALUE):
+        for i in range(1, self.role_count):
             self.roles[i].update()
             left_over = left_over.tags_not_in(self.roles[i].tags)
 
