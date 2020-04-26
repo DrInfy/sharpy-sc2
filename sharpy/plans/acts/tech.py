@@ -1,3 +1,5 @@
+import warnings
+
 from sc2 import UnitTypeId, AbilityId, Set
 from sc2.ids.upgrade_id import UpgradeId
 
@@ -5,10 +7,10 @@ from sc2.units import Units
 from .act_base import ActBase
 
 from sc2.dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
-from ...managers import VersionManager
+from sharpy.managers import VersionManager
 
 
-class ActTech(ActBase):
+class Tech(ActBase):
     """
     Act for researching or upgrading a technology.
     """
@@ -113,3 +115,9 @@ class ActTech(ActBase):
                         return 0
                     return order.progress
         return 0
+
+
+class ActTech(Tech):
+    def __init__(self, upgrade_type: UpgradeId, from_building: UnitTypeId = None):
+        warnings.warn("'ActTech' is deprecated, use 'Tech' instead", DeprecationWarning, 2)
+        super().__init__(upgrade_type, from_building)

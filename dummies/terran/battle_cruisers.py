@@ -98,7 +98,7 @@ class BattleCruisers(KnowledgeBot):
                     RequiredUnitReady(UnitTypeId.STARPORT, 2),
                     BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2),
                 ),
-                Step(None, ActTech(UpgradeId.SHIELDWALL)),
+                Step(None, Tech(UpgradeId.SHIELDWALL)),
                 Step(RequiredMinerals(600), GridBuilding(UnitTypeId.BARRACKS, 5)),
                 Expand(3),
             ],

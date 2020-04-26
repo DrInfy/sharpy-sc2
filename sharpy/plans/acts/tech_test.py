@@ -4,7 +4,7 @@ from unittest import mock
 from sc2 import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 
-from .act_tech import ActTech
+from .tech import Tech
 
 
 def mock_knowledge() -> mock.Mock:
@@ -19,7 +19,7 @@ def mock_knowledge() -> mock.Mock:
 class TestActTech:
     @pytest.mark.asyncio
     async def test_SPIRE_and_GREATERSPIRE_found_implicitly_for_ZERGFLYERWEAPONSLEVEL2(self):
-        act_tech = ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2)
+        act_tech = Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL2)
         await act_tech.start(mock_knowledge())
 
         assert UnitTypeId.SPIRE in act_tech.from_buildings
@@ -28,7 +28,7 @@ class TestActTech:
 
     @pytest.mark.asyncio
     async def test_ROACHWARREN_found_implicitly_for_GLIALRECONSTITUTION(self):
-        act_tech = ActTech(UpgradeId.GLIALRECONSTITUTION)
+        act_tech = Tech(UpgradeId.GLIALRECONSTITUTION)
         await act_tech.start(mock_knowledge())
 
         assert UnitTypeId.ROACHWARREN in act_tech.from_buildings
@@ -36,14 +36,14 @@ class TestActTech:
 
     @pytest.mark.asyncio
     async def test_LURKERRANGE_disabled_in_VersionManager(self):
-        act_tech = ActTech(UpgradeId.LURKERRANGE)
+        act_tech = Tech(UpgradeId.LURKERRANGE)
         await act_tech.start(mock_knowledge())
 
         assert not act_tech.enabled
 
     @pytest.mark.asyncio
     async def test_TERRANVEHICLEANDSHIPARMORSLEVEL3_enabled_in_VersionManager(self):
-        act_tech = ActTech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL3)
+        act_tech = Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL3)
         await act_tech.start(mock_knowledge())
 
         assert act_tech.enabled

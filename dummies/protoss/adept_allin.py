@@ -61,7 +61,7 @@ class AdeptRush(KnowledgeBot):
                             RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
                             GateUnit(UnitTypeId.ADEPT, 2, only_once=True),
                         ),
-                        ActTech(UpgradeId.WARPGATERESEARCH),
+                        Tech(UpgradeId.WARPGATERESEARCH),
                         GateUnit(UnitTypeId.ADEPT, 100),
                     ),
                     Step(

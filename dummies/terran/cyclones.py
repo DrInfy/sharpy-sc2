@@ -33,13 +33,11 @@ class CycloneBot(KnowledgeBot):
             BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
             Step(
                 None,
-                ActTech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE),
+                Tech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE),
                 skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1),
             ),
             StepBuildGas(5),
-            Step(
-                None, ActTech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 2)
-            ),
+            Step(None, Tech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 2)),
             StepBuildGas(6, None, RequiredGas(100)),
             Step(RequiredMinerals(400), GridBuilding(UnitTypeId.FACTORY, 4)),
             Step(None, BuildAddon(UnitTypeId.FACTORYREACTOR, UnitTypeId.FACTORY, 1)),
@@ -54,12 +52,12 @@ class CycloneBot(KnowledgeBot):
         ]
 
         upgrades = [
-            Step(RequiredUnitReady(UnitTypeId.ARMORY, 1), ActTech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL1)),
-            ActTech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL1),
-            ActTech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL2),
-            ActTech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL2),
-            ActTech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL3),
-            ActTech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL3),
+            Step(RequiredUnitReady(UnitTypeId.ARMORY, 1), Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL1)),
+            Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL1),
+            Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL2),
+            Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL2),
+            Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL3),
+            Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL3),
         ]
 
         self.attack = PlanZoneAttack(40)

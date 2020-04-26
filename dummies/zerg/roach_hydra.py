@@ -16,9 +16,7 @@ class RoachHydraBuild(BuildOrder):
 
         gas_related = [
             Step(
-                UnitExists(UnitTypeId.HATCHERY, 2),
-                ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED),
-                skip_until=RequiredGas(100),
+                UnitExists(UnitTypeId.HATCHERY, 2), Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100),
             ),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60), RequiredGas(100)),

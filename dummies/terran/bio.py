@@ -133,9 +133,9 @@ class BuildBio(BuildOrder):
         ]
 
         tech = [
-            Step(None, ActTech(UpgradeId.PUNISHERGRENADES)),
-            Step(None, ActTech(UpgradeId.STIMPACK)),
-            Step(None, ActTech(UpgradeId.SHIELDWALL)),
+            Step(None, Tech(UpgradeId.PUNISHERGRENADES)),
+            Step(None, Tech(UpgradeId.STIMPACK)),
+            Step(None, Tech(UpgradeId.SHIELDWALL)),
         ]
 
         mech = [TerranUnit(UnitTypeId.SIEGETANK, 2, priority=True)]

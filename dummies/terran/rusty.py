@@ -99,7 +99,7 @@ class BuildTanks(BuildOrder):
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
-            Step(None, ActTech(UpgradeId.SHIELDWALL)),
+            Step(None, Tech(UpgradeId.SHIELDWALL)),
             Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, Expand(3)),

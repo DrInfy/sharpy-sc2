@@ -156,7 +156,7 @@ class LurkerBuild(BuildOrder):
                 ZergUnit(UnitTypeId.DRONE, 20),
                 Step(self.build_workers, ZergUnit(UnitTypeId.DRONE, 80), skip=self.max_workers_reached),
             ),
-            Step(RequiredGas(90), ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
+            Step(RequiredGas(90), Tech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
             SequentialList(
                 [
                     Step(

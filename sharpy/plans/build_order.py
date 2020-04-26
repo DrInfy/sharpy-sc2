@@ -4,7 +4,7 @@ import sc2
 from sc2 import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 
-from sharpy.plans.acts import ActTech, ActUnit, ActBase, merge_to_act
+from sharpy.plans.acts import Tech, ActUnit, ActBase, merge_to_act
 from sharpy.plans.acts.grid_building import GridBuilding
 from sharpy.plans.build_step import Step
 from sharpy.plans.require import (
@@ -159,10 +159,10 @@ class BuildOrder(ActBase):
     def forge_upgrades_armor_first(self) -> List[Step]:
         return [
             # Armor
-            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
+            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
+                Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -172,7 +172,7 @@ class BuildOrder(ActBase):
             ),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
+                Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -181,10 +181,10 @@ class BuildOrder(ActBase):
                 ),
             ),
             # Weapons
-            Step(None, ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1)),
+            Step(None, Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1)),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
+                Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -194,7 +194,7 @@ class BuildOrder(ActBase):
             ),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
+                Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -203,20 +203,20 @@ class BuildOrder(ActBase):
                 ),
             ),
             # Shields
-            Step(None, ActTech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
+            Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
             Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), ActTech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), ActTech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
 
     @property
     def forge_upgrades_all(self) -> List[Step]:
         return [
             # Weapons
-            Step(None, ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1)),
+            Step(None, Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1)),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
+                Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -226,7 +226,7 @@ class BuildOrder(ActBase):
             ),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
+                Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -235,10 +235,10 @@ class BuildOrder(ActBase):
                 ),
             ),
             # Armor
-            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
+            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
+                Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -248,7 +248,7 @@ class BuildOrder(ActBase):
             ),
             Step(
                 None,
-                ActTech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
+                Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=RequiredAll(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
@@ -257,22 +257,22 @@ class BuildOrder(ActBase):
                 ),
             ),
             # Shields
-            Step(None, ActTech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
+            Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
             Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), ActTech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), ActTech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
 
     @property
     def air_upgrades_all(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), ActTech(UpgradeId.PROTOSSAIRWEAPONSLEVEL1)),
-            Step(None, ActTech(UpgradeId.PROTOSSAIRARMORSLEVEL1)),
+            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL1)),
+            Step(None, Tech(UpgradeId.PROTOSSAIRARMORSLEVEL1)),
             Step(RequiredUnitReady(UnitTypeId.FLEETBEACON, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL1), ActTech(UpgradeId.PROTOSSAIRWEAPONSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL1), ActTech(UpgradeId.PROTOSSAIRARMORSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL2), ActTech(UpgradeId.PROTOSSAIRWEAPONSLEVEL3)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), ActTech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL2)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL1), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL2)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL2), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL3)),
+            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
         ]
 
     async def start(self, knowledge: "Knowledge"):

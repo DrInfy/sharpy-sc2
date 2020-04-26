@@ -92,7 +92,7 @@ class LingFloodBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
         ]
         buildings = [
             # 12 Pool

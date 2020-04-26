@@ -229,9 +229,9 @@ class CannonRush(KnowledgeBot):
                     AutoPylon(),
                     ProtossUnit(UnitTypeId.STALKER, 4, priority=True),
                     StepBuildGas(3, skip=RequiredGas(300)),
-                    ActTech(UpgradeId.WARPGATERESEARCH),
+                    Tech(UpgradeId.WARPGATERESEARCH),
                     BuildOrder([]).forge_upgrades_all,
-                    Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
+                    Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),

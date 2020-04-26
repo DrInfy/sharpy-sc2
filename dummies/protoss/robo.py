@@ -47,7 +47,7 @@ class MacroRobo(KnowledgeBot):
                 BuildOrder(
                     AutoPylon(),
                     GateUnit(UnitTypeId.STALKER, 2, priority=True),
-                    ActTech(UpgradeId.WARPGATERESEARCH),
+                    Tech(UpgradeId.WARPGATERESEARCH),
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
@@ -62,7 +62,7 @@ class MacroRobo(KnowledgeBot):
                                 GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
                             ),
                             GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1),
-                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.CHARGE)),
+                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.CHARGE)),
                         ]
                     ),
                     [

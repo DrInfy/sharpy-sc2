@@ -16,7 +16,7 @@ class MutaliskBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
             StepBuildGas(2, RequiredTime(4 * 60)),
             StepBuildGas(3, UnitExists(UnitTypeId.LAIR, 1)),
@@ -44,12 +44,12 @@ class MutaliskBuild(BuildOrder):
             MorphOverseer(1),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 5)),
             Step(UnitExists(UnitTypeId.SPIRE), Expand(4)),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
+            Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
             Step(UnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
             MorphGreaterSpire(),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL2),
-            ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL3),
+            Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL2),
+            Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL3),
         ]
 
         high_tier = [
