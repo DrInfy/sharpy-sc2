@@ -123,7 +123,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
             ChronoUnitProduction(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
-            ActDefensiveCannons(0, 1),
+            DefensiveCannons(0, 1),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),

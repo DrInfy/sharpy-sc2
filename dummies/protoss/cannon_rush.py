@@ -390,7 +390,7 @@ class CannonRush(KnowledgeBot):
                     ),
                     ActExpand(2),
                     GridBuilding(UnitTypeId.GATEWAY, 1),
-                    ActDefensiveCannons(2, 0, 1),
+                    DefensiveCannons(2, 0, 1),
                 ],
             ]
         )

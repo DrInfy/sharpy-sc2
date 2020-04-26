@@ -39,7 +39,7 @@ class OneBaseTempests(KnowledgeBot):
                         [Step(UnitExists(UnitTypeId.FLEETBEACON, 1), GridBuilding(UnitTypeId.STARGATE, 2))],
                     ),
                 ),
-                ActDefensiveCannons(4, 2, 0),
+                DefensiveCannons(4, 2, 0),
                 SequentialList(
                     PlanZoneDefense(),
                     RestorePower(),
