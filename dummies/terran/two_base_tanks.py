@@ -46,9 +46,7 @@ class TwoBaseTanks(KnowledgeBot):
             Step(
                 None,
                 Expand(4),
-                skip_until=RequiredAll(
-                    [RequireCustom(self.should_expand), RequiredUnitReady(UnitTypeId.COMMANDCENTER, 3)]
-                ),
+                skip_until=All([RequireCustom(self.should_expand), RequiredUnitReady(UnitTypeId.COMMANDCENTER, 3)]),
             ),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             StepBuildGas(3),

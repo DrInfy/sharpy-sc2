@@ -1,7 +1,7 @@
 from .require_base import RequireBase
 from .require_custom import RequireCustom
 from .any import Any, RequiredAny
-from .required_all import RequiredAll
+from .all import All, RequiredAll
 from .required_gas import RequiredGas
 from .required_minerals import RequiredMinerals
 from .required_supply import RequiredSupply

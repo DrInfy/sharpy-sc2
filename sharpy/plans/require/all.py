@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Callable, Union
 from sharpy.plans.require.methods import merge_to_require
 from sharpy.plans.require import RequireBase
@@ -7,7 +8,7 @@ if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
 
-class RequiredAll(RequireBase):
+class All(RequireBase):
     """Check passes if all of the conditions are true."""
 
     def __init__(
@@ -45,3 +46,13 @@ class RequiredAll(RequireBase):
                 return False
 
         return True
+
+
+class RequiredAll(All):
+    def __init__(
+        self,
+        conditions: Union[RequireBase, Callable[["Knowledge"], bool], List[RequireBase]],
+        *args: Union[RequireBase, Callable[["Knowledge"], bool]]
+    ):
+        warnings.warn("'RequiredAll' is deprecated, use 'All' instead", DeprecationWarning, 2)
+        super().__init__(conditions, *args)

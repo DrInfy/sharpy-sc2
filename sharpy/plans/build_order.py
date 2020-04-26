@@ -11,7 +11,7 @@ from sharpy.plans.require import (
     RequiredUnitReady,
     RequiredSupplyLeft,
     RequiredTechReady,
-    RequiredAll,
+    All,
     Any,
     EnemyUnitExists,
 )
@@ -163,7 +163,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
@@ -173,7 +173,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
@@ -185,7 +185,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
@@ -195,7 +195,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
@@ -217,7 +217,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
@@ -227,7 +227,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
@@ -239,7 +239,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
@@ -249,7 +249,7 @@ class BuildOrder(ActBase):
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
-                skip_until=RequiredAll(
+                skip_until=All(
                     [
                         RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
