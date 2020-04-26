@@ -73,11 +73,7 @@ class DarkTemplarRush(KnowledgeBot):
         build_steps_buildings = [
             Step(Supply(14), GridBuilding(UnitTypeId.PYLON, 1), UnitExists(UnitTypeId.PYLON, 1)),
             StepBuildGas(1, Supply(16)),
-            Step(
-                Supply(16),
-                GridBuilding(UnitTypeId.GATEWAY, 1),
-                RequiredTotalUnitExists([UnitTypeId.GATEWAY, UnitTypeId.WARPGATE], 1),
-            ),
+            Step(Supply(16), GridBuilding(UnitTypeId.GATEWAY, 1)),
             StepBuildGas(2),
             Step(Supply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),

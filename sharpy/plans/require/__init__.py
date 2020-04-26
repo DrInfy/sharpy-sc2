@@ -8,10 +8,8 @@ from .supply import Supply, RequiredSupply, SupplyType
 from .supply_left import SupplyLeft, RequiredSupplyLeft
 from .tech_ready import TechReady
 from .required_time import RequiredTime
-from .required_total_unit_exists import RequiredTotalUnitExists
 from .unit_exists import UnitExists, RequiredUnitExists
 from .enemy_unit_exists import EnemyUnitExists, RequiredEnemyUnitExists
-from .required_less_unit_exists import RequiredLessUnitExists
 from .unit_ready import UnitReady, RequiredUnitReady
 from .enemy_unit_exists_after import EnemyUnitExistsAfter, RequiredEnemyUnitExistsAfter
 from .enemy_building_exists import EnemyBuildingExists, RequiredEnemyBuildingExists
