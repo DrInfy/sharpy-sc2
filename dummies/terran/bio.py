@@ -163,15 +163,15 @@ class BuildBio(BuildOrder):
                 [
                     TerranUnit(UnitTypeId.MARAUDER, 20, priority=True),
                     TerranUnit(UnitTypeId.MARINE, 20),
-                    Step(RequiredMinerals(250), TerranUnit(UnitTypeId.MARINE, 100)),
+                    Step(Minerals(250), TerranUnit(UnitTypeId.MARINE, 100)),
                 ]
             ),
         ]
 
         use_money = BuildOrder(
             [
-                Step(RequiredMinerals(400), GridBuilding(UnitTypeId.BARRACKS, 8)),
-                Step(RequiredMinerals(500), BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
+                Step(Minerals(400), GridBuilding(UnitTypeId.BARRACKS, 8)),
+                Step(Minerals(500), BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
             ]
         )
 

@@ -35,7 +35,7 @@ class LingSpeedBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
             Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
-            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
+            Step(Minerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
         ]
 
         units = [

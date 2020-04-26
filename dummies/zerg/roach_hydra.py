@@ -22,8 +22,8 @@ class RoachHydraBuild(BuildOrder):
             StepBuildGas(2, RequiredTime(4 * 60), RequiredGas(100)),
             StepBuildGas(3, UnitExists(UnitTypeId.HYDRALISKDEN, 1), RequiredGas(50)),
             StepBuildGas(4, RequiredSupply(60, SupplyType.Workers), RequiredGas(25)),
-            StepBuildGas(6, RequiredMinerals(749), RequiredGas(25)),
-            StepBuildGas(8, RequiredMinerals(1000), RequiredGas(25)),
+            StepBuildGas(6, Minerals(749), RequiredGas(25)),
+            StepBuildGas(8, Minerals(1000), RequiredGas(25)),
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
@@ -44,7 +44,7 @@ class RoachHydraBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
             Step(RequiredSupply(100), Expand(5)),
             Step(
-                None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10), skip_until=RequiredMinerals(500)
+                None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10), skip_until=Minerals(500)
             ),  # anti air defense!
         ]
 
@@ -60,7 +60,7 @@ class RoachHydraBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
             Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=RequiredGas(25)),
-            Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 100), skip_until=RequiredMinerals(750)),
+            Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 100), skip_until=Minerals(750)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 45), None),
             Step(None, ActUnit(UnitTypeId.HYDRALISK, UnitTypeId.LARVA, 7), skip=UnitReady(UnitTypeId.HYDRALISKDEN, 1),),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 24), None),

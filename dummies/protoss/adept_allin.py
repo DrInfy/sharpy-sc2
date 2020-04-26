@@ -66,14 +66,9 @@ class AdeptRush(KnowledgeBot):
                     Step(
                         UnitExists(UnitTypeId.CYBERNETICSCORE, 1),
                         GridBuilding(UnitTypeId.GATEWAY, 4),
-                        skip_until=RequiredMinerals(200),
+                        skip_until=Minerals(200),
                     ),
-                    Step(
-                        None,
-                        ProtossUnit(UnitTypeId.ZEALOT, 100),
-                        skip=RequiredGas(25),
-                        skip_until=RequiredMinerals(200),
-                    ),
+                    Step(None, ProtossUnit(UnitTypeId.ZEALOT, 100), skip=RequiredGas(25), skip_until=Minerals(200),),
                 ),
             ),
             SequentialList(

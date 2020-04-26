@@ -342,7 +342,7 @@ class CannonRush(KnowledgeBot):
                 ]
             ),
             # Skip cannon rushing if we started nexus, or have over 750 minerals, the build is probably stuck
-            skip=Any([UnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]),
+            skip=Any([UnitExists(UnitTypeId.NEXUS, 2), Minerals(750)]),
         )
 
     def cannon_rush(self) -> ActBase:
@@ -354,8 +354,8 @@ class CannonRush(KnowledgeBot):
                 ProtossUnit(UnitTypeId.PROBE, 18),
                 ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 [
-                    Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
-                    Step(RequiredMinerals(700), Expand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
+                    Step(Minerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
+                    Step(Minerals(700), Expand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ],
             ]

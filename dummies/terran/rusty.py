@@ -131,7 +131,7 @@ class BuildTanks(BuildOrder):
         ]
         marines = [
             Step(UnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
-            Step(RequiredMinerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
+            Step(Minerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
         ]
 
         super().__init__([scv, dt_counter, dt_counter2, self.depots, buildings, mech, air, marines])

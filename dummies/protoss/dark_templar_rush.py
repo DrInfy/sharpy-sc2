@@ -105,7 +105,7 @@ class DarkTemplarRush(KnowledgeBot):
                 ProtossUnit(UnitTypeId.STALKER, 3),
                 RequiredTechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
-            Step(RequiredMinerals(400), ProtossUnit(UnitTypeId.ZEALOT)),
+            Step(Minerals(400), ProtossUnit(UnitTypeId.ZEALOT)),
         ]
 
         build_steps_chrono = [

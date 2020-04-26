@@ -82,7 +82,7 @@ class MarineRushBot(KnowledgeBot):
                         only_once=True,
                     ),
                 ),
-                Step(RequiredMinerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
+                Step(Minerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
             ]
         elif self.tactic_index == 1:
             self.knowledge.print("20 marine all in", "Build")
@@ -108,7 +108,7 @@ class MarineRushBot(KnowledgeBot):
                     exact=False,
                     only_once=True,
                 ),
-                Step(RequiredMinerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
+                Step(Minerals(225), GridBuilding(UnitTypeId.BARRACKS, 6)),
             ]
 
         empty = BuildOrder([])

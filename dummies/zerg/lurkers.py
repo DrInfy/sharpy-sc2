@@ -69,13 +69,13 @@ class LurkerBuild(BuildOrder):
                     skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
                 ),
                 Step(
-                    RequiredMinerals(1000),
+                    Minerals(1000),
                     StepBuildGas(6),
                     skip=RequiredGas(200),
                     skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),
                 ),
                 Step(
-                    RequiredMinerals(2000),
+                    Minerals(2000),
                     StepBuildGas(8),
                     skip=RequiredGas(200),
                     skip_until=RequiredSupply(50, supply_type=SupplyType.Workers),

@@ -32,7 +32,7 @@ class MacroBuild(BuildOrder):
 
         queens = [
             Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), None),
-            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 5)),
+            Step(Minerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 5)),
         ]
 
         pool_and_tech = [

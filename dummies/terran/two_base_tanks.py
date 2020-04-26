@@ -71,7 +71,7 @@ class TwoBaseTanks(KnowledgeBot):
 
         build_steps_marines = [
             Step(UnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
-            Step(RequiredMinerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
+            Step(Minerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
         ]
 
         build_order = BuildOrder(

@@ -3,7 +3,7 @@ from .require_custom import RequireCustom
 from .any import Any, RequiredAny
 from .all import All, RequiredAll
 from .required_gas import RequiredGas
-from .required_minerals import RequiredMinerals
+from .minerals import Minerals, RequiredMinerals
 from .required_supply import RequiredSupply
 from .required_supply_left import RequiredSupplyLeft
 from .required_tech_ready import RequiredTechReady

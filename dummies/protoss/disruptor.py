@@ -56,7 +56,7 @@ class DistruptorBuild(BuildOrder):
                 ProtossUnit(UnitTypeId.DISRUPTOR, 4, priority=True),
                 ProtossUnit(UnitTypeId.STALKER),
                 SequentialList(
-                    Step(RequiredMinerals(300), GridBuilding(UnitTypeId.GATEWAY, 3, priority=True)),
+                    Step(Minerals(300), GridBuilding(UnitTypeId.GATEWAY, 3, priority=True)),
                     Step(UnitReady(UnitTypeId.NEXUS, 2), GridBuilding(UnitTypeId.GATEWAY, 6, priority=True)),
                 ),
             ),

@@ -83,13 +83,13 @@ class MutaliskBuild(BuildOrder):
             Step(
                 None,
                 ZergUnit(UnitTypeId.ZERGLING, 40),
-                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(300)]),
+                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), Minerals(300)]),
             ),
             Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA), skip=UnitReady(UnitTypeId.SPIRE, 1)),
             Step(
                 None,
                 ZergUnit(UnitTypeId.ZERGLING, 100),
-                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(500)]),
+                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), Minerals(500)]),
             ),
             # Endless mutalisks
             Step(None, ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA), None),
