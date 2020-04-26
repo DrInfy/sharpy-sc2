@@ -38,7 +38,7 @@ class DefaultMicroMethods:
                     combat.move_to(group, target, move_type)
                 else:
                     combat.attack_to(group, target, move_type)
-                return
+                continue
 
             center = group.center
             closest_enemies = group.closest_target_group(combat.enemy_groups)
