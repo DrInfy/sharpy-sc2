@@ -5,7 +5,7 @@ from .all import All, RequiredAll
 from .gas import Gas, RequiredGas
 from .minerals import Minerals, RequiredMinerals
 from .supply import Supply, RequiredSupply, SupplyType
-from .required_supply_left import RequiredSupplyLeft
+from .supply_left import SupplyLeft, RequiredSupplyLeft
 from .required_tech_ready import RequiredTechReady
 from .required_time import RequiredTime
 from .required_total_unit_exists import RequiredTotalUnitExists
