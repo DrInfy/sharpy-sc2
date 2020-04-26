@@ -42,7 +42,7 @@ class MacroStalkers(KnowledgeBot):
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                         StepBuildGas(3, skip=RequiredGas(300)),
                     ],
-                    [GateUnit(UnitTypeId.STALKER, 100)],
+                    [ProtossUnit(UnitTypeId.STALKER, 100)],
                     [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=RequiredGas(200))],
                 ),
             ),

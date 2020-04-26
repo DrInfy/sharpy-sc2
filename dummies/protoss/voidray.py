@@ -45,7 +45,7 @@ class MacroVoidray(KnowledgeBot):
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
                     AutoPylon(),
-                    GateUnit(UnitTypeId.STALKER, 2, priority=True),
+                    ProtossUnit(UnitTypeId.STALKER, 2, priority=True),
                     Tech(UpgradeId.WARPGATERESEARCH),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
@@ -68,12 +68,12 @@ class MacroVoidray(KnowledgeBot):
                     [ProtossUnit(UnitTypeId.VOIDRAY, 20, priority=True)],
                     Step(RequiredTime(60 * 5), Expand(3)),
                     [
-                        GateUnit(UnitTypeId.ZEALOT, 6),
-                        GateUnit(UnitTypeId.ADEPT, 10),
-                        GateUnit(UnitTypeId.ZEALOT, 15),
-                        GateUnit(UnitTypeId.ADEPT, 20),
-                        GateUnit(UnitTypeId.ZEALOT, 23),
-                        GateUnit(UnitTypeId.ADEPT, 30),
+                        ProtossUnit(UnitTypeId.ZEALOT, 6),
+                        ProtossUnit(UnitTypeId.ADEPT, 10),
+                        ProtossUnit(UnitTypeId.ZEALOT, 15),
+                        ProtossUnit(UnitTypeId.ADEPT, 20),
+                        ProtossUnit(UnitTypeId.ZEALOT, 23),
+                        ProtossUnit(UnitTypeId.ADEPT, 30),
                     ],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),

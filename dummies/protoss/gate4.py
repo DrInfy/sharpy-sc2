@@ -49,10 +49,10 @@ class Stalkers4Gate(KnowledgeBot):
                         ),
                         Step(
                             RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GateUnit(UnitTypeId.ADEPT, 2, only_once=True),
+                            ProtossUnit(UnitTypeId.ADEPT, 2, only_once=True),
                         ),
                         Tech(UpgradeId.WARPGATERESEARCH),
-                        GateUnit(UnitTypeId.STALKER, 100),
+                        ProtossUnit(UnitTypeId.STALKER, 100),
                     ),
                     Step(UnitExists(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 4)),
                 ),

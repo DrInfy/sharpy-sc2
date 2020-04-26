@@ -59,10 +59,10 @@ class AdeptRush(KnowledgeBot):
                         ),
                         Step(
                             RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GateUnit(UnitTypeId.ADEPT, 2, only_once=True),
+                            ProtossUnit(UnitTypeId.ADEPT, 2, only_once=True),
                         ),
                         Tech(UpgradeId.WARPGATERESEARCH),
-                        GateUnit(UnitTypeId.ADEPT, 100),
+                        ProtossUnit(UnitTypeId.ADEPT, 100),
                     ),
                     Step(
                         UnitExists(UnitTypeId.CYBERNETICSCORE, 1),

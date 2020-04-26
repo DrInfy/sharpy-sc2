@@ -138,7 +138,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
                     AutoPylon(),
-                    GateUnit(UnitTypeId.STALKER, 2, priority=True),
+                    ProtossUnit(UnitTypeId.STALKER, 2, priority=True),
                     Tech(UpgradeId.WARPGATERESEARCH),
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
@@ -158,7 +158,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                     ),
                     [ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)],
                     Step(RequiredTime(60 * 5), Expand(3)),
-                    [GateUnit(UnitTypeId.STALKER, 30)],
+                    [ProtossUnit(UnitTypeId.STALKER, 30)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
                         StepBuildGas(4, skip=RequiredGas(200)),

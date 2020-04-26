@@ -46,7 +46,7 @@ class MacroRobo(KnowledgeBot):
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
                     AutoPylon(),
-                    GateUnit(UnitTypeId.STALKER, 2, priority=True),
+                    ProtossUnit(UnitTypeId.STALKER, 2, priority=True),
                     Tech(UpgradeId.WARPGATERESEARCH),
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
@@ -71,7 +71,7 @@ class MacroRobo(KnowledgeBot):
                         ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 20, priority=True),
                     ],
                     Step(RequiredTime(60 * 5), Expand(3)),
-                    [GateUnit(UnitTypeId.ZEALOT, 100)],
+                    [ProtossUnit(UnitTypeId.ZEALOT, 100)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
                         StepBuildGas(4, skip=RequiredGas(200)),
