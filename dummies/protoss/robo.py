@@ -58,11 +58,10 @@ class MacroRobo(KnowledgeBot):
                     SequentialList(
                         [
                             Step(
-                                RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                                GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                                UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
                             ),
                             GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1),
-                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.CHARGE)),
+                            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.CHARGE)),
                         ]
                     ),
                     [
@@ -86,7 +85,7 @@ class MacroRobo(KnowledgeBot):
                 RestorePower(),
                 PlanDistributeWorkers(),
                 PlanZoneGather(),
-                Step(RequiredUnitReady(UnitTypeId.IMMORTAL, 3), attack),
+                Step(UnitReady(UnitTypeId.IMMORTAL, 3), attack),
                 PlanFinishEnemy(),
             ),
         )

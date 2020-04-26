@@ -45,17 +45,17 @@ class Banshees(KnowledgeBot):
 
         return BuildOrder(
             AutoDepot(),
-            Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             [Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 34 + 12))],
             [
                 Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-                Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
+                Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 StepBuildGas(1),
                 Expand(2),
                 Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 StepBuildGas(2),
-                Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
-                Step(RequiredUnitReady(UnitTypeId.FACTORY, 1), GridBuilding(UnitTypeId.STARPORT, 1)),
+                Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
+                Step(UnitReady(UnitTypeId.FACTORY, 1), GridBuilding(UnitTypeId.STARPORT, 1)),
                 DefensiveBuilding(UnitTypeId.BUNKER, DefensePosition.Entrance, 1),
                 Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
                 StepBuildGas(3, None, RequiredGas(150)),
@@ -68,8 +68,7 @@ class Banshees(KnowledgeBot):
                 Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
                 Step(
-                    RequiredUnitReady(UnitTypeId.STARPORT, 2),
-                    BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2),
+                    UnitReady(UnitTypeId.STARPORT, 2), BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2),
                 ),
                 Step(None, Tech(UpgradeId.SHIELDWALL)),
                 Step(RequiredMinerals(600), GridBuilding(UnitTypeId.BARRACKS, 5)),
@@ -87,8 +86,7 @@ class Banshees(KnowledgeBot):
                     None,
                 ),
                 Step(
-                    RequiredUnitReady(UnitTypeId.STARPORT, 1),
-                    ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2, priority=True),
+                    UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2, priority=True),
                 ),
             ],
             ActUnit(UnitTypeId.BANSHEE, UnitTypeId.STARPORT, 20, priority=True),

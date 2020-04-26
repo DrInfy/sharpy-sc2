@@ -27,16 +27,16 @@ class TwoBaseTanks(KnowledgeBot):
 
         build_steps_buildings = [
             Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(1, RequiredSupply(16)),
             Expand(2),
             Step(RequiredSupply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             StepBuildGas(2, UnitExists(UnitTypeId.MARINE, 1, include_pending=True)),
-            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
                 None,
                 BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
-                skip_until=RequiredUnitReady(UnitTypeId.FACTORY, 1),
+                skip_until=UnitReady(UnitTypeId.FACTORY, 1),
             ),
             Step(RequiredSupply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 2)),
@@ -46,7 +46,7 @@ class TwoBaseTanks(KnowledgeBot):
             Step(
                 None,
                 Expand(4),
-                skip_until=All([RequireCustom(self.should_expand), RequiredUnitReady(UnitTypeId.COMMANDCENTER, 3)]),
+                skip_until=All([RequireCustom(self.should_expand), UnitReady(UnitTypeId.COMMANDCENTER, 3)]),
             ),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             StepBuildGas(3),
@@ -66,11 +66,11 @@ class TwoBaseTanks(KnowledgeBot):
 
         build_steps_mech = [
             # Step(UnitExists(UnitTypeId.FACTORY, 1), ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 2)),
-            Step(RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1), ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 20))
+            Step(UnitReady(UnitTypeId.FACTORYTECHLAB, 1), ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 20))
         ]
 
         build_steps_marines = [
-            Step(RequiredUnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
+            Step(UnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
             Step(RequiredMinerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
         ]
 
@@ -79,7 +79,7 @@ class TwoBaseTanks(KnowledgeBot):
                 build_steps_scv,
                 build_steps_buildings,
                 build_steps_mech,
-                Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+                Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
                 build_steps_marines,
                 BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 99),
             ]

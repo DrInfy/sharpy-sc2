@@ -159,20 +159,18 @@ class LurkerBuild(BuildOrder):
             Step(RequiredGas(90), Tech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
             SequentialList(
                 [
-                    Step(
-                        RequiredUnitReady(UnitTypeId.ROACHWARREN), gas, skip=RequiredUnitReady(UnitTypeId.HYDRALISKDEN)
-                    ),
-                    Step(RequiredUnitReady(UnitTypeId.HYDRALISKDEN), heavy_gas),
+                    Step(UnitReady(UnitTypeId.ROACHWARREN), gas, skip=UnitReady(UnitTypeId.HYDRALISKDEN)),
+                    Step(UnitReady(UnitTypeId.HYDRALISKDEN), heavy_gas),
                 ]
             ),
             SequentialList(
                 Step(RequireCustom(lambda k: k.enemy_units_manager.enemy_cloak_trigger), MorphLair()),
-                Step(RequiredUnitReady(UnitTypeId.LAIR), MorphOverseer(2)),
+                Step(UnitReady(UnitTypeId.LAIR), MorphOverseer(2)),
             ),
             SequentialList(
                 # Tech
                 Step(
-                    RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
+                    UnitReady(UnitTypeId.SPAWNINGPOOL),
                     PositionBuilding(UnitTypeId.ROACHWARREN, DefensePosition.BehindMineralLineRight, 0),
                 ),
                 MorphLair(),
@@ -183,9 +181,9 @@ class LurkerBuild(BuildOrder):
                 None,
                 SequentialList(
                     # Units
-                    Step(None, RoachesAndHydrasAndLurkers(), skip_until=RequiredUnitReady(UnitTypeId.LURKERDENMP)),
-                    Step(None, LingsAndRoachesAndHydras(), skip_until=RequiredUnitReady(UnitTypeId.HYDRALISKDEN)),
-                    Step(None, LingsAndRoaches(), skip_until=RequiredUnitReady(UnitTypeId.ROACHWARREN)),
+                    Step(None, RoachesAndHydrasAndLurkers(), skip_until=UnitReady(UnitTypeId.LURKERDENMP)),
+                    Step(None, LingsAndRoachesAndHydras(), skip_until=UnitReady(UnitTypeId.HYDRALISKDEN)),
+                    Step(None, LingsAndRoaches(), skip_until=UnitReady(UnitTypeId.ROACHWARREN)),
                     ZergUnit(UnitTypeId.ZERGLING),
                 ),
             ),

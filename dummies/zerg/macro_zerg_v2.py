@@ -48,8 +48,8 @@ class MacroBuild(BuildOrder):
             Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
             # Infestation pit required
             Step(None, ActBuilding(UnitTypeId.INFESTATIONPIT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT, 1), MorphHive()),
-            Step(RequiredUnitReady(UnitTypeId.HIVE, 1), Tech(UpgradeId.ZERGLINGATTACKSPEED)),
+            Step(UnitReady(UnitTypeId.INFESTATIONPIT, 1), MorphHive()),
+            Step(UnitReady(UnitTypeId.HIVE, 1), Tech(UpgradeId.ZERGLINGATTACKSPEED)),
             StepBuildGas(6, None),
             Step(None, ActBuilding(UnitTypeId.ULTRALISKCAVERN, 1)),
             Step(None, Tech(UpgradeId.ZERGMELEEWEAPONSLEVEL3)),

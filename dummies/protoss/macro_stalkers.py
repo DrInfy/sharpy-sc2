@@ -51,7 +51,7 @@ class MacroStalkers(KnowledgeBot):
                 RestorePower(),
                 PlanDistributeWorkers(),
                 PlanZoneGather(),
-                Step(RequiredUnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4)),
+                Step(UnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4)),
                 PlanFinishEnemy(),
             ),
         )

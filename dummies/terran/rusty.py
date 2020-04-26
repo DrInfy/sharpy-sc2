@@ -22,7 +22,7 @@ class BuildTanks(BuildOrder):
             UnitTypeId.BROODLORD,
         ]
         scv = [
-            Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
@@ -59,7 +59,7 @@ class BuildTanks(BuildOrder):
             ),
             GridBuilding(UnitTypeId.STARPORT, 2),
             Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
         ]
 
         buildings = [
@@ -78,7 +78,7 @@ class BuildTanks(BuildOrder):
                 GridBuilding(UnitTypeId.BARRACKS, 1),
             ),
             Step(
-                RequiredUnitReady(UnitTypeId.BARRACKS, 0.25),
+                UnitReady(UnitTypeId.BARRACKS, 0.25),
                 GridBuilding(UnitTypeId.SUPPLYDEPOT, 2),
                 RequiredTotalUnitExists(
                     [UnitTypeId.SUPPLYDEPOT, UnitTypeId.SUPPLYDEPOTDROP, UnitTypeId.SUPPLYDEPOTLOWERED], 2
@@ -87,7 +87,7 @@ class BuildTanks(BuildOrder):
             StepBuildGas(1, RequiredSupply(18)),
             Step(UnitExists(UnitTypeId.MARINE, 1), Expand(2)),
             StepBuildGas(2, RequiredSupply(20)),
-            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1)),
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
@@ -109,30 +109,28 @@ class BuildTanks(BuildOrder):
             Step(
                 UnitExists(UnitTypeId.FACTORY, 1),
                 ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 2),
-                skip=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1),
+                skip=UnitReady(UnitTypeId.FACTORYTECHLAB, 1),
             ),
-            Step(
-                RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1), ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 20)
-            ),
+            Step(UnitReady(UnitTypeId.FACTORYTECHLAB, 1), ActUnit(UnitTypeId.SIEGETANK, UnitTypeId.FACTORY, 20)),
         ]
         air = [
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 2)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 2)),
             Step(None, ActUnit(UnitTypeId.VIKINGFIGHTER, UnitTypeId.STARPORT, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.VIKINGFIGHTER, UnitTypeId.STARPORT, 3),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 1),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 4)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 4)),
             Step(
                 None,
                 ActUnit(UnitTypeId.VIKINGFIGHTER, UnitTypeId.STARPORT, 10),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 4),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 6)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.MEDIVAC, UnitTypeId.STARPORT, 6)),
         ]
         marines = [
-            Step(RequiredUnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
+            Step(UnitReady(UnitTypeId.BARRACKS, 1), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 2)),
             Step(RequiredMinerals(250), ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 100)),
         ]
 

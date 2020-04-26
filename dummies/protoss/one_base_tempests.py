@@ -33,7 +33,7 @@ class OneBaseTempests(KnowledgeBot):
                         AutoPylon(),
                         SequentialList(
                             GridBuilding(UnitTypeId.STARGATE, 1),
-                            Step(RequiredUnitReady(UnitTypeId.STARGATE, 1), GridBuilding(UnitTypeId.FLEETBEACON, 1)),
+                            Step(UnitReady(UnitTypeId.STARGATE, 1), GridBuilding(UnitTypeId.FLEETBEACON, 1)),
                         ),
                         [ProtossUnit(UnitTypeId.TEMPEST, 100, priority=True)],
                         [Step(UnitExists(UnitTypeId.FLEETBEACON, 1), GridBuilding(UnitTypeId.STARGATE, 2))],

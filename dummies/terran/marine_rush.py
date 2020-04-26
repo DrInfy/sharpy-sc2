@@ -74,7 +74,7 @@ class MarineRushBot(KnowledgeBot):
                 ),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 Step(
-                    RequiredUnitReady(UnitTypeId.MARINE, 1),
+                    UnitReady(UnitTypeId.MARINE, 1),
                     BuildPosition(
                         UnitTypeId.BUNKER,
                         natural.center_location.towards(self.game_info.map_center, 4),
@@ -89,7 +89,7 @@ class MarineRushBot(KnowledgeBot):
             self.attack = DodgeRampAttack(20)
             chunk = [
                 Step(RequiredSupply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-                Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
+                Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 GridBuilding(UnitTypeId.BARRACKS, 6),
             ]
@@ -99,7 +99,7 @@ class MarineRushBot(KnowledgeBot):
             zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
             chunk = [
                 Step(RequiredSupply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-                Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
+                Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
                 BuildPosition(
@@ -135,7 +135,7 @@ class MarineRushBot(KnowledgeBot):
 
         return BuildOrder(
             empty.depots,
-            Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             [Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 20))],
             chunk,
             ActUnit(UnitTypeId.MARINE, UnitTypeId.BARRACKS, 200),

@@ -50,9 +50,9 @@ class DarkTemplarRush(KnowledgeBot):
         self.knowledge.building_solver.wall_type = 3  # WallType.ProtossMainZerg
 
         build_steps_buildings2 = [
-            Step(RequiredUnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), GridBuilding(UnitTypeId.DARKSHRINE, 1)),
+            Step(UnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
+            Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
+            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), GridBuilding(UnitTypeId.DARKSHRINE, 1)),
             Tech(UpgradeId.BLINKTECH),
             Tech(UpgradeId.CHARGE),
         ]
@@ -81,7 +81,7 @@ class DarkTemplarRush(KnowledgeBot):
             StepBuildGas(2),
             Step(RequiredSupply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.WARPGATERESEARCH)),
+            Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.WARPGATERESEARCH)),
             GridBuilding(UnitTypeId.GATEWAY, 3),
             AutoPylon(),
         ]
@@ -90,10 +90,10 @@ class DarkTemplarRush(KnowledgeBot):
             Step(
                 None,
                 ProtossUnit(UnitTypeId.DARKTEMPLAR, 4, priority=True),
-                skip_until=RequiredUnitReady(UnitTypeId.DARKSHRINE, 1),
+                skip_until=UnitReady(UnitTypeId.DARKSHRINE, 1),
             ),
             Step(
-                RequiredUnitReady(UnitTypeId.GATEWAY, 1),
+                UnitReady(UnitTypeId.GATEWAY, 1),
                 ProtossUnit(UnitTypeId.ZEALOT, 1),
                 RequiredTechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
@@ -113,7 +113,7 @@ class DarkTemplarRush(KnowledgeBot):
                 None,
                 ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 20, include_killed=True),
-                skip_until=RequiredUnitReady(UnitTypeId.PYLON),
+                skip_until=UnitReady(UnitTypeId.PYLON),
             ),
             ChronoAnyTech(0),
         ]

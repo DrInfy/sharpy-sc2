@@ -210,7 +210,7 @@ class CannonRush(KnowledgeBot):
                 None,
                 ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 16),
-                skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1),
+                skip_until=UnitReady(UnitTypeId.PYLON, 1),
             ),
             ChronoAnyTech(0),
             SequentialList(
@@ -231,7 +231,7 @@ class CannonRush(KnowledgeBot):
                     StepBuildGas(3, skip=RequiredGas(300)),
                     Tech(UpgradeId.WARPGATERESEARCH),
                     BuildOrder([]).forge_upgrades_all,
-                    Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
+                    Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
@@ -239,11 +239,8 @@ class CannonRush(KnowledgeBot):
                     ],
                     [ProtossUnit(UnitTypeId.STALKER, 100)],
                     [
-                        Step(
-                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        ),
-                        Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
+                        Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),),
+                        Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
                         StepBuildGas(4, skip=RequiredGas(200)),
                     ],
                 ),

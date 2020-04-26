@@ -35,21 +35,17 @@ class Stalkers4Gate(KnowledgeBot):
                     AutoPylon(),
                     ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                     SequentialList(
-                        Step(
-                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        ),
-                        Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
+                        Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),),
+                        Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
                     ),
                     SequentialList(
                         Step(
                             None,
                             GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
-                            skip_until=RequiredUnitReady(UnitTypeId.GATEWAY, 1),
+                            skip_until=UnitReady(UnitTypeId.GATEWAY, 1),
                         ),
                         Step(
-                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            ProtossUnit(UnitTypeId.ADEPT, 2, only_once=True),
+                            UnitReady(UnitTypeId.CYBERNETICSCORE, 1), ProtossUnit(UnitTypeId.ADEPT, 2, only_once=True),
                         ),
                         Tech(UpgradeId.WARPGATERESEARCH),
                         ProtossUnit(UnitTypeId.STALKER, 100),

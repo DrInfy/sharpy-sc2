@@ -33,7 +33,7 @@ class MutaliskBuild(BuildOrder):
                 skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
             Step(
-                RequiredUnitReady(UnitTypeId.SPAWNINGPOOL),
+                UnitReady(UnitTypeId.SPAWNINGPOOL),
                 DefensiveBuilding(UnitTypeId.SPINECRAWLER, DefensePosition.Entrance, 1),
             ),
             # Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
@@ -46,7 +46,7 @@ class MutaliskBuild(BuildOrder):
             Step(UnitExists(UnitTypeId.SPIRE), Expand(4)),
             Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
             Step(UnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
-            Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
+            Step(UnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),
             MorphGreaterSpire(),
             Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL2),
             Tech(UpgradeId.ZERGFLYERWEAPONSLEVEL3),
@@ -55,9 +55,7 @@ class MutaliskBuild(BuildOrder):
         high_tier = [
             # Step(RequiredUnitReady(UnitTypeId.GREATERSPIRE), ZergUnit(UnitTypeId.DRONE, 70)),
             Step(
-                None,
-                ZergUnit(UnitTypeId.CORRUPTOR, 3, priority=True),
-                skip_until=RequiredUnitReady(UnitTypeId.GREATERSPIRE),
+                None, ZergUnit(UnitTypeId.CORRUPTOR, 3, priority=True), skip_until=UnitReady(UnitTypeId.GREATERSPIRE),
             ),
             Step(None, MorphBroodLord(5)),
             # Step(RequiredGas(200), ZergUnit(UnitTypeId.MUTALISK, 20, priority=True))
@@ -75,26 +73,23 @@ class MutaliskBuild(BuildOrder):
             Step(None, ZergUnit(UnitTypeId.DRONE, 30), None),
             Step(None, ZergUnit(UnitTypeId.ZERGLING, 16, only_once=True), None),
             Step(None, ZergUnit(UnitTypeId.ROACH, 4, only_once=True), skip_until=RequiredGas(25)),
-            Step(None, ZergUnit(UnitTypeId.MUTALISK, 4), skip_until=RequiredUnitReady(UnitTypeId.SPIRE, 1)),
+            Step(None, ZergUnit(UnitTypeId.MUTALISK, 4), skip_until=UnitReady(UnitTypeId.SPIRE, 1)),
             Step(None, ZergUnit(UnitTypeId.DRONE, 45), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
             Step(
-                None,
-                ZergUnit(UnitTypeId.ROACH, 10),
-                skip=RequiredUnitReady(UnitTypeId.SPIRE, 1),
-                skip_until=RequiredGas(25),
+                None, ZergUnit(UnitTypeId.ROACH, 10), skip=UnitReady(UnitTypeId.SPIRE, 1), skip_until=RequiredGas(25),
             ),
             Step(None, ZergUnit(UnitTypeId.DRONE, 65), None),
             Step(
                 None,
                 ZergUnit(UnitTypeId.ZERGLING, 40),
-                skip_until=All([RequiredUnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(300)]),
+                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(300)]),
             ),
-            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA), skip=RequiredUnitReady(UnitTypeId.SPIRE, 1)),
+            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA), skip=UnitReady(UnitTypeId.SPIRE, 1)),
             Step(
                 None,
                 ZergUnit(UnitTypeId.ZERGLING, 100),
-                skip_until=All([RequiredUnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(500)]),
+                skip_until=All([UnitReady(UnitTypeId.SPIRE, 1), RequiredMinerals(500)]),
             ),
             # Endless mutalisks
             Step(None, ActUnit(UnitTypeId.MUTALISK, UnitTypeId.LARVA), None),

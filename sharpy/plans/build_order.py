@@ -8,7 +8,7 @@ from sharpy.plans.acts import Tech, ActUnit, ActBase, merge_to_act
 from sharpy.plans.acts.grid_building import GridBuilding
 from sharpy.plans.build_step import Step
 from sharpy.plans.require import (
-    RequiredUnitReady,
+    UnitReady,
     RequiredSupplyLeft,
     RequiredTechReady,
     All,
@@ -71,101 +71,101 @@ class BuildOrder(ActBase):
     @property
     def pylons(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 1), None),
+            Step(UnitReady(UnitTypeId.PYLON, 1), None),
             Step(RequiredSupplyLeft(4), GridBuilding(UnitTypeId.PYLON, 2)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 2), None),
+            Step(UnitReady(UnitTypeId.PYLON, 2), None),
             Step(RequiredSupplyLeft(8), GridBuilding(UnitTypeId.PYLON, 3)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 3), None),
+            Step(UnitReady(UnitTypeId.PYLON, 3), None),
             Step(RequiredSupplyLeft(10), GridBuilding(UnitTypeId.PYLON, 4)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 4), None),
+            Step(UnitReady(UnitTypeId.PYLON, 4), None),
             Step(RequiredSupplyLeft(15), GridBuilding(UnitTypeId.PYLON, 5)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 4), None),
+            Step(UnitReady(UnitTypeId.PYLON, 4), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 6)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 5), None),
+            Step(UnitReady(UnitTypeId.PYLON, 5), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 7)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 6), None),
+            Step(UnitReady(UnitTypeId.PYLON, 6), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 8)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 7), None),
+            Step(UnitReady(UnitTypeId.PYLON, 7), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 10)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 9), None),
+            Step(UnitReady(UnitTypeId.PYLON, 9), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 12)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 11), None),
+            Step(UnitReady(UnitTypeId.PYLON, 11), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 14)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 13), None),
+            Step(UnitReady(UnitTypeId.PYLON, 13), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.PYLON, 16)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 16), GridBuilding(UnitTypeId.PYLON, 18)),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 18), GridBuilding(UnitTypeId.PYLON, 20)),
+            Step(UnitReady(UnitTypeId.PYLON, 16), GridBuilding(UnitTypeId.PYLON, 18)),
+            Step(UnitReady(UnitTypeId.PYLON, 18), GridBuilding(UnitTypeId.PYLON, 20)),
         ]
 
     @property
     def depots(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), None),
             Step(RequiredSupplyLeft(6), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 2), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 2), None),
             Step(RequiredSupplyLeft(12), GridBuilding(UnitTypeId.SUPPLYDEPOT, 3)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 3), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 3), None),
             Step(RequiredSupplyLeft(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
             Step(RequiredSupplyLeft(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 6)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 5), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 5), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 7)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 6), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 6), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 8)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 7), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 7), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 10)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 9), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 9), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 12)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 11), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 11), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 14)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 13), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 13), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 16)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 18)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 18), GridBuilding(UnitTypeId.SUPPLYDEPOT, 20)),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 18)),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 18), GridBuilding(UnitTypeId.SUPPLYDEPOT, 20)),
         ]
 
     @property
     def overlords(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 1), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 1), None),
             Step(RequiredSupplyLeft(4), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 2), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 2), None),
             Step(RequiredSupplyLeft(8), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 3)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 3), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 3), None),
             Step(RequiredSupplyLeft(10), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 4)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 4), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 4), None),
             Step(RequiredSupplyLeft(15), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 5)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 4), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 4), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 6)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 5), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 5), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 7)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 6), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 6), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 8)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 7), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 7), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 10)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 9), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 9), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 12)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 11), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 11), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 14)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 13), None),
+            Step(UnitReady(UnitTypeId.OVERLORD, 13), None),
             Step(RequiredSupplyLeft(20), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 16)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 16), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 18)),
-            Step(RequiredUnitReady(UnitTypeId.OVERLORD, 18), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 21)),
+            Step(UnitReady(UnitTypeId.OVERLORD, 16), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 18)),
+            Step(UnitReady(UnitTypeId.OVERLORD, 18), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 21)),
         ]
 
     @property
     def forge_upgrades_armor_first(self) -> List[Step]:
         return [
             # Armor
-            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
+            Step(UnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
                     ]
                 ),
@@ -175,7 +175,7 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
                     ]
                 ),
@@ -187,7 +187,7 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
                     ]
                 ),
@@ -197,14 +197,14 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
                     ]
                 ),
             ),
             # Shields
             Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
-            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
+            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
             Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
             Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
@@ -219,7 +219,7 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
                     ]
                 ),
@@ -229,19 +229,19 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
                     ]
                 ),
             ),
             # Armor
-            Step(RequiredUnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
+            Step(UnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL1)),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
                     ]
                 ),
@@ -251,14 +251,14 @@ class BuildOrder(ActBase):
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=All(
                     [
-                        RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
                         RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
                     ]
                 ),
             ),
             # Shields
             Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
-            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
+            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
             Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
             Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
@@ -266,9 +266,9 @@ class BuildOrder(ActBase):
     @property
     def air_upgrades_all(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL1)),
+            Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL1)),
             Step(None, Tech(UpgradeId.PROTOSSAIRARMORSLEVEL1)),
-            Step(RequiredUnitReady(UnitTypeId.FLEETBEACON, 1), None),
+            Step(UnitReady(UnitTypeId.FLEETBEACON, 1), None),
             Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL2)),
             Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL1), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL2)),
             Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL2), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL3)),

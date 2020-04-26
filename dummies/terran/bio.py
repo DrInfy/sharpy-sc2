@@ -42,7 +42,7 @@ class BuildBio(BuildOrder):
 
         scv = [
             Step(None, TerranUnit(UnitTypeId.MARINE, 2, priority=True), skip_until=lambda k: self.worker_rushed),
-            Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
@@ -79,7 +79,7 @@ class BuildBio(BuildOrder):
             ),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
             Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
         ]
 
         opener = [
@@ -118,7 +118,7 @@ class BuildBio(BuildOrder):
 
         buildings = [
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
-            Step(RequiredUnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
+            Step(UnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
             StepBuildGas(2),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
@@ -141,20 +141,20 @@ class BuildBio(BuildOrder):
         mech = [TerranUnit(UnitTypeId.SIEGETANK, 2, priority=True)]
 
         air = [
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 2, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 2, priority=True)),
             Step(None, TerranUnit(UnitTypeId.VIKINGFIGHTER, 1, priority=True)),
             Step(
                 None,
                 TerranUnit(UnitTypeId.VIKINGFIGHTER, 3, priority=True),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 1),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 4, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 4, priority=True)),
             Step(
                 None,
                 TerranUnit(UnitTypeId.VIKINGFIGHTER, 10, priority=True),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 4),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 6, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 6, priority=True)),
         ]
 
         marines = [

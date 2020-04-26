@@ -24,20 +24,16 @@ class CycloneBot(KnowledgeBot):
             StepBuildGas(1),
             Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             Step(None, StepBuildGas(2), skip_until=UnitExists(UnitTypeId.MARINE, 2)),
-            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             GridBuilding(UnitTypeId.FACTORY, 1),
             BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
             StepBuildGas(4),
             Step(None, Expand(3)),
             GridBuilding(UnitTypeId.FACTORY, 2),
             BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
-            Step(
-                None,
-                Tech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE),
-                skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 1),
-            ),
+            Step(None, Tech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE), skip_until=UnitReady(UnitTypeId.FACTORYTECHLAB, 1),),
             StepBuildGas(5),
-            Step(None, Tech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=RequiredUnitReady(UnitTypeId.FACTORYTECHLAB, 2)),
+            Step(None, Tech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=UnitReady(UnitTypeId.FACTORYTECHLAB, 2)),
             StepBuildGas(6, None, RequiredGas(100)),
             Step(RequiredMinerals(400), GridBuilding(UnitTypeId.FACTORY, 4)),
             Step(None, BuildAddon(UnitTypeId.FACTORYREACTOR, UnitTypeId.FACTORY, 1)),
@@ -52,7 +48,7 @@ class CycloneBot(KnowledgeBot):
         ]
 
         upgrades = [
-            Step(RequiredUnitReady(UnitTypeId.ARMORY, 1), Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL1)),
+            Step(UnitReady(UnitTypeId.ARMORY, 1), Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL1)),
             Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL1),
             Tech(UpgradeId.TERRANVEHICLEWEAPONSLEVEL2),
             Tech(UpgradeId.TERRANVEHICLEANDSHIPARMORSLEVEL2),
@@ -88,9 +84,9 @@ class CycloneBot(KnowledgeBot):
                 Step(
                     UnitExists(UnitTypeId.COMMANDCENTER, 2),
                     MorphOrbitals(3),
-                    skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1),
+                    skip_until=UnitReady(UnitTypeId.BARRACKS, 1),
                 ),
-                Step(None, MorphPlanetary(2), skip_until=RequiredUnitReady(UnitTypeId.ENGINEERINGBAY, 1)),
+                Step(None, MorphPlanetary(2), skip_until=UnitReady(UnitTypeId.ENGINEERINGBAY, 1)),
             ],
             [
                 Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 40)),
@@ -105,7 +101,7 @@ class CycloneBot(KnowledgeBot):
                 ActUnit(UnitTypeId.CYCLONE, UnitTypeId.FACTORY, 120, priority=True),
             ],
             Step(
-                RequiredUnitReady(UnitTypeId.FACTORYREACTOR, 1),
+                UnitReady(UnitTypeId.FACTORYREACTOR, 1),
                 ActUnit(UnitTypeId.HELLION, UnitTypeId.FACTORY, 60),
                 skip_until=RequiredMinerals(300),
             ),
@@ -116,23 +112,23 @@ class CycloneBot(KnowledgeBot):
     @property
     def depots(self) -> List[Step]:
         return [
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 1), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), None),
             Step(RequiredSupplyLeft(6), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 2), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 2), None),
             Step(RequiredSupplyLeft(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 4), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 6)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 5), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 5), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 7)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 6), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 6), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 10)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 8), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 8), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 12)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 10), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 10), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 14)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 13), None),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 13), None),
             Step(RequiredSupplyLeft(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 16)),
-            Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 20)),
+            Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 20)),
         ]
 
 

@@ -15,7 +15,7 @@ class DistruptorBuild(BuildOrder):
     def __init__(self):
         build = BuildOrder(
             Step(
-                RequiredUnitReady(UnitTypeId.PYLON),
+                UnitReady(UnitTypeId.PYLON),
                 ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 19),
             ),
@@ -38,7 +38,7 @@ class DistruptorBuild(BuildOrder):
                 ProtossUnit(UnitTypeId.PROBE, 16 + 6),  # One base
                 Step(UnitExists(UnitTypeId.NEXUS, 2), ProtossUnit(UnitTypeId.PROBE, 44)),
             ),
-            Step(RequiredUnitReady(UnitTypeId.PYLON, 1), AutoPylon()),
+            Step(UnitReady(UnitTypeId.PYLON, 1), AutoPylon()),
             SequentialList(
                 GridBuilding(UnitTypeId.PYLON, 1),
                 GridBuilding(UnitTypeId.GATEWAY, 2, priority=True),
@@ -57,7 +57,7 @@ class DistruptorBuild(BuildOrder):
                 ProtossUnit(UnitTypeId.STALKER),
                 SequentialList(
                     Step(RequiredMinerals(300), GridBuilding(UnitTypeId.GATEWAY, 3, priority=True)),
-                    Step(RequiredUnitReady(UnitTypeId.NEXUS, 2), GridBuilding(UnitTypeId.GATEWAY, 6, priority=True)),
+                    Step(UnitReady(UnitTypeId.NEXUS, 2), GridBuilding(UnitTypeId.GATEWAY, 6, priority=True)),
                 ),
             ),
         )
