@@ -26,11 +26,11 @@ class MacroRobo(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 30, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
-            ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
+            ChronoUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),

@@ -118,11 +118,11 @@ class ProxyZealotRushBot(KnowledgeBot):
         backup = BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 30, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
-            ChronoUnitProduction(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
+            ChronoUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
             DefensiveCannons(0, 1),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
@@ -184,7 +184,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                     ]
                 ),
                 [PlanDistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
-                ChronoUnitProduction(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
+                ChronoUnit(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
             ]
         )
 

@@ -17,7 +17,7 @@ class MacroStalkers(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 40, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),

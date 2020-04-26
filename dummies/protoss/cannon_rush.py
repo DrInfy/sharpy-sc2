@@ -208,7 +208,7 @@ class CannonRush(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 16),
                 skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1),
             ),
@@ -355,7 +355,7 @@ class CannonRush(KnowledgeBot):
                 [GridBuilding(UnitTypeId.PYLON, 1), GridBuilding(UnitTypeId.FORGE, 1, priority=True)],
                 ProxyCannoneer(),
                 ProtossUnit(UnitTypeId.PROBE, 18),
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 [
                     Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
                     Step(RequiredMinerals(700), Expand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),

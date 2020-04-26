@@ -17,7 +17,7 @@ class OneBaseTempests(KnowledgeBot):
         attack = PlanZoneAttack(4)
         return BuildOrder(
             [
-                ChronoUnitProduction(UnitTypeId.TEMPEST, UnitTypeId.STARGATE),
+                ChronoUnit(UnitTypeId.TEMPEST, UnitTypeId.STARGATE),
                 SequentialList(
                     ProtossUnit(UnitTypeId.PROBE, 14),
                     GridBuilding(UnitTypeId.PYLON, 1),

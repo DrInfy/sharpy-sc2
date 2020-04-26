@@ -25,11 +25,11 @@ class MacroVoidray(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 30, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
-            ChronoUnitProduction(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
+            ChronoUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE),
             SequentialList(
                 ProtossUnit(UnitTypeId.PROBE, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),

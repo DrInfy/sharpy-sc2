@@ -16,22 +16,22 @@ class DistruptorBuild(BuildOrder):
         build = BuildOrder(
             Step(
                 RequiredUnitReady(UnitTypeId.PYLON),
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 19),
             ),
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
+                ChronoUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
                 skip=UnitExists(UnitTypeId.IMMORTAL, 1, include_killed=True),
             ),
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY),
+                ChronoUnit(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY),
                 skip=UnitExists(UnitTypeId.OBSERVER, 1, include_killed=True),
             ),
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.DISRUPTOR, UnitTypeId.ROBOTICSFACILITY),
+                ChronoUnit(UnitTypeId.DISRUPTOR, UnitTypeId.ROBOTICSFACILITY),
                 skip=UnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True),
             ),
             SequentialList(

@@ -111,7 +111,7 @@ class DarkTemplarRush(KnowledgeBot):
         build_steps_chrono = [
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 20, include_killed=True),
                 skip_until=RequiredUnitReady(UnitTypeId.PYLON),
             ),

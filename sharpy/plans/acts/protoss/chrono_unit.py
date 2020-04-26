@@ -1,3 +1,5 @@
+import warnings
+
 from sc2 import UnitTypeId, AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit, UnitOrder
@@ -5,7 +7,7 @@ from sc2.unit import Unit, UnitOrder
 from sharpy.plans.acts.act_base import ActBase
 
 
-class ChronoUnitProduction(ActBase):
+class ChronoUnit(ActBase):
     # Use Chronoboost on unit production
     def __init__(self, name: UnitTypeId, from_building: UnitTypeId):
         assert name is not None and isinstance(name, UnitTypeId)
@@ -32,3 +34,9 @@ class ChronoUnitProduction(ActBase):
                                 self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
                                 self.print(f"Chrono {self.creation_ability.name}")
         return True  # Never block
+
+
+class ChronoUnitProduction(ChronoUnit):
+    def __init__(self, name: UnitTypeId, from_building: UnitTypeId):
+        warnings.warn("'ChronoUnitProduction' is deprecated, use 'ChronoUnit' instead", DeprecationWarning, 2)
+        super().__init__(name, from_building)
