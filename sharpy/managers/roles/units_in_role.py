@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from sharpy.managers import UnitCacheManager
 from sc2 import BotAI
@@ -9,7 +9,7 @@ from .unit_task import UnitTask
 
 
 class UnitsInRole:
-    def __init__(self, task: UnitTask, cache: UnitCacheManager, ai: BotAI):
+    def __init__(self, task: Union[int, UnitTask], cache: UnitCacheManager, ai: BotAI):
         self.task = task
         self.units: Units = Units([], ai)
         self.tags: List[int] = []
