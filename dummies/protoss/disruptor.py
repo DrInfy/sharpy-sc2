@@ -42,13 +42,13 @@ class DistruptorBuild(BuildOrder):
             SequentialList(
                 GridBuilding(UnitTypeId.PYLON, 1),
                 GridBuilding(UnitTypeId.GATEWAY, 2, priority=True),
-                StepBuildGas(2),
+                BuildGas(2),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1, priority=True),
                 GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
                 Tech(UpgradeId.WARPGATERESEARCH, UnitTypeId.CYBERNETICSCORE),
                 GridBuilding(UnitTypeId.ROBOTICSBAY, 1, priority=True),
                 Step(UnitExists(UnitTypeId.DISRUPTOR, 1, include_killed=True, include_not_ready=False), Expand(2),),
-                StepBuildGas(4),
+                BuildGas(4),
             ),
             BuildOrder(
                 ProtossUnit(UnitTypeId.IMMORTAL, 1, priority=True, only_once=True),

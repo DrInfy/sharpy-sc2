@@ -22,7 +22,7 @@ class OneBaseTurtle(KnowledgeBot):
             TerranUnit(UnitTypeId.SCV, 15),
             Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
             TerranUnit(UnitTypeId.SCV, 16),
-            StepBuildGas(1),
+            BuildGas(1),
             Step(Supply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             TerranUnit(UnitTypeId.SCV, 18),
             Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
@@ -30,7 +30,7 @@ class OneBaseTurtle(KnowledgeBot):
             TerranUnit(UnitTypeId.SCV, 20),
             Step(Supply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 3)),
             Step(None, GridBuilding(UnitTypeId.BUNKER, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
-            StepBuildGas(2),
+            BuildGas(2),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 2)),
             TerranUnit(UnitTypeId.SCV, 22),
             Step(

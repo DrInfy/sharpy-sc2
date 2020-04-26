@@ -225,7 +225,7 @@ class CannonRush(KnowledgeBot):
                     ],
                     GridBuilding(UnitTypeId.GATEWAY, 2),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
-                    StepBuildGas(2),
+                    BuildGas(2),
                     AutoPylon(),
                     ProtossUnit(UnitTypeId.STALKER, 4, priority=True),
                     StepBuildGas(3, skip=Gas(300)),

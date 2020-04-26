@@ -127,14 +127,14 @@ class ProxyZealotRushBot(KnowledgeBot):
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
-                StepBuildGas(1),
+                BuildGas(1),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 21),
                 Expand(2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
-                StepBuildGas(2),
+                BuildGas(2),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
                     AutoPylon(),

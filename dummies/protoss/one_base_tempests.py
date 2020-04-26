@@ -24,7 +24,7 @@ class OneBaseTempests(KnowledgeBot):
                     ProtossUnit(UnitTypeId.PROBE, 15),
                     GridBuilding(UnitTypeId.GATEWAY, 1),
                     GridBuilding(UnitTypeId.FORGE, 1),
-                    StepBuildGas(2),
+                    BuildGas(2),
                     ProtossUnit(UnitTypeId.PROBE, 18),
                     GridBuilding(UnitTypeId.PYLON, 2),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),

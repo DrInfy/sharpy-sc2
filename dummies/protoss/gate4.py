@@ -28,7 +28,7 @@ class Stalkers4Gate(KnowledgeBot):
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 17),
-                StepBuildGas(2),
+                BuildGas(2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 19),
                 GridBuilding(UnitTypeId.GATEWAY, 2),
                 BuildOrder(

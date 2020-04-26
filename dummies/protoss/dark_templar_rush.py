@@ -66,7 +66,7 @@ class DarkTemplarRush(KnowledgeBot):
             Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), Expand(2)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 30)),
             GridBuilding(UnitTypeId.GATEWAY, 5),
-            StepBuildGas(3),
+            BuildGas(3),
             GridBuilding(UnitTypeId.GATEWAY, 6),
         ]
 
@@ -74,7 +74,7 @@ class DarkTemplarRush(KnowledgeBot):
             Step(Supply(14), GridBuilding(UnitTypeId.PYLON, 1), UnitExists(UnitTypeId.PYLON, 1)),
             StepBuildGas(1, Supply(16)),
             Step(Supply(16), GridBuilding(UnitTypeId.GATEWAY, 1)),
-            StepBuildGas(2),
+            BuildGas(2),
             Step(Supply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),
             Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.WARPGATERESEARCH)),

@@ -119,7 +119,7 @@ class BuildBio(BuildOrder):
         buildings = [
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
             Step(UnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
-            StepBuildGas(2),
+            BuildGas(2),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
@@ -129,7 +129,7 @@ class BuildBio(BuildOrder):
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
-            StepBuildGas(4),
+            BuildGas(4),
         ]
 
         tech = [

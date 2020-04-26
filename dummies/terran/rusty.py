@@ -75,7 +75,7 @@ class BuildTanks(BuildOrder):
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             Step(UnitExists(UnitTypeId.SIEGETANK, 1, include_killed=True), GridBuilding(UnitTypeId.FACTORY, 2)),
-            StepBuildGas(4),
+            BuildGas(4),
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),

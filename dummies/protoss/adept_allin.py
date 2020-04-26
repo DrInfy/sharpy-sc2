@@ -44,7 +44,7 @@ class AdeptRush(KnowledgeBot):
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
-                StepBuildGas(1),
+                BuildGas(1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 17),
                 GridBuilding(UnitTypeId.GATEWAY, 2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
