@@ -164,14 +164,14 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=All(
-                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1)]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=All(
-                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1)]
                 ),
             ),
             # Weapons
@@ -180,14 +180,14 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=All(
-                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1)]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=All(
-                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1)]
                 ),
             ),
             # Shields

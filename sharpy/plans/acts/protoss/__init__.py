@@ -10,4 +10,4 @@ from .protoss_unit import ProtossUnit
 from .restore_power import RestorePower
 from .robo_unit import RoboUnit
 from .star_unit import StarUnit
-from .warp_unit import WarpUnit, WarpUnit
+from .warp_unit import WarpUnit
