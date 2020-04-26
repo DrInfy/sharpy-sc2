@@ -53,11 +53,11 @@ class BuildBio(BuildOrder):
 
         dt_counter = [
             Step(
-                RequiredAny(
+                Any(
                     [
                         EnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,
@@ -68,11 +68,11 @@ class BuildBio(BuildOrder):
         ]
         dt_counter2 = [
             Step(
-                RequiredAny(
+                Any(
                     [
                         EnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,
@@ -90,7 +90,7 @@ class BuildBio(BuildOrder):
             Step(
                 None,
                 Expand(2),
-                skip_until=RequiredAny(
+                skip_until=Any(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
@@ -100,7 +100,7 @@ class BuildBio(BuildOrder):
             Step(
                 None,
                 CancelBuilding(UnitTypeId.COMMANDCENTER, 1),
-                skip=RequiredAny(
+                skip=Any(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),

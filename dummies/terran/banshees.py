@@ -77,11 +77,11 @@ class Banshees(KnowledgeBot):
             ],
             [
                 Step(
-                    RequiredAny(
+                    Any(
                         [
                             EnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                            RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                            RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                            EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                            EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                         ]
                     ),
                     None,

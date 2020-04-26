@@ -80,7 +80,7 @@ class LingFloodBuild(BuildOrder):
         ]
 
         spire_end_game = [
-            Step(RequiredAny([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)]), None),
+            Step(Any([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)]), None),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35),
             MorphLair(),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
@@ -233,8 +233,8 @@ class LingFlood(KnowledgeBot):
         worker_scout = Step(
             None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
         )
-        stop_gas = RequiredAny([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
-        end_game = RequiredAny([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)])
+        stop_gas = Any([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
+        end_game = Any([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(
             [
@@ -244,7 +244,7 @@ class LingFlood(KnowledgeBot):
                         worker_scout,
                         SpreadCreep(),
                         InjectLarva(),
-                        Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
+                        Step(None, PlanDistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),
                         Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
                         Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
                         DummyZergAttack(),

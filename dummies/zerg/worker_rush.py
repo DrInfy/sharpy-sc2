@@ -106,7 +106,7 @@ class LingFloodBuild(BuildOrder):
         ]
 
         spire_end_game = [
-            Step(RequiredAny([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)]), None),
+            Step(Any([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)]), None),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35),
             MorphLair(),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
@@ -220,15 +220,15 @@ class WorkerRush(KnowledgeBot):
         super().__init__("Worker Rush Dummy")
 
     async def create_plan(self) -> BuildOrder:
-        stop_gas = RequiredAny([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
-        end_game = RequiredAny([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)])
+        stop_gas = Any([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
+        end_game = Any([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(
             ActUnitOnce(UnitTypeId.DRONE, UnitTypeId.LARVA, 24),
             LingFloodBuild(),
             SequentialList(
                 InjectLarva(),
-                Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
+                Step(None, PlanDistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),
                 Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
                 Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
                 WorkerAttack(),

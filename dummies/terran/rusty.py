@@ -33,11 +33,11 @@ class BuildTanks(BuildOrder):
 
         dt_counter = [
             Step(
-                RequiredAny(
+                Any(
                     [
                         EnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,
@@ -48,11 +48,11 @@ class BuildTanks(BuildOrder):
         ]
         dt_counter2 = [
             Step(
-                RequiredAny(
+                Any(
                     [
                         EnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,

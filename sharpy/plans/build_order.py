@@ -12,7 +12,7 @@ from sharpy.plans.require import (
     RequiredSupplyLeft,
     RequiredTechReady,
     RequiredAll,
-    RequiredAny,
+    Any,
     EnemyUnitExists,
 )
 from sharpy.plans.sequential_list import SequentialList
@@ -62,11 +62,11 @@ class BuildOrder(ActBase):
     def glaives_upgrade(self) -> UpgradeId:
         return UpgradeId.ADEPTPIERCINGATTACK
 
-    def RequireAnyEnemyUnits(self, unit_types: List[UnitTypeId], count: int) -> RequiredAny:
+    def RequireAnyEnemyUnits(self, unit_types: List[UnitTypeId], count: int) -> Any:
         require_list = []
         for unit_type in unit_types:
             require_list.append(EnemyUnitExists(unit_type, count))
-        return RequiredAny(require_list)
+        return Any(require_list)
 
     @property
     def pylons(self) -> List[Step]:
