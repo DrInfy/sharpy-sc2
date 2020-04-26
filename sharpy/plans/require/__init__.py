@@ -14,7 +14,7 @@ from .enemy_unit_exists import EnemyUnitExists, RequiredEnemyUnitExists
 from .required_less_unit_exists import RequiredLessUnitExists
 from .required_unit_ready import RequiredUnitReady
 from .required_enemy_unit_exists_after import RequiredEnemyUnitExistsAfter
-from .required_enemy_building_exists import RequiredEnemyBuildingExists
+from .enemy_building_exists import EnemyBuildingExists, RequiredEnemyBuildingExists
 from .required_count import RequiredCount
 from .required_supply import SupplyType
 from .methods import merge_to_require

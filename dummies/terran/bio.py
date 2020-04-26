@@ -55,7 +55,7 @@ class BuildBio(BuildOrder):
             Step(
                 RequiredAny(
                     [
-                        RequiredEnemyBuildingExists(UnitTypeId.DARKSHRINE),
+                        EnemyBuildingExists(UnitTypeId.DARKSHRINE),
                         RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
                         RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
@@ -70,7 +70,7 @@ class BuildBio(BuildOrder):
             Step(
                 RequiredAny(
                     [
-                        RequiredEnemyBuildingExists(UnitTypeId.DARKSHRINE),
+                        EnemyBuildingExists(UnitTypeId.DARKSHRINE),
                         RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
                         RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
