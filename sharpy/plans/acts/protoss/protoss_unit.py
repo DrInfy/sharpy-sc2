@@ -2,7 +2,7 @@ from sharpy.plans.acts import ActUnit
 from sc2 import UnitTypeId
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.upgrade_id import UpgradeId
-from sharpy.plans.acts.protoss import WarpUnit
+from .warp_unit import WarpUnit
 
 
 class ProtossUnit(ActUnit):
