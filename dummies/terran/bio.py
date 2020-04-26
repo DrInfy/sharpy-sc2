@@ -78,7 +78,7 @@ class BuildBio(BuildOrder):
                 None,
             ),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
             Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
         ]
 
@@ -110,9 +110,9 @@ class BuildBio(BuildOrder):
             Step(None, self.rush_bunker, skip_until=lambda k: k.possible_rush_detected),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2), skip_until=lambda k: k.possible_rush_detected),
             GridBuilding(UnitTypeId.SUPPLYDEPOT, 2, priority=True),
-            ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
+            BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
             GridBuilding(UnitTypeId.FACTORY, 1),
-            ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
+            BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
             AutoDepot(),
         ]
 
@@ -121,14 +121,14 @@ class BuildBio(BuildOrder):
             Step(RequiredUnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
             StepBuildGas(2),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 3)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
             Step(RequiredSupply(40, SupplyType.Workers), ActExpand(3)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
             StepBuildGas(4),
         ]
 
@@ -171,7 +171,7 @@ class BuildBio(BuildOrder):
         use_money = BuildOrder(
             [
                 Step(RequiredMinerals(400), GridBuilding(UnitTypeId.BARRACKS, 8)),
-                Step(RequiredMinerals(500), ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
+                Step(RequiredMinerals(500), BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
             ]
         )
 

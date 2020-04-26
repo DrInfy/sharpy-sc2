@@ -58,7 +58,7 @@ class BuildTanks(BuildOrder):
                 None,
             ),
             GridBuilding(UnitTypeId.STARPORT, 2),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
             Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
         ]
 
@@ -89,19 +89,19 @@ class BuildTanks(BuildOrder):
             StepBuildGas(2, RequiredSupply(20)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1)),
-            Step(None, ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
+            Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             Step(UnitExists(UnitTypeId.SIEGETANK, 1, include_killed=True), GridBuilding(UnitTypeId.FACTORY, 2)),
             StepBuildGas(4),
-            Step(None, ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
+            Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
             Step(None, ActTech(UpgradeId.SHIELDWALL)),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, ActExpand(3)),
         ]
 

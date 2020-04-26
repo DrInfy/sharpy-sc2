@@ -1,17 +1,14 @@
-import math
+import warnings
 from typing import Dict
 
-import sc2
 from sc2 import UnitTypeId
-from sc2.game_info import GameInfo
-from sc2.pixel_map import PixelMap
 from sc2.position import Point2
 
 from sharpy.plans.acts.act_base import ActBase
 from sc2.unit import Unit
 
 
-class ActBuildAddon(ActBase):
+class BuildAddon(ActBase):
     """Act of starting to build new buildings up to specified count"""
 
     def __init__(self, unit_type: UnitTypeId, unit_from_type: UnitTypeId, to_count: int):
@@ -65,3 +62,9 @@ class ActBuildAddon(ActBase):
         count += self.cache.own(unit_type).amount
 
         return count
+
+
+class ActBuildAddon(BuildAddon):
+    def __init__(self, unit_type: UnitTypeId, unit_from_type: UnitTypeId, to_count: int):
+        warnings.warn("'ActBuildAddon' is deprecated, use 'BuildAddon' instead", DeprecationWarning, 2)
+        super().__init__(unit_type, unit_from_type, to_count)

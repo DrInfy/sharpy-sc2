@@ -82,21 +82,21 @@ class BattleCruisers(KnowledgeBot):
                 DefensiveBuilding(UnitTypeId.BUNKER, DefensePosition.Entrance, 1),
                 Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
                 StepBuildGas(3),
-                Step(None, ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
+                Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1)),
                 Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), GridBuilding(UnitTypeId.FUSIONCORE, 1)),
-                Step(None, ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
+                Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
                 StepBuildGas(
                     4, None, UnitExists(UnitTypeId.BATTLECRUISER, 1, include_killed=True, include_pending=True)
                 ),
                 Step(
                     UnitExists(UnitTypeId.BATTLECRUISER, 1, include_killed=True), GridBuilding(UnitTypeId.BARRACKS, 3),
                 ),
-                Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
-                Step(None, ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1)),
+                Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
+                Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
                 Step(
                     RequiredUnitReady(UnitTypeId.STARPORT, 2),
-                    ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2),
+                    BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 2),
                 ),
                 Step(None, ActTech(UpgradeId.SHIELDWALL)),
                 Step(RequiredMinerals(600), GridBuilding(UnitTypeId.BARRACKS, 5)),

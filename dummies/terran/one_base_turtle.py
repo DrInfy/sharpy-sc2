@@ -35,7 +35,7 @@ class OneBaseTurtle(KnowledgeBot):
             TerranUnit(UnitTypeId.SCV, 22),
             Step(
                 None,
-                ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
+                BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
                 skip_until=RequiredUnitReady(UnitTypeId.FACTORY, 1),
             ),
             Step(RequiredSupply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
