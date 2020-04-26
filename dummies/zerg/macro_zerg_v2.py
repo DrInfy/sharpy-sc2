@@ -1,3 +1,6 @@
+from typing import Optional, List
+
+from sharpy.managers import ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
@@ -63,6 +66,10 @@ class MacroZergV2(KnowledgeBot):
 
     def __init__(self):
         super().__init__("Macro zerg")
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        self.knowledge.combat_manager.default_rules.regroup = False
+        return None
 
     async def create_plan(self) -> BuildOrder:
         attack = PlanZoneAttack(120)
