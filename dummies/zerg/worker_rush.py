@@ -106,7 +106,7 @@ class LingFloodBuild(BuildOrder):
         ]
 
         spire_end_game = [
-            Step(Any([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)]), None),
+            Step(Any([Supply(70), UnitExists(UnitTypeId.LAIR, 1)]), None),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35),
             MorphLair(),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
@@ -221,7 +221,7 @@ class WorkerRush(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         stop_gas = Any([Gas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
-        end_game = Any([RequiredSupply(70), UnitExists(UnitTypeId.LAIR, 1)])
+        end_game = Any([Supply(70), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(
             ActUnitOnce(UnitTypeId.DRONE, UnitTypeId.LARVA, 24),

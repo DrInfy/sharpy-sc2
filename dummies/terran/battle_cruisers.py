@@ -71,11 +71,11 @@ class BattleCruisers(KnowledgeBot):
             Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             [Step(None, ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 34 + 12))],
             [
-                Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+                Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 StepBuildGas(1),
                 Expand(2),
-                Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
+                Step(Supply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 StepBuildGas(2),
                 Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
                 Step(UnitReady(UnitTypeId.FACTORY, 1), GridBuilding(UnitTypeId.STARPORT, 1)),

@@ -18,11 +18,11 @@ class CycloneBot(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         buildings = [
-            Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
-            Step(RequiredSupply(16), Expand(2)),
-            Step(RequiredSupply(18), GridBuilding(UnitTypeId.BARRACKS, 1)),
+            Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+            Step(Supply(16), Expand(2)),
+            Step(Supply(18), GridBuilding(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(1),
-            Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
+            Step(Supply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             Step(None, StepBuildGas(2), skip_until=UnitExists(UnitTypeId.MARINE, 2)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             GridBuilding(UnitTypeId.FACTORY, 1),
@@ -44,7 +44,7 @@ class CycloneBot(KnowledgeBot):
             GridBuilding(UnitTypeId.FACTORY, 6),
             Step(Minerals(400), GridBuilding(UnitTypeId.FACTORY, 8)),
             BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 7),
-            Step(RequiredSupply(120), GridBuilding(UnitTypeId.ARMORY, 2)),
+            Step(Supply(120), GridBuilding(UnitTypeId.ARMORY, 2)),
         ]
 
         upgrades = [

@@ -58,7 +58,7 @@ class MarineRushBot(KnowledgeBot):
             zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
             natural = self.knowledge.expansion_zones[-2]
             chunk = [
-                Step(RequiredSupply(12), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+                Step(Supply(12), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
                 BuildPosition(
                     UnitTypeId.BARRACKS,
@@ -88,7 +88,7 @@ class MarineRushBot(KnowledgeBot):
             self.knowledge.print("20 marine all in", "Build")
             self.attack = DodgeRampAttack(20)
             chunk = [
-                Step(RequiredSupply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+                Step(Supply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 GridBuilding(UnitTypeId.BARRACKS, 6),
@@ -98,7 +98,7 @@ class MarineRushBot(KnowledgeBot):
             self.attack = DodgeRampAttack(10)
             zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
             chunk = [
-                Step(RequiredSupply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+                Step(Supply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 Step(None, GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),

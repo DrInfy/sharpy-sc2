@@ -1,4 +1,5 @@
 import enum
+import warnings
 
 from sharpy.plans.require.require_base import RequireBase
 
@@ -9,7 +10,7 @@ class SupplyType(enum.Enum):
     Workers = 2
 
 
-class RequiredSupply(RequireBase):
+class Supply(RequireBase):
     def __init__(self, supply_amount: int, supply_type: SupplyType = SupplyType.All):
         assert supply_amount is not None and isinstance(supply_amount, int)
         super().__init__()
@@ -23,3 +24,9 @@ class RequiredSupply(RequireBase):
             return self.ai.supply_used - self.ai.supply_workers >= self.supply_amount
 
         return self.ai.supply_workers >= self.supply_amount
+
+
+class RequiredSupply(Supply):
+    def __init__(self, supply_amount: int, supply_type: SupplyType = SupplyType.All):
+        warnings.warn("'RequiredSupply' is deprecated, use 'Supply' instead", DeprecationWarning, 2)
+        super().__init__(supply_amount, supply_type)

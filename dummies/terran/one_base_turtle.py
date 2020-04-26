@@ -18,17 +18,17 @@ class OneBaseTurtle(KnowledgeBot):
 
         build_steps_buildings = [
             TerranUnit(UnitTypeId.SCV, 13),
-            Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+            Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
             TerranUnit(UnitTypeId.SCV, 15),
             Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
             TerranUnit(UnitTypeId.SCV, 16),
             StepBuildGas(1),
-            Step(RequiredSupply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
+            Step(Supply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             TerranUnit(UnitTypeId.SCV, 18),
             Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             TerranUnit(UnitTypeId.SCV, 20),
-            Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 3)),
+            Step(Supply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 3)),
             Step(None, GridBuilding(UnitTypeId.BUNKER, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(2),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 2)),
@@ -38,9 +38,9 @@ class OneBaseTurtle(KnowledgeBot):
                 BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2),
                 skip_until=UnitReady(UnitTypeId.FACTORY, 1),
             ),
-            Step(RequiredSupply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
+            Step(Supply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 3)),
-            Step(RequiredSupply(38), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
+            Step(Supply(38), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
             AutoDepot(),
         ]
 

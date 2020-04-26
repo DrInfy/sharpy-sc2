@@ -3,7 +3,7 @@ from typing import List
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
-from sharpy.plans.require.required_supply import SupplyType
+from sharpy.plans.require.supply import SupplyType
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
@@ -83,9 +83,9 @@ class BuildBio(BuildOrder):
         ]
 
         opener = [
-            Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1, priority=True)),
+            Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1, priority=True)),
             GridBuilding(UnitTypeId.BARRACKS, 1, priority=True),
-            StepBuildGas(1, RequiredSupply(15)),
+            StepBuildGas(1, Supply(15)),
             TerranUnit(UnitTypeId.REAPER, 1, only_once=True, priority=True),
             Step(
                 None,
@@ -125,7 +125,7 @@ class BuildBio(BuildOrder):
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 3)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
-            Step(RequiredSupply(40, SupplyType.Workers), Expand(3)),
+            Step(Supply(40, SupplyType.Workers), Expand(3)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),

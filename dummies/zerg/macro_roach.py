@@ -17,9 +17,9 @@ class MacroRoach(KnowledgeBot):
         build_steps_exps = [
             Step(None, Expand(2)),
             Step(UnitReady(UnitTypeId.SPAWNINGPOOL, 1), Expand(3)),
-            Step(RequiredSupply(80), MorphLair()),
+            Step(Supply(80), MorphLair()),
             Expand(4),
-            Step(RequiredSupply(100), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
+            Step(Supply(100), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
         ]
 
         bsus = [

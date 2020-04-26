@@ -1,7 +1,7 @@
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
-from sharpy.plans.require.required_supply import SupplyType
+from sharpy.plans.require.supply import SupplyType
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.zerg import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
@@ -21,11 +21,11 @@ class MutaliskBuild(BuildOrder):
             StepBuildGas(2, RequiredTime(4 * 60)),
             StepBuildGas(3, UnitExists(UnitTypeId.LAIR, 1)),
             StepBuildGas(5, None, Gas(100)),
-            StepBuildGas(8, RequiredSupply(50, supply_type=SupplyType.Workers)),
+            StepBuildGas(8, Supply(50, supply_type=SupplyType.Workers)),
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(RequiredSupply(16), Expand(2)),
+            Step(Supply(16), Expand(2)),
             Step(UnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             Step(
                 None,
@@ -106,7 +106,7 @@ class MutaliskBot(KnowledgeBot):
             None,
             WorkerScout(),
             skip=RequireCustom(lambda k: len(self.enemy_start_locations) == 1),
-            skip_until=RequiredSupply(20),
+            skip_until=Supply(20),
         )
         distribute = PlanDistributeWorkers()
 

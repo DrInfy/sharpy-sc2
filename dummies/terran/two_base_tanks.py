@@ -26,11 +26,11 @@ class TwoBaseTanks(KnowledgeBot):
         ]
 
         build_steps_buildings = [
-            Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
+            Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
             Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
-            StepBuildGas(1, RequiredSupply(16)),
+            StepBuildGas(1, Supply(16)),
             Expand(2),
-            Step(RequiredSupply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
+            Step(Supply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             StepBuildGas(2, UnitExists(UnitTypeId.MARINE, 1, include_pending=True)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
@@ -38,10 +38,10 @@ class TwoBaseTanks(KnowledgeBot):
                 BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
                 skip_until=UnitReady(UnitTypeId.FACTORY, 1),
             ),
-            Step(RequiredSupply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
+            Step(Supply(28), GridBuilding(UnitTypeId.SUPPLYDEPOT, 4)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 2)),
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
-            Step(RequiredSupply(38), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
+            Step(Supply(38), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
             Step(None, Expand(3), skip_until=RequireCustom(self.should_expand)),
             Step(
                 None,
@@ -50,18 +50,18 @@ class TwoBaseTanks(KnowledgeBot):
             ),
             # BuildStep(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             StepBuildGas(3),
-            Step(RequiredSupply(45), GridBuilding(UnitTypeId.SUPPLYDEPOT, 8)),
+            Step(Supply(45), GridBuilding(UnitTypeId.SUPPLYDEPOT, 8)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
             Step(None, Tech(UpgradeId.SHIELDWALL)),
             StepBuildGas(4),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
-            Step(RequiredSupply(75), GridBuilding(UnitTypeId.SUPPLYDEPOT, 10)),
+            Step(Supply(75), GridBuilding(UnitTypeId.SUPPLYDEPOT, 10)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 3)),
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 3)),
-            Step(RequiredSupply(85), GridBuilding(UnitTypeId.SUPPLYDEPOT, 14)),
+            Step(Supply(85), GridBuilding(UnitTypeId.SUPPLYDEPOT, 14)),
         ]
 
         build_steps_mech = [
