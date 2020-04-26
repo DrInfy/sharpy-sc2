@@ -199,6 +199,17 @@ class UnitRoleManager(ManagerBase):
             left_over = left_over.exclude_type(UnitTypeId.LARVA)
             self.clear_tasks(left_over.of_type(UnitTypeId.OVERLORDCOCOON))
 
+        if self.set_tag_each_iteration:
+            # Clear all unit tasks unless they were previously set
+            for unit in self.ai.units:
+                if unit.tag in self.had_task_set:
+                    continue
+
+                if unit.tag in self.roles[UnitTask.Idle].tags:
+                    continue
+
+                self.clear_task(unit)
+
         for i in range(1, self.role_count):
             self.roles[i].update()
             left_over = left_over.tags_not_in(self.roles[i].tags)
