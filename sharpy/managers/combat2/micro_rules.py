@@ -37,6 +37,8 @@ class MicroRules(Component):
         self.regroup_threshold = 0.75
         # How much distance must be between units to consider them to be in different groups, set to 0 for no grouping
         self.own_group_threshold = 7
+        # In order to avoid exceptions, let's set default generic micro to something.
+        self.generic_micro = MicroStep()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
