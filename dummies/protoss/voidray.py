@@ -39,7 +39,7 @@ class MacroVoidray(KnowledgeBot):
                 ProtossUnit(UnitTypeId.PROBE, 20),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ProtossUnit(UnitTypeId.PROBE, 21),
-                ActExpand(2),
+                Expand(2),
                 ProtossUnit(UnitTypeId.PROBE, 22),
                 StepBuildGas(2),
                 GridBuilding(UnitTypeId.PYLON, 1),
@@ -68,7 +68,7 @@ class MacroVoidray(KnowledgeBot):
                         ]
                     ),
                     [ProtossUnit(UnitTypeId.VOIDRAY, 20, priority=True)],
-                    Step(RequiredTime(60 * 5), ActExpand(3)),
+                    Step(RequiredTime(60 * 5), Expand(3)),
                     [
                         GateUnit(UnitTypeId.ZEALOT, 6),
                         GateUnit(UnitTypeId.ADEPT, 10),

@@ -24,16 +24,16 @@ class LingSpeedBuild(BuildOrder):
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(None, ActExpand(2)),
+            Step(None, Expand(2)),
             Step(UnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
                 skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
             Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
         ]
@@ -71,11 +71,11 @@ class LingFloodBuild(BuildOrder):
         buildings = [
             # 12 Pool
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
-            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), ActExpand(2)),
+            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), Expand(2)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
         ]
 

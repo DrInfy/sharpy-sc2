@@ -29,7 +29,7 @@ class RoachHydraBuild(BuildOrder):
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(RequiredSupply(16), ActExpand(2)),
+            Step(RequiredSupply(16), Expand(2)),
             Step(RequiredSupply(18), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             StepBuildGas(1, RequiredSupply(20)),
             Step(
@@ -37,14 +37,14 @@ class RoachHydraBuild(BuildOrder):
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
                 skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
             Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(RequiredUnitReady(UnitTypeId.LAIR, 1), ActBuilding(UnitTypeId.HYDRALISKDEN, 1)),
             MorphOverseer(1),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
-            Step(RequiredSupply(100), ActExpand(5)),
+            Step(RequiredSupply(100), Expand(5)),
             Step(
                 None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10), skip_until=RequiredMinerals(500)
             ),  # anti air defense!

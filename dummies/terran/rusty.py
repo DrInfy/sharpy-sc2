@@ -85,7 +85,7 @@ class BuildTanks(BuildOrder):
                 ),
             ),
             StepBuildGas(1, RequiredSupply(18)),
-            Step(UnitExists(UnitTypeId.MARINE, 1), ActExpand(2)),
+            Step(UnitExists(UnitTypeId.MARINE, 1), Expand(2)),
             StepBuildGas(2, RequiredSupply(20)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1)),
@@ -102,7 +102,7 @@ class BuildTanks(BuildOrder):
             Step(None, ActTech(UpgradeId.SHIELDWALL)),
             Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
-            Step(None, ActExpand(3)),
+            Step(None, Expand(3)),
         ]
 
         mech = [

@@ -28,7 +28,7 @@ class MacroStalkers(KnowledgeBot):
                 StepBuildGas(1),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
-                ActExpand(2),
+                Expand(2),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 21),
                 StepBuildGas(2),

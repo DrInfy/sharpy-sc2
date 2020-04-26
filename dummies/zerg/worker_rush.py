@@ -97,11 +97,11 @@ class LingFloodBuild(BuildOrder):
         buildings = [
             # 12 Pool
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
-            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), ActExpand(2)),
+            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), Expand(2)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
         ]
 

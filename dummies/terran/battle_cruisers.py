@@ -74,7 +74,7 @@ class BattleCruisers(KnowledgeBot):
                 Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
                 StepBuildGas(1),
-                ActExpand(2),
+                Expand(2),
                 Step(RequiredSupply(20), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
                 StepBuildGas(2),
                 Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
@@ -100,7 +100,7 @@ class BattleCruisers(KnowledgeBot):
                 ),
                 Step(None, ActTech(UpgradeId.SHIELDWALL)),
                 Step(RequiredMinerals(600), GridBuilding(UnitTypeId.BARRACKS, 5)),
-                ActExpand(3),
+                Expand(3),
             ],
             [
                 Step(

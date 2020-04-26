@@ -15,10 +15,10 @@ class MacroRoach(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         build_steps_exps = [
-            Step(None, ActExpand(2)),
-            Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL, 1), ActExpand(3)),
+            Step(None, Expand(2)),
+            Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL, 1), Expand(3)),
             Step(RequiredSupply(80), MorphLair()),
-            ActExpand(4),
+            Expand(4),
             Step(RequiredSupply(100), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
         ]
 

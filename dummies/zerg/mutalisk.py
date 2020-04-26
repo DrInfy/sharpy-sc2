@@ -25,7 +25,7 @@ class MutaliskBuild(BuildOrder):
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(RequiredSupply(16), ActExpand(2)),
+            Step(RequiredSupply(16), Expand(2)),
             Step(UnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             Step(
                 None,
@@ -38,12 +38,12 @@ class MutaliskBuild(BuildOrder):
             ),
             # Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True, include_pending=True), ActExpand(3)),
             Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(3)),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 3)),
             Step(UnitExists(UnitTypeId.LAIR, 1), ActBuilding(UnitTypeId.SPIRE, 1)),
             MorphOverseer(1),
             Step(None, ZergUnit(UnitTypeId.QUEEN, 5)),
-            Step(UnitExists(UnitTypeId.SPIRE), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.SPIRE), Expand(4)),
             ActTech(UpgradeId.ZERGFLYERWEAPONSLEVEL1),
             Step(UnitExists(UnitTypeId.MUTALISK, 10, include_killed=True), ActBuilding(UnitTypeId.INFESTATIONPIT)),
             Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT), MorphHive()),

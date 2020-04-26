@@ -132,7 +132,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 21),
-                ActExpand(2),
+                Expand(2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                 StepBuildGas(2),
                 GridBuilding(UnitTypeId.PYLON, 1),
@@ -157,7 +157,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                         Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.ADEPTPIERCINGATTACK)),
                     ),
                     [ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)],
-                    Step(RequiredTime(60 * 5), ActExpand(3)),
+                    Step(RequiredTime(60 * 5), Expand(3)),
                     [GateUnit(UnitTypeId.STALKER, 30)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),

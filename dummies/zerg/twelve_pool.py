@@ -38,7 +38,7 @@ class TwelvePool(KnowledgeBot):
             Step(
                 RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30), StepBuildGas(2)
             ),
-            ActExpand(2),
+            Expand(2),
             UnitExists(UnitTypeId.DRONE, 20),
             MorphLair(),
             UnitExists(UnitTypeId.DRONE, 30),

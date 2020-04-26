@@ -29,7 +29,7 @@ class TwoBaseTanks(KnowledgeBot):
             Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
             Step(RequiredUnitReady(UnitTypeId.SUPPLYDEPOT, 0.95), GridBuilding(UnitTypeId.BARRACKS, 1)),
             StepBuildGas(1, RequiredSupply(16)),
-            ActExpand(2),
+            Expand(2),
             Step(RequiredSupply(16), GridBuilding(UnitTypeId.SUPPLYDEPOT, 2)),
             StepBuildGas(2, UnitExists(UnitTypeId.MARINE, 1, include_pending=True)),
             Step(None, GridBuilding(UnitTypeId.FACTORY, 1), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
@@ -42,10 +42,10 @@ class TwoBaseTanks(KnowledgeBot):
             Step(None, GridBuilding(UnitTypeId.FACTORY, 2)),
             Step(None, BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 2)),
             Step(RequiredSupply(38), GridBuilding(UnitTypeId.SUPPLYDEPOT, 5)),
-            Step(None, ActExpand(3), skip_until=RequireCustom(self.should_expand)),
+            Step(None, Expand(3), skip_until=RequireCustom(self.should_expand)),
             Step(
                 None,
-                ActExpand(4),
+                Expand(4),
                 skip_until=RequiredAll(
                     [RequireCustom(self.should_expand), RequiredUnitReady(UnitTypeId.COMMANDCENTER, 3)]
                 ),

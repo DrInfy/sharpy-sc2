@@ -219,7 +219,7 @@ class CannonRush(KnowledgeBot):
                 Step(None, cannon_rush, skip=rush_killed),
                 BuildOrder(
                     [
-                        ActExpand(2),
+                        Expand(2),
                         ProtossUnit(UnitTypeId.PROBE, 30),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                     ],
@@ -358,7 +358,7 @@ class CannonRush(KnowledgeBot):
                 ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 [
                     Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
-                    Step(RequiredMinerals(700), ActExpand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
+                    Step(RequiredMinerals(700), Expand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ],
             ]
@@ -388,7 +388,7 @@ class CannonRush(KnowledgeBot):
                         ),
                         skip=RequireCustom(lambda k: k.lost_units_manager.own_lost_type(UnitTypeId.PYLON) > 0),
                     ),
-                    ActExpand(2),
+                    Expand(2),
                     GridBuilding(UnitTypeId.GATEWAY, 1),
                     DefensiveCannons(2, 0, 1),
                 ],

@@ -27,7 +27,7 @@ class MacroBuild(BuildOrder):
         ]
 
         build_step_expansions = [
-            Step(None, ActExpand(999)),
+            Step(None, Expand(999)),
         ]
 
         queens = [

@@ -1,6 +1,6 @@
 from .act_base import ActBase
 from .act_building import ActBuilding
-from .act_expand import ActExpand
+from .expand import Expand, ActExpand
 from .act_tech import ActTech
 from .act_unit_once import ActUnitOnce
 from .act_many import ActMany

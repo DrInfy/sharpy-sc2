@@ -89,7 +89,7 @@ class BuildBio(BuildOrder):
             TerranUnit(UnitTypeId.REAPER, 1, only_once=True, priority=True),
             Step(
                 None,
-                ActExpand(2),
+                Expand(2),
                 skip_until=RequiredAny(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
@@ -125,7 +125,7 @@ class BuildBio(BuildOrder):
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 3)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
-            Step(RequiredSupply(40, SupplyType.Workers), ActExpand(3)),
+            Step(RequiredSupply(40, SupplyType.Workers), Expand(3)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
             Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
             Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),

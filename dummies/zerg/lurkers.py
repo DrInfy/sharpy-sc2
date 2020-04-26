@@ -138,7 +138,7 @@ class LurkerBuild(BuildOrder):
             ),
             SequentialList(
                 # Opener
-                Step(RequiredSupply(16), ActExpand(2)),
+                Step(RequiredSupply(16), Expand(2)),
                 Step(
                     RequiredSupply(18),
                     PositionBuilding(UnitTypeId.SPAWNINGPOOL, DefensePosition.BehindMineralLineLeft, 0),
@@ -147,9 +147,9 @@ class LurkerBuild(BuildOrder):
                 ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4),
                 ZergUnit(UnitTypeId.QUEEN, 2),
                 Step(self.build_workers, None, skip=RequiredTime(8 * 60)),
-                Step(RequiredTime(3 * 60), ActExpand(3)),
+                Step(RequiredTime(3 * 60), Expand(3)),
                 ZergUnit(UnitTypeId.QUEEN, 4),
-                Step(RequiredSupply(40, SupplyType.Workers), ActExpand(4)),
+                Step(RequiredSupply(40, SupplyType.Workers), Expand(4)),
             ),
             SequentialList(
                 # Workers
