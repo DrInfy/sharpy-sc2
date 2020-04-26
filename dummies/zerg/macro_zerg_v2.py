@@ -17,7 +17,7 @@ class MacroBuild(BuildOrder):
     def __init__(self):
         ultras = [
             Step(UnitExists(UnitTypeId.ULTRALISKCAVERN, 1), None),
-            Step(RequiredGas(500), ActUnit(UnitTypeId.ULTRALISK, UnitTypeId.LARVA, priority=True)),
+            Step(Gas(500), ActUnit(UnitTypeId.ULTRALISK, UnitTypeId.LARVA, priority=True)),
         ]
 
         units = [
@@ -39,7 +39,7 @@ class MacroBuild(BuildOrder):
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             StepBuildGas(2, None),
             Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
-            Step(RequiredGas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
+            Step(Gas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
             Step(UnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), Tech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
             Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
             Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),

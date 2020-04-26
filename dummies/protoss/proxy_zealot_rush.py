@@ -143,9 +143,9 @@ class ProxyZealotRushBot(KnowledgeBot):
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        StepBuildGas(3, skip=RequiredGas(300)),
+                        StepBuildGas(3, skip=Gas(300)),
                         Step(UnitExists(UnitTypeId.NEXUS, 3), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 56)),
-                        StepBuildGas(5, skip=RequiredGas(200)),
+                        StepBuildGas(5, skip=Gas(200)),
                     ],
                     SequentialList(
                         Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),),
@@ -158,7 +158,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                     [ProtossUnit(UnitTypeId.STALKER, 30)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
-                        StepBuildGas(4, skip=RequiredGas(200)),
+                        StepBuildGas(4, skip=Gas(200)),
                         GridBuilding(UnitTypeId.STARGATE, 2),
                     ],
                 ),

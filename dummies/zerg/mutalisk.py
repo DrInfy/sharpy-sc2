@@ -16,11 +16,11 @@ class MutaliskBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
-            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=Gas(100)),
+            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=Gas(100)),
             StepBuildGas(2, RequiredTime(4 * 60)),
             StepBuildGas(3, UnitExists(UnitTypeId.LAIR, 1)),
-            StepBuildGas(5, None, RequiredGas(100)),
+            StepBuildGas(5, None, Gas(100)),
             StepBuildGas(8, RequiredSupply(50, supply_type=SupplyType.Workers)),
         ]
         buildings = [
@@ -72,13 +72,11 @@ class MutaliskBuild(BuildOrder):
             Step(None, ZergUnit(UnitTypeId.QUEEN, 1)),
             Step(None, ZergUnit(UnitTypeId.DRONE, 30), None),
             Step(None, ZergUnit(UnitTypeId.ZERGLING, 16, only_once=True), None),
-            Step(None, ZergUnit(UnitTypeId.ROACH, 4, only_once=True), skip_until=RequiredGas(25)),
+            Step(None, ZergUnit(UnitTypeId.ROACH, 4, only_once=True), skip_until=Gas(25)),
             Step(None, ZergUnit(UnitTypeId.MUTALISK, 4), skip_until=UnitReady(UnitTypeId.SPIRE, 1)),
             Step(None, ZergUnit(UnitTypeId.DRONE, 45), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
-            Step(
-                None, ZergUnit(UnitTypeId.ROACH, 10), skip=UnitReady(UnitTypeId.SPIRE, 1), skip_until=RequiredGas(25),
-            ),
+            Step(None, ZergUnit(UnitTypeId.ROACH, 10), skip=UnitReady(UnitTypeId.SPIRE, 1), skip_until=Gas(25),),
             Step(None, ZergUnit(UnitTypeId.DRONE, 65), None),
             Step(
                 None,

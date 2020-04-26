@@ -40,10 +40,10 @@ class MacroStalkers(KnowledgeBot):
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        StepBuildGas(3, skip=RequiredGas(300)),
+                        StepBuildGas(3, skip=Gas(300)),
                     ],
                     [ProtossUnit(UnitTypeId.STALKER, 100)],
-                    [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=RequiredGas(200))],
+                    [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=Gas(200))],
                 ),
             ),
             SequentialList(

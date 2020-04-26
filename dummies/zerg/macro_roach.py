@@ -72,8 +72,8 @@ class MacroRoach(KnowledgeBot):
 
         ravagers = [
             Step(UnitReady(UnitTypeId.ROACH, 4), None),
-            Step(UnitReady(UnitTypeId.ROACHWARREN, 1), MorphRavager(5), skip_until=RequiredGas(200)),
-            Step(UnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=RequiredGas(300)),
+            Step(UnitReady(UnitTypeId.ROACHWARREN, 1), MorphRavager(5), skip_until=Gas(200)),
+            Step(UnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=Gas(300)),
         ]
 
         build = BuildOrder(

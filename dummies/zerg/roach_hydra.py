@@ -15,15 +15,13 @@ class RoachHydraBuild(BuildOrder):
     def __init__(self):
 
         gas_related = [
-            Step(
-                UnitExists(UnitTypeId.HATCHERY, 2), Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100),
-            ),
-            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
-            StepBuildGas(2, RequiredTime(4 * 60), RequiredGas(100)),
-            StepBuildGas(3, UnitExists(UnitTypeId.HYDRALISKDEN, 1), RequiredGas(50)),
-            StepBuildGas(4, RequiredSupply(60, SupplyType.Workers), RequiredGas(25)),
-            StepBuildGas(6, Minerals(749), RequiredGas(25)),
-            StepBuildGas(8, Minerals(1000), RequiredGas(25)),
+            Step(UnitExists(UnitTypeId.HATCHERY, 2), Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=Gas(100),),
+            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=Gas(100)),
+            StepBuildGas(2, RequiredTime(4 * 60), Gas(100)),
+            StepBuildGas(3, UnitExists(UnitTypeId.HYDRALISKDEN, 1), Gas(50)),
+            StepBuildGas(4, RequiredSupply(60, SupplyType.Workers), Gas(25)),
+            StepBuildGas(6, Minerals(749), Gas(25)),
+            StepBuildGas(8, Minerals(1000), Gas(25)),
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
@@ -59,13 +57,13 @@ class RoachHydraBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
-            Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=RequiredGas(25)),
+            Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=Gas(25)),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 100), skip_until=Minerals(750)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 45), None),
             Step(None, ActUnit(UnitTypeId.HYDRALISK, UnitTypeId.LARVA, 7), skip=UnitReady(UnitTypeId.HYDRALISKDEN, 1),),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 24), None),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 50), None),
-            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 10), skip_until=RequiredGas(25)),
+            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 10), skip_until=Gas(25)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 70), None),
             Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA), skip=UnitReady(UnitTypeId.HYDRALISKDEN, 1)),
             # Endless hydralisk

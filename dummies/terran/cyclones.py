@@ -34,7 +34,7 @@ class CycloneBot(KnowledgeBot):
             Step(None, Tech(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE), skip_until=UnitReady(UnitTypeId.FACTORYTECHLAB, 1),),
             StepBuildGas(5),
             Step(None, Tech(UpgradeId.HIGHCAPACITYBARRELS), skip_until=UnitReady(UnitTypeId.FACTORYTECHLAB, 2)),
-            StepBuildGas(6, None, RequiredGas(100)),
+            StepBuildGas(6, None, Gas(100)),
             Step(Minerals(400), GridBuilding(UnitTypeId.FACTORY, 4)),
             Step(None, BuildAddon(UnitTypeId.FACTORYREACTOR, UnitTypeId.FACTORY, 1)),
             BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 3),

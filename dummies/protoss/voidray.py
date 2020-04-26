@@ -50,9 +50,9 @@ class MacroVoidray(KnowledgeBot):
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ProtossUnit(UnitTypeId.PROBE, 44)),
-                        StepBuildGas(3, skip=RequiredGas(300)),
+                        StepBuildGas(3, skip=Gas(300)),
                         Step(UnitExists(UnitTypeId.NEXUS, 3), ProtossUnit(UnitTypeId.PROBE, 56)),
-                        StepBuildGas(5, skip=RequiredGas(200)),
+                        StepBuildGas(5, skip=Gas(200)),
                     ],
                     SequentialList(
                         [
@@ -76,7 +76,7 @@ class MacroVoidray(KnowledgeBot):
                     ],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
-                        StepBuildGas(4, skip=RequiredGas(200)),
+                        StepBuildGas(4, skip=Gas(200)),
                         GridBuilding(UnitTypeId.STARGATE, 2),
                     ],
                 ),
