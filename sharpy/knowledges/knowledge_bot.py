@@ -68,7 +68,7 @@ class KnowledgeBot(BotAI):
     async def chat_send(self, message: str, team_only: bool = False):
         # todo: refactor to use chat manager?
         self.knowledge.print(message, "Chat")
-        await super().chat_send(message)
+        await super().chat_send(message, team_only)
 
     @abstractmethod
     async def create_plan(self) -> BuildOrder:
