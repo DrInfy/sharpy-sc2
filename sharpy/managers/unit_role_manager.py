@@ -20,6 +20,8 @@ class UnitRoleManager(ManagerBase):
         self.role_count = UnitRoleManager.MAX_VALUE
         self.chat_count = 0
         self.had_task_set: Set[int] = set()
+        # If this is True, then units will drop their role if it wasn't set in previous iteration
+        self.set_tag_each_iteration = False
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -35,7 +37,7 @@ class UnitRoleManager(ManagerBase):
             self.peace_unit_types = []
 
         self.roles: List[UnitsInRole] = []
-        for index in range(0, self.role_count - 1):
+        for index in range(0, self.role_count):
             self.roles.append(UnitsInRole(index, self.cache, self.ai))
 
     def attack_ended(self):
@@ -97,7 +99,7 @@ class UnitRoleManager(ManagerBase):
 
     def get_types_from(self, types: Set[UnitTypeId], *args: Union[int, UnitTask]) -> Units:
         units = self.cache.own(types)
-        all_tags: List[int] = []
+        all_tags: Set[int] = set()
 
         if len(args) == 0:
             all_tags = self.roles[UnitTask.Idle].tags
@@ -238,7 +240,7 @@ class UnitRoleManager(ManagerBase):
                 f"F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}"
             )
 
-            for index in range(10, self.role_count - 1):
+            for index in range(10, self.role_count):
                 key = str(index)
                 count = len(self.roles[index].tags)
                 msg += f" {key}:{count}"
