@@ -5,7 +5,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
 from sharpy.managers.roles import UnitTask
-from .act_base import ActBase
+from sharpy.plans.acts.act_base import ActBase
 
 
 class Archon(ActBase):
