@@ -1,4 +1,5 @@
 import sc2
+from sharpy.managers.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.plans.require import RequireBase
 from sc2 import UnitTypeId, BotAI, Race
@@ -123,6 +124,7 @@ class StepBuildGas(ActBase):
         if self.best_gas is not None and should_build and can_build:
             target = self.best_gas
             worker = workers.closest_to(target.position)
+            self.roles.set_task(UnitTask.Building, worker)
             self.ai.do(worker.build_gas(target))
 
             if self.ai.race == Race.Protoss:

@@ -1,4 +1,4 @@
-from typing import List, Union, Set, Iterable
+from typing import List, Union, Set, Iterable, Optional
 
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId, Race
@@ -88,6 +88,19 @@ class UnitRoleManager(ManagerBase):
     def units(self, task: Union[int, UnitTask]) -> Units:
         return self.roles[task].units
 
+    def refresh_task(self, unit: Unit):
+        self.had_task_set.add(unit.tag)
+
+    def refresh_tags(self, tags: Iterable[int]):
+        for tag in tags:
+            if tag not in self.had_task_set:
+                self.had_task_set.add(tag)
+
+    def refresh_tasks(self, units: Units):
+        for unit in units:
+            if unit.tag not in self.had_task_set:
+                self.had_task_set.add(unit.tag)
+
     @property
     def attacking_units(self) -> Units:
         """Returns all units that are currently attacking."""
@@ -109,6 +122,12 @@ class UnitRoleManager(ManagerBase):
                 all_tags += tags
 
         return units.tags_in(all_tags)
+
+    def get_unit_by_tag_from_task(self, tag: int, task: Union[int, UnitTask]) -> Optional[Unit]:
+        """ Get unit by its tag from the specified role. """
+        if tag in self.roles[task].tags:
+            return self.roles[task].units.by_tag(tag)
+        return None
 
     @property
     def hallucinated_units(self) -> Units:
