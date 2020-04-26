@@ -74,7 +74,7 @@ class CycloneBot(KnowledgeBot):
             Repair(),
             ContinueBuilding(),
             PlanZoneGatherTerran(),
-            Step(RequiredTechReady(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE, 0.95), self.attack),
+            Step(TechReady(UpgradeId.CYCLONELOCKONDAMAGEUPGRADE, 0.95), self.attack),
             PlanFinishEnemy(),
         ]
 

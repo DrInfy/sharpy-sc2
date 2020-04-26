@@ -58,7 +58,7 @@ class Stalkers4Gate(KnowledgeBot):
                 RestorePower(),
                 PlanDistributeWorkers(),
                 PlanZoneGather(),
-                Step(RequiredTechReady(UpgradeId.BLINKTECH, 0.9), attack),
+                Step(TechReady(UpgradeId.BLINKTECH, 0.9), attack),
                 PlanFinishEnemy(),
             ),
         )

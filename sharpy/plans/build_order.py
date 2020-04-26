@@ -10,7 +10,7 @@ from sharpy.plans.build_step import Step
 from sharpy.plans.require import (
     UnitReady,
     SupplyLeft,
-    RequiredTechReady,
+    TechReady,
     All,
     Any,
     EnemyUnitExists,
@@ -164,20 +164,14 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),]
                 ),
             ),
             # Weapons
@@ -186,27 +180,21 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),]
                 ),
             ),
             # Shields
             Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
             Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
+            Step(TechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
+            Step(TechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
 
     @property
@@ -218,20 +206,14 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, 1),]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, 1),]
                 ),
             ),
             # Armor
@@ -240,27 +222,21 @@ class BuildOrder(ActBase):
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL2),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL1, 1),]
                 ),
             ),
             Step(
                 None,
                 Tech(UpgradeId.PROTOSSGROUNDARMORSLEVEL3),
                 skip_until=All(
-                    [
-                        UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        RequiredTechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),
-                    ]
+                    [UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), TechReady(UpgradeId.PROTOSSGROUNDARMORSLEVEL2, 1),]
                 ),
             ),
             # Shields
             Step(None, Tech(UpgradeId.PROTOSSSHIELDSLEVEL1)),
             Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
+            Step(TechReady(UpgradeId.PROTOSSSHIELDSLEVEL1, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL2)),
+            Step(TechReady(UpgradeId.PROTOSSSHIELDSLEVEL2, 1), Tech(UpgradeId.PROTOSSSHIELDSLEVEL3)),
         ]
 
     @property
@@ -269,10 +245,10 @@ class BuildOrder(ActBase):
             Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL1)),
             Step(None, Tech(UpgradeId.PROTOSSAIRARMORSLEVEL1)),
             Step(UnitReady(UnitTypeId.FLEETBEACON, 1), None),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL1), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL2)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL2), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL3)),
-            Step(RequiredTechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
+            Step(TechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL1), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL2)),
+            Step(TechReady(UpgradeId.PROTOSSAIRARMORSLEVEL1), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL2)),
+            Step(TechReady(UpgradeId.PROTOSSAIRWEAPONSLEVEL2), Tech(UpgradeId.PROTOSSAIRWEAPONSLEVEL3)),
+            Step(TechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
         ]
 
     async def start(self, knowledge: "Knowledge"):

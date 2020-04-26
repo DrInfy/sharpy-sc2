@@ -233,7 +233,7 @@ class LingFlood(KnowledgeBot):
         worker_scout = Step(
             None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
         )
-        stop_gas = Any([Gas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
+        stop_gas = Any([Gas(100), TechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
         end_game = Any([Supply(90), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(

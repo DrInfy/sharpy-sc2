@@ -220,7 +220,7 @@ class WorkerRush(KnowledgeBot):
         super().__init__("Worker Rush Dummy")
 
     async def create_plan(self) -> BuildOrder:
-        stop_gas = Any([Gas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
+        stop_gas = Any([Gas(100), TechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
         end_game = Any([Supply(70), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(
