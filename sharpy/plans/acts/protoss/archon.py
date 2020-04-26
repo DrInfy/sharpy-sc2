@@ -1,3 +1,4 @@
+import warnings
 from typing import List
 
 from sharpy.events import UnitDestroyedEvent
@@ -58,4 +59,5 @@ class Archon(ActBase):
 
 class ActArchon(Archon):
     def __init__(self, allowed_types: List[UnitTypeId]):
+        warnings.warn("'ActArchon' is deprecated, use 'Archon' instead", DeprecationWarning, 2)
         super().__init__(allowed_types)
