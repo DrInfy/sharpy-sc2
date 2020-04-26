@@ -1,9 +1,9 @@
 from sharpy.plans.require.require_base import RequireBase
 
 
-class RequiredEnemyBases(RequireBase):
+class EnemyBases(RequireBase):
     """
-    Checks if enemy has units of the type based on the information we have seen.
+    Checks if enemy has at least the requested amount of bases.
     """
 
     def __init__(self, count: int):
