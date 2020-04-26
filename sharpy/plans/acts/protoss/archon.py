@@ -8,7 +8,7 @@ from sharpy.managers.roles import UnitTask
 from .act_base import ActBase
 
 
-class ActArchon(ActBase):
+class Archon(ActBase):
     def __init__(self, allowed_types: List[UnitTypeId]):
         assert allowed_types is not None and isinstance(allowed_types, List)
         self.allowed_types: List[UnitTypeId] = allowed_types
@@ -54,3 +54,8 @@ class ActArchon(ActBase):
     def on_unit_destroyed(self, event: UnitDestroyedEvent):
         if event.unit_tag in self.already_merging_tags:
             self.already_merging_tags.remove(event.unit_tag)
+
+
+class ActArchon(Archon):
+    def __init__(self, allowed_types: List[UnitTypeId]):
+        super().__init__(allowed_types)

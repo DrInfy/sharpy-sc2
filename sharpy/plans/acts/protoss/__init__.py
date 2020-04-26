@@ -1,3 +1,4 @@
+from .archon import Archon, ActArchon
 from .artosis_pylon import ArtosisPylon
 from .auto_pylon import AutoPylon
 from .chrono_any_tech import ChronoAnyTech
