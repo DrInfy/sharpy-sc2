@@ -1,5 +1,3 @@
-import warnings
-
 import sc2
 from sharpy.plans.acts import ActBase
 from sharpy.plans.require import RequireBase
@@ -9,20 +7,13 @@ from sc2.unit import Unit
 from sharpy.knowledges import Knowledge
 
 
-class StepBuildGas(ActBase):
+class BuildGas(ActBase):
     """Builds a new gas mining facility closest to vespene geyser with closest worker"""
 
-    def __init__(self, to_count: int, requirement=None, skip=None):
-        warnings.warn("'StepBuildGas' is deprecated, use 'BuildGas' and 'Step' instead", DeprecationWarning, 2)
+    def __init__(self, to_count: int):
         assert to_count is not None and isinstance(to_count, int)
 
-        assert requirement is None or isinstance(requirement, RequireBase)
-        assert skip is None or isinstance(skip, RequireBase)
-
         super().__init__()
-
-        self.requirement: RequireBase = requirement
-        self.skip: RequireBase = skip
 
         self.to_count = to_count
         self.best_gas: Unit = None
@@ -31,21 +22,10 @@ class StepBuildGas(ActBase):
         self.all_types = ALL_GAS
         self.unit_type: UnitTypeId = None
 
-    async def debug_draw(self):
-        if self.requirement is not None:
-            await self.requirement.debug_draw()
-        if self.skip is not None:
-            await self.skip.debug_draw()
-
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
 
         self.unit_type = sc2.race_gas.get(knowledge.my_race)
-
-        if self.requirement is not None and hasattr(self.requirement, "start"):
-            await self.requirement.start(knowledge)
-        if self.skip is not None and hasattr(self.skip, "start"):
-            await self.skip.start(knowledge)
 
     @property
     def active_harvester_count(self):
@@ -103,18 +83,7 @@ class StepBuildGas(ActBase):
 
         return self.best_gas is None and not delayed
 
-    async def ready(self):
-        if self.requirement is None:
-            return True
-        return self.requirement.check()
-
     async def execute(self) -> bool:
-        # External check prevents us from building harvesters
-        if self.skip is not None and self.skip.check():
-            return True
-        if self.requirement is not None and not self.requirement.check():
-            return False
-
         if await self.is_done():
             return True
 
