@@ -112,7 +112,7 @@ class DefaultMicroMethods:
             step.closest_group_distance = 100000
         step.enemy_groups = enemy_groups
         step.center = units.center
-        step.enemies_near_by: Units = step.knowledge.unit_cache.enemy_in_range(step.center, 15 + len(group.units) * 0.1)
+        step.enemies_near_by = step.knowledge.unit_cache.enemy_in_range(step.center, 15 + len(group.units) * 0.1)
 
         step.engaged_power.add_units(step.enemies_near_by)
 

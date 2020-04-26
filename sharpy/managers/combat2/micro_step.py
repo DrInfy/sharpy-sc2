@@ -33,6 +33,7 @@ class MicroStep(ABC, Component):
     our_power: ExtendedPower
     delay_to_shoot: float
     enemies_near_by: Units
+    closest_group: CombatUnits
 
     def __init__(self):
         self.enemy_groups: List[CombatUnits] = []
