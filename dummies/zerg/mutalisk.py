@@ -18,7 +18,7 @@ class MutaliskBuild(BuildOrder):
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
             Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=Gas(100)),
             Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=Gas(100)),
-            StepBuildGas(2, RequiredTime(4 * 60)),
+            StepBuildGas(2, Time(4 * 60)),
             StepBuildGas(3, UnitExists(UnitTypeId.LAIR, 1)),
             StepBuildGas(5, None, Gas(100)),
             StepBuildGas(8, Supply(50, supply_type=SupplyType.Workers)),

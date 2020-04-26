@@ -65,7 +65,7 @@ class MacroVoidray(KnowledgeBot):
                         ]
                     ),
                     [ProtossUnit(UnitTypeId.VOIDRAY, 20, priority=True)],
-                    Step(RequiredTime(60 * 5), Expand(3)),
+                    Step(Time(60 * 5), Expand(3)),
                     [
                         ProtossUnit(UnitTypeId.ZEALOT, 6),
                         ProtossUnit(UnitTypeId.ADEPT, 10),

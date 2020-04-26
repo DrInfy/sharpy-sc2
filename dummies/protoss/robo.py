@@ -69,7 +69,7 @@ class MacroRobo(KnowledgeBot):
                         ActUnit(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
                         ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 20, priority=True),
                     ],
-                    Step(RequiredTime(60 * 5), Expand(3)),
+                    Step(Time(60 * 5), Expand(3)),
                     [ProtossUnit(UnitTypeId.ZEALOT, 100)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),

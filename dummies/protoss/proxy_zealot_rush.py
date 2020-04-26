@@ -154,7 +154,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                         Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.ADEPTPIERCINGATTACK)),
                     ),
                     [ActUnit(UnitTypeId.VOIDRAY, UnitTypeId.STARGATE, 20, priority=True)],
-                    Step(RequiredTime(60 * 5), Expand(3)),
+                    Step(Time(60 * 5), Expand(3)),
                     [ProtossUnit(UnitTypeId.STALKER, 30)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
