@@ -1,12 +1,14 @@
+import warnings
+
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
 from sharpy.managers.roles import UnitTask
 from sc2.units import Units
-from .act_base import ActBase
+from sharpy.plans.acts.act_base import ActBase
 
 
-class ActWarpUnit(ActBase):
+class WarpUnit(ActBase):
     """Use Warp Gates (Protoss) to build units."""
 
     def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
@@ -85,3 +87,9 @@ class ActWarpUnit(ActBase):
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
             self.knowledge.reserve(cost.minerals, cost.vespene)
         return False
+
+
+class ActWarpUnit(WarpUnit):
+    def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
+        warnings.warn("'ActWarpUnit' is deprecated, use 'WarpUnit' instead", DeprecationWarning, 2)
+        super().__init__(unit_type, to_count, priority)

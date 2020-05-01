@@ -35,7 +35,7 @@ class AdeptRush(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 20, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
@@ -44,7 +44,7 @@ class AdeptRush(KnowledgeBot):
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
-                StepBuildGas(1),
+                BuildGas(1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 17),
                 GridBuilding(UnitTypeId.GATEWAY, 2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
@@ -55,26 +55,20 @@ class AdeptRush(KnowledgeBot):
                         Step(
                             None,
                             GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
-                            skip_until=RequiredUnitReady(UnitTypeId.GATEWAY, 1),
+                            skip_until=UnitReady(UnitTypeId.GATEWAY, 1),
                         ),
                         Step(
-                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GateUnit(UnitTypeId.ADEPT, 2, only_once=True),
+                            UnitReady(UnitTypeId.CYBERNETICSCORE, 1), ProtossUnit(UnitTypeId.ADEPT, 2, only_once=True),
                         ),
-                        ActTech(UpgradeId.WARPGATERESEARCH),
-                        GateUnit(UnitTypeId.ADEPT, 100),
+                        Tech(UpgradeId.WARPGATERESEARCH),
+                        ProtossUnit(UnitTypeId.ADEPT, 100),
                     ),
                     Step(
                         UnitExists(UnitTypeId.CYBERNETICSCORE, 1),
                         GridBuilding(UnitTypeId.GATEWAY, 4),
-                        skip_until=RequiredMinerals(200),
+                        skip_until=Minerals(200),
                     ),
-                    Step(
-                        None,
-                        ProtossUnit(UnitTypeId.ZEALOT, 100),
-                        skip=RequiredGas(25),
-                        skip_until=RequiredMinerals(200),
-                    ),
+                    Step(None, ProtossUnit(UnitTypeId.ZEALOT, 100), skip=Gas(25), skip_until=Minerals(200),),
                 ),
             ),
             SequentialList(

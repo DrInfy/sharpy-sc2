@@ -26,43 +26,42 @@ class MacroRobo(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 30, include_pending=True),
                 skip_until=UnitExists(UnitTypeId.ASSIMILATOR, 1),
             ),
-            ChronoUnitProduction(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
+            ChronoUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY),
             SequentialList(
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 14),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 16),
-                StepBuildGas(1),
+                BuildGas(1),
                 GridBuilding(UnitTypeId.GATEWAY, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 20),
-                ActExpand(2),
+                Expand(2),
                 GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 21),
-                StepBuildGas(2),
+                BuildGas(2),
                 ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                 GridBuilding(UnitTypeId.PYLON, 1),
                 BuildOrder(
                     AutoPylon(),
-                    GateUnit(UnitTypeId.STALKER, 2, priority=True),
-                    ActTech(UpgradeId.WARPGATERESEARCH),
+                    ProtossUnit(UnitTypeId.STALKER, 2, priority=True),
+                    Tech(UpgradeId.WARPGATERESEARCH),
                     [
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        StepBuildGas(3, skip=RequiredGas(300)),
+                        StepBuildGas(3, skip=Gas(300)),
                         Step(UnitExists(UnitTypeId.NEXUS, 3), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 56)),
-                        StepBuildGas(5, skip=RequiredGas(200)),
+                        StepBuildGas(5, skip=Gas(200)),
                     ],
                     SequentialList(
                         [
                             Step(
-                                RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                                GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
+                                UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
                             ),
                             GridBuilding(UnitTypeId.ROBOTICSFACILITY, 1),
-                            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.CHARGE)),
+                            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.CHARGE)),
                         ]
                     ),
                     [
@@ -70,11 +69,11 @@ class MacroRobo(KnowledgeBot):
                         ActUnit(UnitTypeId.OBSERVER, UnitTypeId.ROBOTICSFACILITY, 1, priority=True),
                         ActUnit(UnitTypeId.IMMORTAL, UnitTypeId.ROBOTICSFACILITY, 20, priority=True),
                     ],
-                    Step(RequiredTime(60 * 5), ActExpand(3)),
-                    [GateUnit(UnitTypeId.ZEALOT, 100)],
+                    Step(Time(60 * 5), Expand(3)),
+                    [ProtossUnit(UnitTypeId.ZEALOT, 100)],
                     [
                         GridBuilding(UnitTypeId.GATEWAY, 4),
-                        StepBuildGas(4, skip=RequiredGas(200)),
+                        StepBuildGas(4, skip=Gas(200)),
                         GridBuilding(UnitTypeId.ROBOTICSFACILITY, 2),
                     ],
                 ),
@@ -86,7 +85,7 @@ class MacroRobo(KnowledgeBot):
                 RestorePower(),
                 PlanDistributeWorkers(),
                 PlanZoneGather(),
-                Step(RequiredUnitReady(UnitTypeId.IMMORTAL, 3), attack),
+                Step(UnitReady(UnitTypeId.IMMORTAL, 3), attack),
                 PlanFinishEnemy(),
             ),
         )

@@ -1,9 +1,11 @@
+import warnings
+
 from sc2 import UnitTypeId
 
 from sharpy.plans.require.require_base import RequireBase
 
 
-class RequiredEnemyBuildingExists(RequireBase):
+class EnemyBuildingExists(RequireBase):
     """
     Checks if enemy has units of the type based on the information we have seen.
     """
@@ -25,3 +27,11 @@ class RequiredEnemyBuildingExists(RequireBase):
             return True
 
         return False
+
+
+class RequiredEnemyBuildingExists(EnemyBuildingExists):
+    def __init__(self, unit_type: UnitTypeId, count: int = 1):
+        warnings.warn(
+            "'RequiredEnemyBuildingExists' is deprecated, use 'EnemyBuildingExists' instead", DeprecationWarning, 2
+        )
+        super().__init__(unit_type, count)

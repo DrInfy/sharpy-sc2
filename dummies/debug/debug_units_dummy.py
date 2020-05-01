@@ -1,4 +1,4 @@
-from sharpy.plans.require import RequiredTime
+from sharpy.plans.require import Time
 from sharpy.plans.tactics import PlanDistributeWorkers, PlanZoneAttack
 from sc2 import UnitTypeId
 
@@ -17,7 +17,7 @@ class DebugUnitsDummy(KnowledgeBot):
         attack.retreat_multiplier = 0.1
         attack.attack_on_advantage = False
 
-        return BuildOrder([PlanDistributeWorkers(), Step(RequiredTime(60), attack)])
+        return BuildOrder([PlanDistributeWorkers(), Step(Time(60), attack)])
 
     async def on_step(self, iteration):
         # Hack so that BuildingSolver is finally ready to give positions for the debug buildings.

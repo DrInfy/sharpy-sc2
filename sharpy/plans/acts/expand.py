@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional
 
 from sharpy.general.zone import Zone
@@ -20,7 +21,7 @@ def get_new_townhall_type(race: Race):
 train_worker_abilitites = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
-class ActExpand(ActBase):
+class Expand(ActBase):
     def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):
         assert isinstance(to_count, int)
         self.to_count: int = to_count
@@ -162,3 +163,9 @@ class ActExpand(ActBase):
                         return True
 
         return False
+
+
+class ActExpand(Expand):
+    def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):
+        warnings.warn("'ActExpand' is deprecated, use 'Expand' instead", DeprecationWarning, 2)
+        super().__init__(to_count, priority, consider_worker_production)

@@ -1,10 +1,11 @@
-import sc2
+import warnings
+
 from sc2.ids.upgrade_id import UpgradeId
 
 from sharpy.plans.require.require_base import RequireBase
 
 
-class RequiredTechReady(RequireBase):
+class TechReady(RequireBase):
     # Check at tech research progress
     """Require that a specific upgrade/technology already exists or is at
      least at the required percentage."""
@@ -21,3 +22,9 @@ class RequiredTechReady(RequireBase):
         if self.ai.already_pending_upgrade(self.name) >= self.percentage:
             return True
         return False
+
+
+class RequiredTechReady(TechReady):
+    def __init__(self, upgrade: UpgradeId, percentage: float = 1):
+        warnings.warn("'RequiredTechReady' is deprecated, use 'TechReady' instead", DeprecationWarning, 2)
+        super().__init__(upgrade, percentage)

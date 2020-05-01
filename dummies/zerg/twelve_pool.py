@@ -35,14 +35,12 @@ class TwelvePool(KnowledgeBot):
         ]
 
         finish = [
-            Step(
-                RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30), StepBuildGas(2)
-            ),
-            ActExpand(2),
+            Step(RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30), BuildGas(2)),
+            Expand(2),
             UnitExists(UnitTypeId.DRONE, 20),
             MorphLair(),
             UnitExists(UnitTypeId.DRONE, 30),
-            StepBuildGas(4),
+            BuildGas(4),
             ActBuilding(UnitTypeId.SPIRE),
             ZergUnit(UnitTypeId.MUTALISK, 10, priority=True),
         ]

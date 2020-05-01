@@ -1,10 +1,6 @@
 from sharpy.managers.roles import UnitTask
-from sharpy.plans.acts import *
-from sharpy.plans.acts.protoss import *
-from sharpy.plans.require import *
-from sharpy.plans.tactics import *
-from sharpy.plans import BuildOrder, Step, StepBuildGas
 from sharpy.knowledges import KnowledgeBot
+from sharpy.plans.protoss import *
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
@@ -50,11 +46,11 @@ class DarkTemplarRush(KnowledgeBot):
         self.knowledge.building_solver.wall_type = 3  # WallType.ProtossMainZerg
 
         build_steps_buildings2 = [
-            Step(RequiredUnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
-            Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), GridBuilding(UnitTypeId.DARKSHRINE, 1)),
-            ActTech(UpgradeId.BLINKTECH),
-            ActTech(UpgradeId.CHARGE),
+            Step(UnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
+            Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1)),
+            Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), GridBuilding(UnitTypeId.DARKSHRINE, 1)),
+            Tech(UpgradeId.BLINKTECH),
+            Tech(UpgradeId.CHARGE),
         ]
 
         build_steps_workers = [
@@ -63,25 +59,21 @@ class DarkTemplarRush(KnowledgeBot):
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 14)),
             Step(None, None, UnitExists(UnitTypeId.PYLON, 1)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 16 + 3 + 3)),
-            Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), ActExpand(2)),
+            Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), Expand(2)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 30)),
             GridBuilding(UnitTypeId.GATEWAY, 5),
-            StepBuildGas(3),
+            BuildGas(3),
             GridBuilding(UnitTypeId.GATEWAY, 6),
         ]
 
         build_steps_buildings = [
-            Step(RequiredSupply(14), GridBuilding(UnitTypeId.PYLON, 1), UnitExists(UnitTypeId.PYLON, 1)),
-            StepBuildGas(1, RequiredSupply(16)),
-            Step(
-                RequiredSupply(16),
-                GridBuilding(UnitTypeId.GATEWAY, 1),
-                RequiredTotalUnitExists([UnitTypeId.GATEWAY, UnitTypeId.WARPGATE], 1),
-            ),
-            StepBuildGas(2),
-            Step(RequiredSupply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
+            Step(Supply(14), GridBuilding(UnitTypeId.PYLON, 1), UnitExists(UnitTypeId.PYLON, 1)),
+            StepBuildGas(1, Supply(16)),
+            Step(Supply(16), GridBuilding(UnitTypeId.GATEWAY, 1)),
+            BuildGas(2),
+            Step(Supply(21), GridBuilding(UnitTypeId.PYLON, 2), UnitExists(UnitTypeId.PYLON, 2)),
             GridBuilding(UnitTypeId.GATEWAY, 2),
-            Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), ActTech(UpgradeId.WARPGATERESEARCH)),
+            Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), Tech(UpgradeId.WARPGATERESEARCH)),
             GridBuilding(UnitTypeId.GATEWAY, 3),
             AutoPylon(),
         ]
@@ -90,12 +82,12 @@ class DarkTemplarRush(KnowledgeBot):
             Step(
                 None,
                 ProtossUnit(UnitTypeId.DARKTEMPLAR, 4, priority=True),
-                skip_until=RequiredUnitReady(UnitTypeId.DARKSHRINE, 1),
+                skip_until=UnitReady(UnitTypeId.DARKSHRINE, 1),
             ),
             Step(
-                RequiredUnitReady(UnitTypeId.GATEWAY, 1),
+                UnitReady(UnitTypeId.GATEWAY, 1),
                 ProtossUnit(UnitTypeId.ZEALOT, 1),
-                RequiredTechReady(UpgradeId.WARPGATERESEARCH, 1),
+                TechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
             Step(None, ProtossUnit(UnitTypeId.STALKER), None),
         ]
@@ -103,17 +95,17 @@ class DarkTemplarRush(KnowledgeBot):
             Step(
                 UnitExists(UnitTypeId.TWILIGHTCOUNCIL, 1),
                 ProtossUnit(UnitTypeId.STALKER, 3),
-                RequiredTechReady(UpgradeId.WARPGATERESEARCH, 1),
+                TechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
-            Step(RequiredMinerals(400), ProtossUnit(UnitTypeId.ZEALOT)),
+            Step(Minerals(400), ProtossUnit(UnitTypeId.ZEALOT)),
         ]
 
         build_steps_chrono = [
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 skip=UnitExists(UnitTypeId.PROBE, 20, include_killed=True),
-                skip_until=RequiredUnitReady(UnitTypeId.PYLON),
+                skip_until=UnitReady(UnitTypeId.PYLON),
             ),
             ChronoAnyTech(0),
         ]

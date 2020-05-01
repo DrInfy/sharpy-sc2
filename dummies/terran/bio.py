@@ -3,7 +3,7 @@ from typing import List
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
-from sharpy.plans.require.required_supply import SupplyType
+from sharpy.plans.require.supply import SupplyType
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
@@ -42,7 +42,7 @@ class BuildBio(BuildOrder):
 
         scv = [
             Step(None, TerranUnit(UnitTypeId.MARINE, 2, priority=True), skip_until=lambda k: self.worker_rushed),
-            Step(None, MorphOrbitals(), skip_until=RequiredUnitReady(UnitTypeId.BARRACKS, 1)),
+            Step(None, MorphOrbitals(), skip_until=UnitReady(UnitTypeId.BARRACKS, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.SCV, UnitTypeId.COMMANDCENTER, 16 + 6),
@@ -53,11 +53,11 @@ class BuildBio(BuildOrder):
 
         dt_counter = [
             Step(
-                RequiredAny(
+                Any(
                     [
-                        RequiredEnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyBuildingExists(UnitTypeId.DARKSHRINE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,
@@ -68,29 +68,29 @@ class BuildBio(BuildOrder):
         ]
         dt_counter2 = [
             Step(
-                RequiredAny(
+                Any(
                     [
-                        RequiredEnemyBuildingExists(UnitTypeId.DARKSHRINE),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
-                        RequiredEnemyUnitExistsAfter(UnitTypeId.BANSHEE),
+                        EnemyBuildingExists(UnitTypeId.DARKSHRINE),
+                        EnemyUnitExistsAfter(UnitTypeId.DARKTEMPLAR),
+                        EnemyUnitExistsAfter(UnitTypeId.BANSHEE),
                     ]
                 ),
                 None,
             ),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 2)),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTTECHLAB, UnitTypeId.STARPORT, 1)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), ActUnit(UnitTypeId.RAVEN, UnitTypeId.STARPORT, 2)),
         ]
 
         opener = [
-            Step(RequiredSupply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1, priority=True)),
+            Step(Supply(13), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1, priority=True)),
             GridBuilding(UnitTypeId.BARRACKS, 1, priority=True),
-            StepBuildGas(1, RequiredSupply(15)),
+            StepBuildGas(1, Supply(15)),
             TerranUnit(UnitTypeId.REAPER, 1, only_once=True, priority=True),
             Step(
                 None,
-                ActExpand(2),
-                skip_until=RequiredAny(
+                Expand(2),
+                skip_until=Any(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
@@ -100,7 +100,7 @@ class BuildBio(BuildOrder):
             Step(
                 None,
                 CancelBuilding(UnitTypeId.COMMANDCENTER, 1),
-                skip=RequiredAny(
+                skip=Any(
                     [
                         RequireCustom(lambda k: not k.possible_rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
@@ -110,51 +110,51 @@ class BuildBio(BuildOrder):
             Step(None, self.rush_bunker, skip_until=lambda k: k.possible_rush_detected),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2), skip_until=lambda k: k.possible_rush_detected),
             GridBuilding(UnitTypeId.SUPPLYDEPOT, 2, priority=True),
-            ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
+            BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
             GridBuilding(UnitTypeId.FACTORY, 1),
-            ActBuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
+            BuildAddon(UnitTypeId.FACTORYTECHLAB, UnitTypeId.FACTORY, 1),
             AutoDepot(),
         ]
 
         buildings = [
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 2)),
-            Step(RequiredUnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
-            StepBuildGas(2),
+            Step(UnitReady(UnitTypeId.FACTORYTECHLAB), TerranUnit(UnitTypeId.SIEGETANK, 1)),
+            BuildGas(2),
             # BuildStep(None, GridBuilding(UnitTypeId.ARMORY, 1)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1)),
             Step(None, GridBuilding(UnitTypeId.STARPORT, 1)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 3)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
-            Step(RequiredSupply(40, SupplyType.Workers), ActExpand(3)),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 2)),
+            Step(Supply(40, SupplyType.Workers), Expand(3)),
             Step(None, GridBuilding(UnitTypeId.BARRACKS, 5)),
-            Step(None, ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
-            Step(None, ActBuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
-            StepBuildGas(4),
+            Step(None, BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 3)),
+            Step(None, BuildAddon(UnitTypeId.STARPORTREACTOR, UnitTypeId.STARPORT, 1)),
+            BuildGas(4),
         ]
 
         tech = [
-            Step(None, ActTech(UpgradeId.PUNISHERGRENADES)),
-            Step(None, ActTech(UpgradeId.STIMPACK)),
-            Step(None, ActTech(UpgradeId.SHIELDWALL)),
+            Step(None, Tech(UpgradeId.PUNISHERGRENADES)),
+            Step(None, Tech(UpgradeId.STIMPACK)),
+            Step(None, Tech(UpgradeId.SHIELDWALL)),
         ]
 
         mech = [TerranUnit(UnitTypeId.SIEGETANK, 2, priority=True)]
 
         air = [
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 2, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 2, priority=True)),
             Step(None, TerranUnit(UnitTypeId.VIKINGFIGHTER, 1, priority=True)),
             Step(
                 None,
                 TerranUnit(UnitTypeId.VIKINGFIGHTER, 3, priority=True),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 1),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 4, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 4, priority=True)),
             Step(
                 None,
                 TerranUnit(UnitTypeId.VIKINGFIGHTER, 10, priority=True),
                 skip_until=self.RequireAnyEnemyUnits(viking_counters, 4),
             ),
-            Step(RequiredUnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 6, priority=True)),
+            Step(UnitReady(UnitTypeId.STARPORT, 1), TerranUnit(UnitTypeId.MEDIVAC, 6, priority=True)),
         ]
 
         marines = [
@@ -163,15 +163,15 @@ class BuildBio(BuildOrder):
                 [
                     TerranUnit(UnitTypeId.MARAUDER, 20, priority=True),
                     TerranUnit(UnitTypeId.MARINE, 20),
-                    Step(RequiredMinerals(250), TerranUnit(UnitTypeId.MARINE, 100)),
+                    Step(Minerals(250), TerranUnit(UnitTypeId.MARINE, 100)),
                 ]
             ),
         ]
 
         use_money = BuildOrder(
             [
-                Step(RequiredMinerals(400), GridBuilding(UnitTypeId.BARRACKS, 8)),
-                Step(RequiredMinerals(500), ActBuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
+                Step(Minerals(400), GridBuilding(UnitTypeId.BARRACKS, 8)),
+                Step(Minerals(500), BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 6)),
             ]
         )
 
@@ -204,9 +204,9 @@ class BioBot(KnowledgeBot):
             LowerDepots(),
             PlanZoneDefense(),
             worker_scout,
-            Step(None, CallMule(50), skip=RequiredTime(5 * 60)),
-            Step(None, CallMule(100), skip_until=RequiredTime(5 * 60)),
-            Step(None, ScanEnemy(), skip_until=RequiredTime(5 * 60)),
+            Step(None, CallMule(50), skip=Time(5 * 60)),
+            Step(None, CallMule(100), skip_until=Time(5 * 60)),
+            Step(None, ScanEnemy(), skip_until=Time(5 * 60)),
             PlanDistributeWorkers(),
             ManTheBunkers(),
             Repair(),

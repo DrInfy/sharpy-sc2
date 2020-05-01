@@ -19,23 +19,23 @@ class LingSpeedBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
-            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=RequiredGas(100)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=Gas(100)),
+            Step(None, ActBuilding(UnitTypeId.ROACHWARREN, 1), skip_until=Gas(100)),
         ]
         buildings = [
             Step(UnitExists(UnitTypeId.DRONE, 14), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2)),
-            Step(None, ActExpand(2)),
+            Step(None, Expand(2)),
             Step(UnitExists(UnitTypeId.EXTRACTOR, 1), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             Step(
                 None,
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2),
                 skip_until=UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
             ),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
-            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
+            Step(Minerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 10)),  # anti air defense!
         ]
 
         units = [
@@ -47,10 +47,10 @@ class LingSpeedBuild(BuildOrder):
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 30), None),
             Step(None, ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
-            Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=RequiredGas(25)),
+            Step(None, ActUnitOnce(UnitTypeId.ROACH, UnitTypeId.LARVA, 4), skip_until=Gas(25)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40), None),
             Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 16), None),
-            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 10), skip_until=RequiredGas(25)),
+            Step(None, ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 10), skip_until=Gas(25)),
             # Endless zerglings
             Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
@@ -66,21 +66,21 @@ class LingFloodBuild(BuildOrder):
 
         gas_related = [
             StepBuildGas(1, UnitExists(UnitTypeId.HATCHERY, 2)),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=RequiredGas(100)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED), skip_until=Gas(100)),
         ]
         buildings = [
             # 12 Pool
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
-            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), ActExpand(2)),
+            Step(UnitExists(UnitTypeId.ZERGLING, 4, include_killed=True), Expand(2)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
-            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), ActExpand(3)),
+            Step(UnitExists(UnitTypeId.DRONE, 24, include_killed=True), Expand(3)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3)),
-            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), ActExpand(4)),
+            Step(UnitExists(UnitTypeId.DRONE, 30, include_killed=True), Expand(4)),
             Step(None, ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4)),
         ]
 
         spire_end_game = [
-            Step(RequiredAny([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)]), None),
+            Step(Any([Supply(90), UnitExists(UnitTypeId.LAIR, 1)]), None),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 35),
             MorphLair(),
             ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 40),
@@ -233,8 +233,8 @@ class LingFlood(KnowledgeBot):
         worker_scout = Step(
             None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
         )
-        stop_gas = RequiredAny([RequiredGas(100), RequiredTechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
-        end_game = RequiredAny([RequiredSupply(90), UnitExists(UnitTypeId.LAIR, 1)])
+        stop_gas = Any([Gas(100), TechReady(UpgradeId.ZERGLINGMOVEMENTSPEED, 0.001)])
+        end_game = Any([Supply(90), UnitExists(UnitTypeId.LAIR, 1)])
 
         return BuildOrder(
             [
@@ -244,7 +244,7 @@ class LingFlood(KnowledgeBot):
                         worker_scout,
                         SpreadCreep(),
                         InjectLarva(),
-                        Step(None, PlanDistributeWorkers(3, 3), skip=RequiredAny([stop_gas, end_game])),
+                        Step(None, PlanDistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),
                         Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
                         Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
                         DummyZergAttack(),
