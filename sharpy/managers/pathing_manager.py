@@ -268,22 +268,22 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_weak_influence_air(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_air.lowest_influence_in_grid(target, floor(radius))
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_weak_influence_ground(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_ground.safest_spot(target, radius)
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_weak_influence_ground_blink(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_ground.lowest_influence_in_grid(target, floor(radius))
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_influence_air_path(self, start: Point2, target: Point2) -> Point2:
         result = self.path_finder_air.find_path_influence(start, target)
@@ -300,7 +300,7 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points_air.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_influence_ground_path(self, start: Point2, target: Point2, target_index: int = 5) -> Point2:
         result = self.path_finder_ground.find_path_influence(start, target)
@@ -316,7 +316,7 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points_air.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_low_inside_ground(self, start: Point2, target: Point2, distance: float) -> Point2:
         result = self.path_finder_ground.find_low_inside_walk(start, target, distance)
