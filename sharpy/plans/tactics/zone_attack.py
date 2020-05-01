@@ -76,6 +76,7 @@ class PlanZoneAttack(ActBase):
 
         elif self.attack_retreat_started is not None:
             attacking_units = self.knowledge.roles.attacking_units
+            self.roles.refresh_tasks(attacking_units)
 
             for unit in attacking_units:
                 pos: Point2 = unit.position
@@ -143,6 +144,8 @@ class PlanZoneAttack(ActBase):
         for unit in already_attacking:
             # Only units in group are included to current combat force
             self.combat.add_unit(unit)
+
+        self.roles.refresh_tasks(already_attacking)
 
         for unit in self.knowledge.roles.free_units:
             if self.knowledge.should_attack(unit):

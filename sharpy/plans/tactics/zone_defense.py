@@ -117,6 +117,7 @@ class PlanZoneDefense(ActBase):
                             defenders.power, defense_required, enemy_center, zone, zone_tags, zone_worker_defenders
                         )
 
+                self.roles.refresh_tags(self.combat.tags)
                 self.combat.execute(enemy_center, MoveType.SearchAndDestroy)
         return True  # never block
 
