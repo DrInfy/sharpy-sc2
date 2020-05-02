@@ -9,6 +9,7 @@ from sc2.units import Units
 from sc2 import UnitTypeId
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
+import numpy as np
 from sklearn.cluster import DBSCAN
 
 ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
@@ -93,6 +94,7 @@ class GroupCombatManager(ManagerBase):
         self.rules = rules if rules else self.default_rules
 
         self.own_groups: List[CombatUnits] = self.group_own_units(our_units)
+        self.group_own_units_v2(our_units)
 
         if self.debug:
             fn = lambda group: group.center.distance_to(self.ai.start_location)
@@ -192,30 +194,45 @@ class GroupCombatManager(ManagerBase):
 
         return group
 
-    def group_own_units(self, our_units: Units) -> List[CombatUnits]:
-        lookup_distance = self.own_group_threshold
+    def group_own_units(self, units: Units) -> List[CombatUnits]:
         groups: List[Units] = []
-        assigned: Dict[int, int] = dict()
 
-        for unit in our_units:
-            if unit.tag in assigned:
-                continue
+        # import time
+        # ns_pf = time.perf_counter_ns()
 
-            units = Units([unit], self.ai)
-            index = len(groups)
+        numpy_vectors: List[np.ndarray] = []
+        for unit in units:
+            numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
-            assigned[unit.tag] = index
+        if self.cache.enemy_numpy_vectors:
+            clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(numpy_vectors)
+            # print(clustering.labels_)
 
-            groups.append(units)
-            self.include_own_units(unit, units, lookup_distance, index, assigned)
+            for index in range(0, len(clustering.labels_)):
+                unit = units[index]
+                if unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:
+                    continue
+
+                label = clustering.labels_[index]
+
+                if label >= len(groups):
+                    groups.append(Units([unit], self.ai))
+                else:
+                    groups[label].append(unit)
+            # for label in clustering.labels_:
+
+        # ns_pf = time.perf_counter_ns() - ns_pf
+        # print(f"Own unit grouping (v2) took {ns_pf / 1000 / 1000} ms. groups: {len(groups)} units: {len(units)}")
 
         return [CombatUnits(u, self.knowledge) for u in groups]
 
     def group_enemy_units(self) -> List[CombatUnits]:
         groups: List[Units] = []
+
         import time
 
         ns_pf = time.perf_counter_ns()
+
         if self.cache.enemy_numpy_vectors:
             clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(self.cache.enemy_numpy_vectors)
             # print(clustering.labels_)
@@ -233,16 +250,5 @@ class GroupCombatManager(ManagerBase):
                     groups[label].append(unit)
             # for label in clustering.labels_:
         ns_pf = time.perf_counter_ns() - ns_pf
-        print(f"Enemy unit grouping (v2) took {ns_pf / 1000 / 1000} ms. groups: {len(groups)}")
+        # print(f"Enemy unit grouping (v2) took {ns_pf / 1000 / 1000} ms. groups: {len(groups)}")
         return [CombatUnits(u, self.knowledge) for u in groups]
-
-    def include_own_units(self, unit: Unit, units: Units, lookup_distance: float, index: int, assigned: Dict[int, int]):
-        units_close_by = self.cache.own_in_range(unit.position, lookup_distance)
-
-        for unit_close in units_close_by:
-            if unit_close.tag in assigned or unit_close.tag not in self.tags:
-                continue
-
-            assigned[unit_close.tag] = index
-            units.append(unit_close)
-            self.include_own_units(unit_close, units, lookup_distance, index, assigned)
