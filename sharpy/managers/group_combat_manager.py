@@ -94,7 +94,6 @@ class GroupCombatManager(ManagerBase):
         self.rules = rules if rules else self.default_rules
 
         self.own_groups: List[CombatUnits] = self.group_own_units(our_units)
-        self.group_own_units_v2(our_units)
 
         if self.debug:
             fn = lambda group: group.center.distance_to(self.ai.start_location)
