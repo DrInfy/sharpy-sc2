@@ -251,6 +251,34 @@ class BuildOrder(ActBase):
             Step(TechReady(UpgradeId.PROTOSSAIRARMORSLEVEL2), Tech(UpgradeId.PROTOSSAIRARMORSLEVEL3)),
         ]
 
+    @property
+    def Infantry_upgrades_all(self) -> List[Step]:
+        return [
+            # Weapons
+            Step(None, Tech(UpgradeId.TERRANINFANTRYARMORSLEVEL1)),
+            Step(
+                None,
+                Tech(UpgradeId.TERRANINFANTRYARMORSLEVEL2),
+                skip_until=All([UnitReady(UnitTypeId.ARMORY, 1), TechReady(UpgradeId.TERRANINFANTRYARMORSLEVEL1, 1)]),
+            ),
+            Step(
+                None,
+                Tech(UpgradeId.TERRANINFANTRYARMORSLEVEL3),
+                skip_until=All([UnitReady(UnitTypeId.ARMORY, 1), TechReady(UpgradeId.TERRANINFANTRYARMORSLEVEL2, 1)]),
+            ),
+            # Armor
+            Step(UnitReady(UnitTypeId.FORGE, 1), Tech(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1)),
+            Step(
+                None,
+                Tech(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2),
+                skip_until=All([UnitReady(UnitTypeId.ARMORY, 1), TechReady(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1, 1)]),
+            ),
+            Step(
+                None,
+                Tech(UpgradeId.TERRANINFANTRYWEAPONSLEVEL3),
+                skip_until=All([UnitReady(UnitTypeId.ARMORY, 1), TechReady(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2, 1)]),
+            ),
+        ]
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
