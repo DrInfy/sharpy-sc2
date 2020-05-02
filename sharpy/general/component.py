@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sc2.client import Client
 
@@ -29,6 +29,24 @@ class Component:
     def __init__(self) -> None:
         self._debug: bool = False
         self._started: bool = False
+        self.parent_key: Optional[str] = None
+        self._key: Optional[str] = None
+        self.__cache_key: Optional[str] = None
+
+    @property
+    def key(self) -> str:
+        """
+        Key is used to identify this object on possible tree structures
+        @return:
+        """
+        if not self.__cache_key:
+            if not self._key:
+                self._key = type(self).__name__
+            if self.parent_key:
+                self.__cache_key = f"{self.parent_key}/{self._key}"
+            else:
+                self.__cache_key = self._key
+        return self.__cache_key
 
     @property
     def debug(self):
@@ -50,3 +68,7 @@ class Component:
 
     def print(self, msg: str, stats: bool = True):
         self.knowledge.print(msg, type(self).__name__, stats)
+
+    async def start_component(self, component: "Component", knowledge: "Knowledge"):
+        component.parent_key = self.key
+        await component.start(knowledge)

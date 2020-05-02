@@ -42,13 +42,13 @@ class Step(ActBase):
 
     async def start(self, knowledge: "Knowledge"):
         if self.requirement is not None:
-            await self.requirement.start(knowledge)
+            await self.start_component(self.requirement, knowledge)
         if self.action is not None:
-            await self.action.start(knowledge)
+            await self.start_component(self.action, knowledge)
         if self.skip is not None:
-            await self.skip.start(knowledge)
+            await self.start_component(self.skip, knowledge)
         if self.skip_until is not None:
-            await self.skip_until.start(knowledge)
+            await self.start_component(self.skip_until, knowledge)
 
     async def execute(self) -> bool:
         if self.skip is not None and self.skip.check():

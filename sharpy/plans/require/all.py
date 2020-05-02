@@ -38,7 +38,7 @@ class All(RequireBase):
         await super().start(knowledge)
 
         for condition in self.conditions:
-            await condition.start(knowledge)
+            await self.start_component(condition, knowledge)
 
     def check(self) -> bool:
         for condition in self.conditions:

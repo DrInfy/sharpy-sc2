@@ -15,7 +15,7 @@ class Count(RequireBase):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for condition in self.conditions:
-            await condition.start(knowledge)
+            await self.start_component(condition, knowledge)
 
     def check(self) -> bool:
         amount = 0

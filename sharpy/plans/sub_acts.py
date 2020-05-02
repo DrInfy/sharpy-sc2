@@ -43,4 +43,4 @@ class SubActs(ActBase):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for order in self.orders:
-            await order.start(knowledge)
+            await self.start_component(order, knowledge)
