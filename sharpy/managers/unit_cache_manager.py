@@ -33,6 +33,8 @@ class UnitCacheManager(ManagerBase):
         self.enemy_tree: Optional[cKDTree] = None
         self.force_fields: List[EffectData] = []
 
+        self.own_numpy_vectors: List[np.ndarray] = []
+        self.enemy_numpy_vectors: List[np.ndarray] = []
         self.mineral_fields: Dict[Point2, Unit] = {}
 
     async def start(self, knowledge: "Knowledge"):
@@ -105,8 +107,8 @@ class UnitCacheManager(ManagerBase):
         self.enemy_unit_cache.clear()
         self.force_fields.clear()
 
-        own_numpy_vectors = []
-        enemy_numpy_vectors = []
+        self.own_numpy_vectors = []
+        self.enemy_numpy_vectors = []
         self.all_own = self.knowledge.all_own
 
         for unit in self.all_own:
@@ -116,7 +118,7 @@ class UnitCacheManager(ManagerBase):
             if units.amount == 0:
                 self.own_unit_cache[unit.type_id] = units
             units.append(unit)
-            own_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
+            self.own_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
         for unit in self.knowledge.known_enemy_units:
             self.tag_cache[unit.tag] = unit
@@ -125,15 +127,15 @@ class UnitCacheManager(ManagerBase):
             if units.amount == 0:
                 self.enemy_unit_cache[unit.type_id] = units
             units.append(unit)
-            enemy_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
+            self.enemy_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
-        if len(own_numpy_vectors) > 0:
-            self.own_tree = cKDTree(own_numpy_vectors)
+        if len(self.own_numpy_vectors) > 0:
+            self.own_tree = cKDTree(self.own_numpy_vectors)
         else:
             self.own_tree = None
 
-        if len(enemy_numpy_vectors) > 0:
-            self.enemy_tree = cKDTree(enemy_numpy_vectors)
+        if len(self.enemy_numpy_vectors) > 0:
+            self.enemy_tree = cKDTree(self.enemy_numpy_vectors)
         else:
             self.enemy_tree = None
 
