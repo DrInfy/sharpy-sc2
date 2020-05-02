@@ -4,14 +4,13 @@ from sharpy.managers.combat2 import *
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.managers import UnitCacheManager, PathingManager, ManagerBase
 from sharpy.managers.combat2 import Action
-from sharpy.managers.combat2.protoss import *
-from sharpy.managers.combat2.terran import *
-from sharpy.managers.combat2.zerg import *
 from sc2.units import Units
 
 from sc2 import UnitTypeId
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
+import numpy as np
+from sklearn.cluster import DBSCAN
 
 ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
 
@@ -24,13 +23,13 @@ class GroupCombatManager(ManagerBase):
         self.default_rules = MicroRules()
         self.default_rules.load_default_methods()
         self.default_rules.load_default_micro()
+        self.enemy_group_distance = 7
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.pather: PathingManager = self.knowledge.pathing_manager
         self.tags: List[int] = []
-
         self.all_enemy_power = ExtendedPower(self.unit_values)
 
         await self.default_rules.start(knowledge)
@@ -38,14 +37,14 @@ class GroupCombatManager(ManagerBase):
     @property
     def regroup_threshold(self) -> float:
         """ Percentage 0 - 1 on how many of the attacking units should actually be together when attacking"""
-        return self.rules.regroup_threshold
+        return self.rules.regroup_percentage
 
     @property
     def own_group_threshold(self) -> float:
         """
         How much distance must be between units to consider them to be in different groups
         """
-        return self.rules.own_group_threshold
+        return self.rules.own_group_distance
 
     @property
     def unit_micros(self) -> Dict[UnitTypeId, MicroStep]:
@@ -194,64 +193,61 @@ class GroupCombatManager(ManagerBase):
 
         return group
 
-    def group_own_units(self, our_units: Units) -> List[CombatUnits]:
-        lookup_distance = self.own_group_threshold
+    def group_own_units(self, units: Units) -> List[CombatUnits]:
         groups: List[Units] = []
-        assigned: Dict[int, int] = dict()
 
-        for unit in our_units:
-            if unit.tag in assigned:
-                continue
+        # import time
+        # ns_pf = time.perf_counter_ns()
 
-            units = Units([unit], self.ai)
-            index = len(groups)
+        numpy_vectors: List[np.ndarray] = []
+        for unit in units:
+            numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
-            assigned[unit.tag] = index
+        if self.cache.enemy_numpy_vectors:
+            clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(numpy_vectors)
+            # print(clustering.labels_)
 
-            groups.append(units)
-            self.include_own_units(unit, units, lookup_distance, index, assigned)
+            for index in range(0, len(clustering.labels_)):
+                unit = units[index]
+                if unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:
+                    continue
+
+                label = clustering.labels_[index]
+
+                if label >= len(groups):
+                    groups.append(Units([unit], self.ai))
+                else:
+                    groups[label].append(unit)
+            # for label in clustering.labels_:
+
+        # ns_pf = time.perf_counter_ns() - ns_pf
+        # print(f"Own unit grouping (v2) took {ns_pf / 1000 / 1000} ms. groups: {len(groups)} units: {len(units)}")
 
         return [CombatUnits(u, self.knowledge) for u in groups]
-
-    def include_own_units(self, unit: Unit, units: Units, lookup_distance: float, index: int, assigned: Dict[int, int]):
-        units_close_by = self.cache.own_in_range(unit.position, lookup_distance)
-
-        for unit_close in units_close_by:
-            if unit_close.tag in assigned or unit_close.tag not in self.tags:
-                continue
-
-            assigned[unit_close.tag] = index
-            units.append(unit_close)
-            self.include_own_units(unit_close, units, lookup_distance, index, assigned)
 
     def group_enemy_units(self) -> List[CombatUnits]:
         groups: List[Units] = []
-        assigned: Dict[int, int] = dict()
-        lookup_distance = 7
 
-        for unit in self.knowledge.known_enemy_units_mobile:
-            if unit.tag in assigned or unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:
-                continue
+        import time
 
-            units = Units([unit], self.ai)
-            index = len(groups)
+        ns_pf = time.perf_counter_ns()
 
-            assigned[unit.tag] = index
+        if self.cache.enemy_numpy_vectors:
+            clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(self.cache.enemy_numpy_vectors)
+            # print(clustering.labels_)
+            units = self.knowledge.known_enemy_units
+            for index in range(0, len(clustering.labels_)):
+                unit = units[index]
+                if unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:
+                    continue
 
-            groups.append(units)
-            self.include_enemy_units(unit, units, lookup_distance, index, assigned)
+                label = clustering.labels_[index]
 
+                if label >= len(groups):
+                    groups.append(Units([unit], self.ai))
+                else:
+                    groups[label].append(unit)
+            # for label in clustering.labels_:
+        ns_pf = time.perf_counter_ns() - ns_pf
+        # print(f"Enemy unit grouping (v2) took {ns_pf / 1000 / 1000} ms. groups: {len(groups)}")
         return [CombatUnits(u, self.knowledge) for u in groups]
-
-    def include_enemy_units(
-        self, unit: Unit, units: Units, lookup_distance: float, index: int, assigned: Dict[int, int]
-    ):
-        units_close_by = self.cache.enemy_in_range(unit.position, lookup_distance)
-
-        for unit_close in units_close_by:
-            if unit_close.tag in assigned or unit_close.tag not in self.tags or not unit.can_be_attacked:
-                continue
-
-            assigned[unit_close.tag] = index
-            units.append(unit_close)
-            self.include_enemy_units(unit_close, units, lookup_distance, index, assigned)

@@ -119,7 +119,7 @@ class UnitRoleManager(ManagerBase):
         else:
             for task in args:
                 tags = self.roles[task].tags
-                all_tags += tags
+                all_tags = all_tags.union(tags)
 
         return units.tags_in(all_tags)
 
