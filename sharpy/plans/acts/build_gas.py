@@ -1,4 +1,7 @@
+from typing import Optional
+
 import sc2
+from sharpy.managers.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.plans.require import RequireBase
 from sc2 import UnitTypeId, BotAI, Race
@@ -21,6 +24,7 @@ class BuildGas(ActBase):
         self.ai: BotAI = None
         self.all_types = ALL_GAS
         self.unit_type: UnitTypeId = None
+        self.builder_tag: Optional[int] = None
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
@@ -35,35 +39,16 @@ class BuildGas(ActBase):
             return False
 
         active_harvesters = self.ai.gas_buildings.filter(harvester_is_active)
-        count = self.pending_build(self.unit_type)
-        return len(active_harvesters) + count
+        return len(active_harvesters)
 
-    async def is_done(self):
-        active_harvester_count = self.active_harvester_count
-        unit: Unit
-
-        harvesters_own = self.ai.gas_buildings
-
-        # We have more than requested amount of harvesters
-        if active_harvester_count > self.to_count:
-            return True
-        # If harvester has just finished, we need to move the worker away from it, thus delaying done.
-        delayed = False
-        if active_harvester_count == self.to_count:
-            for unit in harvesters_own.not_ready:
-                if unit.build_progress < 0.05:
-                    delayed = True
-            if not delayed:
-                return True
-
+    def find_best(self):
         # No point in building harvester in somewhere with less than 50 gas left
         best_score = 50
         self.best_gas = None
         harvesters: list = []
-        for unit in self.ai.all_units:
-            # We need to check for all races, in case gas was stolen in order to not break here
-            if unit.type_id in self.all_types:
-                harvesters.append(unit)
+        # We need to check for all races, in case gas was stolen in order to not break here
+        harvesters.extend(self.cache.own(self.all_types))
+        harvesters.extend(self.cache.enemy(self.all_types))
 
         for townhall in self.ai.townhalls:  # type: Unit
             if not townhall.is_ready or townhall.build_progress < 0.9:
@@ -77,30 +62,67 @@ class BuildGas(ActBase):
                         exists = True
                         break
                 if not exists:
-                    score = geyser.vespene_contents
+                    score = geyser.vespene_contents - 0.01 * self.knowledge.own_main_zone.center_location.distance_to(
+                        geyser
+                    )
                     if score > best_score:
                         self.best_gas = geyser
 
-        return self.best_gas is None and not delayed
-
     async def execute(self) -> bool:
-        if await self.is_done():
+        active_harvester_count = self.active_harvester_count
+        pending_count = self.pending_build(self.unit_type)
+
+        if active_harvester_count >= self.to_count:
+            # All buildings have been started, we can safely exit now
+            self.clear_worker()
             return True
 
-        workers = self.knowledge.roles.free_workers
+        self.find_best()
 
-        should_build = self.active_harvester_count < self.to_count
-        can_build = workers.exists and self.knowledge.can_afford(self.unit_type)
+        if self.best_gas is None:
+            self.clear_worker()
+            return False  # Cannot proceed
 
-        if self.best_gas is not None and should_build and can_build:
+        worker = self.get_worker_builder(self.best_gas.position, self.builder_tag)
+
+        if pending_count:
+            self.set_worker(worker)
+            return active_harvester_count + pending_count >= self.to_count
+
+        if worker:
+            return await self.build_gas(worker)
+        return False
+
+    def clear_worker(self):
+        if self.builder_tag is not None:
+            self.knowledge.roles.clear_task(self.builder_tag)
+            self.builder_tag = None
+
+    async def build_gas(self, worker: Unit):
+        if self.best_gas is not None and self.knowledge.can_afford(self.unit_type):
             target = self.best_gas
-            worker = workers.closest_to(target.position)
-            self.ai.do(worker.build_gas(target))
+
+            if not self.set_worker(worker):
+                return False
+
+            self.builder_tag = worker.tag
+
+            cmd = worker.build_gas(target, queue=self.has_build_order(worker))
+            self.do(cmd)
 
             if self.ai.race == Race.Protoss:
                 # Protoss only do something else after starting gas
                 mf = self.ai.mineral_field.closest_to(worker)
                 self.ai.do(worker.gather(mf, queue=True))
 
-            self.knowledge.print(f"Building {self.unit_type.name} to {target.position}")
+            self.print(f"Building {self.unit_type.name} to {target.position}")
+        return False
+
+    def set_worker(self, worker: Optional[Unit]) -> bool:
+        if worker:
+            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.builder_tag = worker.tag
+            return True
+
+        self.builder_tag = None
         return False

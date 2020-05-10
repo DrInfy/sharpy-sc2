@@ -40,13 +40,13 @@ class Expand(ActBase):
         count = 0
 
         count += len(self.knowledge.our_zones_with_minerals)
-        count += self.pending_build(self.townhall_type)
 
         return count
 
     async def execute(self) -> bool:
         expand_here: "Zone" = None
         expand_now = False
+        active_bases = self.current_active_base_count
 
         for zone in self.knowledge.expansion_zones:  # type: "Zone"
             if expand_here is None and zone.should_expand_here:
@@ -54,13 +54,25 @@ class Expand(ActBase):
                     expand_here = zone
                     expand_now = zone.safe_expand_here
 
-        if self.current_active_base_count >= self.to_count or expand_here is None or not self.ai.workers.exists:
-            # No desire to expand just yet
+        if active_bases >= self.to_count:
+            # We have expanded enough
             self.clear_worker()
             return True
 
+        if expand_here is None or not self.ai.workers.exists:
+            # Cannot expand
+            self.clear_worker()
+            return False
+
+        worker = self.get_worker_builder(expand_here.center_location, self.builder_tag)
+        pending_count = self.pending_build(self.townhall_type)
+
         # Inform our logic that we're looking to expand
         self.knowledge.expanding_to = expand_here
+
+        if pending_count:
+            self.set_worker(worker)
+            return active_bases + pending_count >= self.to_count
 
         if expand_now:
             if self.ai.can_afford(self.townhall_type):
@@ -77,7 +89,7 @@ class Expand(ActBase):
         if not self.priority:
             return
         position = zone.center_location
-        worker = self.get_worker(position)
+        worker = self.get_worker_builder(position, self.builder_tag)
         if worker is None:
             return
 
@@ -108,22 +120,14 @@ class Expand(ActBase):
 
             self.do(worker.move(position))
 
-    def get_worker(self, position: Point2):
-        worker: Unit = None
-        if self.builder_tag is None:
-            free_workers = self.knowledge.roles.free_workers
-            if free_workers.exists:
-                worker = free_workers.closest_to(position)
-        else:
-            worker: Unit = self.ai.workers.find_by_tag(self.builder_tag)
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                self.builder_tag = None
-        return worker
+    def set_worker(self, worker: Optional[Unit]) -> bool:
+        if worker:
+            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.builder_tag = worker.tag
+            return True
 
-    def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
-        self.builder_tag = worker.tag
+        self.builder_tag = None
+        return False
 
     def clear_worker(self):
         if self.builder_tag is not None:
@@ -132,7 +136,7 @@ class Expand(ActBase):
 
     async def build_expansion(self, expand_here: "Zone"):
         # TODO: Move worker in place beforehand
-        unit = self.get_worker(expand_here.center_location)
+        unit = self.get_worker_builder(expand_here.center_location, self.builder_tag)
 
         if unit is not None:
             self.print(f"Expanding to {expand_here.center_location}!")

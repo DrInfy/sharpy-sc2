@@ -106,7 +106,10 @@ class PlanDistributeWorkers(ActBase):
 
         # Idle worker
         if workers.idle.exists:
-            return workers.idle.first  # use random?
+            for worker in workers:
+                if worker.tag not in self.roles.had_task_set:
+                    # if the task was just set, the worker is still active!
+                    return worker
 
         for zone in self.knowledge.expansion_zones:
             if zone.is_ours and zone.needs_evacuation:
