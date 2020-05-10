@@ -209,7 +209,7 @@ class GroupCombatManager(ManagerBase):
 
             for index in range(0, len(clustering.labels_)):
                 unit = units[index]
-                if unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:
+                if unit.type_id in self.unit_values.combat_ignore:
                     continue
 
                 label = clustering.labels_[index]
