@@ -229,8 +229,8 @@ class ActBase(Component, ABC):
 
             def sort_method(unit: Unit):
                 role = self.roles.unit_role(unit)
-                if self.knowledge.my_race == Race.Protoss and role == UnitTask.Building:
-                    return 0
+                # if self.knowledge.my_race == Race.Protoss and role == UnitTask.Building:
+                #     return 0
 
                 if role == UnitTask.Idle:
                     return 1

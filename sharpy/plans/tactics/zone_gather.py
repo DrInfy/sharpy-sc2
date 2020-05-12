@@ -81,6 +81,8 @@ class PlanZoneGather(ActBase):
             if self.blocker_tag is not None:
                 unit = self.cache.by_tag(self.blocker_tag)
                 if unit is not None and self.knowledge.close_gates:
+                    self.knowledge.roles.set_task(UnitTask.Reserved, unit)
+
                     if unit.type_id in {UnitTypeId.STALKER, UnitTypeId.IMMORTAL} and self.cache.own(UnitTypeId.ZEALOT):
                         # Swap expensive blocker to a zaalot
                         new_blocker = self.get_blocker(self.ai, target_position)
@@ -90,6 +92,7 @@ class PlanZoneGather(ActBase):
                             unit = new_blocker
                             self.blocker_tag = unit.tag
                             self.knowledge.roles.set_task(UnitTask.Reserved, unit)
+
                     if self.should_hold_position(target_position):
                         if unit.distance_to(target_position) < 0.2:
                             self.do(unit.hold_position())

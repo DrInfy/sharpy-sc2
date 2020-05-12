@@ -71,8 +71,13 @@ class Expand(ActBase):
         self.knowledge.expanding_to = expand_here
 
         if pending_count:
-            self.set_worker(worker)
-            return active_bases + pending_count >= self.to_count
+            if self.has_build_order(worker):
+                self.set_worker(worker)
+            else:
+                self.clear_worker()
+
+            if active_bases + pending_count >= self.to_count:
+                return True
 
         if expand_now:
             if self.ai.can_afford(self.townhall_type):
@@ -135,12 +140,11 @@ class Expand(ActBase):
             self.builder_tag = None
 
     async def build_expansion(self, expand_here: "Zone"):
-        # TODO: Move worker in place beforehand
-        unit = self.get_worker_builder(expand_here.center_location, self.builder_tag)
+        worker = self.get_worker_builder(expand_here.center_location, self.builder_tag)
 
-        if unit is not None:
+        if worker is not None:
             self.print(f"Expanding to {expand_here.center_location}!")
-            self.do(unit.build(self.townhall_type, expand_here.center_location))
+            self.do(worker.build(self.townhall_type, expand_here.center_location))
 
     async def debug_actions(self):
         if self.builder_tag is not None:

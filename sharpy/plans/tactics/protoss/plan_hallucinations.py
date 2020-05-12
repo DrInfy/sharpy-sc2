@@ -43,6 +43,7 @@ class PlanHallucination(ActBase):
 
         units = self.roles.units(UnitTask.Hallucination)
         if units.exists:
+            self.roles.refresh_tasks(units)
             if self.knowledge.known_enemy_units_mobile.exists:
                 target = self.knowledge.known_enemy_units_mobile.center
             else:
