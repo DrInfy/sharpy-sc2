@@ -31,10 +31,6 @@ class PlanDistributeWorkers(ActBase):
         self.roles: UnitRoleManager = None
         self.force_work = False
 
-    async def start(self, knowledge: Knowledge):
-        await super().start(knowledge)
-        self.roles = knowledge.roles
-
     @property
     def active_gas_buildings(self) -> Units:
         """All gas buildings that are ready."""
@@ -201,6 +197,8 @@ class PlanDistributeWorkers(ActBase):
 
         self.roles.set_task(UnitTask.Gathering, worker)
         townhalls = self.ai.townhalls.ready
+
+        self.roles.set_task(UnitTask.Gathering, worker)
 
         if worker.is_carrying_resource and townhalls:
             closest = townhalls.closest_to(worker)
