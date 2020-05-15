@@ -232,7 +232,7 @@ class UnitRoleManager(ManagerBase):
                 if unit.tag in self.had_task_set:
                     continue
 
-                if unit.tag in self.roles[UnitTask.Idle].tags:
+                if unit.tag in self.roles[UnitTask.Idle].tags or unit.tag in self.roles[UnitTask.Gathering].tags:
                     continue
 
                 self.clear_task(unit)

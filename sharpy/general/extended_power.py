@@ -5,13 +5,15 @@ from sc2.unit import Unit
 
 from sharpy.general.unit_feature import UnitFeature
 
+# This is more of a power to surround our units, less of an melee
+# grouping up vs ultralisk isn't a very good idea with their splash damage.
 melee = {
     UnitTypeId.ZERGLING,
-    UnitTypeId.ULTRALISK,
+    # UnitTypeId.ULTRALISK,
     UnitTypeId.ZEALOT,
-    UnitTypeId.SCV,
-    UnitTypeId.PROBE,
-    UnitTypeId.DRONE,
+    # UnitTypeId.SCV,
+    # UnitTypeId.PROBE,
+    # UnitTypeId.DRONE,
 }
 
 siege = {

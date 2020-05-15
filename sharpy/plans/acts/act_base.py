@@ -144,6 +144,9 @@ class ActBase(Component, ABC):
                     return True
         return False
 
+    def get_ordered_count(self, unit_type: UnitTypeId):
+        return self.get_count(unit_type, include_pending=True) - self.get_count(unit_type, include_pending=False)
+
     def get_count(
         self, unit_type: UnitTypeId, include_pending=True, include_killed=False, include_not_ready: bool = True
     ) -> int:

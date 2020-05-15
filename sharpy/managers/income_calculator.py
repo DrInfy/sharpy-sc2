@@ -23,6 +23,7 @@ class IncomeCalculator(ManagerBase):
 
     async def update(self):
         self._mineral_income = self.mineral_rate_calc()
+        # self._mineral_income = self.ai.state.score.collection_rate_minerals / 60  # mineral_rate_calc()
         self._gas_income = self.vespene_rate_calc()
 
         # TODO: Calculate enemy income and minerals harvested here

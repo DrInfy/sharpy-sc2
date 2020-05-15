@@ -84,6 +84,10 @@ class GridBuilding(ActBuilding):
             self.builder_tag = None
             return False  # Cannot proceed
 
+        if self.has_build_order(worker):
+            self.set_worker(worker)
+            return False
+
         d = worker.distance_to(position)
         time = d / to_new_ticks(worker.movement_speed)
         unit = self.ai._game_data.units[self.unit_type.value]

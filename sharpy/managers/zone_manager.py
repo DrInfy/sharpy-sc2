@@ -42,7 +42,7 @@ class ZoneManager(ManagerBase):
 
     def init_zones(self):
         """Add expansion locations as zones."""
-        for exp_loc in self.ai.expansion_locations:  # type: Point2
+        for exp_loc in self.ai.expansion_locations_list:  # type: Point2
             is_start_location = False
             if exp_loc in self.ai.enemy_start_locations:
                 is_start_location = True
