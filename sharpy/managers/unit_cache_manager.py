@@ -45,6 +45,14 @@ class UnitCacheManager(ManagerBase):
     def by_tag(self, tag: int) -> Optional[Unit]:
         return self.tag_cache.get(tag, None)
 
+    def by_tags(self, tags: List[int]) -> Units:
+        units = Units([], self.ai)
+        for tag in tags:
+            unit = self.tag_cache.get(tag, None)
+            if unit:
+                units.append(unit)
+        return units
+
     def own(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all own units of the specified type(s)."""
         if isinstance(type_id, UnitTypeId):
