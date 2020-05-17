@@ -1,5 +1,5 @@
 import logging
-from typing import Union, Optional, List, Dict
+from typing import Union, Optional, List, Dict, Callable
 
 from sharpy.general.unit_feature import UnitFeature
 from sc2 import Race, race_gas, race_townhalls
@@ -168,6 +168,7 @@ class UnitValue(ManagerBase):
         # By storing data in the instance, can skip import conflicts.
         super().__init__()
         self.combat_ignore = {UnitTypeId.OVERLORD, UnitTypeId.LARVA} | self.not_really_structure
+        self.init_range_dicts()
 
         self.unit_data = {
             # Units
@@ -398,6 +399,60 @@ class UnitValue(ManagerBase):
             if UnitFeature.Detector in unit_data.features:
                 self.detectors.append(unit_data_key)
 
+    def init_range_dicts(self):
+        self._ground_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
+            UnitTypeId.RAVEN: lambda u: 9,
+            UnitTypeId.ORACLE: lambda u: 4,
+            UnitTypeId.CARRIER: lambda u: 8,
+            UnitTypeId.BATTLECRUISER: lambda u: 6,
+            UnitTypeId.DISRUPTOR: lambda u: 10,
+            UnitTypeId.BANELING: lambda u: 0.1,
+            UnitTypeId.SENTRY: lambda u: 5,
+            UnitTypeId.VOIDRAY: lambda u: 6,
+        }
+
+        self._air_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
+            UnitTypeId.RAVEN: lambda u: 9,
+            UnitTypeId.CARRIER: lambda u: 8,
+            UnitTypeId.BATTLECRUISER: lambda u: 6,
+            UnitTypeId.SENTRY: lambda u: 5,
+            UnitTypeId.VOIDRAY: lambda u: 6,
+        }
+
+        def lurker_range(unit: Unit):
+            if self.knowledge.version_manager.base_version < GameVersion.V_4_11_0:
+                return 8
+            else:
+                if unit.is_mine and self.ai.already_pending_upgrade(UpgradeId.LURKERRANGE) >= 1:
+                    return 10
+                return 8
+
+        def cyclone_range(unit: Unit):
+            if not unit.is_mine:
+                return 13  # worst case
+            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
+                return 7
+            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
+                return 13
+
+        def colossus_range(unit: Unit):
+            if not unit.is_mine:
+                if self.ai.time > 6 * 60:
+                    # Let's assume the worst, enemy has the upgrade!
+                    return 9
+                return 7
+
+            if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
+                return 9
+            else:
+                return 7
+
+        self._ground_range_dict[UnitTypeId.LURKERMP] = lurker_range
+        self._ground_range_dict[UnitTypeId.LURKERMPBURROWED] = lurker_range
+        self._ground_range_dict[UnitTypeId.COLOSSUS] = colossus_range
+        self._ground_range_dict[UnitTypeId.CYCLONE] = cyclone_range
+        self._air_range_dict[UnitTypeId.CYCLONE] = cyclone_range
+
     async def update(self):
         pass
 
@@ -477,48 +532,15 @@ class UnitValue(ManagerBase):
         return 1.0 * health_percentage
 
     def ground_range(self, unit: Unit) -> float:
-        if unit.type_id == UnitTypeId.RAVEN and unit.energy >= 50:
-            return 9
-        if unit.type_id == UnitTypeId.ORACLE:
-            return 4
-        if unit.type_id == UnitTypeId.CARRIER:
-            return 8
-        if unit.type_id == UnitTypeId.BATTLECRUISER:
-            return 6
-        if unit.type_id == UnitTypeId.DISRUPTOR:
-            return 10
-        if unit.type_id == UnitTypeId.BANELING:
-            return 0.1
-        if unit.type_id == UnitTypeId.LURKERMP or unit.type_id == UnitTypeId.LURKERMPBURROWED:
-            if self.knowledge.version_manager.base_version < GameVersion.V_4_11_0:
-                return 8
-            else:
-                if self.ai.already_pending_upgrade(UpgradeId.LURKERRANGE) >= 1:
-                    return 10
-                return 8
-        if unit.type_id == UnitTypeId.COLOSSUS:
-            if not unit.is_mine:
-                return 9  # Let's assume the worst, enemy has the upgrade!
-
-            if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
-                return 9
-            else:
-                return 7
-        if unit.type_id == UnitTypeId.CYCLONE:
-            if not unit.is_mine or self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
-                return 7
-            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
-                return 13
-
+        func = self._ground_range_dict.get(unit.type_id, None)
+        if func:
+            return func(unit)
         return unit.ground_range
 
     def air_range(self, unit: Unit) -> float:
-        if unit.type_id == UnitTypeId.RAVEN and unit.energy >= 50:
-            return 9
-        if unit.type_id == UnitTypeId.CARRIER:
-            return 8
-        if unit.type_id == UnitTypeId.BATTLECRUISER:
-            return 6
+        func = self._air_range_dict.get(unit.type_id, None)
+        if func:
+            return func(unit)
         return unit.air_range
 
     def can_shoot_air(self, unit: Unit) -> bool:
