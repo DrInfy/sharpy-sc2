@@ -177,8 +177,8 @@ class Zone:
         self.known_enemy_power.clear()
         self.assaulting_enemy_power.clear()
 
-        self.our_units: Units = self.cache.own_in_range(self.center_location, self.radius)
-        self.known_enemy_units: Units = self.cache.enemy_in_range(self.center_location, self.radius)
+        # Own and enemy units are figured out in zone manager update.
+
         # Only add units that we can fight against
         self.known_enemy_units = self.known_enemy_units.filter(lambda x: x.cloak != 2)
         self.enemy_workers = self.known_enemy_units.of_type(self.unit_values.worker_types)
