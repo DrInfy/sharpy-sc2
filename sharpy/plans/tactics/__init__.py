@@ -11,3 +11,4 @@ from .warn_build_macro import WarnBuildMacro
 from .worker_counterattack import WorkerCounterAttack
 from .worker_rally_point import WorkerRallyPoint
 from .scouting import Scout, ScoutLocation
+from .distribute_workers2 import PlanDistributeWorkersV2
