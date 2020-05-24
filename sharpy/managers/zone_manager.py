@@ -344,6 +344,10 @@ class ZoneManager(ManagerBase):
                         # We'll want to count units as being in relevant zones if possible
                         d += 5
 
+                    if best_d is None or d < best_d:
+                        best_index = zone_index
+                        best_d = d
+
                 for zone_index in zone_indices:
                     if zone_index != best_index:
                         # Remove the unit from other zones
