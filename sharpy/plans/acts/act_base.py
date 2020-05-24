@@ -210,7 +210,7 @@ class ActBase(Component, ABC):
         4. Workers returning to base from building
         5. Workers mining minerals
         6. Workers mining gas (Pulling workers out of mining gas messes up timings for optimal harvesting)
-        
+
         @param position: location on where we want to build something
         @param priority_tag: Worker tag that has been used here before
         @return: Worker if one was found
