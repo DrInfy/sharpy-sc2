@@ -41,35 +41,35 @@ class ScoutLocation(ScoutBaseAction):
 
     @staticmethod
     def scout_main(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-1].behind_mineral_position_center)
+        return ScoutLocation(lambda k: k.expansion_zones[-1].behind_mineral_position_center, **kwargs)
 
     @staticmethod
     def scout_enemy1(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-1].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-1].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy2(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-2].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-2].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy3(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-3].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-3].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy4(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-4].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-4].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy5(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-5].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-5].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy6(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-6].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-6].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy7(**kwargs) -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-7].center_location)
+        return ScoutLocation(lambda k: k.expansion_zones[-7].center_location, **kwargs)
 
     @staticmethod
     def scout_own1(**kwargs) -> ScoutBaseAction:
