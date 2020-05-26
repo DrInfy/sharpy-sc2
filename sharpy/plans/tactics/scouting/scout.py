@@ -50,6 +50,38 @@ class Scout(SubActs):
 
         self.units.clear()
 
+        if self.find_units():
+            return True
+
+        if self.units:
+            self.roles.set_tasks(UnitTask.Scouting, self.units)
+            await self.micro_units()  # Ignore if the scouting has finished
+        return True
+
+    async def micro_units(self) -> bool:
+        """
+        Micros units
+        @return: True when finished
+        """
+        count = len(self.orders)
+        self.index = self.index % count
+
+        for looped in range(0, count):
+            if looped == count:
+                self.ended = True
+                return True
+            # noinspection PyTypeChecker
+            action: ScoutBaseAction = self.orders[self.index]
+            action.set_scouts(self.units)
+            result = await action.execute()
+            if not result:
+                # Not finished
+                return False
+
+            self.index = (self.index + 1) % count
+        return False
+
+    def find_units(self) -> bool:
         if not self.started:
             if UnitTypeId.OVERLORD in self.unit_types:
                 free_units = self.roles.get_types_from(
@@ -73,23 +105,3 @@ class Scout(SubActs):
                 # Scouts are dead, end the scout act
                 self.ended = True
                 return True
-
-        if self.units:
-            self.roles.set_tasks(UnitTask.Scouting, self.units)
-            count = len(self.orders)
-            self.index = self.index % count
-
-            for looped in range(0, count):
-                if looped == count:
-                    self.ended = True
-                    return True
-                # noinspection PyTypeChecker
-                action: ScoutBaseAction = self.orders[self.index]
-                action.set_scouts(self.units)
-                result = await action.execute()
-                if not result:
-                    # Not finished
-                    return True
-
-                self.index = (self.index + 1) % count
-        return True

@@ -1,8 +1,9 @@
 import string
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 import sc2
+from sc2.ids.buff_id import BuffId
 from sharpy.general.component import Component
 from sharpy.managers import UnitValue
 from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
@@ -13,7 +14,7 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
-
+from sharpy.managers.roles import UnitTask
 
 build_commands = {
     # Protoss
@@ -143,6 +144,9 @@ class ActBase(Component, ABC):
                     return True
         return False
 
+    def get_ordered_count(self, unit_type: UnitTypeId):
+        return self.get_count(unit_type, include_pending=True) - self.get_count(unit_type, include_pending=False)
+
     def get_count(
         self, unit_type: UnitTypeId, include_pending=True, include_killed=False, include_not_ready: bool = True
     ) -> int:
@@ -195,3 +199,65 @@ class ActBase(Component, ABC):
         if unit_type == UnitTypeId.VIKINGFIGHTER:
             count += self.cache.own(UnitTypeId.VIKINGASSAULT).amount
         return count
+
+    def get_worker_builder(self, position: Point2, priority_tag: int) -> Optional[Unit]:
+        """
+        Gets best worker to build in the selected location.
+        Priorities:
+        1. Existing worker with the current priority_tag
+        2. For Protoss, other builders, long distance Proxy builders should be in UnitTask.Reserved
+        3. Idle workers
+        4. Workers returning to base from building
+        5. Workers mining minerals
+        6. Workers mining gas (Pulling workers out of mining gas messes up timings for optimal harvesting)
+
+        @param position: location on where we want to build something
+        @param priority_tag: Worker tag that has been used here before
+        @return: Worker if one was found
+        """
+
+        worker: Optional[Unit] = None
+        if priority_tag is not None:
+            worker: Unit = self.cache.by_tag(priority_tag)
+            if worker is None or worker.is_constructing_scv or self.roles.unit_role(worker) != UnitTask.Building:
+                # Worker is probably dead or it is already building something else.
+                worker = None
+
+        if worker is None:
+            workers = self.ai.workers.filter(
+                lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET) and not w.is_constructing_scv
+            ).sorted_by_distance_to(position)
+            if not workers:
+                return None
+
+            def sort_method(unit: Unit):
+                role = self.roles.unit_role(unit)
+                # if self.knowledge.my_race == Race.Protoss and role == UnitTask.Building:
+                #     return 0
+
+                if role == UnitTask.Idle:
+                    return 1
+
+                if role == UnitTask.Gathering:
+                    if unit.is_gathering and isinstance(unit.order_target, int):
+                        target = self.cache.by_tag(unit.order_target)
+                        if target and target.is_mineral_field:
+                            return 2
+                        else:
+                            return 4
+                    if unit.is_carrying_vespene:
+                        return 5
+                    if unit.is_carrying_minerals:
+                        return 3
+                    return 3
+                return 10
+
+            workers.sort(key=sort_method)
+
+            worker = workers.first
+        else:
+            worker: Unit = self.cache.by_tag(priority_tag)
+            if worker is None or worker.is_constructing_scv:
+                # Worker is probably dead or it is already building something else.
+                worker = None
+        return worker

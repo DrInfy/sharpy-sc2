@@ -78,6 +78,8 @@ class DoubleAdeptScout(ActBase):
             self.ended = True
             return
 
+        self.roles.refresh_tasks(adepts)
+
         if self.target_position != targets[0]:
             self.print(f"target changed to: {targets[0]}")
         self.target_position = targets[0]

@@ -211,6 +211,14 @@ class UnitRoleManager(ManagerBase):
         # Mules should not count for workers
         return units.of_type([UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV])
 
+    def unit_role(self, unit: Unit) -> UnitTask:
+        for role in self.roles:
+            if unit.tag in role.tags:
+                return role.task
+
+        # This should not happen as all units should always have a task, but it'd be undetermined task
+        return UnitTask.Idle
+
     # Always update at the start of loop
     async def update(self):
         left_over = self.ai.units
@@ -224,7 +232,7 @@ class UnitRoleManager(ManagerBase):
                 if unit.tag in self.had_task_set:
                     continue
 
-                if unit.tag in self.roles[UnitTask.Idle].tags:
+                if unit.tag in self.roles[UnitTask.Idle].tags or unit.tag in self.roles[UnitTask.Gathering].tags:
                     continue
 
                 self.clear_task(unit)

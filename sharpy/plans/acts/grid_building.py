@@ -50,8 +50,7 @@ class GridBuilding(ActBuilding):
 
         if count >= self.to_count:
             if self.builder_tag is not None:
-                self.knowledge.roles.clear_task(self.builder_tag)
-                self.builder_tag = None
+                self.clear_worker()
 
             return True  # Step is done
 
@@ -79,10 +78,15 @@ class GridBuilding(ActBuilding):
                 await self.make_pylon.execute()
             return False  # Stuck and cannot proceed
 
-        worker = self.get_worker(position)  # type: Unit
+        worker = self.get_worker_builder(position, self.builder_tag)  # type: Unit
 
         if worker is None:
+            self.builder_tag = None
             return False  # Cannot proceed
+
+        if self.has_build_order(worker):
+            self.set_worker(worker)
+            return False
 
         d = worker.distance_to(position)
         time = d / to_new_ticks(worker.movement_speed)
@@ -156,47 +160,14 @@ class GridBuilding(ActBuilding):
                     moving_status += order.ability.id.name
                 self.client.debug_text_world(moving_status, worker.position3d)
 
-    def get_worker(self, position: Point2):
-        worker: Unit = None
-        if self.builder_tag is None:
-            if self.knowledge.my_race == Race.Protoss:
-                builders: Units = self.knowledge.roles.all_from_task(UnitTask.Building).filter(
-                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
-                )
+    def set_worker(self, worker: Optional[Unit]) -> bool:
+        if worker:
+            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.builder_tag = worker.tag
+            return True
 
-                if builders:
-                    closest = None
-                    best_distance = 0
-                    for builder in builders:  # type: Unit
-                        if len(builder.orders) == 1:
-                            order: UnitOrder = builder.orders[0]
-                            if order.target is Point2:
-                                distance = position.distance_to_point2(order.target)
-                            else:
-                                distance = position.distance_to_point2(builder.position)
-                            if distance < 10 and (closest is None or distance < best_distance):
-                                best_distance = distance
-                                closest = builder
-                    worker = closest
-
-            if worker is None:
-                free_workers = self.knowledge.roles.free_workers.filter(
-                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
-                )
-                if self.knowledge.my_race == Race.Terran:
-                    free_workers = free_workers.filter(lambda u: not self.has_build_order(u))
-                if free_workers.exists:
-                    worker = free_workers.closest_to(position)
-        else:
-            worker: Unit = self.cache.by_tag(self.builder_tag)
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                self.builder_tag = None
-        return worker
-
-    def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
-        self.builder_tag = worker.tag
+        self.builder_tag = None
+        return False
 
     def clear_worker(self):
         if self.builder_tag is not None:

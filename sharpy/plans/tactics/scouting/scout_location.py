@@ -40,64 +40,64 @@ class ScoutLocation(ScoutBaseAction):
         return False
 
     @staticmethod
-    def scout_main() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-1].behind_mineral_position_center)
+    def scout_main(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-1].behind_mineral_position_center, **kwargs)
 
     @staticmethod
-    def scout_enemy1() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-1].center_location)
+    def scout_enemy1(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-1].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy2() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-2].center_location)
+    def scout_enemy2(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-2].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy3() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-3].center_location)
+    def scout_enemy3(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-3].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy4() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-4].center_location)
+    def scout_enemy4(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-4].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy5() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-5].center_location)
+    def scout_enemy5(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-5].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy6() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-6].center_location)
+    def scout_enemy6(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-6].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy7() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[-7].center_location)
+    def scout_enemy7(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[-7].center_location, **kwargs)
 
     @staticmethod
-    def scout_own1() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[0].center_location)
+    def scout_own1(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[0].center_location, **kwargs)
 
     @staticmethod
-    def scout_own2() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[1].center_location)
+    def scout_own2(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[1].center_location, **kwargs)
 
     @staticmethod
-    def scout_own3() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[2].center_location)
+    def scout_own3(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[2].center_location, **kwargs)
 
     @staticmethod
-    def scout_own4() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[3].center_location)
+    def scout_own4(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[3].center_location, **kwargs)
 
     @staticmethod
-    def scout_own5() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[4].center_location)
+    def scout_own5(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[4].center_location, **kwargs)
 
     @staticmethod
-    def scout_own6() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[5].center_location)
+    def scout_own6(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[5].center_location, **kwargs)
 
     @staticmethod
-    def scout_own7() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: k.expansion_zones[6].center_location)
+    def scout_own7(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(lambda k: k.expansion_zones[6].center_location, **kwargs)
 
     @staticmethod
     def scout_enemy_natural_ol_spot() -> ScoutBaseAction:

@@ -16,14 +16,18 @@ class PlanFinishEnemy(ActBase):
         for unit in self.ai.units.idle:  # type: Unit
             if self.knowledge.should_attack(unit):
                 self.do(unit.attack(target))
-                self.knowledge.roles.set_task(UnitTask.Attacking, unit)
+                self.roles.set_task(UnitTask.Attacking, unit)
+
+        # Refresh roles
+        units = self.roles.all_from_task(UnitTask.Attacking)
+        self.roles.refresh_tasks(units)
 
         return True
 
     async def find_attack_position(self, ai):
         main_pos = self.knowledge.own_main_zone.center_location
 
-        target = random.choice(list(ai.expansion_locations))
+        target = random.choice(list(ai.expansion_locations_list))
         last_distance2 = target.distance_to(main_pos)
         target_known = False
         if ai.enemy_structures.exists:

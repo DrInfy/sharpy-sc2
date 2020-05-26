@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING, Optional
 
 from sc2.client import Client
+from sc2.position import Point3
+from sc2.unit import Unit
 
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge, KnowledgeBot
@@ -72,3 +74,8 @@ class Component:
     async def start_component(self, component: "Component", knowledge: "Knowledge"):
         component.parent_key = self.key
         await component.start(knowledge)
+
+    def debug_text_on_unit(self, unit: Unit, text: str):
+        pos3d: Point3 = unit.position3d
+        pos3d = Point3((pos3d.x, pos3d.y, pos3d.z + 2))
+        self.client.debug_text_world(text, pos3d, size=10)

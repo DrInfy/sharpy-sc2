@@ -203,7 +203,7 @@ class GroupCombatManager(ManagerBase):
         for unit in units:
             numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
-        if self.cache.enemy_numpy_vectors:
+        if numpy_vectors:
             clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(numpy_vectors)
             # print(clustering.labels_)
 

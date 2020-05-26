@@ -351,7 +351,7 @@ class Knowledge:
         # This is basically copy pasted from BotAI.owned_expansions
         expansions = {}
 
-        for exp_loc in self.ai.expansion_locations:
+        for exp_loc in self.ai.expansion_locations_list:
 
             def is_near_to_expansion(th: Unit):
                 return th.position.distance_to(exp_loc) < sc2.BotAI.EXPANSION_GAP_THRESHOLD

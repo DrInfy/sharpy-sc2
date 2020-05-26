@@ -45,7 +45,15 @@ class UnitCacheManager(ManagerBase):
     def by_tag(self, tag: int) -> Optional[Unit]:
         return self.tag_cache.get(tag, None)
 
-    def own(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]):
+    def by_tags(self, tags: List[int]) -> Units:
+        units = Units([], self.ai)
+        for tag in tags:
+            unit = self.tag_cache.get(tag, None)
+            if unit:
+                units.append(unit)
+        return units
+
+    def own(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all own units of the specified type(s)."""
         if isinstance(type_id, UnitTypeId):
             return self.own_unit_cache.get(type_id, self.empty_units)
@@ -56,12 +64,12 @@ class UnitCacheManager(ManagerBase):
         return units
 
     @property
-    def own_townhalls(self):
+    def own_townhalls(self) -> Units:
         """Returns all of our own townhalls."""
         # Provided for completeness, even though we could just call ai.townhalls property directly.
         return self.ai.townhalls
 
-    def enemy(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]):
+    def enemy(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all enemy units of the specified type(s)."""
         if isinstance(type_id, UnitTypeId):
             return self.enemy_unit_cache.get(type_id, self.empty_units)
@@ -112,7 +120,8 @@ class UnitCacheManager(ManagerBase):
         self.all_own = self.knowledge.all_own
 
         for unit in self.all_own:
-            self.tag_cache[unit.tag] = unit
+            if unit.is_memory:
+                self.tag_cache[unit.tag] = unit
 
             units = self.own_unit_cache.get(unit.type_id, Units([], self.ai))
             if units.amount == 0:
@@ -121,13 +130,18 @@ class UnitCacheManager(ManagerBase):
             self.own_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
         for unit in self.knowledge.known_enemy_units:
-            self.tag_cache[unit.tag] = unit
+            if unit.is_memory:
+                self.tag_cache[unit.tag] = unit
 
             units = self.enemy_unit_cache.get(unit.type_id, Units([], self.ai))
             if units.amount == 0:
                 self.enemy_unit_cache[unit.type_id] = units
             units.append(unit)
             self.enemy_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
+
+        for unit in self.ai.all_units:
+            # Add all non-memory units to unit tag cache
+            self.tag_cache[unit.tag] = unit
 
         if len(self.own_numpy_vectors) > 0:
             self.own_tree = cKDTree(self.own_numpy_vectors)

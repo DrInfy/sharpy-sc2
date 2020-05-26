@@ -31,10 +31,6 @@ class PlanDistributeWorkers(ActBase):
         self.roles: UnitRoleManager = None
         self.force_work = False
 
-    async def start(self, knowledge: Knowledge):
-        await super().start(knowledge)
-        self.roles = knowledge.roles
-
     @property
     def active_gas_buildings(self) -> Units:
         """All gas buildings that are ready."""
@@ -106,7 +102,10 @@ class PlanDistributeWorkers(ActBase):
 
         # Idle worker
         if workers.idle.exists:
-            return workers.idle.first  # use random?
+            for worker in workers:
+                if worker.tag not in self.roles.had_task_set:
+                    # if the task was just set, the worker is still active!
+                    return worker
 
         for zone in self.knowledge.expansion_zones:
             if zone.is_ours and zone.needs_evacuation:
@@ -198,6 +197,8 @@ class PlanDistributeWorkers(ActBase):
 
         self.roles.set_task(UnitTask.Gathering, worker)
         townhalls = self.ai.townhalls.ready
+
+        self.roles.set_task(UnitTask.Gathering, worker)
 
         if worker.is_carrying_resource and townhalls:
             closest = townhalls.closest_to(worker)

@@ -1,5 +1,6 @@
 from typing import Dict
 
+from sc2.position import Point2
 from sharpy.managers import ManagerBase
 from sc2.unit import Unit
 
@@ -16,6 +17,13 @@ class PreviousUnitsManager(ManagerBase):
 
     async def update(self):
         pass
+
+    def last_position(self, unit: Unit) -> Point2:
+        """
+        Return unit position in last frame, or current if unit was just created.
+        """
+        previous_unit = self.previous_units.get(unit.tag, unit)
+        return previous_unit.position
 
     async def post_update(self):
         """Updates previous units so we know what they are on the next iteration.

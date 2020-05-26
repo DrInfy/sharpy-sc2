@@ -47,7 +47,7 @@ known_melee_maps = (
     "WintersGateLE",
     "WorldofSleepersLE",
     # Season 1 2020
-    "SimulacrumLE",
+    "SImulacrumLE",
     "ZenLE",
     "NightshadeLE",
 )

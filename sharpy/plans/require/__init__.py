@@ -15,3 +15,4 @@ from .enemy_unit_exists_after import EnemyUnitExistsAfter, RequiredEnemyUnitExis
 from .enemy_building_exists import EnemyBuildingExists, RequiredEnemyBuildingExists
 from .count import Count
 from .methods import merge_to_require
+from .once import Once
