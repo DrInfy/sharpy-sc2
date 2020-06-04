@@ -28,9 +28,8 @@ class WarpUnit(ActBase):
         return unit_count >= self.to_count
 
     async def ready_to_warp(self, warpgate: Unit):
-        abilities = await self.ai.get_available_abilities(warpgate)
         # all the units have the same cooldown anyway so let's just look at ZEALOT
-        return AbilityId.WARPGATETRAIN_ZEALOT in abilities
+        return self.cd_manager.is_ready(warpgate.tag, AbilityId.WARPGATETRAIN_ZEALOT)
 
     async def execute(self) -> bool:
         if self.is_done:

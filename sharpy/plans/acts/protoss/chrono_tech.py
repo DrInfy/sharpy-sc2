@@ -24,8 +24,9 @@ class ChronoTech(ActBase):
                     # boost here!
                     if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                         for nexus in self.cache.own(UnitTypeId.NEXUS):
-                            abilities = await self.ai.get_available_abilities(nexus)
-                            if AbilityId.EFFECT_CHRONOBOOSTENERGYCOST in abilities:
+                            if self.cd_manager.is_ready(
+                                nexus.tag, AbilityId.EFFECT_CHRONOBOOSTENERGYCOST
+                            ) and self.allow_new_action(nexus):
                                 self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
                                 self.print(f"Chrono to {self.name}!")
         return True  # Never block
