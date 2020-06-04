@@ -325,12 +325,12 @@ class Zone:
     def our_photon_cannons(self) -> Units:
         """Returns any of our own static defenses on the zone."""
         # todo: make this work for Terran and Zerg and rename
-        return self.our_units(UnitTypeId.PHOTONCANNON).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.PHOTONCANNON)
 
     @property
     def our_batteries(self) -> Units:
         """Returns shield batteries."""
-        return self.our_units(UnitTypeId.SHIELDBATTERY).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.SHIELDBATTERY)
 
     @property
     def enemy_static_defenses(self) -> Units:
