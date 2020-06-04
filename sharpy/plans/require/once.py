@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class Once(RequireBase):
-    """Check passes if any of the conditions are true."""
+    """Check passes if condition has ever been true."""
 
     def __init__(self, condition: Union[RequireBase, Callable[["Knowledge"], bool]]):
         super().__init__()
