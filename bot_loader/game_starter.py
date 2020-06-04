@@ -15,7 +15,7 @@ from bot_loader.loader import BotLoader
 from bot_loader.runner import MatchRunner
 from sc2 import maps
 from sc2.paths import Paths
-from sc2.player import AbstractPlayer, Bot
+from sc2.player import AbstractPlayer, Bot, Human
 from sharpy.knowledges import KnowledgeBot
 
 new_line = "\n"
@@ -214,6 +214,8 @@ Builds:
 
     @staticmethod
     def setup_bot(player: AbstractPlayer, bot_code, enemy_text: str, args):
+        if isinstance(player, Human):
+            player.fullscreen = True
         if isinstance(player, Bot) and hasattr(player.ai, "config"):
             my_bot: KnowledgeBot = player.ai
             my_bot.opponent_id = bot_code + "-" + enemy_text
