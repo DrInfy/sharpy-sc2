@@ -5,6 +5,11 @@ from sharpy.managers.combat2 import MicroStep, Action, MoveType
 from sc2 import AbilityId
 from sc2.unit import Unit
 
+# voidrays don't have weapons in the current api
+cd_ticks = 22.4 * 0.36
+# We'll use a % of the cooldown to shoot and hope that'll be enough
+ticks_to_shoot = 6  # cd_ticks * 0.6
+
 
 class MicroVoidrays(MicroStep):
     def should_retreat(self, unit: Unit) -> bool:
@@ -12,7 +17,7 @@ class MicroVoidrays(MicroStep):
             health_percentage = (unit.shield + unit.health) / (unit.shield_max + unit.health_max)
         else:
             health_percentage = 0
-        if health_percentage < 0.2 or unit.weapon_cooldown < 0:
+        if health_percentage < 0.2:  # or unit.weapon_cooldown < 0:
             # low hp or unit can't attack
             return True
 
@@ -43,12 +48,23 @@ class MicroVoidrays(MicroStep):
             if close_enemies:
                 return Action(None, False, AbilityId.EFFECT_VOIDRAYPRISMATICALIGNMENT)
 
-        if not self.should_shoot() and self.should_retreat(unit):
-            pos = self.pather.find_weak_influence_air(unit.position, 4)
-            return Action(pos, False)
+        shoot = self.should_shoot(unit)
+        if not shoot:
+            if self.should_retreat(unit):
+                pos = self.pather.find_weak_influence_air(unit.position, 4)
+                return Action(pos, False)
 
-        return self.focus_fire(unit, current_command, None)
+        current_command = self.focus_fire(unit, current_command, None)
 
-    def should_shoot(self):
-        tick = self.ai.state.game_loop % 24
-        return tick < 8
+        if not shoot:
+            if self.engaged_power.air_power < 1:
+                if unit.distance_to(current_command.target) > 2:
+                    return Action(current_command.target.position, False)
+        return current_command
+
+    def should_shoot(self, unit: Unit):
+        if unit.weapon_cooldown < 0:
+            tick = self.ai.state.game_loop % cd_ticks
+            return tick < ticks_to_shoot
+        else:
+            return self.ready_to_shoot(unit)
