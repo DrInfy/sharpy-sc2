@@ -400,17 +400,9 @@ class Zone:
             ramps: List[Ramp] = [
                 ramp
                 for ramp in self.ai.game_info.map_ramps
-                if len(ramp.upper) == 2
+                if len(ramp.upper) in {2, 5}
                 and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS
             ]
-
-            if not ramps:
-                ramps: List[Ramp] = [
-                    ramp
-                    for ramp in self.ai.game_info.map_ramps
-                    if len(ramp.upper) <= 4
-                    and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS
-                ]
 
             if not len(ramps):
                 ramps: List[Ramp] = self.ai.game_info.map_ramps
