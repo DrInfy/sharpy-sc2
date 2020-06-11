@@ -13,6 +13,8 @@ class Advantage(enum.Enum):
     OverwhelmingDisadvantage = -4
 
 
+almost_even = {Advantage.Even, Advantage.SlightAdvantage, Advantage.SlightDisadvantage}
+
 at_least_clear_advantage = {Advantage.OverwhelmingAdvantage, Advantage.ClearAdvantage}
 at_least_small_advantage = {Advantage.OverwhelmingAdvantage, Advantage.ClearAdvantage, Advantage.SmallAdvantage}
 
