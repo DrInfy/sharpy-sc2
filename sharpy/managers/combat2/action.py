@@ -1,7 +1,7 @@
 from typing import Union, Optional
 
 from sc2 import AbilityId
-from sc2.position import Point2
+from sc2.position import Point2, Pointlike
 from sc2.unit import Unit
 from sc2.unit_command import UnitCommand
 
@@ -10,10 +10,13 @@ class Action:
     target: Union[Point2, Unit]
     is_attack: bool
 
-    def __init__(self, target: Optional[Union[Point2, Unit]],
-                 is_attack: bool,
-                 ability: Optional[AbilityId] = None,
-                 debug_comment: Optional[str] = None):
+    def __init__(
+        self,
+        target: Optional[Union[Point2, Pointlike, Unit]],
+        is_attack: bool,
+        ability: Optional[AbilityId] = None,
+        debug_comment: Optional[str] = None,
+    ):
 
         self.target = target
         self.is_attack = is_attack
@@ -29,6 +32,7 @@ class Action:
         else:
             action = unit.move(self.target)
         return action
+
 
 class NoAction(Action):
     def __init__(self):

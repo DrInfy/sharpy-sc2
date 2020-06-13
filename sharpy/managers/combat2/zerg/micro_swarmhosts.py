@@ -12,9 +12,9 @@ HOST_RANGE = 15
 class MicroSwarmHosts(MicroStep):
     """Micro Swarm Hosts."""
 
-    def __init__(self, knowledge) -> None:
+    def __init__(self) -> None:
         """Run setup."""
-        super().__init__(knowledge)
+        super().__init__()
         self.last_used_any = 0
         self.tags_ready: List[int] = []
 
@@ -41,12 +41,7 @@ class MicroSwarmHosts(MicroStep):
         if self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_SPAWNLOCUSTS):
             distance = self.pather.walk_distance(unit.position, center)
             if distance < HOST_RANGE:
-                return Action(
-                    center,
-                    False,
-                    AbilityId.EFFECT_SPAWNLOCUSTS,
-                    debug_comment="Spawning Locusts",
-                )
+                return Action(center, False, AbilityId.EFFECT_SPAWNLOCUSTS, debug_comment="Spawning Locusts",)
             else:
                 return Action(center, False)
 

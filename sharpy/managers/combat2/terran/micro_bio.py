@@ -6,8 +6,8 @@ from sc2.units import Units
 
 
 class MicroBio(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.stim_required = 0
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
@@ -22,12 +22,10 @@ class MicroBio(GenericMicro):
         return super().group_solve_combat(units, current_command)
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if (
-            self.stim_required > 0
-            and not self.has_stim(unit)
-            and unit.shield_health_percentage > 0.5
-        ):
-            if unit.type_id == UnitTypeId.MARAUDER and self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_STIM_MARAUDER):
+        if self.stim_required > 0 and not self.has_stim(unit) and unit.shield_health_percentage > 0.5:
+            if unit.type_id == UnitTypeId.MARAUDER and self.cd_manager.is_ready(
+                unit.tag, AbilityId.EFFECT_STIM_MARAUDER
+            ):
                 self.stim_required -= 2
                 return Action(None, False, AbilityId.EFFECT_STIM_MARAUDER)
             elif unit.type_id == UnitTypeId.MARINE and self.cd_manager.is_ready(unit.tag, AbilityId.EFFECT_STIM_MARINE):

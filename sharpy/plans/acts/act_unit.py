@@ -5,11 +5,12 @@ from sc2.units import Units
 
 from .act_base import ActBase
 
-REACTORS = {UnitTypeId.BARRACKSREACTOR, UnitTypeId.FACTORYREACTOR,
-            UnitTypeId.STARPORTREACTOR, UnitTypeId.REACTOR}
+REACTORS = {UnitTypeId.BARRACKSREACTOR, UnitTypeId.FACTORYREACTOR, UnitTypeId.STARPORTREACTOR, UnitTypeId.REACTOR}
+
 
 class ActUnit(ActBase):
     """Builds units."""
+
     def __init__(self, unit_type: UnitTypeId, from_building: UnitTypeId, to_count: int = 9999, priority: bool = False):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         assert from_building is not None and isinstance(from_building, UnitTypeId)
@@ -51,7 +52,7 @@ class ActUnit(ActBase):
             if self.knowledge.unit_values.real_type(unit.type_id) == self.unit_type:
                 count += 1
 
-        if (self.unit_type == self.knowledge.my_worker_type):
+        if self.unit_type == self.knowledge.my_worker_type:
             count = max(count, self.ai.supply_workers)
 
         ability = self.ai._game_data.units[self.unit_type.value].creation_ability
@@ -63,7 +64,7 @@ class ActUnit(ActBase):
             else:
                 count += pending
 
-        if (self.unit_type == self.knowledge.my_worker_type):
+        if self.unit_type == self.knowledge.my_worker_type:
             count = max(self.ai.supply_workers, count)
 
         count += sum([o.ability and o.ability.id == ability.id for u in self.builders for o in u.orders])
@@ -90,7 +91,9 @@ class ActUnit(ActBase):
                         continue
 
                     if self.knowledge.cooldown_manager.is_ready(builder.tag, unit_data.creation_ability.id):
-                        self.print(f'{self.unit_type.name} from {self.from_building.name} at {builder.position}')
+                        pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
+                        self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
+
                         self.knowledge.reserve(cost.minerals, cost.vespene)
                         if self.allow_new_action(builder):
                             # Only do this when it is actually good idea

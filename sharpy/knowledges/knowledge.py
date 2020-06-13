@@ -1,7 +1,7 @@
 import logging
 import string
 from configparser import ConfigParser
-from typing import Set, List, Optional, Dict, Callable
+from typing import Set, List, Optional, Dict, Callable, Type
 
 import sc2
 from sharpy.general.zone import Zone
@@ -17,13 +17,18 @@ from sc2.data import Result
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
+from typing import TYPE_CHECKING, TypeVar
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import KnowledgeBot
 
 root_logger = logging.getLogger()
+TManager = TypeVar("TManager")
 
 
 class Knowledge:
     def __init__(self):
-        self.ai: sc2.BotAI = None
+        self.ai: "KnowledgeBot" = None
         self.config: ConfigParser = None
         self._debug: bool = False
 
@@ -40,7 +45,6 @@ class Knowledge:
         self.rush_distance = 0
 
         self._all_own: Units = None
-
 
         # Base building related
         self.reserved_minerals = 0
@@ -69,8 +73,19 @@ class Knowledge:
         self.chat_manager: ChatManager = ChatManager()
         self.memory_manager: MemoryManager = MemoryManager()
         self.action_handler: ActionHandler = ActionHandler()
+        self.version_manager: VersionManager = VersionManager()
+        self.managers: List[ManagerBase] = []
 
+    def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
+        """
+        Sets managers to be updated.
+        This is not intended to be used outside of Knowledge.
+        Use KnowledgeBot.configure_managers to configure your managers.
+
+        @param additional_managers: Additional list of custom managers
+        """
         self.managers: List[ManagerBase] = [
+            self.version_manager,
             self.unit_values,
             self.unit_cache,
             self.action_handler,
@@ -92,9 +107,26 @@ class Knowledge:
             self.memory_manager,
         ]
 
+        if additional_managers:
+            self.managers.extend(additional_managers)
+
+    def get_manager(self, manager_type: Type[TManager]) -> Optional[TManager]:
+        """
+        Get manager by its type. Because the implementation can pretty slow, it is recommended to
+        fetch the required manager types in Component `start` in order to not slow the bot down.
+
+        @param manager_type: type of manager to be requested. i.e. `DataManager`
+        @return: Manager of requested type, if one is found.
+        """
+        for manager in self.managers:
+            if issubclass(type(manager), manager_type):
+                return manager
+
     # noinspection PyAttributeOutsideInit
-    def pre_start(self, ai: sc2.BotAI):
-        self.ai: sc2.BotAI = ai
+    def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
+        assert isinstance(ai, sc2.BotAI)
+        self.ai: "KnowledgeBot" = ai
+        self._set_managers(additional_managers)
         self._all_own: Units = Units([], self.ai)
         self.config: ConfigParser = self.ai.config
         self.logger = sc2.main.logger
@@ -124,7 +156,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "builds.edge_protoss" for "edge_protoss" setting under [builds].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].get(key[1])
 
     def get_int_setting(self, key: str) -> int:
@@ -133,7 +165,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "gameplay.disruptor_max_count" for "disruptor_max_count" setting under [gameplay].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getint(key[1])
 
     def get_boolean_setting(self, key: str) -> str:
@@ -142,7 +174,7 @@ class Knowledge:
 
         :param key: Key of the setting, eg. "general.chat" for "chat" setting under [general].
         """
-        key = key.split('.')
+        key = key.split(".")
         return self.config[key[0]].getboolean(key[1])
 
     @property
@@ -215,20 +247,26 @@ class Knowledge:
     async def update(self, iteration: int):
         if self.close_gates:
             lings = self.enemy_units_manager.unit_count(UnitTypeId.ZERGLING)
-            if self.enemy_units_manager.unit_count(UnitTypeId.ROACH) > lings\
-                    or self.enemy_units_manager.unit_count(UnitTypeId.HYDRALISK) > lings:
+            if (
+                self.enemy_units_manager.unit_count(UnitTypeId.ROACH) > lings
+                or self.enemy_units_manager.unit_count(UnitTypeId.HYDRALISK) > lings
+            ):
                 self.close_gates = False
 
         self._all_own: Units = self.ai.units + self.ai.structures
         memory_units = self.memory_manager.ghost_units
         self._known_enemy_structures: Units = self.ai.enemy_structures.filter(
-            lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure)
+            lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure
+        )
         self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures + memory_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units + memory_units
 
-        self._known_enemy_units_workers: Units =\
-            Units(self._known_enemy_units_mobile.of_type([UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]),
-                  self.ai)
+        self._known_enemy_units_workers: Units = Units(
+            self._known_enemy_units_mobile.of_type(
+                [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
+            ),
+            self.ai,
+        )
 
         self.iteration = iteration
 
@@ -290,7 +328,7 @@ class Knowledge:
             cost = self.ai._game_data.calculate_ability_cost(item_id)
         minerals = self.ai.minerals - self.reserved_minerals
         gas = self.ai.vespene - self.reserved_gas
-        return cost.minerals <= minerals and cost.vespene <= max(0,gas) and enough_supply
+        return cost.minerals <= minerals and cost.vespene <= max(0, gas) and enough_supply
 
     def should_attack(self, unit: Unit):
         """Returns boolean whether unit should participate in an attack. Ignores structures, workers and other non attacking types."""
@@ -298,19 +336,13 @@ class Knowledge:
             return False
         if self.my_race == Race.Zerg and unit.type_id == UnitTypeId.QUEEN:
             return False
-        if unit.type_id == UnitTypeId.INTERCEPTOR or unit.type_id == UnitTypeId.ADEPTPHASESHIFT or unit.type_id == UnitTypeId.MULE:
+        if (
+            unit.type_id == UnitTypeId.INTERCEPTOR
+            or unit.type_id == UnitTypeId.ADEPTPHASESHIFT
+            or unit.type_id == UnitTypeId.MULE
+        ):
             return False
         return not unit.is_structure and self.my_worker_type != unit.type_id
-
-    def building_going_down(self, building: Unit) -> bool:
-        """Returns boolean indicating whether a building is low on health and under attack."""
-        if building.tag in self.previous_units_manager.previous_units:
-            previous_building = self.previous_units_manager.previous_units[building.tag]
-            health = building.health
-            compare_health = max(70, building.health_max * 0.09)
-            if health < previous_building.health < compare_health:
-                return True
-        return False
 
     @property
     def enemy_expansions_dict(self) -> Dict[Point2, Unit]:
@@ -319,7 +351,8 @@ class Knowledge:
         # This is basically copy pasted from BotAI.owned_expansions
         expansions = {}
 
-        for exp_loc in self.ai.expansion_locations:
+        for exp_loc in self.ai.expansion_locations_list:
+
             def is_near_to_expansion(th: Unit):
                 return th.position.distance_to(exp_loc) < sc2.BotAI.EXPANSION_GAP_THRESHOLD
 
@@ -423,12 +456,10 @@ class Knowledge:
         pass
 
     async def on_building_construction_started(self, unit: Unit):
-        self._print(f"Started {unit.type_id.name} at {unit.position}"
-        )
+        self._print(f"Started {unit.type_id.name} at {unit.position}")
 
     async def on_building_construction_complete(self, unit: Unit):
-        self._print(f"Completed {unit.type_id.name} at {unit.position}"
-        )
+        self._print(f"Completed {unit.type_id.name} at {unit.position}")
 
     async def on_end(self, game_result: Result):
         self._print(f"Result: {game_result.name}", stats=False)
@@ -450,7 +481,7 @@ class Knowledge:
         for manager in self.managers:
             await manager.on_end(game_result)
 
-# region Knowledge event handlers
+    # region Knowledge event handlers
 
     # todo: if this is useful, it should be refactored as a more general solution
 
@@ -459,14 +490,14 @@ class Knowledge:
         self._on_unit_destroyed_listeners.append(func)
 
     def unregister_on_unit_destroyed_listener(self, func):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @staticmethod
     def fire_event(listeners, event):
         for listener in listeners:
             listener(event)
 
-# endregion
+    # endregion
 
     #
     # Printing
@@ -497,9 +528,11 @@ class Knowledge:
         if stats:
             last_step_time = round(self.ai.step_time[3])
 
-            message = f"{self.ai.time_formatted.rjust(5)} {str(last_step_time).rjust(4)}ms " \
-                f"{str(self.ai.minerals).rjust(4)}M {str(self.ai.vespene).rjust(4)}G " \
+            message = (
+                f"{self.ai.time_formatted.rjust(5)} {str(last_step_time).rjust(4)}ms "
+                f"{str(self.ai.minerals).rjust(4)}M {str(self.ai.vespene).rjust(4)}G "
                 f"{str(self.ai.supply_used).rjust(3)}/{str(self.ai.supply_cap).rjust(3)}U {message}"
+            )
 
         # noinspection PyUnresolvedReferences
         if not self.ai.run_custom or self.ai.player_id == 1 or self.ai.realtime:
@@ -526,7 +559,9 @@ class Knowledge:
                 self.gather_point = zone.gather_point
             elif zone.is_ours:
                 if len(self.zone_manager.gather_points) > i:
-                    self.gather_point = self.zone_manager.expansion_zones[self.zone_manager.gather_points[i]].gather_point
+                    self.gather_point = self.zone_manager.expansion_zones[
+                        self.zone_manager.gather_points[i]
+                    ].gather_point
 
     def get_z(self, point: Point2):
         return self.terrain_to_z_height(self.ai.get_terrain_height(point))
@@ -534,6 +569,11 @@ class Knowledge:
     def terrain_to_z_height(self, h):
         """Gets correct z from versions 4.9.0+"""
         return -16 + 32 * h / 255
+
+    def z_height_to_terrain(self, z):
+        """Gets correct height from versions 4.9.0+"""
+        h = (z + 16) / 32 * 255
+        return h
 
     async def post_update(self):
         for manager in self.managers:

@@ -3,6 +3,7 @@ import sys
 from typing import Dict, List, Optional
 
 import sc2pathlibp
+from sc2.unit import Unit
 from sharpy import sc2math
 from sharpy.general.path import Path
 from sharpy.managers.grids import BuildGrid, GridArea, ZoneArea
@@ -35,14 +36,14 @@ class ZoneManager(ManagerBase):
         self.found_enemy_start: Optional[Point2] = None
         self.map: MapInfo = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.map = knowledge.map
         self.init_zones()
 
     def init_zones(self):
         """Add expansion locations as zones."""
-        for exp_loc in self.ai.expansion_locations:  # type: Point2
+        for exp_loc in self.ai.expansion_locations_list:  # type: Point2
             is_start_location = False
             if exp_loc in self.ai.enemy_start_locations:
                 is_start_location = True
@@ -54,7 +55,6 @@ class ZoneManager(ManagerBase):
         self._sort_expansion_zones()
         self._zones_truly_sorted = self.enemy_start_location_found
         self.zone_sorted_by = self.enemy_start_location
-
 
     def _path_distance(self, start: Point2, end: Point2):
         path = Path(self.knowledge.pathing_manager.path_finder_terrain.find_path(start, end))
@@ -161,10 +161,11 @@ class ZoneManager(ManagerBase):
         zone_count = len(self.expansion_zones)
         for i in range(0, zone_count):
             for j in range(i + 1, zone_count):
-                path_data = pf.find_path(self.expansion_zones[i].center_location, self.expansion_zones[j].center_location)
+                path_data = pf.find_path(
+                    self.expansion_zones[i].center_location, self.expansion_zones[j].center_location
+                )
                 self.expansion_zones[i].paths[j] = Path(path_data)
                 self.expansion_zones[j].paths[i] = Path(path_data, True)
-
 
         for i in range(1, zone_count - 1):
             # Recalculate improved gather points based on pathing
@@ -181,7 +182,7 @@ class ZoneManager(ManagerBase):
 
                 area: GridArea = grid.get(target[0], target[1])
                 if area.ZoneIndex == ZoneArea.OwnThirdZone:
-                    if len(self.gather_points )> 2:
+                    if len(self.gather_points) > 2:
                         self.gather_points.insert(2, 2)
                     else:
                         self.gather_points.append(2)
@@ -191,21 +192,25 @@ class ZoneManager(ManagerBase):
         last = 1
         count = len(self.expansion_zones) // 2
         if count > 2:
-            last_angle = sc2math.line_angle(self.expansion_zones[1].center_location, self.expansion_zones[-2].center_location)
+            last_angle = sc2math.line_angle(
+                self.expansion_zones[1].center_location, self.expansion_zones[-2].center_location
+            )
 
             for i in range(2, count):
-                angle = sc2math.line_angle(self.expansion_zones[last].center_location, self.expansion_zones[i].center_location)
+                angle = sc2math.line_angle(
+                    self.expansion_zones[last].center_location, self.expansion_zones[i].center_location
+                )
                 d = sc2math.angle_distance(last_angle, angle)
 
                 if d < 1:
-                    last_angle = sc2math.line_angle(self.expansion_zones[i].center_location,
-                                                    self.expansion_zones[-2].center_location)
+                    last_angle = sc2math.line_angle(
+                        self.expansion_zones[i].center_location, self.expansion_zones[-2].center_location
+                    )
                     last = i
 
                 gather_points.append(last)
 
         return gather_points
-
 
     def _zone_distance_to_start(self, zone: Zone):
         return zone.center_location.distance_to(self.ai.start_location)
@@ -223,8 +228,9 @@ class ZoneManager(ManagerBase):
         else:
             enemy_location = self.enemy_natural.center_location
 
-        return self._path_distance(zone.center_location, own_position) * 2 \
-               - self._path_distance(zone.center_location, enemy_location)
+        return self._path_distance(zone.center_location, own_position) * 2 - self._path_distance(
+            zone.center_location, enemy_location
+        )
 
     def _zone_distance_to_enemy_start(self, zone: Zone):
         enemy_location = self.enemy_start_location
@@ -245,9 +251,9 @@ class ZoneManager(ManagerBase):
         else:
             enemy_location = self.enemy_natural.center_location
 
-
-        return self._path_distance(zone.center_location, enemy_location) * 2 \
-               - self._path_distance(zone.center_location, own_position)
+        return self._path_distance(zone.center_location, enemy_location) * 2 - self._path_distance(
+            zone.center_location, own_position
+        )
 
     # endregion
 
@@ -255,6 +261,9 @@ class ZoneManager(ManagerBase):
     async def update(self):
         if self.knowledge.iteration == 0:
             self.init_zone_pathing()
+
+        self.update_own_units_zones()
+        self.update_enemy_units_zones()
 
         for zone in self.zones.values():  # type: Zone
             zone.update()
@@ -265,6 +274,84 @@ class ZoneManager(ManagerBase):
         elif self.enemy_start_location != self.zone_sorted_by:
             self.zone_sorted_by = self.enemy_start_location
             self._sort_expansion_zones()
+
+    def update_own_units_zones(self):
+        # Figure out all the zones the units are set in
+        tags_in_zones: Dict[int, List[int]] = {}
+
+        for tag in self.cache.all_own.tags:
+            # Create empty arrays for easy code later
+            tags_in_zones[tag] = []
+
+        for zone in self.expansion_zones:
+            zone.our_units = self.cache.own_in_range(zone.center_location, zone.radius)
+            for tag in zone.our_units.tags:
+                # Registering zone here
+                tags_in_zones[tag].append(zone.zone_index)
+
+        for tag, zone_indices in tags_in_zones.items():
+            if len(zone_indices) > 1:
+                # the unit is registered in multiple zones, let's make it be in only one zone
+                unit = self.cache.by_tag(tag)
+                best_d: Optional[float] = None
+                best_index = None
+                for zone_index in zone_indices:
+                    zone = self.expansion_zones[zone_index]
+                    d = unit.distance_to(zone.center_location)
+                    # structures in the same zone are at the same height, units walking in ramps need also accounting
+                    height_difference = abs(zone.height - self.ai.get_terrain_height(unit))
+                    d += 10 * height_difference
+                    if zone.is_neutral:
+                        # We'll want to count units as being in relevant zones if possible
+                        d += 5
+
+                    if best_d is None or d < best_d:
+                        best_index = zone_index
+                        best_d = d
+
+                for zone_index in zone_indices:
+                    if zone_index != best_index:
+                        # Remove the unit from other zones
+                        self.expansion_zones[zone_index].our_units.remove(unit)
+
+    def update_enemy_units_zones(self):
+        # Figure out all the zones the units are set in
+        tags_in_zones: Dict[int, List[int]] = {}
+
+        for tag in self.knowledge.known_enemy_units.tags:
+            # Create empty arrays for easy code later
+            tags_in_zones[tag] = []
+
+        for zone in self.expansion_zones:
+            zone.known_enemy_units = self.cache.enemy_in_range(zone.center_location, zone.radius)
+            for tag in zone.known_enemy_units.tags:
+                # Registering zone here
+                tags_in_zones[tag].append(zone.zone_index)
+
+        for tag, zone_indices in tags_in_zones.items():
+            if len(zone_indices) > 1:
+                # the unit is registered in multiple zones, let's make it be in only one zone
+                unit = self.cache.by_tag(tag)
+                best_d: Optional[float] = None
+                best_index = None
+                for zone_index in zone_indices:
+                    zone = self.expansion_zones[zone_index]
+                    d = unit.distance_to(zone.center_location)
+                    # structures in the same zone are at the same height, units walking in ramps need also accounting
+                    height_difference = abs(zone.height - self.ai.get_terrain_height(unit))
+                    d += 10 * height_difference
+                    if zone.is_neutral:
+                        # We'll want to count units as being in relevant zones if possible
+                        d += 5
+
+                    if best_d is None or d < best_d:
+                        best_index = zone_index
+                        best_d = d
+
+                for zone_index in zone_indices:
+                    if zone_index != best_index:
+                        # Remove the unit from other zones
+                        self.expansion_zones[zone_index].known_enemy_units.remove(unit)
 
     # endregion
 
@@ -407,6 +494,12 @@ class ZoneManager(ManagerBase):
                 position: Point3 = Point3((zone.center_location.x, zone.center_location.y, z + 1))
                 is_gather = i in self.gather_points
 
+                for unit in zone.our_units:
+                    self.debug_text_on_unit(unit, f"Z:{zone.zone_index}")
+
+                for unit in zone.known_enemy_units:
+                    self.debug_text_on_unit(unit, f"Z:{zone.zone_index}")
+
                 zone_msg = f"Zone {i}"
                 if is_gather:
                     zone_msg += " (Gather)"
@@ -439,3 +532,13 @@ class ZoneManager(ManagerBase):
                     client.debug_sphere_out(position, 1, Point3((200, 200, 0)))
 
     # endregion
+    def zone_for_unit(self, building: Unit) -> Optional[Zone]:
+        if building.is_mine:
+            for zone in self.expansion_zones:
+                if zone.our_units.find_by_tag(building.tag):
+                    return zone
+        else:
+            for zone in self.expansion_zones:
+                if zone.known_enemy_units.find_by_tag(building.tag):
+                    return zone
+        return None

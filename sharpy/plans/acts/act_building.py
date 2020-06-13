@@ -8,10 +8,9 @@ from sc2.unit import Unit
 from .act_base import ActBase
 
 
-
-
 class ActBuilding(ActBase):
     """Act of starting to build new buildings up to specified count"""
+
     def __init__(self, unit_type: UnitTypeId, to_count: int = 1):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
         assert to_count is not None and isinstance(to_count, int)
@@ -37,14 +36,12 @@ class ActBuilding(ActBase):
 
         return False
 
-
-
     async def actually_build(self, ai, count):
         location = self.get_random_build_location()
-        self.knowledge.print(f'[ActBuilding] {count+1}. building of type {self.unit_type} near {location}')
+        self.knowledge.print(
+            f"[ActBuilding] {count+1}. {self.unit_type.name} near ({location.x:.1f}, {location.y:.1f})"
+        )
         await ai.build(self.unit_type, near=location)
-
-
 
     def get_random_build_location(self) -> Point2:
         """Calculates building position."""

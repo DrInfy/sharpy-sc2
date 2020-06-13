@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional, Set
 
-#from knowledges import Knowledge
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
@@ -12,6 +11,7 @@ class CooldownManager(ManagerBase):
     Global cooldown manager that is shared between all units.
     TODO: Rename to ability manager?
     """
+
     def __init__(self):
         super().__init__()
         self.used_dict: Dict[int, Dict[AbilityId, float]] = dict()
@@ -26,10 +26,10 @@ class CooldownManager(ManagerBase):
             return
         try:
             result: List[List[AbilityId]] = await self.ai.get_available_abilities(self.knowledge.all_own)
-        except:
-            self.print(f"Get available abilities failed.")
+        except Exception as e:
+            self.print(f"Get available abilities failed: {e}")
             return
-        
+
         for i in range(0, len(self.knowledge.all_own)):
             self.available_dict[self.knowledge.all_own[i].tag] = result[i]
 
@@ -44,7 +44,7 @@ class CooldownManager(ManagerBase):
             current_shade_tags = set()
 
             if adepts.exists:
-                for shade in shades: # type: Unit
+                for shade in shades:  # type: Unit
                     current_shade_tags.add(shade.tag)
                     if shade.tag not in self._shade_tags_handled:
                         self._shade_tags_handled.add(shade.tag)
@@ -66,7 +66,6 @@ class CooldownManager(ManagerBase):
                     if adept_tag is not None and adept_tag in self.adept_to_shade:
                         self.adept_to_shade.pop(adept_tag)
                     self.shade_to_adept.pop(shade_tag)
-
 
     async def post_update(self):
         pass
@@ -95,4 +94,3 @@ class CooldownManager(ManagerBase):
             self.used_dict[unit_tag] = ability_dict
 
         ability_dict[ability] = self.time
-

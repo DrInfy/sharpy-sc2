@@ -12,7 +12,6 @@ from sc2.units import Units
 
 
 class PlanZoneAttack2(PlanZoneAttack):
-
     def _start_attack(self, power: ExtendedPower, attackers: Units):
         drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.knowledge.enemy_start_location, 10)
         self.retreat_multiplier = 0  # never retreat, never surrender
@@ -32,51 +31,52 @@ class TwelvePool(KnowledgeBot):
     async def create_plan(self) -> BuildOrder:
         build_step_buildings = [
             # 12 Pool
-            Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1), RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1)),
+            Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1), UnitExists(UnitTypeId.SPAWNINGPOOL, 1)),
         ]
 
         finish = [
-            Step(RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30),
-                 StepBuildGas(2)),
-            ActExpand(2),
-            RequiredUnitExists(UnitTypeId.DRONE, 20),
+            Step(RequireCustom(lambda k: self.enemy_structures.flying.exists and self.supply_used > 30), BuildGas(2)),
+            Expand(2),
+            UnitExists(UnitTypeId.DRONE, 20),
             MorphLair(),
-            RequiredUnitExists(UnitTypeId.DRONE, 30),
-            StepBuildGas(4),
+            UnitExists(UnitTypeId.DRONE, 30),
+            BuildGas(4),
             ActBuilding(UnitTypeId.SPIRE),
-            ZergUnit(UnitTypeId.MUTALISK, 10, priority=True)
+            ZergUnit(UnitTypeId.MUTALISK, 10, priority=True),
         ]
 
         build_step_units = [
-
             # 12 Pool followed by overlord
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
-                 RequiredUnitExists(UnitTypeId.OVERLORD, 2)),
-
+            Step(
+                UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.OVERLORD, UnitTypeId.LARVA, 2),
+                UnitExists(UnitTypeId.OVERLORD, 2),
+            ),
             # TheMusZero
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
-                 RequiredUnitExists(UnitTypeId.DRONE, 14)),
+            Step(
+                UnitExists(UnitTypeId.SPAWNINGPOOL, 1),
+                ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 14),
+                UnitExists(UnitTypeId.DRONE, 14),
+            ),
             # Queen for more larvae
-            # BuildStep(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1), RequiredUnitExists(UnitTypeId.QUEEN, 1)),
-
+            # BuildStep(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 1), UnitExists(UnitTypeId.QUEEN, 1)),
             # Endless zerglings
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA),
-                 None),
-
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
-        return BuildOrder([
+        return BuildOrder(
             build_step_buildings,
             finish,
             build_step_units,
             AutoOverLord(),
+            PlanDistributeWorkers(),
             InjectLarva(),
             PlanWorkerOnlyDefense(),
             PlanZoneDefense(),
             PlanZoneGather(),
             PlanZoneAttack2(2),
             PlanFinishEnemy(),
-        ])
+        )
 
 
 class LadderBot(TwelvePool):

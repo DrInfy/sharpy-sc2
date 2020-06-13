@@ -17,6 +17,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     time_interval is seconds.
     """
+
     def __init__(self, time_interval: int = 60):
         super().__init__()
         self.time_interval: int = time_interval
@@ -28,6 +29,7 @@ class HallucinatedPhoenixScout(ActBase):
     async def execute(self) -> bool:
         phoenix = await self.get_hallucinated_phoenix()
         if phoenix:
+            self.knowledge.roles.set_task(UnitTask.Scouting, phoenix)
             self.move_phoenix(phoenix)
         if not phoenix and self.should_send_scout:
             # We should have a Phoenix on the next iteration
@@ -43,12 +45,11 @@ class HallucinatedPhoenixScout(ActBase):
             # Phoenix does not exist anymore
             self.current_phoenix_tag = None
 
-        phoenixes = self.knowledge.roles.units(UnitTask.Hallucination)(UnitTypeId.PHOENIX)
+        phoenixes = self.roles.get_types_from({UnitTypeId.PHOENIX}, UnitTask.Hallucination)
 
         if phoenixes.exists:
             phoenix = phoenixes[0]
             self.current_phoenix_tag = phoenix.tag
-            self.knowledge.roles.set_task(UnitTask.Scouting, phoenix)
             return phoenix
         return None
 
@@ -62,7 +63,9 @@ class HallucinatedPhoenixScout(ActBase):
 
         for sentry in sentries:
             # we don't want to actually spend all energy to make hallucination
-            if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST):
+            if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (
+                another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST
+            ):
                 if self.knowledge.known_enemy_units_mobile.closer_than(15, sentry):
                     # Don't make combat hallucinated phoenixes1
                     continue

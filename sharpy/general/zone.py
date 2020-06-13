@@ -37,8 +37,8 @@ class Zone:
 
         self.knowledge = knowledge
         self.ai: sc2.BotAI = knowledge.ai
-        self.cache: 'UnitCacheManager' = knowledge.unit_cache
-        self.unit_values: 'UnitValue' = knowledge.unit_values
+        self.cache: "UnitCacheManager" = knowledge.unit_cache
+        self.unit_values: "UnitValue" = knowledge.unit_values
         self.needs_evacuation = False
         self._is_enemys = False
 
@@ -52,7 +52,9 @@ class Zone:
         self.could_have_enemy_workers_in = 0
 
         # All mineral fields on the zone
-        self._original_mineral_fields: Units = self.ai.expansion_locations.get(self.center_location, Units([], self.ai))
+        self._original_mineral_fields: Units = self.ai.expansion_locations_dict.get(
+            self.center_location, Units([], self.ai)
+        )
         self.mineral_fields: Units = Units(self._original_mineral_fields.copy(), self.ai)
 
         self.last_minerals: int = 10000000  # Arbitrary value just to ensure a lower value will get updated.
@@ -175,8 +177,8 @@ class Zone:
         self.known_enemy_power.clear()
         self.assaulting_enemy_power.clear()
 
-        self.our_units: Units = self.cache.own_in_range(self.center_location, self.radius)
-        self.known_enemy_units: Units = self.cache.enemy_in_range(self.center_location, self.radius)
+        # Own and enemy units are figured out in zone manager update.
+
         # Only add units that we can fight against
         self.known_enemy_units = self.known_enemy_units.filter(lambda x: x.cloak != 2)
         self.enemy_workers = self.known_enemy_units.of_type(self.unit_values.worker_types)
@@ -215,7 +217,7 @@ class Zone:
 
         for mf in self.mineral_fields:  # type: Unit
             score = mf.mineral_contents
-            for worker in self.our_workers:   # type: Unit
+            for worker in self.our_workers:  # type: Unit
                 if worker.order_target == mf.tag:
                     score -= 1000
             if score > best_score or best_mf is None:
@@ -234,13 +236,16 @@ class Zone:
                     if self.enemy_townhall.is_ready:
                         self.could_have_enemy_workers_in = self.ai.time + 60
                     else:
-                        finish_time = self.unit_values.building_completion_time(self.ai.time, self.enemy_townhall.type_id,
-                                                               self.enemy_townhall.build_progress)
+                        finish_time = self.unit_values.building_completion_time(
+                            self.ai.time, self.enemy_townhall.type_id, self.enemy_townhall.build_progress
+                        )
                         self.could_have_enemy_workers_in = finish_time + 60
         else:
             if self.is_scouted_at_least_once:
                 if not self.is_neutral:
-                    self.could_have_enemy_workers_in = self.last_scouted_center + self.unit_values.build_time(UnitTypeId.NEXUS) + 90
+                    self.could_have_enemy_workers_in = (
+                        self.last_scouted_center + self.unit_values.build_time(UnitTypeId.NEXUS) + 90
+                    )
             else:
                 self.could_have_enemy_workers_in = 3 * 60
 
@@ -262,9 +267,10 @@ class Zone:
             self.enemy_townhall = None
 
         # We are going to presume that the enemy has a town hall even if we don't see one
-        self._is_enemys = self.enemy_townhall is not None or \
-            (self == self.knowledge.enemy_main_zone and self in self.knowledge.unscouted_zones)
-        
+        self._is_enemys = self.enemy_townhall is not None or (
+            self == self.knowledge.enemy_main_zone and self in self.knowledge.unscouted_zones
+        )
+
     @property
     def should_expand_here(self) -> bool:
         resources = self.has_minerals or self.resources == ZoneResources.Limited
@@ -299,8 +305,7 @@ class Zone:
 
     @property
     def is_under_attack(self) -> bool:
-        return self.is_ours and self.power_balance < 0 or \
-            self.is_enemys and self.power_balance > 0
+        return self.is_ours and self.power_balance < 0 or self.is_enemys and self.power_balance > 0
 
     @property
     def safe_expand_here(self) -> bool:
@@ -320,12 +325,12 @@ class Zone:
     def our_photon_cannons(self) -> Units:
         """Returns any of our own static defenses on the zone."""
         # todo: make this work for Terran and Zerg and rename
-        return self.our_units(UnitTypeId.PHOTONCANNON).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.PHOTONCANNON)
 
     @property
     def our_batteries(self) -> Units:
         """Returns shield batteries."""
-        return self.our_units(UnitTypeId.SHIELDBATTERY).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.SHIELDBATTERY)
 
     @property
     def enemy_static_defenses(self) -> Units:
@@ -392,21 +397,17 @@ class Zone:
 
     def _find_ramp(self, ai):
         if self.center_location in self.ai.enemy_start_locations or self.center_location == self.ai.start_location:
-            ramps: List[Ramp] = [ramp for ramp in self.ai.game_info.map_ramps if len(ramp.upper) == 2
-                 and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS]
-
-            if not ramps:
-                ramps: List[Ramp] = [ramp for ramp in self.ai.game_info.map_ramps if len(ramp.upper) <= 4
-                                     and ramp.top_center.distance_to(
-                    self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS]
+            ramps: List[Ramp] = [
+                ramp
+                for ramp in self.ai.game_info.map_ramps
+                if len(ramp.upper) in {2, 5}
+                and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS
+            ]
 
             if not len(ramps):
                 ramps: List[Ramp] = self.ai.game_info.map_ramps
 
-            ramp: Ramp = min(
-                ramps,
-                key=(lambda r: self.center_location.distance_to(r.top_center))
-            )
+            ramp: Ramp = min(ramps, key=(lambda r: self.center_location.distance_to(r.top_center)))
 
             if ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS:
                 return ExtendedRamp(ramp, self.ai)
@@ -419,14 +420,17 @@ class Zone:
         for map_ramp in ai.game_info.map_ramps:  # type: Ramp
             if map_ramp.top_center == map_ramp.bottom_center:
                 continue  # Bugged ramp data
-            if ai.get_terrain_height(map_ramp.top_center) == self.height \
-                    and map_ramp.top_center.distance_to(self.center_location) < Zone.ZONE_RAMP_MAX_RADIUS:
+            if (
+                ai.get_terrain_height(map_ramp.top_center) == self.height
+                and map_ramp.top_center.distance_to(self.center_location) < Zone.ZONE_RAMP_MAX_RADIUS
+            ):
 
                 if found_ramp is None:
                     found_ramp = ExtendedRamp(map_ramp, ai)
                 else:
                     if found_ramp.top_center.distance_to(self.gather_point) > map_ramp.top_center.distance_to(
-                            self.gather_point):
+                        self.gather_point
+                    ):
                         found_ramp = ExtendedRamp(map_ramp, ai)
 
         return found_ramp

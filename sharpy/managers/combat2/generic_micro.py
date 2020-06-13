@@ -12,22 +12,27 @@ from sc2.units import Units
 
 
 class CombatModel:
-    StalkerToRoach = 0,  # Longer range vs shorther
-    StalkerToSpeedlings = 1,  # Ranged vs melee
-    StalkerToSiege = 2,  # Range vs extreme fire power
-    AssaultRamp = 3,  # Push on narrow ramps
-    RoachToStalker = 4,  # Shorter range vs longer
+    StalkerToRoach = 0  # Longer range vs shorther
+    StalkerToSpeedlings = 1  # Ranged vs melee
+    StalkerToSiege = 2  # Range vs extreme fire power
+    AssaultRamp = 3  # Push on narrow ramps
+    RoachToStalker = 4  # Shorter range vs longer
+
 
 no_retreat_on_low_hp: Set[UnitTypeId] = {
-    UnitTypeId.ZEALOT, UnitTypeId.ZERGLING,
-    UnitTypeId.ULTRALISK, UnitTypeId.ROACH, UnitTypeId.CARRIER
+    UnitTypeId.ZEALOT,
+    UnitTypeId.ZERGLING,
+    UnitTypeId.ULTRALISK,
+    UnitTypeId.ROACH,
+    UnitTypeId.CARRIER,
 }
 
+
 class GenericMicro(MicroStep):
-    def __init__(self, knowledge):
+    def __init__(self):
         self.prio_dict: Optional[Dict[UnitTypeId, int]] = None
         self.model = CombatModel.StalkerToRoach
-        super().__init__(knowledge)
+        super().__init__()
 
     def should_retreat(self, unit: Unit) -> bool:
         if unit.type_id in no_retreat_on_low_hp:
@@ -55,8 +60,8 @@ class GenericMicro(MicroStep):
             # in combat
             if self.engaged_power.siege_percentage > 0.5:
                 self.model = CombatModel.StalkerToSiege
-            elif self.engaged_power.melee_percentage > 0.3 and not flyers:
-                if self.knowledge.enemy_race == Race.Zerg and self.engaged_power.melee_power > 3:
+            elif self.engaged_power.surround_percentage > 0.3 and not flyers:
+                if self.knowledge.enemy_race == Race.Zerg and self.engaged_power.surround_power > 3:
                     self.model = CombatModel.StalkerToSpeedlings
                 else:
                     if self.attack_range < self.enemy_attack_range - 0.5:

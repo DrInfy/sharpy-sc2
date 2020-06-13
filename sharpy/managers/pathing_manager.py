@@ -2,6 +2,7 @@ import logging
 from math import floor
 from typing import List, Dict, Tuple
 
+from sc2pathlibp import Sc2Map
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.managers.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
 from sharpy.sc2math import point_normalize
@@ -14,7 +15,7 @@ from sc2.game_info import GameInfo
 
 from sharpy.managers import ManagerBase
 import sc2pathlibp
-from sc2.position import Point2
+from sc2.position import Point2, Point3
 from sc2.unit import Unit
 
 
@@ -26,14 +27,20 @@ class PathingManager(ManagerBase):
         self.path_finder_air: sc2pathlibp.PathFinder = None
         self.found_points = []
         self.found_points_air = []
+        self.map = Sc2Map
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         game_info: GameInfo = self.ai.game_info
         path_grid = game_info.pathing_grid
         placement_grid = game_info.placement_grid
-
+        self.map = Sc2Map(
+            path_grid.data_numpy,
+            placement_grid.data_numpy,
+            game_info.terrain_height.data_numpy,
+            game_info.playable_area,
+        )
         _data = [[0 for y in range(path_grid.height)] for x in range(path_grid.width)]
 
         for x in range(0, path_grid.width):
@@ -50,12 +57,22 @@ class PathingManager(ManagerBase):
         air_data = [[1 for y in range(path_grid.height)] for x in range(path_grid.width)]
         for x in range(0, path_grid.width):
             for y in range(0, path_grid.height):
-                if x < game_info.playable_area.x \
-                        or x > game_info.playable_area.x + game_info.playable_area.width\
-                        or y < game_info.playable_area.y \
-                        or y > game_info.playable_area.y + game_info.playable_area.height:
+                if (
+                    x < game_info.playable_area.x
+                    or x > game_info.playable_area.x + game_info.playable_area.width
+                    or y < game_info.playable_area.y
+                    or y > game_info.playable_area.y + game_info.playable_area.height
+                ):
                     air_data[x][y] = 0
         self.path_finder_air = sc2pathlibp.PathFinder(air_data)
+
+    @property
+    def overlord_spots(self) -> List[Point2]:
+        points = []
+        for tuple_spot in self.map.overlord_spots:
+            points.append(Point2(tuple_spot))
+        # TODO: cache this
+        return points
 
     async def update(self):
         await self.update_influence()
@@ -156,7 +173,7 @@ class PathingManager(ManagerBase):
             power.add_unit(enemy_type, 100)
 
             if self.unit_values.can_shoot_air(example_enemy):
-                positions: List[Point2] = map(lambda u: u.position, enemies)   # need to be specified in both places
+                positions: List[Point2] = map(lambda u: u.position, enemies)  # need to be specified in both places
                 s_range = self.unit_values.air_range(example_enemy)
 
                 if example_enemy.type_id == UnitTypeId.CYCLONE:
@@ -223,6 +240,11 @@ class PathingManager(ManagerBase):
         if self.debug:
             self.path_finder_ground.plot(self.found_points)
             self.path_finder_air.plot(self.found_points_air, "air_map")
+            for spot in self.overlord_spots:
+                point = Point2(spot)
+                z = self.knowledge.get_z(point)
+                point3 = Point3((point.x, point.y, z))
+                self.client.debug_box2_out(point3, 0.25)
 
     def walk_distance(self, start: Point2, target: Point2) -> float:
         result = self.path_finder_ground.find_path(start, target)
@@ -246,22 +268,22 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_weak_influence_air(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_air.lowest_influence_in_grid(target, floor(radius))
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_weak_influence_ground(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_ground.safest_spot(target, radius)
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_weak_influence_ground_blink(self, target: Point2, radius: float) -> Point2:
         pathing_result = self.path_finder_ground.lowest_influence_in_grid(target, floor(radius))
         pos = pathing_result[0]
-        return Point2((pos[0] + 0.5, pos[1] + 0.5))
+        return Point2((pos[0], pos[1]))
 
     def find_influence_air_path(self, start: Point2, target: Point2) -> Point2:
         result = self.path_finder_air.find_path_influence(start, target)
@@ -278,7 +300,7 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points_air.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_influence_ground_path(self, start: Point2, target: Point2, target_index: int = 5) -> Point2:
         result = self.path_finder_ground.find_path_influence(start, target)
@@ -294,7 +316,7 @@ class PathingManager(ManagerBase):
         target = path[target_index]
         if self.debug:
             self.found_points_air.extend(path)
-        return Point2((target[0] + 0.5, target[1] + 0.5))
+        return Point2((target[0], target[1]))
 
     def find_low_inside_ground(self, start: Point2, target: Point2, distance: float) -> Point2:
         result = self.path_finder_ground.find_low_inside_walk(start, target, distance)

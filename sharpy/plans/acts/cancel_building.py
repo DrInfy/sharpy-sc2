@@ -36,11 +36,11 @@ class CancelBuilding(ActBase):
 
         for worker in self.ai.workers:  # type: Unit
             for order in worker.orders:  # type: UnitOrder
-                if (order.ability.id == creation_ability.id):
+                if order.ability.id == creation_ability.id:
                     self.cancelled_count += 1
                     count -= 1
                     self.do(worker.stop())  # cancel the order
-                    self.print(f'Stopping {self.unit_type.name}')
+                    self.print(f"Stopping {self.unit_type.name}")
 
         building: Unit
         for building in self.cache.own(self.unit_type).not_ready:
@@ -49,6 +49,6 @@ class CancelBuilding(ActBase):
             self.cancelled_count += 1
             count -= 1
             self.do(building(AbilityId.CANCEL_BUILDINPROGRESS))
-            self.print(f'Canceling {self.unit_type.name}')
+            self.print(f"Canceling {self.unit_type.name}")
 
         return True  # Step is done

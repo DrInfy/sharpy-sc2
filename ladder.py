@@ -6,23 +6,29 @@ import asyncio
 import logging
 
 import aiohttp
+
+from sc2 import Race, Difficulty
 from sc2.client import Client
 
 import sc2
+from sc2.player import Computer, Human
 from sc2.protocol import ConnectionAlreadyClosed
 
 
 def run_ladder_game(bot):
     # Load command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--GamePort', type=int, nargs="?", help='Game port')
-    parser.add_argument('--StartPort', type=int, nargs="?", help='Start port')
-    parser.add_argument('--LadderServer', type=str, nargs="?", help='Ladder server')
-    parser.add_argument('--ComputerOpponent', type=str, nargs="?", help='Computer opponent')
-    parser.add_argument('--ComputerRace', type=str, nargs="?", help='Computer race')
-    parser.add_argument('--ComputerDifficulty', type=str, nargs="?", help='Computer difficulty')
-    parser.add_argument('--OpponentId', type=str, nargs="?", help='Opponent ID')
+    parser.add_argument("--GamePort", type=int, nargs="?", help="Game port")
+    parser.add_argument("--StartPort", type=int, nargs="?", help="Start port")
+    parser.add_argument("--LadderServer", type=str, nargs="?", help="Ladder server")
+    parser.add_argument("--ComputerOpponent", type=str, nargs="?", help="Computer opponent")
+    parser.add_argument("--ComputerRace", type=str, nargs="?", help="Computer race")
+    parser.add_argument("--ComputerDifficulty", type=str, nargs="?", help="Computer difficulty")
+    parser.add_argument("--OpponentId", type=str, nargs="?", help="Opponent ID")
     args, unknown = parser.parse_known_args()
+
+    if args.GamePort is None or args.StartPort is None:
+        return stand_alone_game(bot), None
 
     if args.LadderServer is None:
         host = "127.0.0.1"
@@ -44,13 +50,7 @@ def run_ladder_game(bot):
     portconfig.players = [[ports[3], ports[4]]]
 
     # Join ladder game
-    g = join_ladder_game(
-        host=host,
-        port=host_port,
-        players=[bot],
-        realtime=False,
-        portconfig=portconfig
-    )
+    g = join_ladder_game(host=host, port=host_port, players=[bot], realtime=False, portconfig=portconfig)
 
     # Run it
     result = asyncio.get_event_loop().run_until_complete(g)
@@ -58,8 +58,9 @@ def run_ladder_game(bot):
 
 
 # Modified version of sc2.main._join_game to allow custom host and port, and to not spawn an additional sc2process (thanks to alkurbatov for fix)
-async def join_ladder_game(host, port, players, realtime, portconfig, save_replay_as=None, step_time_limit=None,
-                           game_time_limit=None):
+async def join_ladder_game(
+    host, port, players, realtime, portconfig, save_replay_as=None, step_time_limit=None, game_time_limit=None
+):
     ws_url = f"ws://{host}:{port}/sc2api"
     ws_connection = await aiohttp.ClientSession().ws_connect(ws_url, timeout=120)
 
@@ -75,3 +76,32 @@ async def join_ladder_game(host, port, players, realtime, portconfig, save_repla
         await ws_connection.close()
 
     return result
+
+
+def stand_alone_game(bot):
+    """
+    Play a game against the ladder build or test the bot against ingame ai
+    """
+    print("Starting local game...")
+    print("Play as human? (y / n)")
+    input_human = input(">> ")
+    if input_human and input_human.lower() == "y":
+        races = ["p", "z", "t", "r"]
+        race = None
+        while race is None:
+            print("Input your race (p / z / t / r):")
+            human_race = input(">> ").lower()
+            if human_race in races:
+                if human_race == "p":
+                    race = Race.Protoss
+                elif human_race == "z":
+                    race = Race.Zerg
+                elif human_race == "t":
+                    race = Race.Terran
+                elif human_race == "r":
+                    race = Race.Random
+                else:
+                    print(f'"{human_race}" not recognized.')
+        return sc2.run_game(sc2.maps.get("AcropolisLE"), [Human(race), bot], realtime=True)
+
+    return sc2.run_game(sc2.maps.get("AcropolisLE"), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)

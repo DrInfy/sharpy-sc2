@@ -5,9 +5,6 @@ from sc2.unit import Unit
 
 
 class MicroRavagers(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
-
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         shuffler = unit.tag % 10
 

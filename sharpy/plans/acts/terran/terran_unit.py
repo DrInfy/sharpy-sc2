@@ -13,7 +13,6 @@ class TerranUnit(ActUnit):
             super().__init__(unit_type, list(production_units)[0], to_count, priority)
         self.only_once = only_once
 
-
     def get_unit_count(self) -> int:
         count = super().get_unit_count()
 

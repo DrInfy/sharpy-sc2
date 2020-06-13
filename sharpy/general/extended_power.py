@@ -5,13 +5,22 @@ from sc2.unit import Unit
 
 from sharpy.general.unit_feature import UnitFeature
 
+# This is more of a power to surround our units, less of an melee
+# It requires units to be fast enough to actually surround a army
+# grouping up vs ultralisk isn't a very good idea with their splash damage.
+surround = {
+    UnitTypeId.ZERGLING,
+    UnitTypeId.ZEALOT,
+}
+
+# Actual melee units
 melee = {
     UnitTypeId.ZERGLING,
     UnitTypeId.ULTRALISK,
     UnitTypeId.ZEALOT,
     UnitTypeId.SCV,
     UnitTypeId.PROBE,
-    UnitTypeId.DRONE
+    UnitTypeId.DRONE,
 }
 
 siege = {
@@ -34,20 +43,21 @@ siege = {
 
 
 class ExtendedPower:
-
-    def is_enough_for(self, enemies: 'ExtendedPower', our_percentage: float = 1.1) -> bool:
+    def is_enough_for(self, enemies: "ExtendedPower", our_percentage: float = 1.1) -> bool:
         # reduce some variable from air / ground power so that we don't fight against 100 roach with
         # 20 stalkers and observer.
         if self.power < 1:
             return False
 
-        if self.air_power * our_percentage >= enemies.air_presence \
-            and self.ground_power * our_percentage >= enemies.ground_presence \
-            and self.power * our_percentage >= enemies.power:
+        if (
+            self.air_power * our_percentage >= enemies.air_presence
+            and self.ground_power * our_percentage >= enemies.ground_presence
+            and self.power * our_percentage >= enemies.power
+        ):
             return True
         return False
 
-    def __init__(self, values: 'UnitValue'):
+    def __init__(self, values: "UnitValue"):
         self.values = values
         self.power: float = 0
         self.air_presence: float = 0
@@ -55,6 +65,7 @@ class ExtendedPower:
         self.air_power: float = 0
         self.ground_power: float = 0
         self.melee_power: float = 0
+        self.surround_power: float = 0
         self.siege_power: float = 0
         # count of units
         self.detectors: int = 0
@@ -67,6 +78,12 @@ class ExtendedPower:
         return 0
 
     @property
+    def surround_percentage(self) -> float:
+        if self.power > 0:
+            return self.surround_power / self.power
+        return 0
+
+    @property
     def siege_percentage(self) -> float:
         if self.power > 0:
             return self.siege_power / self.power
@@ -76,7 +93,7 @@ class ExtendedPower:
         for unit in units:
             self.add_unit(unit)
 
-    def add_unit(self, unit: Union[Unit, UnitTypeId], count = 1):
+    def add_unit(self, unit: Union[Unit, UnitTypeId], count=1):
         unit_type: UnitTypeId
 
         if type(unit) is Unit:
@@ -105,6 +122,8 @@ class ExtendedPower:
                 self.ground_power += pwr
                 if unit_type in melee:
                     self.melee_power += pwr
+                if unit_type in surround:
+                    self.surround_power += pwr
             if UnitFeature.ShootsAir in features:
                 if unit_type == UnitTypeId.SENTRY:
                     # Exception to the rule due to weak attack
@@ -121,25 +140,27 @@ class ExtendedPower:
             if UnitFeature.Detector in features:
                 self.detectors += 1
 
-    def add_power(self, extended_power: 'ExtendedPower'):
+    def add_power(self, extended_power: "ExtendedPower"):
         self.power += extended_power.power
         self.air_presence += extended_power.air_presence
         self.ground_presence += extended_power.ground_presence
         self.air_power += extended_power.air_power
         self.ground_power += extended_power.ground_power
         self.melee_power += extended_power.melee_power
+        self.surround_power += extended_power.surround_power
         self.siege_power += extended_power.siege_power
         # count of units
         self.detectors += extended_power.detectors
         self.stealth_power += extended_power.stealth_power
 
-    def substract_power(self, extended_power: 'ExtendedPower'):
+    def substract_power(self, extended_power: "ExtendedPower"):
         self.power -= extended_power.power
         self.air_presence -= extended_power.air_presence
         self.ground_presence -= extended_power.ground_presence
         self.air_power -= extended_power.air_power
         self.ground_power -= extended_power.ground_power
         self.melee_power -= extended_power.melee_power
+        self.surround_power -= extended_power.surround_power
         self.siege_power -= extended_power.siege_power
         # count of units
         self.detectors -= extended_power.detectors
@@ -152,6 +173,7 @@ class ExtendedPower:
         self.air_power += value_to_add
         self.ground_power += value_to_add
         self.melee_power += value_to_add
+        self.surround_power += value_to_add
         self.siege_power += value_to_add
         self.detectors += value_to_add
         self.stealth_power += value_to_add
@@ -163,6 +185,7 @@ class ExtendedPower:
         self.air_power *= multiplier
         self.ground_power *= multiplier
         self.melee_power *= multiplier
+        self.surround_power *= multiplier
         self.siege_power *= multiplier
         self.detectors *= multiplier
         self.stealth_power *= multiplier
@@ -174,6 +197,7 @@ class ExtendedPower:
         self.air_power = 0
         self.ground_power = 0
         self.melee_power = 0
+        self.surround_power = 0
         self.siege_power = 0
         self.detectors = 0
         self.stealth_power = 0

@@ -1,5 +1,6 @@
 from typing import List, Dict, Optional
 
+from sharpy.managers.combat2.protoss import MicroAdepts
 from sharpy.plans.acts import ActBase
 from sharpy.managers import CooldownManager, GroupCombatManager
 from sc2 import UnitTypeId, AbilityId
@@ -8,12 +9,13 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 from sharpy.general.zone import Zone
-from sharpy.managers.combat2 import MoveType
+from sharpy.managers.combat2 import MoveType, MicroRules
 from sharpy.managers.roles import UnitTask
 
 
 class DoubleAdeptScout(ActBase):
-    ZONE_DISTANCE_THRESHOLD_SQUARED = 9*9
+    ZONE_DISTANCE_THRESHOLD_SQUARED = 9 * 9
+    micro: MicroRules
 
     def __init__(self, adepts_to_start: int = 2):
         super().__init__()
@@ -31,10 +33,12 @@ class DoubleAdeptScout(ActBase):
         self.adept_target = False
         self.adepts_to_start = adepts_to_start
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.combat: GroupCombatManager = knowledge.combat_manager
-        self.cooldown_manager: CooldownManager = self.knowledge.cooldown_manager
+        self.micro = MicroRules()
+        self.micro.load_default_methods()
+        self.micro.generic_micro = MicroAdepts(False)
+        await self.micro.start(knowledge)
 
     async def execute(self) -> bool:
         if self.knowledge.possible_rush_detected:
@@ -74,8 +78,10 @@ class DoubleAdeptScout(ActBase):
             self.ended = True
             return
 
+        self.roles.refresh_tasks(adepts)
+
         if self.target_position != targets[0]:
-            self.print(f'target changed to: {targets[0]}')
+            self.print(f"target changed to: {targets[0]}")
         self.target_position = targets[0]
 
         if self.adept_target != targets[1]:
@@ -86,32 +92,32 @@ class DoubleAdeptScout(ActBase):
         shade_distance = center.distance_to(self.target_position)  # TODO: Use ground distance
 
         for adept in adepts:  # type: Unit
-            shade_tag = self.cooldown_manager.adept_to_shade.get(adept.tag, None)
+            shade_tag = self.cd_manager.adept_to_shade.get(adept.tag, None)
             if shade_tag is not None:
                 shade = self.cache.by_tag(shade_tag)
-                if self.cooldown_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, 6.9):
+                if self.cd_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, 6.9):
                     # Determine whether to cancel the shade or not
-                    if (self.knowledge.enemy_units_manager.danger_value(adept, adept.position) <
-                            self.knowledge.enemy_units_manager.danger_value(adept, shade.position)):
+                    if self.knowledge.enemy_units_manager.danger_value(
+                        adept, adept.position
+                    ) < self.knowledge.enemy_units_manager.danger_value(adept, shade.position):
                         # It's safer to not phase shift
                         self.do(adept(AbilityId.CANCEL_ADEPTPHASESHIFT))
                         continue
 
-            if (self.cooldown_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
-                    and (shade_distance < 11 or shade_distance > 30)):
+            if self.cd_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT) and (
+                shade_distance < 11 or shade_distance > 30
+            ):
                 self.do(adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target))
-                self.cooldown_manager.used_ability(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
+                self.cd_manager.used_ability(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
                 self.target_changed = False
-                self.print(f'Using phase shift to: {self.adept_target}')
+                self.print(f"Using phase shift to: {self.adept_target}")
             else:
                 self.combat.add_unit(adept)
 
-        self.combat.execute(local_target, MoveType.Harass)
+        self.combat.execute(local_target, MoveType.Harass, rules=self.micro)
 
     async def select_targets(self, center: Point2) -> (Point2, Point2):
         """ Returns none if no valid target was found. """
-        closest_distance = 100000
-        furthest_distance = 0
         closest_viable_zone: Zone = None
         second_viable_zone: Zone = None
         current_zone_index: Optional[int] = None
@@ -136,7 +142,10 @@ class DoubleAdeptScout(ActBase):
                     elif zone.is_enemys:
                         # both are enemy zones
                         if current_zone_index == i:
-                            if zone.could_have_enemy_workers_in < self.ai.time and closest_viable_zone.could_have_enemy_workers_in < self.ai.time:
+                            if (
+                                zone.could_have_enemy_workers_in < self.ai.time
+                                and closest_viable_zone.could_have_enemy_workers_in < self.ai.time
+                            ):
                                 second_viable_zone = closest_viable_zone
                                 closest_viable_zone = zone
                             elif zone.could_have_enemy_workers_in < self.ai.time:
@@ -149,13 +158,17 @@ class DoubleAdeptScout(ActBase):
             return None
 
         if second_viable_zone:
-            return (await self.get_zone_closest(closest_viable_zone, center),
-                    await self.get_zone_closest(second_viable_zone, center))
+            return (
+                await self.get_zone_closest(closest_viable_zone, center),
+                await self.get_zone_closest(second_viable_zone, center),
+            )
 
-        return (await self.get_zone_closest(closest_viable_zone, center),
-                await self.get_zone_furthest(closest_viable_zone, center))
+        return (
+            await self.get_zone_closest(closest_viable_zone, center),
+            await self.get_zone_furthest(closest_viable_zone, center),
+        )
 
-    async def get_zone_target(self, zone:Zone, center) -> Point2:
+    async def get_zone_target(self, zone: Zone, center) -> Point2:
         if self.is_behind_minerals:
             target_position = await self.get_zone_furthest(zone, center)
         else:
@@ -163,7 +176,7 @@ class DoubleAdeptScout(ActBase):
 
         return target_position
 
-    async def get_zone_closest(self, zone:Zone, center) -> Point2:
+    async def get_zone_closest(self, zone: Zone, center) -> Point2:
         target_position = zone.behind_mineral_position_center  # default position
         if zone.mineral_fields.exists and len(zone.behind_mineral_positions) > 0:
             distance = 9999999

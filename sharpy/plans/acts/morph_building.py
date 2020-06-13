@@ -1,6 +1,7 @@
-from sc2 import UnitTypeId, AbilityId
+from sc2 import UnitTypeId, AbilityId, Set
 from sc2.unit import Unit
 from .act_base import ActBase
+
 
 class MorphBuilding(ActBase):
     def __init__(self, building_type: UnitTypeId, ability_type: AbilityId, result_type: UnitTypeId, target_count: int):
@@ -12,17 +13,21 @@ class MorphBuilding(ActBase):
 
     async def execute(self) -> bool:
         target_count = self.cache.own(self.result_type).amount
-        start_buildings = self.cache.own(self.building_type).ready.sorted_by_distance_to(self.knowledge.own_main_zone.center_location)
+        start_buildings = self.cache.own(self.building_type).ready.sorted_by_distance_to(
+            self.knowledge.own_main_zone.center_location
+        )
 
-        for target in start_buildings: # type: Unit
+        ignore_tags: Set[int] = set()
+        for target in start_buildings:  # type: Unit
             if target.orders and target.orders[0].ability.id == self.ability_type:
                 target_count += 1
+                ignore_tags.add((target.tag))
 
         if target_count >= self.target_count:
             return True
 
         for target in start_buildings:
-            if target.is_ready:
+            if target.is_ready and target.tag not in ignore_tags:
                 if self.knowledge.can_afford(self.ability_type):
                     self.do(target(self.ability_type))
 
@@ -34,5 +39,3 @@ class MorphBuilding(ActBase):
         if start_buildings:
             return False
         return True
-
-

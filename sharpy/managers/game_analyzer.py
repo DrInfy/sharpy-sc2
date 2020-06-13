@@ -1,8 +1,13 @@
 from typing import Tuple
 
 from sharpy.managers import EnemyArmyPredicter
-from sharpy.managers.game_states.advantage import at_least_clear_disadvantage, at_least_clear_advantage, \
-    at_least_advantage, at_least_small_disadvantage, at_least_small_advantage
+from sharpy.managers.game_states.advantage import (
+    at_least_clear_disadvantage,
+    at_least_clear_advantage,
+    at_least_advantage,
+    at_least_small_disadvantage,
+    at_least_small_advantage,
+)
 from sharpy.managers.income_calculator import GAS_MINE_RATE
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.tools import IntervalFunc
@@ -39,7 +44,7 @@ class GameAnalyzer(ManagerBase):
         self._last_army: Advantage = Advantage.Even
         self._last_predict: Advantage = Advantage.Even
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enemy_predicter: EnemyArmyPredicter = knowledge.enemy_army_predicter
         self.our_power = ExtendedPower(self.unit_values)
@@ -69,7 +74,7 @@ class GameAnalyzer(ManagerBase):
                 enemy_workers += 12
 
         mineral_fields = 0
-        for zone in self.knowledge.zone_manager.expansion_zones: # type: Zone
+        for zone in self.knowledge.zone_manager.expansion_zones:  # type: Zone
             if zone.is_enemys:
                 self.enemy_zones += 1
                 mineral_fields += len(zone.mineral_fields)
@@ -84,8 +89,9 @@ class GameAnalyzer(ManagerBase):
 
         enemy_income = self.enemy_mineral_income + self._enemy_gas_income
         self._our_income_advantage = our_income - enemy_income
-        self.our_power.add_units(self.ai.units.filter(lambda u: u.is_ready
-                                                                and u.type_id != self.knowledge.my_worker_type))
+        self.our_power.add_units(
+            self.ai.units.filter(lambda u: u.is_ready and u.type_id != self.knowledge.my_worker_type)
+        )
 
         self.enemy_predict_power = self.enemy_predicter.predicted_enemy_power
         self.enemy_power = self.enemy_predicter.enemy_power
@@ -105,13 +111,13 @@ class GameAnalyzer(ManagerBase):
         predict = self._calc_our_army_predict()
 
         if self._last_income != income:
-            self.print(f'Income advantage is now {income.name}')
+            self.print(f"Income advantage is now {income.name}")
 
-        if self._last_army  != army:
-            self.print(f'Known army advantage is now {army.name}')
+        if self._last_army != army:
+            self.print(f"Known army advantage is now {army.name}")
 
         if self._last_predict != predict:
-            self.print(f'Predicted army advantage is now {predict.name}')
+            self.print(f"Predicted army advantage is now {predict.name}")
 
         self._last_income = income
         self._last_army = army
@@ -121,12 +127,18 @@ class GameAnalyzer(ManagerBase):
         if self.debug:
             msg = f"Our income: {self.knowledge.income_calculator.mineral_income} / {round(self.knowledge.income_calculator.gas_income)}"
             msg += f"\nEnemy income: {self.enemy_mineral_income} / {round(self.enemy_gas_income)}"
-            msg += f"\nResources: {round(self._our_income_advantage)}+{self.our_zones - self.enemy_zones}" \
+            msg += (
+                f"\nResources: {round(self._our_income_advantage)}+{self.our_zones - self.enemy_zones}"
                 f" ({self.our_income_advantage.name})"
-            msg += f"\nArmy: {round(self.our_power.power)} vs" \
+            )
+            msg += (
+                f"\nArmy: {round(self.our_power.power)} vs"
                 f" {round(self.enemy_power.power)} ({self.our_army_advantage.name})"
-            msg += f"\nArmy predict: {round(self.our_power.power)} vs" \
+            )
+            msg += (
+                f"\nArmy predict: {round(self.our_power.power)} vs"
                 f" {round(self.enemy_predict_power.power)} ({self.our_army_predict.name})"
+            )
             msg += f"\nEnemy air: {self.enemy_air.name}"
             self.client.debug_text_2d(msg, Point2((0.4, 0.15)), None, 14)
 
@@ -185,8 +197,10 @@ class GameAnalyzer(ManagerBase):
 
     @property
     def predicting_victory(self) -> bool:
-        return (self.our_army_predict == Advantage.OverwhelmingAdvantage
-                and self.our_income_advantage == Advantage.OverwhelmingAdvantage)
+        return (
+            self.our_army_predict == Advantage.OverwhelmingAdvantage
+            and self.our_income_advantage == Advantage.OverwhelmingAdvantage
+        )
 
     @property
     def been_predicting_defeat_for(self) -> float:
@@ -196,8 +210,9 @@ class GameAnalyzer(ManagerBase):
 
     @property
     def predicting_defeat(self) -> bool:
-        return (self.our_army_predict == Advantage.OverwhelmingDisadvantage
-                and (self.ai.supply_workers < 5 or self.our_income_advantage == Advantage.OverwhelmingDisadvantage))
+        return self.our_army_predict == Advantage.OverwhelmingDisadvantage and (
+            self.ai.supply_workers < 5 or self.our_income_advantage == Advantage.OverwhelmingDisadvantage
+        )
 
     @property
     def our_army_predict(self) -> Advantage:
@@ -205,20 +220,32 @@ class GameAnalyzer(ManagerBase):
 
     def _calc_our_army_predict(self) -> Advantage:
         if self.our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 1.1):
-            if self.our_power.power > 20 and self.our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 3):
+            if self.our_power.power > 20 and self.our_power.is_enough_for(
+                self.enemy_predict_power, our_percentage=1 / 3
+            ):
                 return Advantage.OverwhelmingAdvantage
-            if self.our_power.power > 10 and self.our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 2):
+            if self.our_power.power > 10 and self.our_power.is_enough_for(
+                self.enemy_predict_power, our_percentage=1 / 2
+            ):
                 return Advantage.ClearAdvantage
-            if self.our_power.power > 5 and self.our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 1.4):
+            if self.our_power.power > 5 and self.our_power.is_enough_for(
+                self.enemy_predict_power, our_percentage=1 / 1.4
+            ):
                 return Advantage.SmallAdvantage
             return Advantage.SlightAdvantage
 
         if self.enemy_predict_power.is_enough_for(self.our_power, our_percentage=1 / 1.1):
-            if self.enemy_predict_power.power > 20 and self.enemy_predict_power.is_enough_for(self.our_power, our_percentage=1 / 3):
+            if self.enemy_predict_power.power > 20 and self.enemy_predict_power.is_enough_for(
+                self.our_power, our_percentage=1 / 3
+            ):
                 return Advantage.OverwhelmingDisadvantage
-            if self.enemy_predict_power.power > 10 and self.enemy_predict_power.is_enough_for(self.our_power, our_percentage=1 / 2):
+            if self.enemy_predict_power.power > 10 and self.enemy_predict_power.is_enough_for(
+                self.our_power, our_percentage=1 / 2
+            ):
                 return Advantage.ClearDisadvantage
-            if self.enemy_predict_power.power > 5 and self.enemy_predict_power.is_enough_for(self.our_power, our_percentage=1 / 1.4):
+            if self.enemy_predict_power.power > 5 and self.enemy_predict_power.is_enough_for(
+                self.our_power, our_percentage=1 / 1.4
+            ):
                 return Advantage.SmallDisadvantage
             return Advantage.SlightDisadvantage
         return Advantage.Even
@@ -301,12 +328,12 @@ class GameAnalyzer(ManagerBase):
 
         maxed_gas = max(self.vespene_left)
         avg_gas = sum(self.vespene_left) / len(self.vespene_left)
-        self.print_end(f'Minerals max {maxed_minerals} Average {round(avg_minerals)}')
-        self.print_end(f'Vespene max {maxed_gas} Average {round(avg_gas)}')
+        self.print_end(f"Minerals max {maxed_minerals} Average {round(avg_minerals)}")
+        self.print_end(f"Vespene max {maxed_gas} Average {round(avg_gas)}")
 
-    def _print_by_type(self, types: List[UnitTypeId], lost_units: Dict[UnitTypeId, List[Unit]],
-                       left_units: Dict[UnitTypeId, int]):
-
+    def _print_by_type(
+        self, types: List[UnitTypeId], lost_units: Dict[UnitTypeId, List[Unit]], left_units: Dict[UnitTypeId, int]
+    ):
         def get_counts(unit_type: UnitTypeId) -> tuple:
             dead = len(lost_units.get(unit_type, []))
             alive = left_units.get(unit_type, 0)
@@ -318,10 +345,12 @@ class GameAnalyzer(ManagerBase):
 
         for unit_type in types:
             counts = get_counts(unit_type)
-            self.print_end(f"{str(unit_type.name).ljust(17)} "
-                           f"total: {str(counts[0]).rjust(3)} "
-                           f"alive: {str(counts[1]).rjust(3)} "
-                           f"dead: {str(counts[2]).rjust(3)} ")
+            self.print_end(
+                f"{str(unit_type.name).ljust(17)} "
+                f"total: {str(counts[0]).rjust(3)} "
+                f"alive: {str(counts[1]).rjust(3)} "
+                f"dead: {str(counts[2]).rjust(3)} "
+            )
 
     def print_end(self, msg: str):
         self.knowledge.print(msg, "GameAnalyzerEnd", stats=False)

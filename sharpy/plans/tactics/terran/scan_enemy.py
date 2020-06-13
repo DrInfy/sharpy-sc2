@@ -55,12 +55,10 @@ class ScanEnemy(ActBase):
         for zone in self.knowledge.enemy_expansion_zones:
             score = default_score + (self.ai.time - zone.last_scouted_center)
             default_score -= 100
-            if score > best_score or current_zone == None:
+            if score > best_score or current_zone is None:
                 best_score = score
                 current_zone = zone
 
         if current_zone is None:
             return None
         return current_zone.center_location.towards_with_random_angle(current_zone.gather_point, 4)
-
-

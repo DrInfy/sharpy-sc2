@@ -1,8 +1,10 @@
 import string
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 import sc2
+from sc2.ids.buff_id import BuffId
+from sharpy.general.component import Component
 from sharpy.managers import UnitValue
 from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
@@ -12,11 +14,10 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
-
+from sharpy.managers.roles import UnitTask
 
 build_commands = {
     # Protoss
-
     AbilityId.PROTOSSBUILD_NEXUS,
     AbilityId.PROTOSSBUILD_PYLON,
     AbilityId.PROTOSSBUILD_GATEWAY,
@@ -32,7 +33,6 @@ build_commands = {
     AbilityId.PROTOSSBUILD_DARKSHRINE,
     AbilityId.PROTOSSBUILD_ROBOTICSFACILITY,
     AbilityId.PROTOSSBUILD_ROBOTICSBAY,
-
     # Terran
     AbilityId.TERRANBUILD_COMMANDCENTER,
     AbilityId.TERRANBUILD_SUPPLYDEPOT,
@@ -47,7 +47,6 @@ build_commands = {
     AbilityId.TERRANBUILD_GHOSTACADEMY,
     AbilityId.TERRANBUILD_STARPORT,
     AbilityId.TERRANBUILD_FUSIONCORE,
-
     # Zerg
     AbilityId.ZERGBUILD_BANELINGNEST,
     AbilityId.ZERGBUILD_EVOLUTIONCHAMBER,
@@ -65,22 +64,7 @@ build_commands = {
 }
 
 
-class ActBase(ABC):
-    knowledge: 'Knowledge'
-    ai: sc2.BotAI
-    cache: UnitCacheManager
-    unit_values: UnitValue
-    pather: PathingManager
-    combat: GroupCombatManager
-    roles: UnitRoleManager
-
-    def __init__(self):
-        _debug: bool = False
-
-    @property
-    def debug(self):
-        return self._debug and self.knowledge.debug
-
+class ActBase(Component, ABC):
     async def debug_draw(self):
         if self.debug:
             await self.debug_actions()
@@ -99,20 +83,6 @@ class ActBase(ABC):
         :return: True if it allowed
         """
         return self.knowledge.action_handler.allow_action(unit)
-
-    async def start(self, knowledge: 'Knowledge'):
-        self.knowledge = knowledge
-        self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")
-        self.ai = knowledge.ai
-        self.cache = knowledge.unit_cache
-        self.unit_values = knowledge.unit_values
-        self._client: Client = self.ai._client
-        self.pather = self.knowledge.pathing_manager
-        self.combat = self.knowledge.combat_manager
-        self.roles = self.knowledge.roles
-
-    def print(self, msg: string, stats: bool = True):
-        self.knowledge.print(msg, type(self).__name__, stats)
 
     @abstractmethod
     async def execute(self) -> bool:
@@ -139,7 +109,9 @@ class ActBase(ABC):
         # Already building structures
         # Avoid counting structures twice for Terran SCVs.
         if self.knowledge.my_race != Race.Terran:
-            pending_buildings: List[Point2] = list(map(lambda structure: structure.position, self.cache.own(unit_type).structure.not_ready))
+            pending_buildings: List[Point2] = list(
+                map(lambda structure: structure.position, self.cache.own(unit_type).structure.not_ready)
+            )
             positions.extend(pending_buildings)
 
         return positions
@@ -172,10 +144,12 @@ class ActBase(ABC):
                     return True
         return False
 
-    def get_count(self, unit_type: UnitTypeId,
-                  include_pending=True,
-                  include_killed=False,
-                  include_not_ready: bool = True) -> int:
+    def get_ordered_count(self, unit_type: UnitTypeId):
+        return self.get_count(unit_type, include_pending=True) - self.get_count(unit_type, include_pending=False)
+
+    def get_count(
+        self, unit_type: UnitTypeId, include_pending=True, include_killed=False, include_not_ready: bool = True
+    ) -> int:
         """Calculates how many buildings there are already, including pending structures."""
         count = 0
 
@@ -225,3 +199,65 @@ class ActBase(ABC):
         if unit_type == UnitTypeId.VIKINGFIGHTER:
             count += self.cache.own(UnitTypeId.VIKINGASSAULT).amount
         return count
+
+    def get_worker_builder(self, position: Point2, priority_tag: int) -> Optional[Unit]:
+        """
+        Gets best worker to build in the selected location.
+        Priorities:
+        1. Existing worker with the current priority_tag
+        2. For Protoss, other builders, long distance Proxy builders should be in UnitTask.Reserved
+        3. Idle workers
+        4. Workers returning to base from building
+        5. Workers mining minerals
+        6. Workers mining gas (Pulling workers out of mining gas messes up timings for optimal harvesting)
+
+        @param position: location on where we want to build something
+        @param priority_tag: Worker tag that has been used here before
+        @return: Worker if one was found
+        """
+
+        worker: Optional[Unit] = None
+        if priority_tag is not None:
+            worker: Unit = self.cache.by_tag(priority_tag)
+            if worker is None or worker.is_constructing_scv or self.roles.unit_role(worker) != UnitTask.Building:
+                # Worker is probably dead or it is already building something else.
+                worker = None
+
+        if worker is None:
+            workers = self.ai.workers.filter(
+                lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET) and not w.is_constructing_scv
+            ).sorted_by_distance_to(position)
+            if not workers:
+                return None
+
+            def sort_method(unit: Unit):
+                role = self.roles.unit_role(unit)
+                # if self.knowledge.my_race == Race.Protoss and role == UnitTask.Building:
+                #     return 0
+
+                if role == UnitTask.Idle:
+                    return 1
+
+                if role == UnitTask.Gathering:
+                    if unit.is_gathering and isinstance(unit.order_target, int):
+                        target = self.cache.by_tag(unit.order_target)
+                        if target and target.is_mineral_field:
+                            return 2
+                        else:
+                            return 4
+                    if unit.is_carrying_vespene:
+                        return 5
+                    if unit.is_carrying_minerals:
+                        return 3
+                    return 3
+                return 10
+
+            workers.sort(key=sort_method)
+
+            worker = workers.first
+        else:
+            worker: Unit = self.cache.by_tag(priority_tag)
+            if worker is None or worker.is_constructing_scv:
+                # Worker is probably dead or it is already building something else.
+                worker = None
+        return worker

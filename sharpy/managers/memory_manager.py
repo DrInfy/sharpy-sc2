@@ -17,6 +17,7 @@ class MemoryManager(ManagerBase):
     Structures are ignored because they have two tags. One for the real building and another
     for the building's snapshot when under fog of war.
     """
+
     def __init__(self):
         super().__init__()
 
@@ -27,7 +28,7 @@ class MemoryManager(ManagerBase):
         # Dictionary of units that we know of, but which are longer present at the location last seen. Keyed by unit tag.
         self._archive_units_by_tag: Dict[int, Deque[Unit]] = dict()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
@@ -125,11 +126,9 @@ class MemoryManager(ManagerBase):
 ignored_unit_types = {
     # Protoss
     UnitTypeId.INTERCEPTOR,
-
     # Terran
     UnitTypeId.MULE,
     UnitTypeId.AUTOTURRET,
-
     # Zerg
     # Cocoons?
     UnitTypeId.LARVA,

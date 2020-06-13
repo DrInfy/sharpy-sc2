@@ -1,6 +1,6 @@
 import random
 
-val = random.randint(0, 6)
+val = random.randint(0, 7)
 
 if val == 0:
     from .battle_cruisers import LadderBot
@@ -16,6 +16,9 @@ elif val == 5:
     from .two_base_tanks import LadderBot
 elif val == 6:
     from .bio import LadderBot
+elif val == 7:
+    from .one_base_turtle import LadderBot
+
 
 class RandomTerranBot(LadderBot):
     pass

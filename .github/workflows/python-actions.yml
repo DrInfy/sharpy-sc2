@@ -1,0 +1,89 @@
+name: Python actions
+
+on:
+  push:
+    branches: 
+      - master
+      - develop
+  pull_request:
+    branches: 
+      - master
+      - develop
+
+jobs:
+  run_linter_and_unit_tests:
+    name: Run linter and unit tests
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      # Run all steps regardless of failures
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.7]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements.dev.txt
+
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors
+        echo Running flake8. error/warning count ...
+        flake8 .
+
+    - name: Test with pytest
+      run: |
+        pytest
+
+  run_test_bots:
+    name: Run test bots
+
+    # for this purpose, test games can only be run with the headless Sc2 Linux client.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: true  # one failure is enough
+      matrix:
+        python-version: [3.7]
+        player1: [zealot, 12pool, bio]
+        player2: [ai.random.hard]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        
+    - name: Print directories and files
+      run: |
+        sudo apt-get install tree
+        tree
+
+    - name: Load and build docker image
+      run: |
+        docker build -t test_image -f test/Dockerfile_python_3.7-sc2_4.10 .
+
+    - name: Run bots
+      run: |
+        docker run --interactive --tty --detach --name app1 test_image
+        docker exec -i app1 bash -c "tree"
+        
+        # travis_test_script.py is a wrapper for SC2 bots to set a timeout
+        # docker exec --interactive app1 bash -c "python python-sc2/test/travis_test_script.py"
+        
+        # could use matrix here to provide the bots and map
+        docker exec -i app1 bash -c "python run_custom.py -p1 ${{ matrix.player1 }} -p2 ${{ matrix.player2 }} --map AcolyteLE"
+        docker rm -f app1

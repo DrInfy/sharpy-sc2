@@ -1,0 +1,29 @@
+# flake8 is a Python linter - https://pypi.org/project/flake8/
+# black is an opionated code formatter for Python - https://pypi.org/project/black/
+
+[flake8]
+show-source = True
+count = True
+
+ignore =
+    E203 # whitespace before ':' - Black intentionally breaks this not PEP 8 compliant rule
+    E501 # line too long - line length is configured in Black
+    E731
+    W503 # line break before binary operator - Black intentionally breaks this not PEP 8 compliant rule
+
+    # TODO! - Black does not fix these and there are way too many to fix by hand.
+    E402 # module level import not at top of file
+    F401 # Module imported but unused
+    F403 # ‘from module import *’ used; unable to detect undefined names
+    F405 # name may be undefined, or defined from star imports: module
+    F821 # undefined name 'name' - these are hacks used to circumvent cyclic import problems
+
+exclude =
+    .git
+    .venv
+    __pycache__
+    python-sc2
+    jsonpickle
+    sc2pathlibp
+    Bots
+

@@ -28,7 +28,7 @@ class InjectLarva(ActBase):
                 for order in queen.orders:  # type: UnitOrder
                     if order.ability.id == AbilityId.EFFECT_INJECTLARVA and type(order.target) is int:
                         injected_halls.append(order.target)
-            
+
             idle_queens = all_queens.idle
             for queen in idle_queens:  # type: Unit
                 if self.knowledge.cooldown_manager.is_ready(queen.tag, AbilityId.EFFECT_INJECTLARVA):

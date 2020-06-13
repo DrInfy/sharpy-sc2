@@ -12,7 +12,6 @@ from sharpy.managers.roles import UnitTask
 
 
 class DarkTemplarAttack(ActBase):
-
     def __init__(self):
         self.dt_push_started = False
         self.ninja_dt_tag: Optional[int] = None
@@ -68,7 +67,8 @@ class DarkTemplarAttack(ActBase):
         if harash_dt is not None:
             self.knowledge.roles.set_task(UnitTask.Reserved, harash_dt)
             enemy_workers = self.cache.enemy_in_range(harash_dt.position, 15).of_type(
-                [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE])
+                [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
+            )
             if enemy_workers.exists:
                 target = enemy_workers.closest_to(harash_dt)
                 self.do(harash_dt.attack(target))

@@ -1,6 +1,6 @@
 import random
 
-val = random.randint(0, 7)
+val = random.randint(0, 9)
 
 if val == 0:
     from .adept_allin import LadderBot
@@ -18,6 +18,11 @@ elif val == 6:
     from .robo import LadderBot
 elif val == 7:
     from .voidray import LadderBot
+elif val == 8:
+    from .one_base_tempests import LadderBot
+elif val == 9:
+    from .disruptor import LadderBot
+
 
 class RandomProtossBot(LadderBot):
     pass

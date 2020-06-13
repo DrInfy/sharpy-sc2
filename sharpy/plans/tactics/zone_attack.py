@@ -2,8 +2,12 @@ from enum import Enum
 from typing import Optional, List
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers.game_states.advantage import at_least_small_disadvantage, at_least_small_advantage, \
-    at_least_clear_advantage, at_least_clear_disadvantage
+from sharpy.managers.game_states.advantage import (
+    at_least_small_disadvantage,
+    at_least_small_advantage,
+    at_least_clear_advantage,
+    at_least_clear_disadvantage,
+)
 from sharpy.general.zone import Zone
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -14,6 +18,7 @@ from sharpy.knowledges import Knowledge
 from sharpy.managers.combat2 import MoveType
 from sharpy.general.extended_power import ExtendedPower
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from sharpy.managers import *
 
@@ -27,13 +32,13 @@ RETREAT_STOP_DISTANCE_SQUARED = RETREAT_STOP_DISTANCE * RETREAT_STOP_DISTANCE
 
 
 class AttackStatus(Enum):
-    NotActive = 0,
-    GatheringForAttack = 1,  # Not in use yet
-    Attacking = 2,
-    MovingToExpansion = 3,  # NYI, moving to hold enemy expansion
-    ProtectingExpansion = 4,  # NYI, holding enemy expansion and preventing enemy expansions
-    Retreat = 10,  # Prefers to escape without fighting
-    Withdraw = 11,  # Fights any enemies while escaping
+    NotActive = 0
+    GatheringForAttack = 1  # Not in use yet
+    Attacking = 2
+    MovingToExpansion = 3  # NYI, moving to hold enemy expansion
+    ProtectingExpansion = 4  # NYI, holding enemy expansion and preventing enemy expansions
+    Retreat = 10  # Prefers to escape without fighting
+    Withdraw = 11  # Fights any enemies while escaping
 
 
 class PlanZoneAttack(ActBase):
@@ -71,6 +76,7 @@ class PlanZoneAttack(ActBase):
 
         elif self.attack_retreat_started is not None:
             attacking_units = self.knowledge.roles.attacking_units
+            self.roles.refresh_tasks(attacking_units)
 
             for unit in attacking_units:
                 pos: Point2 = unit.position
@@ -100,7 +106,7 @@ class PlanZoneAttack(ActBase):
             if self._should_attack(own_power):
                 self._start_attack(own_power, attackers)
 
-        return False # Blocks!
+        return False  # Blocks!
 
     async def debug_actions(self):
         if self.status == AttackStatus.NotActive:
@@ -120,10 +126,9 @@ class PlanZoneAttack(ActBase):
             attacking_status = moving_status = "unknown attack task"
 
         for unit in self.knowledge.roles.units(UnitTask.Moving):
-            self._client.debug_text_world(moving_status, unit.position3d)
+            self.client.debug_text_world(moving_status, unit.position3d)
         for unit in self.knowledge.roles.units(UnitTask.Attacking):
-            self._client.debug_text_world(attacking_status, unit.position3d)
-
+            self.client.debug_text_world(attacking_status, unit.position3d)
 
     def handle_attack(self, target):
         already_attacking: Units = self.knowledge.roles.units(UnitTask.Attacking)
@@ -136,18 +141,17 @@ class PlanZoneAttack(ActBase):
         center = already_attacking.center
         front_runner = already_attacking.closest_to(target)
 
-        #target = self.pather.find_path(center, target)
-
         for unit in already_attacking:
             # Only units in group are included to current combat force
             self.combat.add_unit(unit)
 
+        self.roles.refresh_tasks(already_attacking)
+
         for unit in self.knowledge.roles.free_units:
             if self.knowledge.should_attack(unit):
-                p: Point2 = unit.position
-
-                if (not self.knowledge.roles.is_in_role(UnitTask.Attacking, unit)
-                        and (unit.distance_to(center) > 20 or unit.distance_to(front_runner) > 20)):
+                if not self.knowledge.roles.is_in_role(UnitTask.Attacking, unit) and (
+                    unit.distance_to(center) > 20 or unit.distance_to(front_runner) > 20
+                ):
                     self.knowledge.roles.set_task(UnitTask.Moving, unit)
                     # Unit should start moving to target position.
                     self.combat.add_unit(unit)
@@ -167,17 +171,23 @@ class PlanZoneAttack(ActBase):
 
     def _should_attack(self, power: ExtendedPower) -> bool:
         if self.attack_on_advantage:
-            if ((self.game_analyzer.our_army_predict in at_least_clear_advantage
-                 and self.game_analyzer.our_income_advantage in at_least_small_disadvantage)
-                    or (self.game_analyzer.our_army_predict in at_least_small_advantage
-                        and self.game_analyzer.our_income_advantage in at_least_clear_disadvantage)):
+            if (
+                self.game_analyzer.our_army_predict in at_least_clear_advantage
+                and self.game_analyzer.our_income_advantage in at_least_small_disadvantage
+            ) or (
+                self.game_analyzer.our_army_predict in at_least_small_advantage
+                and self.game_analyzer.our_income_advantage in at_least_clear_disadvantage
+            ):
                 # Our army is bigger but economy is weaker, attack!
                 return True
 
-            if ((self.game_analyzer.our_army_predict in at_least_small_disadvantage
-                 and self.game_analyzer.our_income_advantage in at_least_clear_advantage)
-                    or (self.game_analyzer.our_army_predict in at_least_clear_disadvantage
-                        and self.game_analyzer.our_income_advantage in at_least_small_advantage)):
+            if (
+                self.game_analyzer.our_army_predict in at_least_small_disadvantage
+                and self.game_analyzer.our_income_advantage in at_least_clear_advantage
+            ) or (
+                self.game_analyzer.our_army_predict in at_least_clear_disadvantage
+                and self.game_analyzer.our_income_advantage in at_least_small_advantage
+            ):
                 # Our army is smaller but economy is better, focus on defence!
                 return False
 
@@ -186,7 +196,7 @@ class PlanZoneAttack(ActBase):
         multiplier = ENEMY_TOTAL_POWER_MULTIPLIER
 
         zone_count = 0
-        for zone in self.knowledge.expansion_zones: # type: Zone
+        for zone in self.knowledge.expansion_zones:  # type: Zone
             if zone.is_enemys:
                 zone_count += 1
 
@@ -196,7 +206,7 @@ class PlanZoneAttack(ActBase):
         if zone_count == 1 and enemy_main.is_enemys:
             # We should seriously consider whether we want to crash and burn against a one base defense
             enemy_total_power.add_units(enemy_main.enemy_static_defenses)
-            #multiplier *= 2
+            # multiplier *= 2
 
         elif zone_count == 2 and enemy_natural.is_enemys:
             enemy_total_power.add_units(enemy_natural.enemy_static_defenses)
@@ -208,7 +218,9 @@ class PlanZoneAttack(ActBase):
         enemy_total_power.power = max(self.start_attack_power, enemy_total_power.power)
 
         if power.is_enough_for(enemy_total_power, 1 / multiplier):
-            self.print(f"Power {power.power:.2f} is larger than required attack power {enemy_total_power.power:.2f} -> attack!")
+            self.print(
+                f"Power {power.power:.2f} is larger than required attack power {enemy_total_power.power:.2f} -> attack!"
+            )
             return True
         if self.ai.supply_used > 190:
             self.print(f"Supply is {self.ai.supply_used} -> attack!")
@@ -218,7 +230,7 @@ class PlanZoneAttack(ActBase):
     def _start_attack(self, power: ExtendedPower, attackers: Units):
         self.knowledge.roles.set_tasks(UnitTask.Attacking, attackers)
         self.status = AttackStatus.Attacking
-        self.print(f'Attack started at {power.power:.2f} power.')
+        self.print(f"Attack started at {power.power:.2f} power.")
 
     def _should_retreat(self, fight_center: Point2, already_attacking: Units) -> AttackStatus:
         enemy_local_units: Units = self.knowledge.known_enemy_units.closer_than(
@@ -232,10 +244,13 @@ class PlanZoneAttack(ActBase):
         enemy_local_power = self.unit_values.calc_total_power(enemy_local_units)
 
         if self.attack_on_advantage and enemy_local_power.power < 2:
-            if ((self.game_analyzer.our_army_predict in at_least_clear_advantage
-                 and self.game_analyzer.our_income_advantage in at_least_small_disadvantage)
-                    or (self.game_analyzer.our_army_predict in at_least_small_advantage
-                        and self.game_analyzer.our_income_advantage in at_least_clear_disadvantage)):
+            if (
+                self.game_analyzer.our_army_predict in at_least_clear_advantage
+                and self.game_analyzer.our_income_advantage in at_least_small_disadvantage
+            ) or (
+                self.game_analyzer.our_army_predict in at_least_small_advantage
+                and self.game_analyzer.our_income_advantage in at_least_clear_disadvantage
+            ):
                 # Our army is bigger but economy is weaker, attack!
                 return AttackStatus.NotActive
 
@@ -251,8 +266,10 @@ class PlanZoneAttack(ActBase):
 
         if enemy_local_power.is_enough_for(own_local_power, self.retreat_multiplier):
             # Start retreat next turn
-            self.print(f'Retreat started at {own_local_power.power:.2f} own local power '
-                       f'against {enemy_local_power.power:.2f} enemy local power.')
+            self.print(
+                f"Retreat started at {own_local_power.power:.2f} own local power "
+                f"against {enemy_local_power.power:.2f} enemy local power."
+            )
             return AttackStatus.Retreat
 
         return AttackStatus.NotActive

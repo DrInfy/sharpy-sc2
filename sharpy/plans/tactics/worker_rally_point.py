@@ -9,13 +9,14 @@ from sharpy.tools import IntervalFunc
 
 class WorkerRallyPoint(ActBase):
     """Handles setting worker rally points"""
+
     ability: AbilityId
     func: IntervalFunc
 
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         # set rally point once every 5 seconds
         self.func = IntervalFunc(self.ai, self.set_rally_point, 5)

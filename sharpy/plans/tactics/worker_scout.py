@@ -17,6 +17,7 @@ class WorkerScout(ActBase):
     Selects a scout worker and performs basic scout sweep across
     start and expansion locations.
     """
+
     def __init__(self):
         super().__init__()
         self.position_updater: IntervalFunc = None
@@ -43,6 +44,10 @@ class WorkerScout(ActBase):
             self.last_locations.append(self.scout.position)
 
     async def select_scout(self):
+        if self.scout_tag is not None:
+            self.scout = self.roles.get_unit_by_tag_from_task(self.scout_tag, UnitTask.Scouting)
+            return
+
         workers = self.knowledge.roles.free_workers
         if not workers.exists:
             return
@@ -51,8 +56,7 @@ class WorkerScout(ActBase):
             closest_worker = workers.closest_to(self.current_target)
             self.scout_tag = closest_worker.tag
             self.knowledge.roles.set_task(UnitTask.Scouting, closest_worker)
-
-        self.scout = self.cache.by_tag(self.scout_tag)
+            self.scout = closest_worker
 
     def distance_to_scout(self, location):
         # Return sys.maxsize so that the sort function does not crash like it does with None
@@ -70,17 +74,26 @@ class WorkerScout(ActBase):
 
         enemy_base_found = self.knowledge.enemy_start_location_found
 
-        enemy_base_scouted = enemy_base_found and self.knowledge.enemy_main_zone.is_scouted_at_least_once \
+        enemy_base_scouted = (
+            enemy_base_found
+            and self.knowledge.enemy_main_zone.is_scouted_at_least_once
             and self.knowledge.enemy_main_zone.scout_last_circled
+        )
 
-        enemy_base_blocked = enemy_base_found and self.enemy_ramp_top_scouted \
+        enemy_base_blocked = (
+            enemy_base_found
+            and self.enemy_ramp_top_scouted
             and await self.target_unreachable(self.knowledge.enemy_main_zone.behind_mineral_position_center)
+        )
 
         if enemy_base_scouted or enemy_base_blocked:
             # When enemy found and enemy main base scouted, scout nearby expansions
             self.scout_enemy_expansions()
-        elif (enemy_base_found and self.enemy_ramp_top_scouted
-              and self.scout.distance_to(self.knowledge.enemy_main_zone.center_location) < 40):
+        elif (
+            enemy_base_found
+            and self.enemy_ramp_top_scouted
+            and self.scout.distance_to(self.knowledge.enemy_main_zone.center_location) < 40
+        ):
 
             self.circle_location(self.zone_manager.enemy_main_zone.center_location)
             self.zone_manager.enemy_main_zone.scout_last_circled = self.knowledge.ai.time
@@ -114,7 +127,6 @@ class WorkerScout(ActBase):
 
         self.print(f"Scouting enemy base at locations {self.scout_locations}")
 
-
     def circle_location(self, location: Point2):
         self.scout_locations.clear()
         self.scout_locations = points_on_circumference_sorted(location, self.scout.position, 10, 30)
@@ -137,7 +149,7 @@ class WorkerScout(ActBase):
 
     @property
     def current_target_is_enemy_ramp(self) -> bool:
-        for zone in self.knowledge.expansion_zones: # type: Zone
+        for zone in self.knowledge.expansion_zones:  # type: Zone
             if zone.ramp and self.current_target == zone.ramp.top_center:
                 return True
         return False
@@ -147,9 +159,11 @@ class WorkerScout(ActBase):
             return False
 
         start = self.scout
-        if (len(self.last_locations) < 5
-                or self.scout.distance_to(self.last_locations[-1]) > 1
-                or self.scout.distance_to(self.last_locations[-2]) > 1):
+        if (
+            len(self.last_locations) < 5
+            or self.scout.distance_to(self.last_locations[-1]) > 1
+            or self.scout.distance_to(self.last_locations[-2]) > 1
+        ):
             # Worker is still moving, it's not stuck
             return False
 
@@ -169,6 +183,8 @@ class WorkerScout(ActBase):
         if self.scout is None:
             # No one to scout
             return True  # Non blocking
+
+        self.roles.refresh_task(self.scout)
 
         if not len(self.scout_locations):
             # Nothing to scout

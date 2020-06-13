@@ -11,7 +11,7 @@ class MicroZerglings(MicroStep):
             if self.ready_to_attack_ratio < 0.25:
                 return Action(self.closest_group.center, True)
             return Action(self.closest_group.center.towards(self.center, -3), False)
-        #if self.engage_percentage == 0
+        # if self.engage_percentage == 0
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
@@ -25,5 +25,3 @@ class MicroZerglings(MicroStep):
         #             if pylons:
         #                 return Action(buildings.first, True)
         return current_command
-
-

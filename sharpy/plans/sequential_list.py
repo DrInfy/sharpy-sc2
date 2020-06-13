@@ -1,30 +1,31 @@
-from typing import List
+from typing import List, Union, Callable
 
+from sharpy.plans.build_step import Step
 from sharpy.plans.acts import ActBase
 
+from typing import TYPE_CHECKING
 
-class SequentialList(ActBase):
-    def __init__(self, orders: List[ActBase]):
-        assert orders is not None and isinstance(orders, list)
-        super().__init__()
-        for order in orders:
-            assert isinstance(order, ActBase)
+from sharpy.plans.sub_acts import SubActs
 
-        self.orders: List[ActBase] = orders
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
-    async def debug_draw(self):
-        for order in self.orders:
-            await order.debug_draw()
-            
-    async def start(self, knowledge: 'Knowledge'):
-        await super().start(knowledge)
-        for order in self.orders:
-            await order.start(knowledge)
+
+class SequentialList(SubActs):
+    def __init__(
+        self,
+        orders: Union[
+            Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
+        ],
+        *argv
+    ):
+
+        super().__init__(orders, *argv)
 
     async def execute(self) -> bool:
         for order in self.orders:
             result = await order.execute()
-            if (not result):
+            if not result:
                 return result
 
         return True

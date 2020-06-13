@@ -6,6 +6,7 @@ from sc2.unit import Unit
 MINERAL_MINE_RATE = 1  # this isn't needed in calculations
 GAS_MINE_RATE = 0.9433962264
 
+
 class IncomeCalculator(ManagerBase):
     def __init__(self):
         super().__init__()
@@ -22,6 +23,7 @@ class IncomeCalculator(ManagerBase):
 
     async def update(self):
         self._mineral_income = self.mineral_rate_calc()
+        # self._mineral_income = self.ai.state.score.collection_rate_minerals / 60
         self._gas_income = self.vespene_rate_calc()
 
         # TODO: Calculate enemy income and minerals harvested here
@@ -31,7 +33,7 @@ class IncomeCalculator(ManagerBase):
         nexus: Unit
         for nexus in self.ai.townhalls:
             rate += min(nexus.assigned_harvesters, nexus.ideal_harvesters)
-            rate += max(nexus.assigned_harvesters - nexus.ideal_harvesters, 0) * 0.5 # half power mining?
+            rate += max(nexus.assigned_harvesters - nexus.ideal_harvesters, 0) * 0.5  # half power mining?
         # With two workers per mineral patch, a large node with 1800 minerals will exhaust after 15 minutes
         # multiplier = 1800.0 / 60 / 15 / 2 => 1
         return rate
@@ -47,4 +49,3 @@ class IncomeCalculator(ManagerBase):
 
     async def post_update(self):
         pass
-

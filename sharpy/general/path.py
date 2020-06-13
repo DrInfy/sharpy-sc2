@@ -3,8 +3,9 @@ from typing import Tuple, List, Optional
 from sc2.position import Point2
 
 
-class Path():
+class Path:
     path: Tuple[int, int]
+
     def __init__(self, path: Tuple[List[Tuple[int, int]], float], reverse: bool = False) -> None:
         self.distance: float = path[1]
         if reverse:

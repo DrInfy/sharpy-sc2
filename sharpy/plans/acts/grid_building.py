@@ -19,9 +19,14 @@ worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
 class GridBuilding(ActBuilding):
-
-    def __init__(self, unit_type: UnitTypeId, to_count: int, iterator: Optional[int] = None, priority: bool = False,
-                 allow_wall: bool = True):
+    def __init__(
+        self,
+        unit_type: UnitTypeId,
+        to_count: int,
+        iterator: Optional[int] = None,
+        priority: bool = False,
+        allow_wall: bool = True,
+    ):
         super().__init__(unit_type, to_count)
         self.allow_wall = allow_wall
         assert isinstance(priority, bool)
@@ -32,7 +37,7 @@ class GridBuilding(ActBuilding):
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.building_solver = self.knowledge.building_solver
 
@@ -45,13 +50,14 @@ class GridBuilding(ActBuilding):
 
         if count >= self.to_count:
             if self.builder_tag is not None:
-                self.knowledge.roles.clear_task(self.builder_tag)
-                self.builder_tag = None
+                self.clear_worker()
 
             return True  # Step is done
 
-        if count + (self.pending_build(self.unit_type)
-                    - self.cache.own(self.unit_type).not_ready.amount) >= self.to_count:
+        if (
+            count + (self.pending_build(self.unit_type) - self.cache.own(self.unit_type).not_ready.amount)
+            >= self.to_count
+        ):
             if self.builder_tag is not None:
                 worker = self.cache.by_tag(self.builder_tag)
                 if worker is not None:
@@ -64,7 +70,7 @@ class GridBuilding(ActBuilding):
         elif self.knowledge.my_race == Race.Terran:
             position = self.position_terran(count)
         else:
-            raise ValueError(f'Position lookup for race {self.knowledge.my_race} not supported.')
+            raise ValueError(f"Position lookup for race {self.knowledge.my_race} not supported.")
 
         if position is None:
             if self.make_pylon is not None:
@@ -72,10 +78,15 @@ class GridBuilding(ActBuilding):
                 await self.make_pylon.execute()
             return False  # Stuck and cannot proceed
 
-        worker = self.get_worker(position)  # type: Unit
+        worker = self.get_worker_builder(position, self.builder_tag)  # type: Unit
 
         if worker is None:
+            self.builder_tag = None
             return False  # Cannot proceed
+
+        if self.has_build_order(worker):
+            self.set_worker(worker)
+            return False
 
         d = worker.distance_to(position)
         time = d / to_new_ticks(worker.movement_speed)
@@ -120,8 +131,10 @@ class GridBuilding(ActBuilding):
                     else:
                         available_minerals -= 50  # should start producing workers soon now
 
-            if available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals \
-                    and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene:
+            if (
+                available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals
+                and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene
+            ):
                 # Go wait
                 self.set_worker(worker)
                 self.knowledge.reserve(cost.minerals, cost.vespene)
@@ -145,47 +158,16 @@ class GridBuilding(ActBuilding):
                     if moving_status != "":
                         moving_status += ", "
                     moving_status += order.ability.id.name
-                self._client.debug_text_world(moving_status, worker.position3d)
+                self.client.debug_text_world(moving_status, worker.position3d)
 
-    def get_worker(self, position: Point2):
-        worker: Unit = None
-        if self.builder_tag is None:
-            if self.knowledge.my_race == Race.Protoss:
-                builders: Units = self.knowledge.roles.all_from_task(UnitTask.Building)\
-                    .filter(lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET))
+    def set_worker(self, worker: Optional[Unit]) -> bool:
+        if worker:
+            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.builder_tag = worker.tag
+            return True
 
-                if builders:
-                    closest = None
-                    best_distance = 0
-                    for builder in builders:  # type: Unit
-                        if len(builder.orders) == 1:
-                            order: UnitOrder = builder.orders[0]
-                            if order.target is Point2:
-                                distance = position.distance_to_point2(order.target)
-                            else:
-                                distance = position.distance_to_point2(builder.position)
-                            if distance < 10 and (closest is None or distance < best_distance):
-                                best_distance = distance
-                                closest = builder
-                    worker = closest
-
-            if worker is None:
-                free_workers = self.knowledge.roles.free_workers\
-                    .filter(lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET))
-                if self.knowledge.my_race == Race.Terran:
-                    free_workers = free_workers.filter(lambda u: not self.has_build_order(u))
-                if free_workers.exists:
-                    worker = free_workers.closest_to(position)
-        else:
-            worker: Unit = self.cache.by_tag(self.builder_tag)
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                self.builder_tag = None
-        return worker
-
-    def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
-        self.builder_tag = worker.tag
+        self.builder_tag = None
+        return False
 
     def clear_worker(self):
         if self.builder_tag is not None:
@@ -311,7 +293,6 @@ class GridBuilding(ActBuilding):
 
         is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
         buildings = self.ai.structures
-        iterator = self.get_iterator(is_depot, count)
 
         if is_depot:
             for point in self.building_solver.pylon_position[::1]:

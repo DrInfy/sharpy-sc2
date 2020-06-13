@@ -12,6 +12,7 @@ from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 
+
 class WorkerCounterAttack(ActBase):
     def __init__(self):
         self.has_failed = False
@@ -19,13 +20,13 @@ class WorkerCounterAttack(ActBase):
         self.tags: List[int] = []
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_mf = self.solve_optimal_mineral_field()
 
     def solve_optimal_mineral_field(self) -> Unit:
         main: Zone = self.knowledge.own_main_zone
-        for mf in main.mineral_fields: #type: Unit
+        for mf in main.mineral_fields:  # type: Unit
             if len(main.mineral_fields.closer_than(2, mf.position)) > 2:
                 return mf
         return main.mineral_fields.first
@@ -36,8 +37,15 @@ class WorkerCounterAttack(ActBase):
         if self.was_active:
             return self.handle_counter()
         if self.knowledge.build_detector.rush_build == EnemyRushBuild.WorkerRush:
-            self.was_active = True
-            return self.start_counter()
+            # Wait until enemy is close enough
+            if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.knowledge.all_own.filter(
+                lambda u: u.shield_health_percentage < 0.75
+            ):
+                self.was_active = True
+                return self.start_counter()
+            elif self.ai.time < 60:
+                # Prevent other defense mechanisms from activating
+                return False
         return True
 
     def start_counter(self) -> bool:

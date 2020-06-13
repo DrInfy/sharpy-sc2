@@ -31,10 +31,6 @@ class PlanDistributeWorkers(ActBase):
         self.roles: UnitRoleManager = None
         self.force_work = False
 
-    async def start(self, knowledge: Knowledge):
-        await super().start(knowledge)
-        self.roles = knowledge.roles
-
     @property
     def active_gas_buildings(self) -> Units:
         """All gas buildings that are ready."""
@@ -59,9 +55,10 @@ class PlanDistributeWorkers(ActBase):
     def non_full_safe_zones(self) -> List[Zone]:
         """All zones which have a non-full mineral line and are safe from enemies."""
         zones = filter(
-            lambda z: z.our_townhall.surplus_harvesters < 0 and z.power_balance > BAD_ZONE_POWER_THRESHOLD
-                      and not z.needs_evacuation,
-            self.knowledge.our_zones_with_minerals
+            lambda z: z.our_townhall.surplus_harvesters < 0
+            and z.power_balance > BAD_ZONE_POWER_THRESHOLD
+            and not z.needs_evacuation,
+            self.knowledge.our_zones_with_minerals,
         )
         return list(zones)
 
@@ -70,7 +67,7 @@ class PlanDistributeWorkers(ActBase):
         """All zones which have a non-full mineral line and are safe from enemies."""
         zones = filter(
             lambda z: z.power_balance > BAD_ZONE_POWER_THRESHOLD and not z.needs_evacuation,
-            self.knowledge.our_zones_with_minerals
+            self.knowledge.our_zones_with_minerals,
         )
         return list(zones)
 
@@ -105,12 +102,16 @@ class PlanDistributeWorkers(ActBase):
 
         # Idle worker
         if workers.idle.exists:
-            return workers.idle.first  # use random?
+            for worker in workers:
+                if worker.tag not in self.roles.had_task_set:
+                    # if the task was just set, the worker is still active!
+                    return worker
 
         for zone in self.knowledge.expansion_zones:
             if zone.is_ours and zone.needs_evacuation:
-                mineral_workers = workers \
-                    .filter(lambda w: w.order_target in zone.mineral_fields.tags and not w.is_carrying_minerals)
+                mineral_workers = workers.filter(
+                    lambda w: w.order_target in zone.mineral_fields.tags and not w.is_carrying_minerals
+                )
                 if mineral_workers.exists:
                     self.force_work = True
                     return mineral_workers.first
@@ -120,16 +121,16 @@ class PlanDistributeWorkers(ActBase):
             townhall: Unit = our_zone.our_townhall
 
             if townhall.surplus_harvesters > 0:
-                mineral_workers = workers \
-                    .filter(lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals)
+                mineral_workers = workers.filter(
+                    lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals
+                )
                 if mineral_workers.exists:
                     return mineral_workers.first
 
         # Surplus gas worker
         for gas in self.active_gas_buildings:  # type: Unit
             if gas.surplus_harvesters > 0:
-                excess_gas_workers = workers \
-                    .filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)
+                excess_gas_workers = workers.filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)
                 if excess_gas_workers.exists:
                     return excess_gas_workers.first
 
@@ -138,16 +139,18 @@ class PlanDistributeWorkers(ActBase):
     def get_gas_worker(self) -> Optional[Unit]:
         for gas in self.active_gas_buildings:  # type: Unit
 
-            excess_gas_workers = self.ai.workers \
-                .filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)
+            excess_gas_workers = self.ai.workers.filter(
+                lambda w: w.order_target == gas.tag and not w.is_carrying_vespene
+            )
             if excess_gas_workers.exists:
                 return excess_gas_workers.first
 
     def get_mineral_worker(self) -> Optional[Unit]:
         for our_zone in self.knowledge.our_zones_with_minerals:
             townhall: Unit = our_zone.our_townhall
-            mineral_workers = self.ai.workers \
-                .filter(lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals)
+            mineral_workers = self.ai.workers.filter(
+                lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals
+            )
             if mineral_workers.exists:
                 return mineral_workers.closest_to(townhall)
         return None
@@ -195,6 +198,8 @@ class PlanDistributeWorkers(ActBase):
         self.roles.set_task(UnitTask.Gathering, worker)
         townhalls = self.ai.townhalls.ready
 
+        self.roles.set_task(UnitTask.Gathering, worker)
+
         if worker.is_carrying_resource and townhalls:
             closest = townhalls.closest_to(worker)
             self.do(worker(AbilityId.SMART, closest))
@@ -213,7 +218,9 @@ class PlanDistributeWorkers(ActBase):
             gas_workers = self.active_gas_workers
             if self.max_gas is not None and gas_workers > self.max_gas:
                 worker = self.get_gas_worker()
-            elif self.gas_workers_target > self.active_gas_workers and self.active_gas_buildings.amount * 3 > gas_workers:
+            elif (
+                self.gas_workers_target > self.active_gas_workers and self.active_gas_buildings.amount * 3 > gas_workers
+            ):
                 worker = self.get_mineral_worker()
 
             if worker is None:

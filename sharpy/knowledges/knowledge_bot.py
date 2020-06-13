@@ -5,21 +5,27 @@ from abc import abstractmethod
 
 from sc2.units import Units
 from sharpy.knowledges import Knowledge
-from sharpy.plans import BuildOrder
+from sharpy.managers import ManagerBase
 from config import get_config, get_version
-from sc2 import BotAI, Result, Optional, UnitTypeId
+from sc2 import BotAI, Result, Optional, UnitTypeId, List
 from sc2.unit import Unit
 import time
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import BuildOrder
 
 
 class KnowledgeBot(BotAI):
     """Base class for bots that are built around Knowledge class."""
+
     def __init__(self, name: str):
         super().__init__()
         self.name = name
         self.config = get_config()
         self.knowledge: Knowledge = None
-        self.plan: BuildOrder = None
+        self.plan: "BuildOrder" = None
         self.knowledge = Knowledge()
         self.start_plan = True
         self.run_custom = False
@@ -27,15 +33,24 @@ class KnowledgeBot(BotAI):
         self.realtime_split = True
         self.last_game_loop = -1
         self.distance_calculation_method = 0
+        self.unit_command_uses_self_do = True
 
     async def real_init(self):
-        self.knowledge.pre_start(self)
+        self.knowledge.pre_start(self, self.configure_managers())
         await self.knowledge.start()
         self.plan = await self.create_plan()
         if self.start_plan:
             await self.plan.start(self.knowledge)
 
         self._log_start()
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        """
+        Override this for custom manager usage.
+        Use this to override managers in knowledge
+        @return: Optional list of new managers
+        """
+        return None
 
     async def chat_init(self):
         if self.knowledge.is_chat_allowed:
@@ -54,13 +69,13 @@ class KnowledgeBot(BotAI):
 
         return msg
 
-    async def chat_send(self, message: str):
+    async def chat_send(self, message: str, team_only: bool = False):
         # todo: refactor to use chat manager?
         self.knowledge.print(message, "Chat")
-        await super().chat_send(message)
+        await super().chat_send(message, team_only)
 
     @abstractmethod
-    async def create_plan(self) -> BuildOrder:
+    async def create_plan(self) -> "BuildOrder":
         pass
 
     async def on_before_start(self):
@@ -121,11 +136,14 @@ class KnowledgeBot(BotAI):
             ms_step = ns_step / 1000 / 1000
 
             if ms_step > 100:
-                self.knowledge.print(f"Step {self.state.game_loop} took {round(ms_step)} ms.",
-                                     "LAG", stats=False, log_level=logging.WARNING)
+                self.knowledge.print(
+                    f"Step {self.state.game_loop} took {round(ms_step)} ms.",
+                    "LAG",
+                    stats=False,
+                    log_level=logging.WARNING,
+                )
 
-
-        except:  # catch all exceptions
+        except:  # noqa, catch all exceptions
             e = sys.exc_info()[0]
             logging.exception(e)
 

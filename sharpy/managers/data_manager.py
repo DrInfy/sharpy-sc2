@@ -16,6 +16,7 @@ from sharpy.tools.opponent_data import GameResult, OpponentData
 
 DATA_FOLDER = "data"
 
+
 class DataManager(ManagerBase):
     data: OpponentData
     enabled: bool
@@ -27,7 +28,7 @@ class DataManager(ManagerBase):
         self.last_result = None
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enabled = self.ai.opponent_id is not None
         self.enable_write = self.knowledge.config["general"].getboolean("write_data")
@@ -44,8 +45,7 @@ class DataManager(ManagerBase):
             if my_file.is_file():
                 try:
                     self.read_data()
-
-                except:
+                except Exception:
                     self.data = OpponentData()
                     self.data.enemy_id = self.ai.opponent_id
                     self.knowledge.print("Data read failed on game start.")
@@ -55,13 +55,17 @@ class DataManager(ManagerBase):
 
             if self.data.results:
                 self.last_result = self.data.results[-1]
-                self.last_result_as_current_race = next((result for result in reversed(self.data.results)
-                                                         if  hasattr(result, "my_race")
-                                                         and result.my_race == self.knowledge.my_race),
-                                                        None)
+                self.last_result_as_current_race = next(
+                    (
+                        result
+                        for result in reversed(self.data.results)
+                        if hasattr(result, "my_race") and result.my_race == self.knowledge.my_race
+                    ),
+                    None,
+                )
 
     def read_data(self):
-        with open(self.file_name, 'r') as handle:
+        with open(self.file_name, "r") as handle:
             text = handle.read()
             # Compatibility with older versions to prevent crashes
             text = text.replace("bot.tools", "sharpy.tools")
@@ -89,8 +93,11 @@ class DataManager(ManagerBase):
 
     @property
     def last_enemy_build(self) -> Tuple[EnemyRushBuild, EnemyMacroBuild]:
-        if not self.last_result or not hasattr(self.last_result, "enemy_macro_build")\
-                or not hasattr(self.last_result, "enemy_build"):
+        if (
+            not self.last_result
+            or not hasattr(self.last_result, "enemy_macro_build")
+            or not hasattr(self.last_result, "enemy_build")
+        ):
             return EnemyRushBuild.Macro, EnemyMacroBuild.StandardMacro
 
         return EnemyRushBuild(self.last_result.enemy_build), EnemyMacroBuild(self.last_result.enemy_macro_build)
@@ -120,9 +127,9 @@ class DataManager(ManagerBase):
         if my_file.is_file():
             try:
                 self.read_data()
-            except:
+            except Exception as e:
                 # Don't write if we can't read the current data
-                self.knowledge.print("Data read failed on save.")
+                self.print(f"Data read failed on save: {e}")
                 return
         elif not os.path.exists(DATA_FOLDER):
             os.makedirs(DATA_FOLDER)
@@ -140,16 +147,16 @@ class DataManager(ManagerBase):
 
         frozen = jsonpickle.encode(self.data)
         try:
-            with open(self.file_name, 'w') as handle:
+            with open(self.file_name, "w") as handle:
                 handle.write(frozen)
                 # pickle.dump(self.data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        except:
-            self.knowledge.print("Data write failed.")
+        except Exception as e:
+            self.print(f"Data write failed: {e}")
 
     async def on_end(self, game_result: Result):
         if not self.enabled:
             return
-        
+
         if game_result == Result.Victory:
             self.result.result = 1
         elif game_result == Result.Tie:

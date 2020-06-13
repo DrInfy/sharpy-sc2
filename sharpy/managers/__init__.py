@@ -17,3 +17,4 @@ from .chat_manager import ChatManager
 from .memory_manager import MemoryManager
 from .action_issued import ActionHandler
 from .unit_value import UnitValue
+from .version_manager import VersionManager

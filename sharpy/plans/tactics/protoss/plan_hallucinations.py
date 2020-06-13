@@ -11,6 +11,7 @@ from sharpy.knowledges import Knowledge
 
 class PlanHallucination(ActBase):
     """Keeps track of our own hallucinated units."""
+
     def __init__(self):
         super().__init__()
         self.roles: UnitRoleManager = None
@@ -42,6 +43,7 @@ class PlanHallucination(ActBase):
 
         units = self.roles.units(UnitTask.Hallucination)
         if units.exists:
+            self.roles.refresh_tasks(units)
             if self.knowledge.known_enemy_units_mobile.exists:
                 target = self.knowledge.known_enemy_units_mobile.center
             else:
@@ -56,4 +58,3 @@ class PlanHallucination(ActBase):
         self.roles.set_task(UnitTask.Hallucination, unit)
         self.knowledge.lost_units_manager.hallucination_tags.append(unit.tag)
         self.print(f"{unit.type_id.name} {unit.tag} detected as hallucination")
-

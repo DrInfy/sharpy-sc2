@@ -23,12 +23,13 @@ CREEP_TUMOR_MAX_RANGE = 8  # not sure about this
 tumors = {UnitTypeId.CREEPTUMOR, UnitTypeId.CREEPTUMORBURROWED, UnitTypeId.CREEPTUMORQUEEN}
 areas = {BuildArea.Empty, BuildArea.Ramp, BuildArea.BuildingPadding}
 
+
 class SpreadCreep(ActBase):
     def __init__(self):
         self.building_solver: BuildingSolver = None
         super().__init__()
 
-    async def start(self, knowledge: 'Knowledge'):
+    async def start(self, knowledge: "Knowledge"):
         self.building_solver = knowledge.building_solver
         return await super().start(knowledge)
 
@@ -63,9 +64,8 @@ class SpreadCreep(ActBase):
         idle_queens = all_queens.idle
 
         for queen in idle_queens:  # type: Unit
-            if (
-                self.knowledge.cooldown_manager.is_ready(queen.tag, AbilityId.BUILD_CREEPTUMOR_QUEEN)
-                and (queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4)
+            if self.knowledge.cooldown_manager.is_ready(queen.tag, AbilityId.BUILD_CREEPTUMOR_QUEEN) and (
+                queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4
             ):
                 position = self.get_next_plant_position(queen)
                 self.do(queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position))
@@ -84,10 +84,9 @@ class SpreadCreep(ActBase):
             distance = distance_interval[0] + random.random() * (distance_interval[1] - distance_interval[0])
             next_pos = pos.towards_with_random_angle(towards, distance).rounded
 
-            if (
-                    self.building_solver.grid.query_area(next_pos, BlockerType.Building1x1, lambda g: g.Area in areas)
-                and self.ai.has_creep(next_pos)
-            ):
+            if self.building_solver.grid.query_area(
+                next_pos, BlockerType.Building1x1, lambda g: g.Area in areas
+            ) and self.ai.has_creep(next_pos):
 
                 if not close_tumors or close_tumors.closest_distance_to(next_pos) > 3:
                     return next_pos
@@ -97,14 +96,13 @@ class SpreadCreep(ActBase):
 
         # iterate a few times so we find a suitable position
         for i in range(10):
-            distance_interval = (CREEP_TUMOR_MAX_RANGE-3, CREEP_TUMOR_MAX_RANGE)
+            distance_interval = (CREEP_TUMOR_MAX_RANGE - 3, CREEP_TUMOR_MAX_RANGE)
             distance = distance_interval[0] + random.random() * (distance_interval[1] - distance_interval[0])
             next_pos = tumor.position.towards_with_random_angle(towards, distance).rounded
 
-            if (
-                    self.building_solver.grid.query_area(next_pos, BlockerType.Building1x1, lambda g: g.Area in areas)
-                and self.ai.has_creep(next_pos)
-            ):
+            if self.building_solver.grid.query_area(
+                next_pos, BlockerType.Building1x1, lambda g: g.Area in areas
+            ) and self.ai.has_creep(next_pos):
 
                 close_tumors = self.cache.own_in_range(next_pos, 3).of_type(tumors)
                 if not close_tumors:
@@ -112,4 +110,3 @@ class SpreadCreep(ActBase):
 
         # suitable position not found
         return None
-

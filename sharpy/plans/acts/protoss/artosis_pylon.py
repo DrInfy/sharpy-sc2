@@ -34,4 +34,3 @@ class ArtosisPylon(GridBuilding):
                 best_position = point
 
         return best_position
-

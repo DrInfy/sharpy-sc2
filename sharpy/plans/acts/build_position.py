@@ -8,7 +8,6 @@ from sc2.unit import Unit
 
 
 class BuildPosition(ActBase):
-
     def __init__(self, unit_type: UnitTypeId, position: Point2, exact: bool = True, only_once: bool = False):
         super().__init__()
         self.exact = exact
@@ -21,7 +20,7 @@ class BuildPosition(ActBase):
         if self.position is None:
             return True
 
-        for building in self.cache.own(self.unit_type): # type: Unit
+        for building in self.cache.own(self.unit_type):  # type: Unit
             if building.distance_to(self.position) < 2:
                 if self.only_once:
                     self.position = None
@@ -39,19 +38,20 @@ class BuildPosition(ActBase):
                 position = self.position
 
             if position is not None:
-                self.print(f'Building {self.unit_type.name} to {position}')
+                self.print(f"Building {self.unit_type.name} to {position}")
                 self.do(worker.build(self.unit_type, position))
                 self.set_worker(worker)
             else:
-                self.print(f'Could not build {self.unit_type.name} to {position}')
+                self.print(f"Could not build {self.unit_type.name} to {position}")
         else:
             unit = self.ai._game_data.units[self.unit_type.value]
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
 
             d = worker.distance_to(position)
             time = d / worker.movement_speed
-            if self.ai.minerals - self.knowledge.reserved_minerals > (cost.minerals - 10 * time) \
-                    and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
+            if self.ai.minerals - self.knowledge.reserved_minerals > (
+                cost.minerals - 10 * time
+            ) and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
 
                 if worker is not None:
                     self.set_worker(worker)

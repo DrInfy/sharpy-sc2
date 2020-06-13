@@ -7,3 +7,4 @@ from .roach_hydra import RoachHydra
 from .mutalisk import MutaliskBot
 from .roach_rush import RoachRush
 from .zerg_random import RandomZergBot
+from .lurkers import LurkerBot

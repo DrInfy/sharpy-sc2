@@ -36,7 +36,7 @@ class ActMorphBuilding(ActBase):
         if fromUnits.ready.exists and self.knowledge.can_afford(self.ability_type):
             for builder in fromUnits.ready:
                 if len(builder.orders) == 0:
-                    self.knowledge.print(f'Tech started: {self.ability_type.name}')
+                    self.knowledge.print(f"Tech started: {self.ability_type.name}")
                     self.do(builder(self.ability_type))
                     return False
 
