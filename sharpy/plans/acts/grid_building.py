@@ -26,6 +26,7 @@ class GridBuilding(ActBuilding):
         iterator: Optional[int] = None,
         priority: bool = False,
         allow_wall: bool = True,
+        consider_worker_production: bool = True,
     ):
         super().__init__(unit_type, to_count)
         self.allow_wall = allow_wall
@@ -33,7 +34,7 @@ class GridBuilding(ActBuilding):
         self.priority = priority
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
-        self.consider_worker_production = True
+        self.consider_worker_production = consider_worker_production
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
