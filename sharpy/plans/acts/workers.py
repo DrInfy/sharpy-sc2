@@ -55,9 +55,7 @@ class Workers(ActBase):
 
         available_builders = builders.idle
         busy_builders = builders.tags_not_in(available_builders.tags)
-        minerals_available = self.knowledge.available_mineral
 
-        can_afford = math.floor(minerals_available / self.cost.minerals)
         supply_for = self.ai.supply_left
 
         income = self.knowledge.income_calculator.mineral_income
