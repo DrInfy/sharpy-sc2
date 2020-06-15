@@ -140,13 +140,18 @@ class LurkerBuild(BuildOrder):
     def max_workers_reached(self, knowledge: Knowledge) -> bool:
         count = 1
         for townhall in self.ai.townhalls:  # type: Unit
-            count += townhall.ideal_harvesters
+            if townhall.is_ready:
+                count += townhall.ideal_harvesters
+            else:
+                count += 8
         for gas in self.ai.gas_buildings:  # type: Unit
-            count += gas.ideal_harvesters
+            if gas.is_ready:
+                count += gas.ideal_harvesters
+            else:
+                count += 3
 
-        if len(knowledge.unit_cache.own(UnitTypeId.DRONE)) >= count:
+        if self.ai.supply_workers >= count:
             return True
-
         return False
 
 
