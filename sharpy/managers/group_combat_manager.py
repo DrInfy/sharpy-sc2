@@ -12,6 +12,13 @@ from sc2.unit import Unit
 import numpy as np
 from sklearn.cluster import DBSCAN
 
+# IMPORTANT, do NOT remove these. Used for pyinstaller to include all files.
+import sklearn.utils._cython_blas
+import sklearn.neighbors.typedefs
+import sklearn.neighbors.quad_tree
+import sklearn.tree
+import sklearn.tree._utils
+
 ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
 
 

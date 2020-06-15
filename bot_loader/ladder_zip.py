@@ -38,7 +38,7 @@ json = """{
 json_exe = """{
   "Bots": {
     "[NAME]": {
-      "Race": "Protoss",
+      "Race": "[RACE]",
       "Type": "cppwin32",
       "RootPath": "./",
       "FileName": "[NAME].exe",
@@ -72,12 +72,14 @@ class LadderZip:
 
         # Executable
         # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build
+
         self.pyinstaller = (
             'pyinstaller -y --add-data "[FOLDER]/sc2pathlibp'
             '";"sc2pathlibp/" --add-data "[FOLDER]/sc2";"sc2/" '
             '--add-data "[FOLDER]/config.ini";"." --add-data '
             '"[FOLDER]/version.txt";"."  '
             '"[FOLDER]/run.py" '
+            '--add-binary="C:\\Windows\\System32\\vcomp140.dll";"." '
             '-n "[NAME]" '
             '--distpath "[OUTPUTFOLDER]"'
         )
