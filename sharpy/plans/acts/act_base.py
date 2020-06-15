@@ -91,7 +91,8 @@ class ActBase(Component, ABC):
         pass
 
     def pending_build(self, unit_type: UnitTypeId) -> float:
-        return self.ai.already_pending(unit_type)
+        """ Only counts buildings that are commanded to be built, not ready builds are not included"""
+        return self.get_count(unit_type) - self.get_count(unit_type, include_pending=False)
 
     def pending_building_positions(self, unit_type: UnitTypeId) -> List[Point2]:
         """Returns positions of buildings of the specified type that have either been ordered to be built by a worker
