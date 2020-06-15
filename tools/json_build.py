@@ -8,8 +8,6 @@ from sc2.ids.upgrade_id import UpgradeId
 
 
 def main():
-    build_order = []
-    building_count = defaultdict(int)
     unit_count = defaultdict(int)
     with open("build_order.json", "r") as f:
         raw_order = json.load(f)
