@@ -20,7 +20,6 @@ class NoDoubleOrders(ActBase):
 
                 if self.last_cancel + 0.2 < self.ai.time:
                     self.knowledge.print("[DUPLICATE] " + "Cancelling!")
-                    # self.do(unit(AbilityId.CANCEL_QUEUEPASIVE))
                     self.do(unit(AbilityId.CANCEL_LAST))
                     self.last_cancel = self.ai.time
         return True
