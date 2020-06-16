@@ -13,7 +13,7 @@ building_ids = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
 class BuildId(ActBase):
     act: ActBase
 
-    def __init__(self, type_id: Union[UnitTypeId, int], to_count: int, priority: bool = False) -> None:
+    def __init__(self, type_id: Union[UnitTypeId, int], to_count: int, priority: bool = True) -> None:
         if type_id is int:
             self.type_id = UnitTypeId[type_id]
         else:
