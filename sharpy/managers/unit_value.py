@@ -434,6 +434,7 @@ class UnitValue(ManagerBase):
                 return 7
             if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
                 return 13
+            return 7  # ?
 
         def colossus_range(unit: Unit):
             if not unit.is_mine:
@@ -444,8 +445,7 @@ class UnitValue(ManagerBase):
 
             if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
                 return 9
-            else:
-                return 7
+            return 7
 
         self._ground_range_dict[UnitTypeId.LURKERMP] = lurker_range
         self._ground_range_dict[UnitTypeId.LURKERMPBURROWED] = lurker_range
