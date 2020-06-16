@@ -13,6 +13,8 @@ if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
     from sharpy.managers.group_combat_manager import GroupCombatManager
 
+ignored_types = {UnitTypeId.LARVA, UnitTypeId.EGG}
+
 changelings = {
     UnitTypeId.CHANGELING,
     UnitTypeId.CHANGELINGMARINE,
@@ -194,6 +196,9 @@ class DefaultMicroMethods:
         best_target: Optional[Unit] = None
         best_score: float = 0
         for enemy in enemies:  # type: Unit
+            if enemy.type_id in ignored_types:
+                continue
+
             if not step.is_target(enemy):
                 continue
 
@@ -255,6 +260,9 @@ class DefaultMicroMethods:
         best_score: float = 0
 
         for enemy in close_enemies:  # type: Unit
+            if enemy.type_id in ignored_types:
+                continue
+
             if enemy.is_flying:
                 continue
 
