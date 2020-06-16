@@ -18,3 +18,4 @@ from .position_building import PositionBuilding
 from .reserve import Reserve
 from .tech import Tech, ActTech
 from .workers import Workers
+from .auto_worker import AutoWorker
