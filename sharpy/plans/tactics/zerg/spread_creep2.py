@@ -194,8 +194,6 @@ class SpreadCreepV2(ActBase):
             self.queen_plant_location_cache[queen.tag] = queen_pos
             return queen_pos
 
-        self.print(f"Could not find a creep tumor location for queen {queen}")
-
     def get_next_creep_tumor_position(self, tumor: Unit) -> Optional[Point2]:
         """ Tries to find a suitable position for tumors to move to next. """
         tumor_pos: Point2 = tumor.position
