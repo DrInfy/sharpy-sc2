@@ -222,10 +222,7 @@ class SpreadCreepV2(ActBase):
             distance = distance_interval[0] + random.random() * (distance_interval[1] - distance_interval[0])
             next_pos = tumor.position.towards_with_random_angle(towards, distance).rounded
 
-            if self.building_solver.grid.query_area(
-                next_pos, BlockerType.Building1x1, lambda g: g.Area in areas
-            ) and self.ai.has_creep(next_pos):
-
+            if self.is_placeable(next_pos):
                 close_tumors = self.cache.own_in_range(next_pos, 3).of_type(tumors)
                 if not close_tumors:
                     return next_pos
