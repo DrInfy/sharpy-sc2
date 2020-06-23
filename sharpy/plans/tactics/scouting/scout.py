@@ -67,7 +67,7 @@ class Scout(SubActs):
         self.index = self.index % count
 
         for looped in range(0, count):
-            if looped == count:
+            if looped == count - 1:
                 self.ended = True
                 return True
             # noinspection PyTypeChecker
