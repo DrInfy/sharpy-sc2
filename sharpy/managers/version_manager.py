@@ -7,6 +7,7 @@ from sharpy.managers import ManagerBase
 
 
 class GameVersion(IntEnum):
+    V_4_12_0 = 80188
     V_4_11_4 = 78285
     V_4_11_0 = 77379
     V_4_10_0 = 75689
