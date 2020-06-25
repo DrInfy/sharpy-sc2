@@ -49,7 +49,7 @@ OTHER_ADDON = {
 
 class PlanAddonSwap(ActBase):
     """
-    Plans the addon swap, reserved landing locations and addons to not be built by the GridBuilding() act.
+    Plans the addon swap, reserves landing locations and addons to not be built by the GridBuilding() act.
     """
 
     def __init__(
