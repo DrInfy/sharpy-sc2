@@ -14,6 +14,7 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
+from sc2.constants import EQUIVALENTS_FOR_TECH_PROGRESS
 from sharpy.managers.roles import UnitTask
 
 build_commands = {
@@ -176,29 +177,8 @@ class ActBase(Component, ABC):
         return count
 
     def related_count(self, count, unit_type):
-        if unit_type == UnitTypeId.SPIRE:
-            count += self.cache.own(UnitTypeId.GREATERSPIRE).amount
-        if unit_type == UnitTypeId.WARPGATE:
-            count += self.cache.own(UnitTypeId.GATEWAY).amount
-        if unit_type == UnitTypeId.WARPPRISM:
-            count += self.cache.own(UnitTypeId.WARPPRISMPHASING).amount
-        if unit_type == UnitTypeId.LAIR:
-            count += self.cache.own(UnitTypeId.HIVE).amount
-        if unit_type == UnitTypeId.GATEWAY:
-            count += self.cache.own(UnitTypeId.WARPGATE).amount
-        if unit_type == UnitTypeId.COMMANDCENTER:
-            count += self.cache.own(UnitTypeId.ORBITALCOMMAND).amount
-            count += self.cache.own(UnitTypeId.PLANETARYFORTRESS).amount
-        if unit_type == UnitTypeId.HATCHERY:
-            count += self.cache.own(UnitTypeId.LAIR).amount
-            count += self.cache.own(UnitTypeId.HIVE).amount
-        if unit_type == UnitTypeId.SUPPLYDEPOT:
-            count += self.cache.own(UnitTypeId.SUPPLYDEPOTDROP).amount
-            count += self.cache.own(UnitTypeId.SUPPLYDEPOTLOWERED).amount
-        if unit_type == UnitTypeId.SIEGETANK:
-            count += self.cache.own(UnitTypeId.SIEGETANKSIEGED).amount
-        if unit_type == UnitTypeId.VIKINGFIGHTER:
-            count += self.cache.own(UnitTypeId.VIKINGASSAULT).amount
+        if unit_type in EQUIVALENTS_FOR_TECH_PROGRESS:
+            count += self.cache.own(EQUIVALENTS_FOR_TECH_PROGRESS[unit_type]).amount
         return count
 
     def get_worker_builder(self, position: Point2, priority_tag: int) -> Optional[Unit]:
