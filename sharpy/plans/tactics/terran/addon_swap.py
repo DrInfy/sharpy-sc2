@@ -78,9 +78,9 @@ class PlanAddonSwap(ActBase):
         self.force_move_to_naked = force_move_to_naked
 
         self.production_with_addon: Dict[UnitTypeId, Dict[Optional[UnitTypeId], Units]] = {
-            UnitTypeId.BARRACKS: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None,},
-            UnitTypeId.FACTORY: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None,},
-            UnitTypeId.STARPORT: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None,},
+            UnitTypeId.BARRACKS: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
+            UnitTypeId.FACTORY: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
+            UnitTypeId.STARPORT: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
         }
         self.free_techlab_locations: Set[Point2] = set()
         self.free_reactor_locations: Set[Point2] = set()
