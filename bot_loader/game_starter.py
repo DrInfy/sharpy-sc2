@@ -94,6 +94,7 @@ class GameStarter:
         return map_list
 
     def play(self):
+        # noinspection PyTypeChecker
         parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description="Run a game with custom parameters.",
@@ -134,6 +135,9 @@ Builds:
             "-r", "--release", help="Use only release config and ignore config local.", action="store_true"
         )
         parser.add_argument("-raw", "--raw_selection", help="Raw affects selection.", action="store_true")
+        parser.add_argument(
+            "--port", help="starting port to use, i.e. 10 would result in ports 10-17 being used to play."
+        )
 
         args = parser.parse_args()
 
@@ -206,6 +210,7 @@ Builds:
             realtime=args.real_time,
             game_time_limit=(30 * 60),
             save_replay_as=f"{folder}/{file_name}.SC2Replay",
+            start_port=args.port,
         )
 
         # release file handle
