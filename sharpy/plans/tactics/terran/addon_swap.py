@@ -68,7 +68,7 @@ class PlanAddonSwap(ActBase):
                 UnitTypeId.REACTOR: barracks_reactor_count,
                 UnitTypeId.TECHLAB: barracks_techlab_count,
             },
-            UnitTypeId.FACTORY: {UnitTypeId.REACTOR: factory_reactor_count, UnitTypeId.TECHLAB: factory_techlab_count,},
+            UnitTypeId.FACTORY: {UnitTypeId.REACTOR: factory_reactor_count, UnitTypeId.TECHLAB: factory_techlab_count},
             UnitTypeId.STARPORT: {
                 UnitTypeId.REACTOR: starport_reactor_count,
                 UnitTypeId.TECHLAB: starport_techlab_count,
