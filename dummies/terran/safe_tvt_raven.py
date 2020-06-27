@@ -145,7 +145,9 @@ class TerranSafeTvT(KnowledgeBot):
             # Once stim and combatshield is researched, have a 5-2-1 setup
             Step(
                 None,
-                PlanAddonSwap(barracks_reactor_count=5, factory_techlab_count=2, starport_reactor_count=1),
+                PlanAddonSwap(
+                    barracks_reactor_count=5, factory_techlab_count=2, starport_reactor_count=1, only_once=False
+                ),
                 skip_until=TechReady(UpgradeId.SHIELDWALL),
             ),
         ]

@@ -61,8 +61,14 @@ class PlanAddonSwap(ActBase):
         starport_techlab_count: int = 0,
         starport_reactor_count: int = 0,
         force_move_to_naked: bool = False,
+        only_once: bool = True,
     ):
         super().__init__()
+
+        self.completed = False
+        # As soon as all structures were satisfied with addons once, do not run this plan ever again
+        self.only_once = only_once
+
         self.desired_amount = {
             UnitTypeId.BARRACKS: {
                 UnitTypeId.REACTOR: barracks_reactor_count,
@@ -99,9 +105,15 @@ class PlanAddonSwap(ActBase):
         await super().start(knowledge)
 
     async def execute(self) -> bool:
+        if self.only_once and self.completed:
+            return True
         await self.update_units()
+        await self.check_if_plan_is_completed()
+        if self.completed:
+            return True
         await self.plan_addon_swaps()
-        return True
+        # Block if structures are not satisfied
+        return False
 
     async def update_units(self):
         self.locations_with_addon[UnitTypeId.TECHLAB] = {
@@ -146,6 +158,19 @@ class PlanAddonSwap(ActBase):
 
         all_production = self.knowledge.unit_cache.own(ALL_PRODUCTION_TYPES)
         self.structures_at_positions = {unit.position: unit for unit in all_production}
+
+    async def check_if_plan_is_completed(self):
+        """ Checks if all structures are satisfied with their addon count. """
+        self.completed = True
+
+        for production_type in PRODUCTION_TYPES:
+            for addon_type in ADDON_TYPES:
+                if (
+                    self.production_with_addon[production_type][addon_type].amount
+                    < self.desired_amount[production_type][addon_type]
+                ):
+                    self.completed = False
+                    return
 
     async def plan_addon_swaps(self):
         """ Main function which first tries to move structures away from addons, then attaches them. """
