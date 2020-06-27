@@ -172,7 +172,11 @@ class ActBase(Component, ABC):
         count = self.related_count(count, unit_type)
 
         if include_killed:
-            count += self.knowledge.lost_units_manager.own_lost_type(unit_type)
+            count += self.knowledge.lost_units_manager.own_lost_type(unit_type, real_type=False)
+            related = EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_type, None)
+            if related:
+                for related_type in related:
+                    count += self.knowledge.lost_units_manager.own_lost_type(related_type, real_type=False)
 
         return count
 

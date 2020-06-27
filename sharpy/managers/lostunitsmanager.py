@@ -59,13 +59,15 @@ class LostUnitsManager(ManagerBase):
         """Calculates lost resources for an enemy. Returns a tuple with (unit_count, minerals, gas)."""
         return self._calculate_lost_resources(self._enemy_lost_units)
 
-    def own_lost_type(self, unit_type: UnitTypeId) -> int:
-        real_type = self.unit_values.real_type(unit_type)
-        return len(self._my_lost_units.get(real_type, []))
+    def own_lost_type(self, unit_type: UnitTypeId, real_type=True) -> int:
+        if real_type:
+            unit_type = self.unit_values.real_type(unit_type)
+        return len(self._my_lost_units.get(unit_type, []))
 
-    def enemy_lost_type(self, unit_type: UnitTypeId) -> int:
-        real_type = self.unit_values.real_type(unit_type)
-        return len(self._enemy_lost_units.get(real_type, []))
+    def enemy_lost_type(self, unit_type: UnitTypeId, real_type=True) -> int:
+        if real_type:
+            unit_type = self.unit_values.real_type(unit_type)
+        return len(self._enemy_lost_units.get(unit_type, []))
 
     def _calculate_lost_resources(self, lost_units: Dict[UnitTypeId, List[Unit]]) -> tuple:
         lost_minerals = 0
