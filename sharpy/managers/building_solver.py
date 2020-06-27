@@ -2,7 +2,7 @@ import enum
 import logging
 import math
 from math import floor
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Set
 
 from s2clientprotocol.debug_pb2 import Color
 
@@ -148,6 +148,13 @@ class BuildingSolver(ManagerBase):
             WallFinder(Point2((4, 2)), Point2((-1, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
             WallFinder(Point2((-4, -2)), Point2((1, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
         ]
+
+        # Addon swap variables
+        self.free_addon_locations: Set[Point2] = set()
+        # Structures that are planned to move to target location - if the structure dies, remove its tag from the dictionary and remove the target location from 'self.reserved_landing_locations'
+        # TODO Remove structure if it dies while swapping, add free techlaab / reactor location if it dies
+        # TODO Don't queue new units in the structure if an addon swap is planned
+        self.structure_target_move_location: Dict[int, Point2] = {}
 
     @property
     def pylon_position(self) -> List[Point2]:

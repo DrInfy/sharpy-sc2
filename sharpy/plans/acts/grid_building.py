@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Set
 
 from sharpy.sc2math import to_new_ticks
 from sc2.ids.buff_id import BuffId
@@ -212,10 +212,19 @@ class GridBuilding(ActBuilding):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
+            reserved_landing_locations: Set[Point2] = set(
+                self.knowledge.building_solver.structure_target_move_location.values()
+            )
             for point in self.building_solver.building_position:
                 if not self.allow_wall:
                     if point in self.building_solver.wall_buildings:
                         continue
+                # If a structure is landing here from AddonSwap() then dont use this location
+                if point in reserved_landing_locations:
+                    continue
+                # If this location has a techlab or reactor next to it, then don't create a new structure here
+                if point in self.knowledge.building_solver.free_addon_locations:
+                    continue
                 if not buildings.closer_than(1, point):
                     return point
 
