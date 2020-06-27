@@ -5,3 +5,4 @@ from .man_the_bunkers import ManTheBunkers
 from .repair import Repair
 from .scan_enemy import ScanEnemy
 from .zone_gather_terran import PlanZoneGatherTerran
+from .addon_swap import PlanAddonSwap, ExecuteAddonSwap
