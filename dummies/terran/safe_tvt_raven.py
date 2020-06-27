@@ -69,8 +69,14 @@ class TerranSafeTvT(KnowledgeBot):
             BuildOrder(
                 TerranUnit(UnitTypeId.CYCLONE, 1, only_once=True),
                 TerranUnit(UnitTypeId.RAVEN, 2, only_once=True),
-                Step(UnitExists(UnitTypeId.CYCLONE), TerranUnit(UnitTypeId.SIEGETANK, 5, only_once=True),),
-                Step(UnitExists(UnitTypeId.RAVEN, 2), TerranUnit(UnitTypeId.VIKINGFIGHTER, 6, only_once=True),),
+                Step(
+                    UnitExists(UnitTypeId.CYCLONE, include_killed=True),
+                    TerranUnit(UnitTypeId.SIEGETANK, 5, only_once=True),
+                ),
+                Step(
+                    UnitExists(UnitTypeId.RAVEN, 2, include_killed=True),
+                    TerranUnit(UnitTypeId.VIKINGFIGHTER, 6, only_once=True),
+                ),
             ),
             # Late game units
             BuildOrder(
