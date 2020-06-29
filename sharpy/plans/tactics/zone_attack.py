@@ -297,11 +297,9 @@ class PlanZoneAttack(ActBase):
 
         best_zone = None
         best_score = 100000
-
+        start_position = self.knowledge.gather_point
         if self.knowledge.roles.attacking_units:
             start_position = self.knowledge.roles.attacking_units.center
-        else:
-            return None
 
         for zone in enemy_zones:  # type: Zone
             not_like_points = zone.center_location.distance_to(start_position)
