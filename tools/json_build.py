@@ -33,6 +33,8 @@ def main():
     unit_count[worker] = 12
     unit_count[townhall] = 1
 
+    text_timings = "WarnBuildMacro(["
+
     text = ""
     last_line: Optional[str] = None
     last_id: Optional[Union[UnitTypeId, UpgradeId]] = None
@@ -45,6 +47,8 @@ def main():
             id = UnitTypeId(order["id"])
             unit_count[id] += 1
             line += f"BuildId({str(id)}, to_count={unit_count[id]})"
+            if order["type"] == "structure":
+                text_timings += f"({str(id)}, {unit_count[id]}, {order['frame'] // 22.4}),"
         elif order["type"] == "upgrade":
             id = UpgradeId(order["id"])
             line += f"Tech({str(id)})"
@@ -58,16 +62,15 @@ def main():
         line += ","
 
         if last_line is not None and (last_id is None or last_id != id):
-            print(last_line)
             text += last_line + "\n"
 
         last_line = line
         last_id = id
 
-    print(last_line)
     text += last_line + "\n"
-
-    # print(text)
+    text_timings += "], []),"
+    print(text_timings)
+    print(text)
 
 
 def action_replacement_dict() -> Dict[str, str]:
