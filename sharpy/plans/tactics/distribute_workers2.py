@@ -29,26 +29,38 @@ class WorkStatus:
 class PlanDistributeWorkersV2(ActBase):
     """Handles idle workers and worker distribution."""
 
-    def __init__(self, min_gas: Optional[int] = None, max_gas: Optional[int] = None):
+    def __init__(
+        self,
+        min_gas: Optional[int] = None,
+        max_gas: Optional[int] = None,
+        aggressive_gas_fill: bool = True,
+        evacuate_zones: bool = True,
+    ):
         super().__init__()
         assert min_gas is None or isinstance(min_gas, int)
         assert max_gas is None or isinstance(max_gas, int)
 
         self.min_gas = min_gas
         self.max_gas = max_gas
-
+        self.aggressive_gas_fill = aggressive_gas_fill
+        # evacuate
+        self.evacuate_zones = evacuate_zones
         self.active_gas_workers = 0
         self.roles: UnitRoleManager = None
-        self.force_work = False
+        # self.force_work = False
         # workplace tag to tags of workers there
         self.worker_dict: Dict[int, List[int]] = dict()
         self.work_queue: List[WorkStatus] = []
+        self.gas_workers_target = 0
+        self.gas_workers_max = 0
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.roles = knowledge.roles
 
     async def execute(self) -> bool:
+        self.gas_workers_target = self.calc_gas_workers_target()
+        self.gas_workers_max = len(self.safe_active_gas_buildings) * 3
         self.worker_dict.clear()
         self.calculate_workers()
         self.generate_worker_queue()
@@ -66,6 +78,17 @@ class PlanDistributeWorkersV2(ActBase):
             if status.available < 0:
                 work_status = status
                 break
+
+        if (
+            self.aggressive_gas_fill
+            and not work_status
+            and self.gas_workers_target < min(self.gas_workers_target, self.gas_workers_max)
+        ):
+            # Assign work
+            for status in self.work_queue[::-1]:
+                if status.unit.type_id in buildings_5x5 and status.unit.assigned_harvesters > 0:
+                    work_status = status
+                    break
 
         if work_status:
             tags = self.worker_dict.get(work_status.unit.tag, [])
@@ -99,7 +122,20 @@ class PlanDistributeWorkersV2(ActBase):
         return result
 
     @property
-    def gas_workers_target(self) -> int:
+    def safe_active_gas_buildings(self) -> Units:
+        """All gas buildings that are on a safe zone and could use more workers."""
+        result = Units([], self.ai)
+
+        for zone in self.knowledge.our_zones:  # type: Zone
+            if zone.is_under_attack:
+                continue
+
+            filtered = filter(lambda g: g.has_vespene, zone.gas_buildings)
+            result.extend(filtered)
+
+        return result
+
+    def calc_gas_workers_target(self) -> int:
         """Target count for workers harvesting gas."""
         worker_count = self.knowledge.roles.free_workers.amount
         max_workers_at_gas = self.active_gas_buildings.amount * MAX_WORKERS_PER_GAS
@@ -161,13 +197,13 @@ class PlanDistributeWorkersV2(ActBase):
 
             current_workers = len(self.worker_dict.get(building.tag, []))
             zone = self.zone_manager.zone_manager.zone_for_unit(building)
-            if zone and zone.needs_evacuation:
+            if self.evacuate_zones and zone and zone.needs_evacuation:
                 # Exit workers from the zone
                 self.work_queue.append(WorkStatus(building, -current_workers * 10, True))
             elif building.has_vespene:
-                self.active_gas_workers += 1
                 # One worker should be inside the gas
                 harvesters = min(building.assigned_harvesters, current_workers + 1)
+                self.active_gas_workers += harvesters
                 self.work_queue.append(WorkStatus(building, building.ideal_harvesters - harvesters))
             else:
                 self.zone_manager.zone_for_unit(building)
