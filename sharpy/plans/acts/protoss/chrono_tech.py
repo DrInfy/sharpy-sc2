@@ -19,7 +19,7 @@ class ChronoTech(ActBase):
         # if ai.already_pending_upgrade(self.name):
         target: Unit
         for target in self.cache.own(self.from_building).ready:
-            if target.orders and target.orders[0].ability.id == self.name:
+            if target.orders and target.orders[0].ability.exact_id == self.name:
                 # boost here!
                 if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                     for nexus in self.cache.own(UnitTypeId.NEXUS):
