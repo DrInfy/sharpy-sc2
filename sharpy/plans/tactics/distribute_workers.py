@@ -75,7 +75,7 @@ class DistributeWorkers(ActBase):
 
         # Balance workers in bases that have to many
         work_status: Optional[WorkStatus] = None
-        for status in self.work_queue[::-1]:
+        for status in self.work_queue:
             if status.available < 0:
                 work_status = status
                 break
@@ -86,7 +86,7 @@ class DistributeWorkers(ActBase):
             and self.gas_workers_target < min(self.gas_workers_target, self.gas_workers_max)
         ):
             # Assign work
-            for status in self.work_queue[::-1]:
+            for status in self.work_queue:
                 if status.unit.type_id in buildings_5x5 and status.unit.assigned_harvesters > 0:
                     work_status = status
                     break
@@ -99,7 +99,6 @@ class DistributeWorkers(ActBase):
                     assign_worker = assign_workers.furthest_to(work_status.unit)
                     await self.set_work(assign_worker, work_status)
 
-        # TODO: Force Assign workers to gas as needed. Setting perhaps for this?
         return True
 
     @property
@@ -200,7 +199,7 @@ class DistributeWorkers(ActBase):
             zone = self.zone_manager.zone_manager.zone_for_unit(building)
             if self.evacuate_zones and zone and zone.needs_evacuation:
                 # Exit workers from the zone
-                self.work_queue.append(WorkStatus(building, -current_workers * 10, True))
+                self.work_queue.append(WorkStatus(building, -current_workers * 100, True))
             elif building.has_vespene:
                 # One worker should be inside the gas
                 harvesters = min(building.assigned_harvesters, current_workers + 1)
@@ -215,13 +214,18 @@ class DistributeWorkers(ActBase):
             def sort_method(tpl: WorkStatus):
                 if tpl.unit.type_id in buildings_5x5:
                     return tpl.available
-                return tpl.available * 100
+                return tpl.available * 10
+
+        elif self.active_gas_workers < self.gas_workers_target:
+
+            def sort_method(tpl: WorkStatus):
+                if tpl.unit.type_id in buildings_5x5:
+                    return tpl.available * 10
+                return tpl.available
 
         else:
 
             def sort_method(tpl: WorkStatus):
-                if tpl.unit.type_id in buildings_5x5:
-                    return tpl.available * 100
                 return tpl.available
 
         self.work_queue.sort(key=sort_method)
@@ -229,7 +233,7 @@ class DistributeWorkers(ActBase):
         # for queue in self.work_queue:
         #     self.print(f"Queue: {queue.unit.type_id.name} {queue.unit.tag}: {queue.available}")
 
-    async def set_work(self, worker, last_work_status: Optional[WorkStatus] = None):
+    async def set_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None):
         if last_work_status:
             typename = last_work_status.unit.type_id.name
             self.print(
@@ -254,9 +258,12 @@ class DistributeWorkers(ActBase):
         return True  # Always non-blocking
 
     def get_new_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None) -> Optional[Unit]:
-        current_work: WorkStatus = None
+        current_work: Optional[WorkStatus] = None
 
-        for status in self.work_queue:
+        for status in self.work_queue[::-1]:
+            if status == last_work_status:
+                continue
+
             if status.unit.has_vespene:
                 if status.available > 0:
                     current_work = status
@@ -267,7 +274,8 @@ class DistributeWorkers(ActBase):
                     break
 
                 if current_work is None:
-                    current_work = status
+                    if last_work_status is None or last_work_status.force_exit:
+                        current_work = status
                 else:
                     if current_work.available == status.available and current_work.unit.distance_to(
                         worker
