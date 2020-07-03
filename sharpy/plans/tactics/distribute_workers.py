@@ -147,7 +147,7 @@ class DistributeWorkers(ActBase):
         if self.max_gas is not None:
             estimate = min(estimate, self.max_gas)
 
-        return min(max_workers_at_gas, estimate)
+        return max(0, min(max_workers_at_gas, estimate))
 
     def add_worker(self, worker: Unit, target: Unit):
         worker_list = self.worker_dict.get(target.tag, [])
@@ -196,7 +196,7 @@ class DistributeWorkers(ActBase):
                 continue
 
             current_workers = len(self.worker_dict.get(building.tag, []))
-            zone = self.zone_manager.zone_manager.zone_for_unit(building)
+            zone = self.zone_manager.zone_for_unit(building)
             if self.evacuate_zones and zone and zone.needs_evacuation:
                 # Exit workers from the zone
                 self.work_queue.append(WorkStatus(building, -current_workers * 100, True))
@@ -209,14 +209,14 @@ class DistributeWorkers(ActBase):
                 self.zone_manager.zone_for_unit(building)
                 self.work_queue.append(WorkStatus(building, building.ideal_harvesters - current_workers))
 
-        if self.active_gas_workers > self.gas_workers_target:
+        if self.active_gas_workers < self.gas_workers_target:
 
             def sort_method(tpl: WorkStatus):
                 if tpl.unit.type_id in buildings_5x5:
                     return tpl.available
                 return tpl.available * 10
 
-        elif self.active_gas_workers < self.gas_workers_target:
+        elif self.active_gas_workers > self.gas_workers_target:
 
             def sort_method(tpl: WorkStatus):
                 if tpl.unit.type_id in buildings_5x5:
