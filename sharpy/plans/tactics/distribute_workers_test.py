@@ -8,7 +8,7 @@ import pytest
 from unittest import mock
 
 from sc2 import UnitTypeId, Race, BotAI, AbilityId
-from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE
+from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE, IS_MINE
 from sc2.distances import DistanceCalculation
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.pixel_map import PixelMap
@@ -19,6 +19,7 @@ from sc2.units import Units
 from .distribute_workers import DistributeWorkers
 from ...general.zone import Zone
 from ...knowledges import Knowledge, KnowledgeBot
+from ...managers.roles import UnitTask
 from ...managers.unit_value import BUILDING_IDS
 
 MAIN_POINT = Point2((10, 10))
@@ -29,9 +30,10 @@ ENEMY_NATURAL_POINT = Point2((90, 40))
 
 def mock_ai() -> BotAI:
     ai = BotAI()
+    ai.unit_command_uses_self_do = True
     ai._initialize_variables()
     # ai = mock.Mock(bot_object)
-    ai.distance_calculation_method = 1
+    ai._distances_override_functions(0)
     ai.actions = []
     ai.config = {"general": mock.Mock(), "debug_log": mock.Mock()}
     ai.config["general"].getboolean = lambda x: False
@@ -66,8 +68,8 @@ def mock_ai() -> BotAI:
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].has_minerals = True
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].attributes = {}
     ai._game_data.units[UnitTypeId.PROBE.value].attributes = {}
-    ai._game_data.abilities = {AbilityId.HARVEST_GATHER_PROBE.value: mock.Mock()}
-    ai._game_data.abilities[AbilityId.HARVEST_GATHER_PROBE.value].id = AbilityId.HARVEST_GATHER_PROBE
+    ai._game_data.abilities = {AbilityId.HARVEST_GATHER.value: mock.Mock()}
+    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value].id = AbilityId.HARVEST_GATHER
 
     for typedata in BUILDING_IDS:
         ai._game_data.units[typedata.value] = mock.Mock()
@@ -100,6 +102,8 @@ async def mock_knowledge(ai) -> Knowledge:
         [p1, p2],
         math.hypot(p1[0] - p2[0], p1[1] - p2[1]),
     )
+
+    knowledge._all_own = ai.all_own_units
 
     await knowledge.roles.start(knowledge)
     await knowledge.unit_cache.start(knowledge)
@@ -143,19 +147,31 @@ def mock_unit(ai, type_id: UnitTypeId, position: Point2) -> Unit:
         proto_mock.assigned_harvesters = 0
         proto_mock.ideal_harvesters = 16
         ai.townhalls.append(unit)
-        ai.all_units.append(unit)
 
     if type_id in ALL_GAS:
         ai.gas_buildings.append(unit)
 
     if unit.is_structure:
+        proto_mock.health = 400  # Whatever
+        proto_mock.health_max = 400  # Whatever
+        proto_mock.shield = 400
+        proto_mock.shield_max = 400
         ai.structures.append(unit)
         proto_mock.build_progress = 1
+        ai.all_own_units.append(unit)
+        proto_mock.alliance = IS_MINE
 
     if type_id in {UnitTypeId.PROBE}:
+        proto_mock.health = 20
+        proto_mock.health_max = 20
+        proto_mock.shield = 20
+        proto_mock.shield_max = 20
         ai.units.append(unit)
         ai.workers.append(unit)
-        ai.all_units.append(unit)
+        ai.all_own_units.append(unit)
+        proto_mock.alliance = IS_MINE
+
+    ai.all_units.append(unit)
 
     return unit
 
@@ -181,7 +197,7 @@ class TestDistributeWorkers:
         distribute_workers = DistributeWorkers()
         ai = mock_ai()
 
-        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
 
         worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
 
@@ -251,7 +267,7 @@ class TestDistributeWorkers:
         nexus1._proto.assigned_harvesters = 0
         nexus1._proto.ideal_harvesters = 16
 
-        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+        mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
 
         worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
         ai.units.append(worker1)
@@ -275,7 +291,7 @@ class TestDistributeWorkers:
         nexus1._proto.assigned_harvesters = 16
         nexus1._proto.ideal_harvesters = 16
 
-        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+        mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
 
         worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
         ai.units.append(worker1)
@@ -296,12 +312,14 @@ class TestDistributeWorkers:
         ai = mock_ai()
 
         nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
-        nexus2 = mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
+        nexus1._proto.assigned_harvesters = 1
+
+        mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
 
         worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
-        set_fake_order(worker1, AbilityId.HARVEST_GATHER_PROBE, ai.mineral_field[0].tag)
+        set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
         knowledge = await mock_knowledge(ai)
-        knowledge.roles.set_task(0, worker1)
+        knowledge.roles.set_task(UnitTask.Gathering, worker1)
         knowledge.expansion_zones[0].needs_evacuation = True
         await distribute_workers.start(knowledge)
         await distribute_workers.execute()
@@ -309,18 +327,133 @@ class TestDistributeWorkers:
         assert ai.actions[0].unit.tag == worker1.tag
         assert ai.actions[0].target.tag == ai.mineral_field[1].tag
 
-    # @pytest.mark.asyncio
-    # async def test_assign_surplus_to_gas(self):
-    #     assert False
-    #
-    # @pytest.mark.asyncio
-    # async def test_assign_surplus_to_nexus(self):
-    #     assert False
-    #
-    # @pytest.mark.asyncio
-    # async def test_force_assign_to_gas(self):
-    #     assert False
-    #
-    # @pytest.mark.asyncio
-    # async def test_do_not_send_excess_workers(self):
-    #     assert False
+    @pytest.mark.asyncio
+    async def test_assign_surplus_to_gas(self):
+        distribute_workers = DistributeWorkers(aggressive_gas_fill=True)
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 17
+
+        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+
+        assert len(ai.actions) == 1
+        assert ai.actions[0].target.tag == gas.tag
+
+    @pytest.mark.asyncio
+    async def test_assign_surplus_to_nexus(self):
+        distribute_workers = DistributeWorkers()
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 17
+
+        nexus2 = mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
+        nexus2._proto.assigned_harvesters = 14
+
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        for i in range(0, 14):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 60)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[1].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+        assert len(ai.actions) > 0
+        assert ai.actions[0].target.tag == ai.mineral_field[1].tag
+
+    @pytest.mark.asyncio
+    async def test_force_assign_to_gas(self):
+        distribute_workers = DistributeWorkers(aggressive_gas_fill=True)
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 14
+
+        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+
+        for i in range(0, 14):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+
+        assert len(ai.actions) == 1
+        assert ai.actions[0].target.tag == gas.tag
+
+    @pytest.mark.asyncio
+    async def test_no_force_assign_to_gas(self):
+        distribute_workers = DistributeWorkers(aggressive_gas_fill=False)
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 14
+
+        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+
+        for i in range(0, 14):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+
+        assert len(ai.actions) == 0
+
+    @pytest.mark.asyncio
+    async def test_do_not_send_excess_workers(self):
+        distribute_workers = DistributeWorkers()
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 17
+
+        nexus2 = mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
+        nexus2._proto.assigned_harvesters = 16
+
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        for i in range(0, 16):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 60)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[1].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+        assert len(ai.actions) == 0

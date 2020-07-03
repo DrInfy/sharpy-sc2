@@ -76,14 +76,14 @@ class DistributeWorkers(ActBase):
         # Balance workers in bases that have to many
         work_status: Optional[WorkStatus] = None
         for status in self.work_queue:
-            if status.available < 0:
+            if status.available < 0 or status.force_exit:
                 work_status = status
                 break
 
         if (
             self.aggressive_gas_fill
             and not work_status
-            and self.gas_workers_target < min(self.gas_workers_target, self.gas_workers_max)
+            and self.active_gas_workers < min(self.gas_workers_target, self.gas_workers_max)
         ):
             # Assign work
             for status in self.work_queue:
