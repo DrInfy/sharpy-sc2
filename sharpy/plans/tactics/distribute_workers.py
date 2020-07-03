@@ -258,7 +258,7 @@ class DistributeWorkers(ActBase):
         return True  # Always non-blocking
 
     def get_new_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None) -> Optional[Unit]:
-        current_work: Optional[WorkStatus] = None
+        new_work: Optional[WorkStatus] = None
 
         for status in self.work_queue[::-1]:
             if status == last_work_status:
@@ -266,34 +266,34 @@ class DistributeWorkers(ActBase):
 
             if status.unit.has_vespene:
                 if status.available > 0:
-                    current_work = status
+                    new_work = status
                     break
             else:
                 if status.available > 0:
-                    current_work = status
+                    new_work = status
                     break
 
-                if current_work is None:
+                if new_work is None:
                     if last_work_status is None or last_work_status.force_exit:
-                        current_work = status
+                        new_work = status
                 else:
-                    if current_work.available == status.available and current_work.unit.distance_to(
+                    if new_work.available == status.available and new_work.unit.distance_to(
                         worker
                     ) > status.unit.distance_to(worker):
-                        current_work = status
+                        new_work = status
 
-        if current_work:
+        if new_work:
             if last_work_status:
-                if last_work_status.unit.tag == current_work.unit.tag:
+                if last_work_status.unit.tag == new_work.unit.tag:
                     # Don't move workers from one job to same job
                     return None
 
-                if current_work.available < 0 and not last_work_status.unit.has_vespene:
+                if new_work.available < 0 and not last_work_status.unit.has_vespene and not last_work_status.force_exit:
                     # Don't move workers from overcrowded mineral mining to another overcrowded mineral mining
                     return None
 
-            current_work.available -= 1
-            return current_work.unit
+            new_work.available -= 1
+            return new_work.unit
         return None
 
     def assign_to_work(self, worker: Unit, work: Unit):

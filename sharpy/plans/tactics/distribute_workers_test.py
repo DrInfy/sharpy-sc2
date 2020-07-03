@@ -316,6 +316,34 @@ class TestDistributeWorkers:
 
         mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
 
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 60)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[1].tag)
+
+        worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+        set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        knowledge = await mock_knowledge(ai)
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        knowledge.expansion_zones[0].needs_evacuation = True
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+        assert len(ai.actions) == 1
+        assert ai.actions[0].unit.tag == worker1.tag
+        assert ai.actions[0].target.tag == ai.mineral_field[1].tag
+
+    @pytest.mark.asyncio
+    async def test_force_evacuate_zone_nexus(self):
+        distribute_workers = DistributeWorkers()
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 1
+
+        mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT))
+
         worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
         set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
         knowledge = await mock_knowledge(ai)
