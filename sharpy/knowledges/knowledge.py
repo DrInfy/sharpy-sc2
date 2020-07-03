@@ -253,12 +253,12 @@ class Knowledge:
             ):
                 self.close_gates = False
 
-        self._all_own: Units = self.ai.units + self.ai.structures
+        self._all_own: Units = self.ai.all_own_units
         memory_units = self.memory_manager.ghost_units
         self._known_enemy_structures: Units = self.ai.enemy_structures.filter(
             lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure
         )
-        self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures + memory_units
+        self._known_enemy_units: Units = self.ai.all_enemy_units + memory_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units + memory_units
 
         self._known_enemy_units_workers: Units = Units(
