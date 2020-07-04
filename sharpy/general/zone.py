@@ -95,6 +95,16 @@ class Zone:
         if self.ramp is not None:
             self.gather_point = self.ramp.top_center.towards(self.center_location, 4)
 
+    @property
+    def is_island(self) -> bool:
+        """
+        Pathing is either blocked by non-walkable areas or with minerals
+        @return: True if the zone is an island
+        """
+        if self.zone_index == 0 or len(self.paths) == 0:
+            return False
+        return self.paths[0].distance <= 0
+
     def _init_behind_mineral_positions(self) -> List[Point2]:
         positions: List[Point2] = []
         possible_behind_mineral_positions: List[Point2] = []
