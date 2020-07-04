@@ -442,7 +442,7 @@ class TestDistributeWorkers:
         nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
         nexus1._proto.assigned_harvesters = 14
 
-        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+        mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
 
         for i in range(0, 14):
             worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
