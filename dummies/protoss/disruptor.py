@@ -66,7 +66,7 @@ class DistruptorBuild(BuildOrder):
             PlanCancelBuilding(),
             WorkerRallyPoint(),
             RestorePower(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             PlanWorkerOnlyDefense(),  # Counter worker rushes
             PlanZoneDefense(),
             PlanZoneGather(),

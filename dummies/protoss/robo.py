@@ -83,7 +83,7 @@ class MacroRobo(KnowledgeBot):
                 PlanHeatObserver(),
                 PlanZoneDefense(),
                 RestorePower(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 Step(UnitReady(UnitTypeId.IMMORTAL, 3), attack),
                 PlanFinishEnemy(),

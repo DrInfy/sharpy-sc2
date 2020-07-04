@@ -56,7 +56,7 @@ class Stalkers4Gate(KnowledgeBot):
             SequentialList(
                 PlanZoneDefense(),
                 RestorePower(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 Step(TechReady(UpgradeId.BLINKTECH, 0.9), attack),
                 PlanFinishEnemy(),

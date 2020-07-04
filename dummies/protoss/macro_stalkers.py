@@ -49,7 +49,7 @@ class MacroStalkers(KnowledgeBot):
             SequentialList(
                 PlanZoneDefense(),
                 RestorePower(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 Step(UnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4)),
                 PlanFinishEnemy(),

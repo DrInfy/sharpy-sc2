@@ -253,7 +253,7 @@ class CannonRush(KnowledgeBot):
             SequentialList(
                 PlanCancelBuilding(),
                 PlanZoneDefense(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 PlanZoneAttack(6),
                 PlanFinishEnemy(),

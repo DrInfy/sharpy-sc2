@@ -180,7 +180,7 @@ class ProxyZealotRushBot(KnowledgeBot):
                         backup,
                     ]
                 ),
-                [PlanDistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
+                [DistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
                 ChronoUnit(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
             ]
         )

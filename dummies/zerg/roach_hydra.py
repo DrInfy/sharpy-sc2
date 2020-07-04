@@ -92,7 +92,7 @@ class RoachHydra(KnowledgeBot):
             skip=RequireCustom(lambda k: len(self.enemy_start_locations) == 1),
             skip_until=Supply(20),
         )
-        self.distribute = PlanDistributeWorkers()
+        self.distribute = DistributeWorkers()
 
         return BuildOrder(
             RoachHydraBuild(),

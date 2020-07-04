@@ -220,7 +220,7 @@ class LingFlood(KnowledgeBot):
         worker_scout = Step(
             None, WorkerScout(), skip_until=RequireCustom(lambda k: len(self.enemy_start_locations) > 1)
         )
-        distribute = PlanDistributeWorkers()
+        distribute = DistributeWorkers()
 
         return BuildOrder(
             [
@@ -244,9 +244,9 @@ class LingFlood(KnowledgeBot):
                         worker_scout,
                         SpreadCreep(),
                         InjectLarva(),
-                        Step(None, PlanDistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),
-                        Step(None, PlanDistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
-                        Step(None, PlanDistributeWorkers(None, None), skip_until=end_game),
+                        Step(None, DistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),
+                        Step(None, DistributeWorkers(0, 0), skip_until=stop_gas, skip=end_game),
+                        Step(None, DistributeWorkers(None, None), skip_until=end_game),
                         DummyZergAttack(),
                     ]
                 ),

@@ -69,7 +69,7 @@ class TwelvePool(KnowledgeBot):
             finish,
             build_step_units,
             AutoOverLord(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             InjectLarva(),
             PlanWorkerOnlyDefense(),
             PlanZoneDefense(),
