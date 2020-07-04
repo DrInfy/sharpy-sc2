@@ -4,8 +4,10 @@ import math
 from math import floor
 from typing import Dict, List, Optional, Tuple, Set
 
+import numpy as np
 from s2clientprotocol.debug_pb2 import Color
 
+import sc2pathlibp
 from sharpy.constants import Constants
 from sharpy import sc2math
 from sharpy.sc2math import spiral
@@ -51,12 +53,20 @@ def fill_padding(cell: GridArea, point: Point2 = None) -> GridArea:
 
 class WallFinder:
     def __init__(
-        self, b1: Point2, b2: Point2, check_from_b1: Point2, check_from_b2: Point2, zealot: Point2, score: int = 2
+        self,
+        name: str,
+        b1: Point2,
+        b2: Point2,
+        check_from_b1: Point2,
+        check_from_b2: Point2,
+        zealot: Point2,
+        score: int = 2,
     ):
         assert isinstance(b1, Point2)
         assert isinstance(b2, Point2)
         assert isinstance(check_from_b1, Point2)
         assert isinstance(check_from_b2, Point2)
+        self.name = name
         self.buildings: List[Point2] = [b1, b2, Point2((0, 0))]
         self.checks: List[Point2] = [b1 + check_from_b1, b2 + check_from_b2]
         self.zealot: Point2 = zealot
@@ -103,50 +113,52 @@ class BuildingSolver(ManagerBase):
 
         self.wall_finders_v = [
             # Pure vertical walls
-            WallFinder(Point2((0, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2)), 5),
-            WallFinder(Point2((1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
-            WallFinder(Point2((-1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
-            WallFinder(Point2((1, -3)), Point2((-1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
-            WallFinder(Point2((-1, -3)), Point2((1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("v1", Point2((0, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2)), 5),
+            WallFinder("v2", Point2((1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("v3", Point2((-1, -3)), Point2((0, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("v4", Point2((1, -3)), Point2((-1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("v5", Point2((-1, -3)), Point2((1, 4)), Point2((0, -1)), Point2((0, 1)), Point2((0, 2))),
             # Hybrid vertical walls
-            WallFinder(Point2((2, -3)), Point2((-1, 4)), Point2((1, 0)), Point2((0, 1)), Point2((0, 2))),
-            WallFinder(Point2((-2, -3)), Point2((1, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((0, 2))),
-            WallFinder(Point2((2, 3)), Point2((-1, -4)), Point2((1, 0)), Point2((0, -1)), Point2((0, -2))),
-            WallFinder(Point2((-2, 3)), Point2((1, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((0, -2))),
-            WallFinder(Point2((2, -3)), Point2((-2, 4)), Point2((1, 0)), Point2((0, 1)), Point2((-1, 2)), 1),
-            WallFinder(Point2((-2, -3)), Point2((2, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((1, 2)), 1),
-            WallFinder(Point2((2, 3)), Point2((-2, -4)), Point2((1, 0)), Point2((0, -1)), Point2((-1, -2)), 1),
-            WallFinder(Point2((-2, 3)), Point2((2, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((1, -2)), 1),
+            WallFinder("hv1", Point2((2, -3)), Point2((-1, 4)), Point2((1, 0)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("hv2", Point2((-2, -3)), Point2((1, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((0, 2))),
+            WallFinder("hv3", Point2((2, 3)), Point2((-1, -4)), Point2((1, 0)), Point2((0, -1)), Point2((0, -2))),
+            WallFinder("hv4", Point2((-2, 3)), Point2((1, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((0, -2))),
+            WallFinder("hv5", Point2((2, -3)), Point2((-2, 4)), Point2((1, 0)), Point2((0, 1)), Point2((-1, 2)), 1),
+            WallFinder("hv6", Point2((-2, -3)), Point2((2, 4)), Point2((-1, 0)), Point2((0, 1)), Point2((1, 2)), 1),
+            WallFinder("hv7", Point2((2, 3)), Point2((-2, -4)), Point2((1, 0)), Point2((0, -1)), Point2((-1, -2)), 1),
+            WallFinder("hv8", Point2((-2, 3)), Point2((2, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((1, -2)), 1),
         ]
 
         self.wall_finders_h = [
             # Pure horizontal walls
-            WallFinder(Point2((-3, 0)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((-3, 1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((-3, -1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((-3, 1)), Point2((4, -1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((-3, -1)), Point2((4, 1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("h1", Point2((-3, 0)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0)), 5),
+            WallFinder("h2", Point2((-3, 1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("h3", Point2((-3, -1)), Point2((4, 0)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("h4", Point2((-3, 1)), Point2((4, -1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("h5", Point2((-3, -1)), Point2((4, 1)), Point2((-1, 0)), Point2((1, 0)), Point2((2, 0))),
             # Hybrid horizontal walls
-            WallFinder(Point2((-3, 2)), Point2((4, -1)), Point2((0, 1)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((-3, -2)), Point2((4, 1)), Point2((0, -1)), Point2((1, 0)), Point2((2, 0))),
-            WallFinder(Point2((3, 2)), Point2((-4, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, 0))),
-            WallFinder(Point2((3, -2)), Point2((-4, 1)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 0))),
-            WallFinder(Point2((-3, 2)), Point2((4, -2)), Point2((0, 1)), Point2((1, 0)), Point2((2, -1)), 1),
-            WallFinder(Point2((-3, -2)), Point2((4, 2)), Point2((0, -1)), Point2((1, 0)), Point2((2, 1)), 1),
-            WallFinder(Point2((3, 2)), Point2((-4, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, -1)), 1),
-            WallFinder(Point2((3, -2)), Point2((-4, 2)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 1)), 1),
+            WallFinder("hh1", Point2((-3, 2)), Point2((4, -1)), Point2((0, 1)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("hh2", Point2((-3, -2)), Point2((4, 1)), Point2((0, -1)), Point2((1, 0)), Point2((2, 0))),
+            WallFinder("hh3", Point2((3, 2)), Point2((-4, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, 0))),
+            WallFinder("hh4", Point2((3, -2)), Point2((-4, 1)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 0))),
+            WallFinder("hh5", Point2((-3, 2)), Point2((4, -2)), Point2((0, 1)), Point2((1, 0)), Point2((2, -1)), 1),
+            WallFinder("hh6", Point2((-3, -2)), Point2((4, 2)), Point2((0, -1)), Point2((1, 0)), Point2((2, 1)), 1),
+            WallFinder("hh7", Point2((3, 2)), Point2((-4, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((-2, -1)), 1),
+            WallFinder("hh8", Point2((3, -2)), Point2((-4, 2)), Point2((0, -1)), Point2((-1, 0)), Point2((-2, 1)), 1),
         ]
 
         self.wall_finders_d = [
             # Dioganal / ramp walls
-            WallFinder(Point2((2, 4)), Point2((-3, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
-            WallFinder(Point2((-2, -4)), Point2((3, 2)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
-            WallFinder(Point2((4, 2)), Point2((-2, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
-            WallFinder(Point2((-4, -2)), Point2((2, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
-            WallFinder(Point2((2, 4)), Point2((-3, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
-            WallFinder(Point2((-2, -4)), Point2((3, 1)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
-            WallFinder(Point2((4, 2)), Point2((-1, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
-            WallFinder(Point2((-4, -2)), Point2((1, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
+            WallFinder("d1", Point2((2, 4)), Point2((-3, -2)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
+            WallFinder("d2", Point2((-2, -4)), Point2((3, 2)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
+            WallFinder("d3", Point2((4, 2)), Point2((-2, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
+            WallFinder("d4", Point2((-4, -2)), Point2((2, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
+            WallFinder("d5", Point2((2, 4)), Point2((-3, -1)), Point2((0, 1)), Point2((-1, 0)), Point2((1, 2))),
+            WallFinder("d6", Point2((-2, -4)), Point2((3, 1)), Point2((0, -1)), Point2((1, 0)), Point2((-1, -2))),
+            WallFinder("d7", Point2((4, 2)), Point2((-1, -3)), Point2((1, 0)), Point2((0, -1)), Point2((2, 1))),
+            WallFinder("d8", Point2((-4, -2)), Point2((1, 3)), Point2((-1, 0)), Point2((0, 1)), Point2((-2, -1))),
+            WallFinder("d9", Point2((-3, 1)), Point2((2, -4)), Point2((-1, 0)), Point2((0, -1)), Point2((1, -2))),
+            WallFinder("d10", Point2((3, -1)), Point2((-2, 4)), Point2((1, 0)), Point2((0, 1)), Point2((-1, 2))),
         ]
 
         # Addon swap variables
@@ -439,7 +451,7 @@ class BuildingSolver(ManagerBase):
             wall_finders.extend(self.wall_finders_v)
         else:
             search_vector = Point2((0, math.copysign(1, search_vector.y)))
-            perpendicular = Point2((search_vector.x, 0))
+            perpendicular = Point2((search_vector.y, 0))
             # Add vertical walls
             wall_finders.extend(self.wall_finders_h)
 
@@ -459,7 +471,7 @@ class BuildingSolver(ManagerBase):
             wall_finders.extend(self.wall_finders_v)
         else:
             search_vector = Point2((0, math.copysign(1, search_vector.y)))
-            perpendicular = Point2((search_vector.y, 0))
+            perpendicular = Point2((-search_vector.y, 0))
             # Add vertical walls
             wall_finders.extend(self.wall_finders_h)
 
@@ -476,12 +488,14 @@ class BuildingSolver(ManagerBase):
     async def find_wall_in_direction(
         self, center: Point2, perpendicular: Point2, search_vector: Point2, wall_finders: List[WallFinder]
     ):
+        map_data = np.swapaxes(self.ai.game_info.pathing_grid.data_numpy, 0, 1)
+
         zone_height = self.ai.get_terrain_height(center)
         enemy_natural: Point2 = self.knowledge.expansion_zones[-2].center_location
 
         wall: Optional[Tuple[int, Point2, Point2, List[Point2]]] = None
 
-        for i in range(7, 15):
+        for i in range(5, 15):
             for j in range(-15, 16):
                 lookup = center + search_vector * i + perpendicular * j
 
@@ -492,42 +506,42 @@ class BuildingSolver(ManagerBase):
                 for finder in wall_finders:
 
                     if finder.query(self.grid, lookup, ZoneArea.OwnNaturalZone):
-                        if not self.grid.query_area(
-                            lookup + search_vector * 5, BlockerType.Building1x1, self.is_pathable
-                        ) or not self.grid.query_area(
-                            lookup - search_vector * 5, BlockerType.Building1x1, self.is_pathable
-                        ):
-                            # Wall was found, it seems like it's not towards open area
-                            self.print(
-                                f"Wall was found at {lookup}, but disregarded due to not free area check",
-                                stats=False,
-                                log_level=logging.DEBUG,
-                            )
-                            continue
-
-                        lookup_distance = await self.client.query_pathing(lookup, enemy_natural)
-                        wall_distance = await self.client.query_pathing(lookup + search_vector * 5, enemy_natural)
-                        if wall_distance + 1 > lookup_distance:
-                            self.print(
-                                f"Wall was found at {lookup}, but disregarded due to distance check",
-                                stats=False,
-                                log_level=logging.DEBUG,
-                            )
-                            continue
-
                         pylon = lookup - 2.5 * search_vector
                         zealot = lookup + finder.zealot
                         gates = finder.positions(lookup)
 
+                        tester: sc2pathlibp.PathFinder = sc2pathlibp.PathFinder(map_data)
+
+                        tester.create_block(gates, (3, 3))
+                        tester.create_block(zealot, (1, 1))
+                        path = tester.find_path(
+                            self.knowledge.expansion_zones[1].center_location, self.knowledge.enemy_start_location
+                        )
+
+                        if path[1] > 0:
+                            self.print(
+                                f"Wall {finder.name} was found at {lookup}, but disregarded due to not blocking check",
+                                stats=False,
+                            )
+                            continue
+
                         if wall is None:
-                            self.print(f"Natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
+                            self.print(
+                                f"Natural wall {finder.name} found! ({lookup})", stats=False, log_level=logging.DEBUG
+                            )
                             wall = (finder.score, pylon, zealot, gates)
                         elif wall[0] < finder.score:
-                            self.print(f"Better natural wall found! ({lookup})", stats=False, log_level=logging.DEBUG)
+                            self.print(
+                                f"Better natural wall {finder.name} found! ({lookup})",
+                                stats=False,
+                                log_level=logging.DEBUG,
+                            )
                             wall = (finder.score, pylon, zealot, gates)
                         else:
                             self.print(
-                                f"Natural wall found, but disregarded! ({lookup})", stats=False, log_level=logging.DEBUG
+                                f"Natural wall {finder.name} found, but disregarded! ({lookup})",
+                                stats=False,
+                                log_level=logging.DEBUG,
                             )
                             wall = (finder.score, pylon, zealot, gates)
 
