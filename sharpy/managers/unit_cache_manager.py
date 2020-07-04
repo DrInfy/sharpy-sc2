@@ -120,9 +120,6 @@ class UnitCacheManager(ManagerBase):
         self.all_own = self.knowledge.all_own
 
         for unit in self.all_own:
-            if unit.is_memory:
-                self.tag_cache[unit.tag] = unit
-
             units = self.own_unit_cache.get(unit.type_id, Units([], self.ai))
             if units.amount == 0:
                 self.own_unit_cache[unit.type_id] = units

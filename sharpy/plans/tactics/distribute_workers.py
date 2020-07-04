@@ -1,13 +1,16 @@
-from typing import Optional, List
+import warnings
+from typing import Optional, List, Dict, Tuple
 
+from sc2.constants import IS_COLLECTING, ALL_GAS
 from sharpy.managers import UnitRoleManager
+from sharpy.managers.unit_value import buildings_5x5
 from sharpy.plans.acts import ActBase
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
 
 from sharpy.managers.roles import UnitTask
 from sc2 import UnitTypeId, Race, AbilityId
-from sc2.unit import Unit
+from sc2.unit import Unit, UnitOrder
 
 from sharpy.knowledges import Knowledge
 from sharpy.general.zone import Zone
@@ -17,19 +20,86 @@ ZONE_EVACUATION_POWER_THRESHOLD = -5
 BAD_ZONE_POWER_THRESHOLD = -2
 
 
-class PlanDistributeWorkers(ActBase):
+class WorkStatus:
+    def __init__(self, unit: Unit, available: int, force_exit: bool = False) -> None:
+        self.force_exit = force_exit
+        self.unit = unit
+        self.available = available
+
+
+class DistributeWorkers(ActBase):
     """Handles idle workers and worker distribution."""
 
-    def __init__(self, min_gas: Optional[int] = None, max_gas: Optional[int] = None):
+    def __init__(
+        self,
+        min_gas: Optional[int] = None,
+        max_gas: Optional[int] = None,
+        aggressive_gas_fill: bool = True,
+        evacuate_zones: bool = True,
+    ):
         super().__init__()
         assert min_gas is None or isinstance(min_gas, int)
         assert max_gas is None or isinstance(max_gas, int)
 
         self.min_gas = min_gas
         self.max_gas = max_gas
-
+        self.aggressive_gas_fill = aggressive_gas_fill
+        # evacuate
+        self.evacuate_zones = evacuate_zones
+        self.active_gas_workers = 0
         self.roles: UnitRoleManager = None
-        self.force_work = False
+        # self.force_work = False
+        # workplace tag to tags of workers there
+        self.worker_dict: Dict[int, List[int]] = dict()
+        self.work_queue: List[WorkStatus] = []
+        self.gas_workers_target = 0
+        self.gas_workers_max = 0
+
+    async def start(self, knowledge: Knowledge):
+        await super().start(knowledge)
+        self.roles = knowledge.roles
+
+    async def execute(self) -> bool:
+        self.gas_workers_target = self.calc_gas_workers_target()
+        self.gas_workers_max = len(self.safe_active_gas_buildings) * 3
+        self.worker_dict.clear()
+        self.calculate_workers()
+        self.generate_worker_queue()
+
+        for worker in (
+            self.roles.all_from_task(UnitTask.Idle).of_type(self.unit_values.worker_types)
+            + self.roles.all_from_task(UnitTask.Gathering).idle
+        ):  # type: Unit
+            # Re-assign idle workers
+            await self.set_work(worker)
+
+        # Balance workers in bases that have to many
+        work_status: Optional[WorkStatus] = None
+        for status in self.work_queue:
+            if status.available < 0 or status.force_exit:
+                work_status = status
+                break
+
+        if (
+            self.aggressive_gas_fill
+            and not work_status
+            and self.active_gas_workers < min(self.gas_workers_target, self.gas_workers_max)
+        ):
+            # Assign work
+            for status in self.work_queue:
+                if status.unit.type_id in buildings_5x5 and status.unit.assigned_harvesters > 0:
+                    work_status = status
+                    break
+
+        if work_status:
+            tags = self.worker_dict.get(work_status.unit.tag, [])
+            if tags:
+                assign_workers = self.cache.by_tags(tags)
+                if assign_workers:
+                    assign_worker = assign_workers.furthest_to(work_status.unit)
+                    await self.set_work(assign_worker, work_status)
+
+        return True
 
     @property
     def active_gas_buildings(self) -> Units:
@@ -52,37 +122,20 @@ class PlanDistributeWorkers(ActBase):
         return result
 
     @property
-    def non_full_safe_zones(self) -> List[Zone]:
-        """All zones which have a non-full mineral line and are safe from enemies."""
-        zones = filter(
-            lambda z: z.our_townhall.surplus_harvesters < 0
-            and z.power_balance > BAD_ZONE_POWER_THRESHOLD
-            and not z.needs_evacuation,
-            self.knowledge.our_zones_with_minerals,
-        )
-        return list(zones)
+    def safe_active_gas_buildings(self) -> Units:
+        """All gas buildings that are on a safe zone and could use more workers."""
+        result = Units([], self.ai)
 
-    @property
-    def safe_zones(self) -> List[Zone]:
-        """All zones which have a non-full mineral line and are safe from enemies."""
-        zones = filter(
-            lambda z: z.power_balance > BAD_ZONE_POWER_THRESHOLD and not z.needs_evacuation,
-            self.knowledge.our_zones_with_minerals,
-        )
-        return list(zones)
+        for zone in self.knowledge.our_zones:  # type: Zone
+            if zone.is_under_attack:
+                continue
 
-    @property
-    def active_gas_workers(self) -> int:
-        """Number of active workers harvesting gas."""
-        count: int = 0
+            filtered = filter(lambda g: g.has_vespene, zone.gas_buildings)
+            result.extend(filtered)
 
-        for building in self.active_gas_buildings:  # type: Unit
-            count += building.assigned_harvesters
+        return result
 
-        return count
-
-    @property
-    def gas_workers_target(self) -> int:
+    def calc_gas_workers_target(self) -> int:
         """Target count for workers harvesting gas."""
         worker_count = self.knowledge.roles.free_workers.amount
         max_workers_at_gas = self.active_gas_buildings.amount * MAX_WORKERS_PER_GAS
@@ -94,101 +147,153 @@ class PlanDistributeWorkers(ActBase):
         if self.max_gas is not None:
             estimate = min(estimate, self.max_gas)
 
-        return min(max_workers_at_gas, estimate)
+        return max(0, min(max_workers_at_gas, estimate))
 
-    def get_worker_to_reassign(self) -> Optional[Unit]:
-        """Returns a worker to reassign or None."""
-        workers = self.ai.workers.filter(lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET))
+    def add_worker(self, worker: Unit, target: Unit):
+        worker_list = self.worker_dict.get(target.tag, [])
+        if not worker_list:
+            self.worker_dict[target.tag] = worker_list
+        worker_list.append(worker.tag)
 
-        # Idle worker
-        if workers.idle.exists:
-            for worker in workers:
-                if worker.tag not in self.roles.had_task_set:
-                    # if the task was just set, the worker is still active!
-                    return worker
+    def calculate_workers(self):
+        if not self.ai.townhalls:
+            # can't mine anything
+            return
 
-        for zone in self.knowledge.expansion_zones:
-            if zone.is_ours and zone.needs_evacuation:
-                mineral_workers = workers.filter(
-                    lambda w: w.order_target in zone.mineral_fields.tags and not w.is_carrying_minerals
-                )
-                if mineral_workers.exists:
-                    self.force_work = True
-                    return mineral_workers.first
+        for worker in self.ai.workers:
+            # worker.is_gathering
+            if worker.orders:
+                order: UnitOrder = worker.orders[-1]
 
-        # Surplus mineral worker
-        for our_zone in self.knowledge.our_zones_with_minerals:
-            townhall: Unit = our_zone.our_townhall
+                if order.ability.id in IS_COLLECTING and isinstance(order.target, int):
+                    obj = self.cache.by_tag(order.target)
+                    if obj:
+                        if obj.is_mineral_field:
+                            townhall = self.ai.townhalls.closest_to(obj)
+                            self.add_worker(worker, townhall)
+                        elif obj.type_id in ALL_GAS:
+                            self.add_worker(worker, obj)
 
-            if townhall.surplus_harvesters > 0:
-                mineral_workers = workers.filter(
-                    lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals
-                )
-                if mineral_workers.exists:
-                    return mineral_workers.first
+                        if obj.type_id in buildings_5x5:
+                            if worker.is_carrying_minerals:
+                                self.add_worker(worker, obj)
+                            elif worker.is_carrying_vespene:
+                                if self.ai.gas_buildings:
+                                    gas_building = self.ai.gas_buildings.closest_to(worker)
+                                    self.add_worker(worker, gas_building)
 
-        # Surplus gas worker
-        for gas in self.active_gas_buildings:  # type: Unit
-            if gas.surplus_harvesters > 0:
-                excess_gas_workers = workers.filter(lambda w: w.order_target == gas.tag and not w.is_carrying_vespene)
-                if excess_gas_workers.exists:
-                    return excess_gas_workers.first
+                        # self.print(
+                        #     f"worker {worker.tag} is {order.ability.id.name} to {order.target} {obj.type_id.name}"
+                        # )
 
-        return None
+    def generate_worker_queue(self):
+        self.work_queue.clear()
+        self.active_gas_workers = 0
 
-    def get_gas_worker(self) -> Optional[Unit]:
-        for gas in self.active_gas_buildings:  # type: Unit
+        for building in self.ai.gas_buildings + self.ai.townhalls:
+            if building.ideal_harvesters == 0:
+                # Ignore empty buildings
+                continue
 
-            excess_gas_workers = self.ai.workers.filter(
-                lambda w: w.order_target == gas.tag and not w.is_carrying_vespene
-            )
-            if excess_gas_workers.exists:
-                return excess_gas_workers.first
+            current_workers = len(self.worker_dict.get(building.tag, []))
+            zone = self.zone_manager.zone_for_unit(building)
+            if self.evacuate_zones and zone and zone.needs_evacuation:
+                # Exit workers from the zone
+                self.work_queue.append(WorkStatus(building, -current_workers * 100, True))
+            elif building.has_vespene:
+                # One worker should be inside the gas
+                harvesters = min(building.assigned_harvesters, current_workers + 1)
+                self.active_gas_workers += harvesters
+                self.work_queue.append(WorkStatus(building, building.ideal_harvesters - harvesters))
+            else:
+                self.zone_manager.zone_for_unit(building)
+                self.work_queue.append(WorkStatus(building, building.ideal_harvesters - current_workers))
 
-    def get_mineral_worker(self) -> Optional[Unit]:
-        for our_zone in self.knowledge.our_zones_with_minerals:
-            townhall: Unit = our_zone.our_townhall
-            mineral_workers = self.ai.workers.filter(
-                lambda w: w.order_target in our_zone.mineral_fields.tags and not w.is_carrying_minerals
-            )
-            if mineral_workers.exists:
-                return mineral_workers.closest_to(townhall)
-        return None
-
-    def get_new_work(self, worker: Unit) -> Optional[Unit]:
-        """Returns new work for a worker, or None if there is nothing better to do."""
         if self.active_gas_workers < self.gas_workers_target:
-            # assign to nearest non-full gas building
-            if self.safe_non_full_gas_buildings.exists:
-                return self.safe_non_full_gas_buildings.closest_to(worker)
 
-        if len(self.non_full_safe_zones) > 0:
-            # assign to nearest non-full townhall / mineral field
-            def distance_to_zone(zone: Zone):
-                return worker.distance_to(zone.center_location)
+            def sort_method(tpl: WorkStatus):
+                if tpl.unit.type_id in buildings_5x5:
+                    return tpl.available
+                return tpl.available * 10
 
-            sorted_zones = sorted(self.non_full_safe_zones, key=distance_to_zone)
+        elif self.active_gas_workers > self.gas_workers_target:
 
-            return sorted_zones[0].mineral_fields[0]
+            def sort_method(tpl: WorkStatus):
+                if tpl.unit.type_id in buildings_5x5:
+                    return tpl.available * 10
+                return tpl.available
 
-        if not worker.is_gathering or self.force_work:
-            # Assign to mineral line with lowest saturation
-            def mineral_saturation(zone: Zone):
-                if zone.our_townhall.ideal_harvesters > 0:
-                    return zone.our_townhall.assigned_harvesters / zone.our_townhall.ideal_harvesters
+        else:
+
+            def sort_method(tpl: WorkStatus):
+                return tpl.available
+
+        self.work_queue.sort(key=sort_method)
+
+        # for queue in self.work_queue:
+        #     self.print(f"Queue: {queue.unit.type_id.name} {queue.unit.tag}: {queue.available}")
+
+    async def set_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None):
+        if last_work_status:
+            typename = last_work_status.unit.type_id.name
+            self.print(
+                f"Worker {worker.tag} needs better work! {typename} {last_work_status.unit.tag}: {last_work_status.available}"
+            )
+        else:
+            self.print(f"Worker {worker.tag} needs new work!")
+        new_work = self.get_new_work(worker, last_work_status)
+
+        if new_work is None:
+            self.print(f"No work to assign worker {worker.tag} to.")
+            return True
+
+        if new_work.type_id in buildings_5x5:
+            for zone in self.zone_manager.expansion_zones:  # type: Zone
+                if zone.center_location.distance_to(new_work.position) < 1:
+                    new_work = zone.check_best_mineral_field()
+                    break
+
+        self.print(f"New work found, gathering {new_work.type_id} {new_work.tag}!")
+        self.assign_to_work(worker, new_work)
+        return True  # Always non-blocking
+
+    def get_new_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None) -> Optional[Unit]:
+        new_work: Optional[WorkStatus] = None
+
+        for status in self.work_queue[::-1]:
+            if status == last_work_status:
+                continue
+
+            if status.unit.has_vespene:
+                if status.available > 0:
+                    new_work = status
+                    break
+            else:
+                if status.available > 0:
+                    new_work = status
+                    break
+
+                if new_work is None:
+                    if last_work_status is None or last_work_status.force_exit:
+                        new_work = status
                 else:
-                    return 9000
+                    if new_work.available == status.available and new_work.unit.distance_to(
+                        worker
+                    ) > status.unit.distance_to(worker):
+                        new_work = status
 
-            sorted_zones = sorted(self.safe_zones, key=mineral_saturation)
+        if new_work:
+            if last_work_status:
+                if last_work_status.unit.tag == new_work.unit.tag:
+                    # Don't move workers from one job to same job
+                    return None
 
-            if len(sorted_zones) > 0:
-                return sorted_zones[0].mineral_fields[0]
+                if new_work.available < 0 and not last_work_status.unit.has_vespene and not last_work_status.force_exit:
+                    # Don't move workers from overcrowded mineral mining to another overcrowded mineral mining
+                    return None
 
-        if self.safe_non_full_gas_buildings.exists:
-            # Just go mine gas then.
-            return self.safe_non_full_gas_buildings.closest_to(worker)
-
-        # Could not find anything better to do
+            new_work.available -= 1
+            return new_work.unit
         return None
 
     def assign_to_work(self, worker: Unit, work: Unit):
@@ -207,35 +312,14 @@ class PlanDistributeWorkers(ActBase):
         else:
             self.do(worker.gather(work))
 
-    async def execute(self) -> bool:
-        self.force_work = False
 
-        for worker in self.roles.all_from_task(UnitTask.Idle).of_type(self.unit_values.worker_types):  # type: Unit
-            await self.set_work(worker)
+class PlanDistributeWorkers(DistributeWorkers):
+    def __init__(self, *args, **kwargs):
+        warnings.warn("'PlanDistributeWorkers' is deprecated, use 'DistributeWorkers' instead", DeprecationWarning, 2)
+        super().__init__(*args, **kwargs)
 
-        worker = self.get_worker_to_reassign()
-        if worker is None:
-            gas_workers = self.active_gas_workers
-            if self.max_gas is not None and gas_workers > self.max_gas:
-                worker = self.get_gas_worker()
-            elif (
-                self.gas_workers_target > self.active_gas_workers and self.active_gas_buildings.amount * 3 > gas_workers
-            ):
-                worker = self.get_mineral_worker()
 
-            if worker is None:
-                self.print("No worker to assign.")
-                return True
-
-        await self.set_work(worker)
-        return True
-
-    async def set_work(self, worker):
-        self.print(f"Worker {worker.tag} needs new work!")
-        new_work = self.get_new_work(worker)
-        if new_work is None:
-            self.print(f"No work to assign worker {worker.tag} to.")
-            return True
-        self.print(f"New work found, gathering {new_work.type_id} {new_work.tag}!")
-        self.assign_to_work(worker, new_work)
-        return True  # Always non-blocking
+class PlanDistributeWorkersV2(DistributeWorkers):
+    def __init__(self, *args, **kwargs):
+        warnings.warn("'PlanDistributeWorkersV2' is deprecated, use 'DistributeWorkers' instead", DeprecationWarning, 2)
+        super().__init__(*args, **kwargs)

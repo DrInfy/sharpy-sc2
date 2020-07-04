@@ -507,7 +507,7 @@ class BuildingSolver(ManagerBase):
 
                         lookup_distance = await self.client.query_pathing(lookup, enemy_natural)
                         wall_distance = await self.client.query_pathing(lookup + search_vector * 5, enemy_natural)
-                        if wall_distance > lookup_distance:
+                        if wall_distance + 1 > lookup_distance:
                             self.print(
                                 f"Wall was found at {lookup}, but disregarded due to distance check",
                                 stats=False,

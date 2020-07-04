@@ -44,6 +44,7 @@ buildings_3x3 = {
     UnitTypeId.STARGATE,
     UnitTypeId.FLEETBEACON,
     UnitTypeId.ASSIMILATOR,
+    UnitTypeId.ASSIMILATORRICH,
     UnitTypeId.SPAWNINGPOOL,
     UnitTypeId.ROACHWARREN,
     UnitTypeId.HYDRALISKDEN,
@@ -52,6 +53,7 @@ buildings_3x3 = {
     UnitTypeId.NYDUSNETWORK,
     UnitTypeId.NYDUSCANAL,
     UnitTypeId.EXTRACTOR,
+    UnitTypeId.EXTRACTORRICH,
     UnitTypeId.INFESTATIONPIT,
     UnitTypeId.ULTRALISKCAVERN,
     UnitTypeId.BARRACKS,
@@ -62,6 +64,8 @@ buildings_3x3 = {
     UnitTypeId.FUSIONREACTOR,
     UnitTypeId.BUNKER,
     UnitTypeId.ARMORY,
+    UnitTypeId.REFINERY,
+    UnitTypeId.REFINERYRICH,
 }
 
 buildings_5x5 = {
@@ -73,6 +77,8 @@ buildings_5x5 = {
     UnitTypeId.ORBITALCOMMAND,
     UnitTypeId.PLANETARYFORTRESS,
 }
+
+BUILDING_IDS = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
 
 
 class UnitData:

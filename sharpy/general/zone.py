@@ -104,18 +104,24 @@ class Zone:
         for mf in all_mf:  # type: Unit
             possible_behind_mineral_positions.append(self.center_location.towards(mf.position, 9))
 
-        positions.append(self.center_location.towards(all_mf.center, 9))  # Center
-        positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
-        positions.append(positions[0].furthest(possible_behind_mineral_positions))
+        if all_mf:
+            positions.append(self.center_location.towards(all_mf.center, 9))  # Center
+            positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
+            positions.append(positions[0].furthest(possible_behind_mineral_positions))
+
         return positions
 
     @property
     def behind_mineral_position_center(self) -> Point2:
-        return self.behind_mineral_positions[1]
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1]
+        return self.center_location
 
     @property
     def mineral_line_center(self) -> Point2:
-        return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        return self.center_location
 
     def calc_needs_evacuation(self):
         """
@@ -395,7 +401,10 @@ class Zone:
             mf = self.ai.mineral_field.closest_to(closest_base)
             self.ai.do(unit.gather(mf))
 
-    def _find_ramp(self, ai):
+    def _find_ramp(self, ai) -> Optional[ExtendedRamp]:
+        if not self.ai.game_info.map_ramps:
+            return None
+
         if self.center_location in self.ai.enemy_start_locations or self.center_location == self.ai.start_location:
             ramps: List[Ramp] = [
                 ramp

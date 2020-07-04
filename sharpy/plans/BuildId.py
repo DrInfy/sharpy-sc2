@@ -1,13 +1,11 @@
 from typing import Union
 from sc2 import UnitTypeId, Race
 from sc2.constants import ALL_GAS
-from sharpy.managers.unit_value import buildings_5x5, buildings_3x3, buildings_2x2
+from sharpy.managers.unit_value import buildings_5x5, buildings_3x3, buildings_2x2, BUILDING_IDS
 from sharpy.plans.acts import ActBase, GridBuilding, Expand, Workers, BuildGas
 from sharpy.plans.acts.protoss import ProtossUnit
 from sharpy.plans.acts.terran import TerranUnit
 from sharpy.plans.acts.zerg import ZergUnit
-
-building_ids = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
 
 
 class BuildId(ActBase):
@@ -32,7 +30,7 @@ class BuildId(ActBase):
             self.act = BuildGas(self.to_count)
         elif self.type_id in buildings_5x5:
             self.act = Expand(self.to_count, priority=self.priority, consider_worker_production=False)
-        elif self.type_id in building_ids:
+        elif self.type_id in BUILDING_IDS:
             self.act = GridBuilding(
                 self.type_id, self.to_count, priority=self.priority, consider_worker_production=False
             )
