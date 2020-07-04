@@ -23,6 +23,7 @@ class UnitCacheManager(ManagerBase):
 
     all_own: Units
     empty_units: Units
+    mineral_wall: Units
 
     def __init__(self):
         super().__init__()
@@ -36,11 +37,13 @@ class UnitCacheManager(ManagerBase):
         self.own_numpy_vectors: List[np.ndarray] = []
         self.enemy_numpy_vectors: List[np.ndarray] = []
         self.mineral_fields: Dict[Point2, Unit] = {}
+        self.mineral_wall: Units = {}
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.all_own: Units = Units([], self.ai)
         self.empty_units: Units = Units([], self.ai)
+        self.mineral_wall: Units = Units([], self.ai)
 
     def by_tag(self, tag: int) -> Optional[Unit]:
         return self.tag_cache.get(tag, None)
@@ -155,9 +158,15 @@ class UnitCacheManager(ManagerBase):
                 self.force_fields.append(effect)
 
     async def post_update(self):
-        pass
+        if self.debug:
+            for mf in self.mineral_wall:
+                self.debug_text_on_unit(mf, "WALL")
 
     def update_minerals(self):
         self.mineral_fields.clear()
+        self.mineral_wall.clear()
+
         for mf in self.ai.mineral_field:  # type: Unit
             self.mineral_fields[mf.position] = mf
+            if mf.position not in self.ai._resource_location_to_expansion_position_dict:
+                self.mineral_wall.append(mf)
