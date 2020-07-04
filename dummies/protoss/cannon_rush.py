@@ -188,11 +188,16 @@ class ProxyCannoneer(ActBase):
 
 
 class CannonRush(KnowledgeBot):
-    def __init__(self):
+    def __init__(self, build_name: str = "default"):
         super().__init__("Sharp Cannon")
+        self.build_name = build_name
 
     async def create_plan(self) -> BuildOrder:
-        rnd = select_build_index(self.knowledge, "build.cannon_rush", 0, 2)
+        if self.build_name == "default":
+            rnd = select_build_index(self.knowledge, "build.cannonrush", 0, 2)
+        else:
+            rnd = int(self.build_name)
+
         self.knowledge.building_solver.wall_type = WallType.NoWall
         rush_killed = RequireCustom(
             lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or self.time > 4 * 60

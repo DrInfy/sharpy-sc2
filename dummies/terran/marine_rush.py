@@ -42,15 +42,19 @@ class DodgeRampAttack(PlanZoneAttack):
 class MarineRushBot(KnowledgeBot):
     tactic_index: int
 
-    def __init__(self):
+    def __init__(self, build_name: str = "default"):
         super().__init__("Marine Rush")
+        self.build_name = build_name
 
     async def pre_step_execute(self):
         if self.tactic_index != 1 and self.time < 5 * 60:
             self.knowledge.gather_point = self.knowledge.expansion_zones[-2].gather_point
 
     async def create_plan(self) -> BuildOrder:
-        self.tactic_index = select_build_index(self.knowledge, "build.marine", 0, 2)
+        if self.build_name == "default":
+            self.tactic_index = select_build_index(self.knowledge, "build.marine", 0, 2)
+        else:
+            self.tactic_index = int(self.build_name)
 
         if self.tactic_index == 0:
             self.knowledge.print("Proxy 2 rax bunker rush", "Build")
