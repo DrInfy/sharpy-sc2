@@ -65,8 +65,9 @@ class BuildGrid(Grid):
             cell.Area = BuildArea.HighRock
             return cell
 
-        for low_blocker in ai.all_units:  # type: Unit
+        for low_blocker in ai.destructables:  # type: Unit
             type_id = low_blocker.type_id
+            # TODO: diagonal rocks, they're not commonly blocking base building though
             if type_id in unbuildable_rocks:
                 self.fill_area(low_blocker.position, BlockerType.Building2x2, low_rock_filler)
             if type_id in breakable_rocks_2x2:
