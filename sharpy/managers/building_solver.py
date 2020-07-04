@@ -491,8 +491,6 @@ class BuildingSolver(ManagerBase):
         map_data = np.swapaxes(self.ai.game_info.pathing_grid.data_numpy, 0, 1)
 
         zone_height = self.ai.get_terrain_height(center)
-        enemy_natural: Point2 = self.knowledge.expansion_zones[-2].center_location
-
         wall: Optional[Tuple[int, Point2, Point2, List[Point2]]] = None
 
         for i in range(5, 15):
