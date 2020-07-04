@@ -95,7 +95,7 @@ class MacroRoach(KnowledgeBot):
             PlanCancelBuilding(),
             SpreadCreep(),
             InjectLarva(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             PlanZoneDefense(),
             PlanZoneGather(),
             attack,

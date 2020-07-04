@@ -1,4 +1,4 @@
-from sharpy.plans.tactics import PlanDistributeWorkers
+from sharpy.plans.tactics import DistributeWorkers
 from sc2 import UnitTypeId
 
 from sharpy.knowledges import KnowledgeBot
@@ -13,7 +13,7 @@ class RestorePowerDummy(KnowledgeBot):
         super().__init__("RestorePowerDummy")
 
     async def create_plan(self) -> BuildOrder:
-        return BuildOrder([RestorePower(), PlanDistributeWorkers()])
+        return BuildOrder([RestorePower(), DistributeWorkers()])
 
     async def on_step(self, iteration):
         # Hack so that BuildingSolver is finally ready to give positions for the debug buildings.

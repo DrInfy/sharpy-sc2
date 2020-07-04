@@ -1,4 +1,7 @@
+from typing import Optional, List
+
 from sharpy.knowledges import KnowledgeBot
+from sharpy.managers import ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -8,6 +11,8 @@ from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 import random
+
+from sharpy.utils import select_build_index
 
 
 class JumpIn(ActBase):
@@ -30,24 +35,36 @@ class JumpIn(ActBase):
 
 
 class BattleCruisers(KnowledgeBot):
-    def __init__(self):
+    jump: int
+
+    def __init__(self, build_name: str = "default"):
         super().__init__("Flying Rust")
+        self.build_name = build_name
 
     async def pre_step_execute(self):
         pass
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        self.knowledge.roles.set_tag_each_iteration = True
+        return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:
         attack_value = random.randint(50, 80)
         self.attack = Step(None, PlanZoneAttack(attack_value))
         empty = BuildOrder([])
-        self.jump = random.randint(0, 2)
+
+        if self.build_name == "default":
+            self.jump = select_build_index(self.knowledge, "build.bc", 0, 1)
+        else:
+            self.jump = int(self.build_name)
 
         if self.jump == 0:
             self.knowledge.print(f"Att at {attack_value}", "Build")
         else:
             self.knowledge.print(f"Jump, att at {attack_value }", "Build")
+
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
-        self.distribute_workers = PlanDistributeWorkers(4)
+        self.distribute_workers = DistributeWorkers(4)
         tactics = [
             PlanCancelBuilding(),
             LowerDepots(),

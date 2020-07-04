@@ -172,7 +172,7 @@ class LurkerBot(KnowledgeBot):
                 Step(None, WorkerScout(), skip_until=Supply(20)),
                 SpreadCreep(),
                 InjectLarva(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneAttack(),
                 PlanFinishEnemy(),
             ),

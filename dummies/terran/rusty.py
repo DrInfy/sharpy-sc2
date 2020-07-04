@@ -138,7 +138,7 @@ class Rusty(KnowledgeBot):
             worker_scout,
             CallMule(100),
             ScanEnemy(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             ManTheBunkers(),
             Repair(),
             ContinueBuilding(),

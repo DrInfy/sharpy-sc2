@@ -95,7 +95,7 @@ class TwoBaseTanks(KnowledgeBot):
             scout,
             ScanEnemy(120),
             CallMule(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             Repair(),
             ContinueBuilding(),
             PlanZoneGatherTerran(),

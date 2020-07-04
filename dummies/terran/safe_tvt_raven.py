@@ -47,16 +47,16 @@ class TerranSafeTvT(KnowledgeBot):
 
         gas_management = [
             # Mine with 6 workers until first barracks is complete
-            Step(None, PlanDistributeWorkers(6), skip=UnitReady(UnitTypeId.BARRACKS)),
+            Step(None, DistributeWorkers(6), skip=UnitReady(UnitTypeId.BARRACKS)),
             # Mine with 4 workers until the natural CC is started
             Step(
                 None,
-                PlanDistributeWorkers(4, 4),
+                DistributeWorkers(4, 4),
                 skip_until=UnitReady(UnitTypeId.BARRACKS),
                 skip=UnitExists(UnitTypeId.COMMANDCENTER, 2),
             ),
             # Mine with at least 9 workers afterwards
-            Step(None, PlanDistributeWorkers(min_gas=9), skip_until=UnitExists(UnitTypeId.COMMANDCENTER, 2)),
+            Step(None, DistributeWorkers(min_gas=9), skip_until=UnitExists(UnitTypeId.COMMANDCENTER, 2)),
         ]
 
         units = [
