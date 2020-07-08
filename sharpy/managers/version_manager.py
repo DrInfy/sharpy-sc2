@@ -1,7 +1,7 @@
 from enum import IntEnum
 from typing import Set, Dict, Any
 
-from sc2 import UnitTypeId
+from sc2 import UnitTypeId, AbilityId
 from sc2.ids.upgrade_id import UpgradeId
 from sharpy.managers import ManagerBase
 
@@ -55,6 +55,10 @@ class VersionManager(ManagerBase):
                     UnitTypeId.REFINERYRICH: 1960,
                     UnitTypeId.MINERALFIELD450: 1961,
                 },
+            )
+        if self.base_version < GameVersion.V_4_12_0:
+            self._set_enum_mapping(
+                AbilityId, {AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD: 3801},
             )
 
     def _set_enum_mapping(self, enum: Any, items: Dict[Any, int]):
