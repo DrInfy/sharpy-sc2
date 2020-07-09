@@ -321,7 +321,11 @@ class Zone:
 
     @property
     def is_under_attack(self) -> bool:
-        return self.is_ours and self.power_balance < 0 or self.is_enemys and self.power_balance > 0
+        return (
+            (self.is_ours and self.assaulting_enemy_power.power > 5 or self.power_balance < 1)
+            or self.is_enemys
+            and self.power_balance > 0
+        )
 
     @property
     def safe_expand_here(self) -> bool:
