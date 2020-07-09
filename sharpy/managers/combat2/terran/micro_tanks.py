@@ -63,9 +63,9 @@ class MicroTanks(GenericMicro):
 
             # distance_closest = enemies.closest.distance_to(unit)
 
-            unsiege_threshold = 15
+            unsiege_threshold = 17
             if self.move_type == MoveType.SearchAndDestroy:
-                unsiege_threshold = 20
+                unsiege_threshold = 23
 
             status = self.get_siege_status(unit)
 
