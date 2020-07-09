@@ -15,13 +15,13 @@ class MicroMedivacs(MicroStep):
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
+        # if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
+        #     return current_command
+        #
+        # if self.move_type in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
+        #     return current_command
 
-        if self.move_type in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
-            return current_command
-
-        if unit.energy < 5:
+        if unit.energy < 5 and self.enemies_near_by:
             return self.stay_safe(unit)
 
         healable_targets = self.group.ground_units.filter(
@@ -30,7 +30,7 @@ class MicroMedivacs(MicroStep):
             )
         )
 
-        if not healable_targets:
+        if not healable_targets and self.enemies_near_by:
             return self.stay_safe(unit)
 
         return current_command
