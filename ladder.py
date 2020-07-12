@@ -25,7 +25,7 @@ def run_ladder_game(bot):
     parser.add_argument("--ComputerRace", type=str, nargs="?", help="Computer race")
     parser.add_argument("--ComputerDifficulty", type=str, nargs="?", help="Computer difficulty")
     parser.add_argument("--OpponentId", type=str, nargs="?", help="Opponent ID")
-    parser.add_argument("--RealTime", type=bool, nargs="?", action="store_true", help="real time flag")
+    parser.add_argument("--RealTime", action="store_true", help="real time flag")
     args, unknown = parser.parse_known_args()
 
     if args.GamePort is None or args.StartPort is None:
