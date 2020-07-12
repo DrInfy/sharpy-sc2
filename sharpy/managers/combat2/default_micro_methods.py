@@ -63,7 +63,7 @@ class DefaultMicroMethods:
 
                 if power.power > combat.regroup_threshold * total_power.power:
                     # Most of the army is here
-                    if group.is_too_spread_out() and not is_in_combat:
+                    if group.is_too_spread_out() and not is_in_combat and enemy_power.power > 5:
                         combat.regroup(group, group.center)
                     else:
                         combat.attack_to(group, target, move_type)
