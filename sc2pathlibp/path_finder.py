@@ -1,10 +1,7 @@
 from .sc2pathlib import PathFind
 
-# from . import _sc2pathlib
-# import sc2pathlib
 import numpy as np
 from typing import Union, List, Tuple
-from math import floor
 
 
 def to_float2(original: Tuple[int, int]) -> Tuple[float, float]:
@@ -81,8 +78,8 @@ class PathFinder:
         :param large: Unit is large and requires path to have width of 2 to pass
         :return: Tuple of points and total distance.
         """
-        start_int = (floor(start[0]), floor(start[1]))
-        end_int = (floor(end[0]), floor(end[1]))
+        start_int = (int(round(start[0])), int(round(start[1])))
+        end_int = (int(round(end[0])), int(round(end[1])))
         if large:
             return self._path_find.find_path_large(start_int, end_int, self.heuristic_accuracy)
         return self._path_find.find_path(start_int, end_int, self.heuristic_accuracy)
@@ -98,24 +95,24 @@ class PathFinder:
         :param large: Unit is large and requires path to have width of 2 to pass
         :return: Tuple of points and total distance including influence.
         """
-        start_int = (floor(start[0]), floor(start[1]))
-        end_int = (floor(end[0]), floor(end[1]))
+        start_int = (int(round(start[0])), int(round(start[1])))
+        end_int = (int(round(end[0])), int(round(end[1])))
         if large:
             return self._path_find.find_path_influence_large(start_int, end_int, self.heuristic_accuracy)
         return self._path_find.find_path_influence(start_int, end_int, self.heuristic_accuracy)
 
     def safest_spot(self, destination_center: (float, float), walk_distance: float) -> (Tuple[int, int], float):
-        destination_int = (floor(destination_center[0]), floor(destination_center[1]))
+        destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence_walk(destination_int, walk_distance)
 
     def lowest_influence_in_grid(self, destination_center: (float, float), radius: int) -> (Tuple[int, int], float):
-        destination_int = (floor(destination_center[0]), floor(destination_center[1]))
+        destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence(destination_int, radius)
 
     def add_influence(self, points: List[Tuple[float, float]], value: float, distance: float, flat: bool = False):
         list = []
         for point in points:
-            list.append((floor(point[0]), floor(point[1])))
+            list.append((round(point[0]), round(point[1])))
 
         if flat:
             self._path_find.add_influence_flat(list, value, distance)
@@ -125,7 +122,7 @@ class PathFinder:
     def add_influence_walk(self, points: List[Tuple[float, float]], value: float, distance: float, flat: bool = False):
         list = []
         for point in points:
-            list.append((floor(point[0]), floor(point[1])))
+            list.append((round(point[0]), round(point[1])))
 
         if flat:
             self._path_find.add_walk_influence_flat(list, value, distance)
@@ -144,8 +141,8 @@ class PathFinder:
         :param distance: This should represent the firing distance of the unit with more range
         :return: Tuple for position and influence distance to reach the destination
         """
-        # start_int = (floor(start[0]), floor(start[1]))
-        # target_int = (floor(target[0]), floor(target[1]))
+        # start_int = (round(start[0]), round(start[1]))
+        # target_int = (round(target[0]), round(target[1]))
         return self._path_find.find_low_inside_walk(start, target, distance)
 
     def plot(self, path: List[Tuple[int, int]], image_name: str = "map", resize: int = 4):
