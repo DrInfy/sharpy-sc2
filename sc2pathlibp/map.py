@@ -163,7 +163,7 @@ class Sc2Map:
     def plot(self, image_name: str = "map", resize: int = 4):
         """
         Uses cv2 to draw current pathing grid.
-
+        
         requires opencv-python
 
         :param path: list of points to colorize
@@ -189,7 +189,7 @@ class Sc2Map:
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
-
+    
     def plot_reaper_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
         image = np.array(self._map.reaper_pathing, dtype=np.uint8)
 
@@ -207,7 +207,7 @@ class Sc2Map:
     def plot_chokes(self, image_name: str = "map", resize: int = 4):
         """
         Uses cv2 to draw current pathing grid.
-
+        
         requires opencv-python
 
         :param path: list of points to colorize
@@ -222,7 +222,6 @@ class Sc2Map:
 
     def plot_image(self, image, image_name: str = "map", resize: int = 4):
         import cv2
-
         image = np.rot90(image, 1)
 
         resized = cv2.resize(image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)
