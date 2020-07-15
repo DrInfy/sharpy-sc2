@@ -1,20 +1,22 @@
 import subprocess
 import tempfile
 import time
+import os
 from typing import List, Any, Optional
 
 import portpicker
 from aiohttp.web_ws import WebSocketResponse
 
+import sc2
 from bot_loader.killable_process import KillableProcess
 from bot_loader.ladder_bot import BotLadder
 from bot_loader.port_picker import pick_contiguous_unused_ports, return_ports
-from sc2 import run_game
+from sc2 import run_game, Race
 
 # noinspection PyProtectedMember
 from sc2.main import _host_game
 from sc2.paths import Paths
-from sc2.player import AbstractPlayer
+from sc2.player import AbstractPlayer, BotProcess
 import asyncio
 
 from sc2.portconfig import Portconfig
@@ -31,6 +33,25 @@ class MatchRunner:
         super().__init__()
 
     def run_game(
+        self,
+        map_settings: str,
+        players: List[AbstractPlayer],
+        player1_id: str,
+        start_port: Optional[str],
+        realtime: bool = False,
+        **kwargs,
+    ):
+        from sc2.main import GameMatch, run_multiple_games
+
+        if isinstance(players[1], BotLadder):
+            ladder_bot: BotLadder = players[1]
+            cmd = ladder_bot.map_type_cmd()
+            cmd = " ".join(cmd)
+            players[1] = BotProcess(ladder_bot.path, cmd, ladder_bot.race, ladder_bot.name)
+
+        run_multiple_games([GameMatch(map_settings, [players[0], players[1]], realtime=realtime)])
+
+    def run_game_OLD(
         self, map_settings: str, players: List[AbstractPlayer], player1_id: str, start_port: Optional[str], **kwargs
     ):
         if isinstance(players[0], BotLadder):
