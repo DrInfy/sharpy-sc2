@@ -79,6 +79,14 @@ buildings_5x5 = {
 }
 
 BUILDING_IDS = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
+REVERSE_MORPHS_DICT = {
+    UnitTypeId.LURKERMP: UnitTypeId.HYDRALISK,
+    UnitTypeId.BANELING: UnitTypeId.ZERGLING,
+    UnitTypeId.RAVAGER: UnitTypeId.ROACH,
+    UnitTypeId.OVERSEER: UnitTypeId.OVERLORD,
+    UnitTypeId.OVERLORDTRANSPORT: UnitTypeId.OVERLORD,
+    UnitTypeId.BROODLORD: UnitTypeId.CORRUPTOR,
+}
 
 
 class UnitData:
@@ -250,37 +258,23 @@ class UnitValue(ManagerBase):
             UnitTypeId.LARVA: UnitData(0, 0, 0, 0),
             UnitTypeId.EGG: UnitData(0, 0, 0, 0),
             UnitTypeId.DRONE: UnitData(50, 0, 1, 0.5, 12, features=[UnitFeature.HitsGround]),
-            UnitTypeId.DRONEBURROWED: UnitData(50, 0, 1, 0.5, features=[UnitFeature.HitsGround]),
             UnitTypeId.QUEEN: UnitData(150, 0, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.QUEENBURROWED: UnitData(150, 0, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.ZERGLING: UnitData(25, 0, 0.5, 0.5, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ZERGLINGBURROWED: UnitData(25, 0, 0.5, 0.5, features=[UnitFeature.HitsGround]),
-            UnitTypeId.BANELINGCOCOON: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
+            UnitTypeId.BANELINGCOCOON: UnitData(25, 25, 0.5, 1, features=[]),
             UnitTypeId.BANELING: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
-            UnitTypeId.BANELINGBURROWED: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
             UnitTypeId.ROACH: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ROACHBURROWED: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.RAVAGER: UnitData(75 + 25, 75 + 25, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.RAVAGERBURROWED: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.RAVAGERCOCOON: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
+            UnitTypeId.RAVAGERCOCOON: UnitData(75 + 25, 75 + 25, 3, 3, features=[]),
             UnitTypeId.HYDRALISK: UnitData(100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.HYDRALISKBURROWED: UnitData(
-                100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
-            ),
             UnitTypeId.LURKERMP: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
-            UnitTypeId.LURKERMPBURROWED: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
+            UnitTypeId.LURKERMPEGG: UnitData(50, 100, 3, 3, features=[]),
             UnitTypeId.INFESTOR: UnitData(100, 150, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.INFESTORBURROWED: UnitData(
-                100, 150, 2, 0, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
-            ),
             UnitTypeId.INFESTEDTERRAN: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.INFESTEDCOCOON: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.SWARMHOSTMP: UnitData(100, 75, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.SWARMHOSTBURROWEDMP: UnitData(100, 75, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.LOCUSTMP: UnitData(0, 0, 0, 0.5),
             UnitTypeId.LOCUSTMPFLYING: UnitData(0, 0, 0, 0.5),
             UnitTypeId.ULTRALISK: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ULTRALISKBURROWED: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
             UnitTypeId.OVERLORD: UnitData(100, 0, 0, 0.1, features=[UnitFeature.Flying]),
             UnitTypeId.OVERLORDCOCOON: UnitData(100, 0, 0, 0.1, features=[UnitFeature.Flying]),
             UnitTypeId.OVERLORDTRANSPORT: UnitData(100, 0, 0, 0.5, features=[UnitFeature.Flying]),
@@ -290,18 +284,17 @@ class UnitValue(ManagerBase):
             UnitTypeId.CHANGELINGMARINE: UnitData(0, 0, 0, 0.01),
             UnitTypeId.CHANGELINGMARINESHIELD: UnitData(0, 0, 0, 0.01),
             UnitTypeId.CHANGELINGZEALOT: UnitData(0, 0, 0, 0.01),
-            UnitTypeId.CHANGELINGZERGLING: UnitData(25, 0, 0, 0.01),
-            UnitTypeId.CHANGELINGZERGLINGWINGS: UnitData(25, 0, 0, 0.01),
+            UnitTypeId.CHANGELINGZERGLING: UnitData(0, 0, 0, 0.01),
+            UnitTypeId.CHANGELINGZERGLINGWINGS: UnitData(0, 0, 0, 0.01),
             UnitTypeId.MUTALISK: UnitData(
                 100, 100, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
             ),
-            UnitTypeId.MUTALISKEGG: UnitData(100, 100, 2, 0),
             UnitTypeId.CORRUPTOR: UnitData(150, 100, 2, 2, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.VIPER: UnitData(100, 200, 3, 3, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.BROODLORD: UnitData(
                 150 + 150, 150 + 100, 4, 6, features=[UnitFeature.HitsGround, UnitFeature.Flying]
             ),
-            UnitTypeId.BROODLORDCOCOON: UnitData(150 + 150, 150 + 100, 4, 4, features=[UnitFeature.Flying]),
+            UnitTypeId.BROODLORDCOCOON: UnitData(150 + 150, 150 + 100, 4, 6, features=[UnitFeature.Flying]),
             UnitTypeId.BROODLING: UnitData(0, 0, 0, 0.01),
             # Buildings
             # Terran
@@ -709,7 +702,6 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.OVERLORDCOCOON: UnitTypeId.OVERLORD,
     UnitTypeId.RAVAGERCOCOON: UnitTypeId.RAVAGER,
     UnitTypeId.LURKERMPBURROWED: UnitTypeId.LURKERMP,
-    UnitTypeId.LURKERMP: UnitTypeId.LURKERMP,
     UnitTypeId.QUEENBURROWED: UnitTypeId.QUEEN,
     UnitTypeId.CREEPTUMORBURROWED: UnitTypeId.CREEPTUMOR,
     UnitTypeId.INFESTORBURROWED: UnitTypeId.INFESTOR,
@@ -718,6 +710,7 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     # Terran
     UnitTypeId.SIEGETANKSIEGED: UnitTypeId.SIEGETANK,
     UnitTypeId.VIKINGASSAULT: UnitTypeId.VIKINGFIGHTER,
+    UnitTypeId.THORAP: UnitTypeId.THOR,
     UnitTypeId.LIBERATORAG: UnitTypeId.LIBERATOR,
     UnitTypeId.WIDOWMINEBURROWED: UnitTypeId.WIDOWMINE,
     UnitTypeId.SUPPLYDEPOTLOWERED: UnitTypeId.SUPPLYDEPOT,

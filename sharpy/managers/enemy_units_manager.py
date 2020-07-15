@@ -8,7 +8,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.unit_value import UnitValue
+from sharpy.managers.unit_value import UnitValue, REVERSE_MORPHS_DICT
 
 
 class EnemyUnitsManager(ManagerBase):
@@ -29,7 +29,8 @@ class EnemyUnitsManager(ManagerBase):
 
         # Dictionary for enemy units. Key is unit type, values are sets of unit tags.
         self._known_enemy_units_dict: Dict[UnitTypeId, Set[int]] = {}
-
+        # This is the count we have seen that are morphed from this base type
+        self._morphed_type: Dict[UnitTypeId, int] = {}
         self._enemy_cloak_trigger = False
 
     async def start(self, knowledge: "Knowledge"):
@@ -63,7 +64,7 @@ class EnemyUnitsManager(ManagerBase):
         """Returns how many units enemy currently has of that unit type."""
         real_type = self.unit_values.real_type(unit_type)
         unit_tags = self._known_enemy_units_dict.get(real_type, set())
-        return len(unit_tags)
+        return len(unit_tags) - self._morphed_type.get(real_type, 0)
 
     @property
     def enemy_total_power(self) -> ExtendedPower:
@@ -84,10 +85,13 @@ class EnemyUnitsManager(ManagerBase):
 
     async def update(self):
         self.cloak_check()
+        types_check = set()
 
         for unit in self.knowledge.known_enemy_units:  # type: Unit
-
             real_type = self.unit_values.real_type(unit.type_id)
+
+            if real_type not in types_check:
+                types_check.add(real_type)
 
             # Ignore some units that are eg. temporary
             if real_type in ignored_types:
@@ -101,8 +105,14 @@ class EnemyUnitsManager(ManagerBase):
                 continue
 
             known_units = self._known_enemy_units_dict.setdefault(real_type, set())
-            known_units.add(unit.tag)
-            self.print(f"Enemy unit {unit.tag} of type {real_type} discovered.")
+            if unit.tag not in known_units:
+                known_units.add(unit.tag)
+                morphed_from = REVERSE_MORPHS_DICT.get(real_type, None)
+                if morphed_from:
+                    self._morphed_type[morphed_from] = self._morphed_type.get(morphed_from, 0) + 1
+                self.print(f"Enemy unit {unit.tag} of type {real_type} discovered.")
+
+        self.re_adjust_morphs(types_check)
 
     @property
     def enemy_cloak_trigger(self):
@@ -185,6 +195,13 @@ class EnemyUnitsManager(ManagerBase):
 
     async def post_update(self):
         pass
+
+    def re_adjust_morphs(self, types_check: Set[UnitTypeId]):
+        for type_id in types_check:
+            count = len(self.cache.enemy(type_id))
+            tags_count = len(self._known_enemy_units_dict.get(type_id, []))
+            if count > tags_count - self._morphed_type.get(type_id, 0):
+                self._morphed_type[type_id] = max(0, count - tags_count)
 
 
 ignored_types: Set[UnitTypeId] = {

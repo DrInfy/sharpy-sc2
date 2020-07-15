@@ -13,7 +13,6 @@ class LostUnitsManager(ManagerBase):
 
     def __init__(self):
         super().__init__()
-        self.hallucination_tags: List[int] = []
 
         self._my_lost_units: Dict[UnitTypeId, List[Unit]] = {}
         self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = {}
@@ -36,7 +35,7 @@ class LostUnitsManager(ManagerBase):
         unit = event.unit
         type_id = event.unit.type_id
 
-        if type_id in ignored_types or unit.tag in self.hallucination_tags:
+        if type_id in ignored_types or unit.is_hallucination:
             return
 
         # Find a mapping if there is one, or use the type_id as it is

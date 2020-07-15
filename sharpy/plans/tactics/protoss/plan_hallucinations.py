@@ -56,5 +56,4 @@ class PlanHallucination(ActBase):
 
     async def hallucination_detected(self, unit):
         self.roles.set_task(UnitTask.Hallucination, unit)
-        self.knowledge.lost_units_manager.hallucination_tags.append(unit.tag)
         self.print(f"{unit.type_id.name} {unit.tag} detected as hallucination")

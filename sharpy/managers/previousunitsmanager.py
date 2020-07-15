@@ -30,12 +30,5 @@ class PreviousUnitsManager(ManagerBase):
         Needs to be run right before the end of an iteration."""
         self.previous_units = dict()
 
-        for unit in self.knowledge.all_own:  # type: Unit
-            if unit.tag in self.previous_units:
-                self.print(f"Unit {unit} is already present in previous_units!")
+        for unit in self.ai.all_units:  # type: Unit
             self.previous_units[unit.tag] = unit
-
-        for enemy_unit in self.knowledge.known_enemy_units:  # type: Unit
-            if enemy_unit.tag in self.previous_units:
-                self.print(f"Enemy unit {enemy_unit} is already present in previous_units!")
-            self.previous_units[enemy_unit.tag] = enemy_unit
