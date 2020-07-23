@@ -20,6 +20,8 @@ class VersionManager(ManagerBase):
         self.base_version = 12345
         self.disabled_upgrades: Set[UpgradeId] = set()
         self.moved_upgrades: Dict[UpgradeId, UnitTypeId] = {}
+        # You have to manually check this
+        self.disabled_abilities: Set[AbilityId] = set()
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):
@@ -35,6 +37,7 @@ class VersionManager(ManagerBase):
         self.knowledge.print(self.full_version, "Version")
         self.configure_enums()
         self.configure_upgrades()
+        self.configure_abilities()
 
     async def update(self):
         pass
@@ -75,3 +78,11 @@ class VersionManager(ManagerBase):
             self.disabled_upgrades.add(UpgradeId.VOIDRAYSPEEDUPGRADE)
             self.moved_upgrades[UpgradeId.MEDIVACINCREASESPEEDBOOST] = UnitTypeId.STARPORTTECHLAB
             self.moved_upgrades[UpgradeId.LIBERATORAGRANGEUPGRADE] = UnitTypeId.STARPORTTECHLAB
+
+    def configure_abilities(self):
+        if self.base_version < GameVersion.V_4_12_0:
+            self.disabled_abilities.add(AbilityId.BATTERYOVERCHARGE_BATTERYOVERCHARGE)
+        if self.base_version < GameVersion.V_4_11_0:
+            self.disabled_abilities.add(AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD)
+        if self.base_version >= GameVersion.V_4_11_0:
+            self.disabled_abilities.add(AbilityId.INFESTEDTERRANS_INFESTEDTERRANS)
