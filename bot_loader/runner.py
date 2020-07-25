@@ -46,7 +46,6 @@ class MatchRunner:
         if isinstance(players[1], BotLadder):
             ladder_bot: BotLadder = players[1]
             cmd = ladder_bot.map_type_cmd()
-            cmd = " ".join(cmd)
             players[1] = BotProcess(ladder_bot.path, cmd, ladder_bot.race, ladder_bot.name)
 
         run_multiple_games([GameMatch(map_settings, [players[0], players[1]], realtime=realtime)])

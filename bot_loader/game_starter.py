@@ -65,8 +65,8 @@ class GameStarter:
         self.root_logger.setLevel(log_level)
 
         # Remove handlers from python-sc2 so we don't get the same messages twice.
-        for handler in sc2.main.logger.handlers:
-            sc2.main.logger.removeHandler(handler)
+        # for handler in sc2.main.logger.handlers:
+        #     sc2.main.logger.removeHandler(handler)
 
         self.definitions = definitions
         self.players = definitions.playable

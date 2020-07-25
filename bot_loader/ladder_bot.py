@@ -62,16 +62,10 @@ class BotLadder(AbstractPlayer):
             file_name = mapping[0]
 
         if mapping[1] is None:
-            return [file_name]
+            return [os.path.join(self.path, file_name)]
         if mapping[1] == "java":
-            return [mapping[1], "-jar", file_name]
-        return [mapping[1], file_name]
-
-        # if mapping[1] is None:
-        #     return [os.path.join(self.path, file_name)]
-        # if mapping[1] == "java":
-        #     return [mapping[1], "-jar", os.path.join(self.path, file_name)]
-        # return [mapping[1], os.path.join(self.path, file_name)]
+            return [mapping[1], "-jar", os.path.join(self.path, file_name)]
+        return [mapping[1], os.path.join(self.path, file_name)]
 
     def __str__(self):
         if self.name is not None:

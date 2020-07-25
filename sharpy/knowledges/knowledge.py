@@ -540,12 +540,12 @@ class Knowledge:
         elif not self.config["general"].getboolean("frozen_log") and tag != "Build":
             return  # No print
 
-        if self.logger.hasHandlers():
-            # Write to the competition site log
-            self.logger.log(log_level, message)
-        else:
-            # Write to our own log configured in run_custom.py
-            logging.log(log_level, message)
+        # if self.logger.hasHandlers():
+        #     # Write to the competition site log
+        #     self.logger.log(log_level, message)
+        # else:
+        # Write to our own log configured in run_custom.py
+        logging.log(log_level, message)
 
     def _find_gather_point(self):
         self.gather_point = self.base_ramp.top_center.towards(self.base_ramp.bottom_center, -4)
