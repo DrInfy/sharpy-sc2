@@ -197,9 +197,15 @@ class DistributeWorkers(ActBase):
 
             current_workers = len(self.worker_dict.get(building.tag, []))
             zone = self.zone_manager.zone_for_unit(building)
-            if self.evacuate_zones and zone and zone.needs_evacuation:
+            if zone.is_enemys:
+                # Exit workers from the zone
+                self.work_queue.append(WorkStatus(building, -current_workers * 10000, True))
+            elif self.evacuate_zones and zone and zone.needs_evacuation:
                 # Exit workers from the zone
                 self.work_queue.append(WorkStatus(building, -current_workers * 100, True))
+            elif not zone.is_ours:
+                # Exit workers from the zone (?), what about long distance mining?
+                self.work_queue.append(WorkStatus(building, -current_workers * 10, False))
             elif building.has_vespene:
                 # One worker should be inside the gas
                 harvesters = min(building.assigned_harvesters, current_workers + 1)
