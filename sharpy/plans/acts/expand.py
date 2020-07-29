@@ -22,8 +22,15 @@ train_worker_abilitites = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTR
 
 
 class Expand(ActBase):
-    def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):
+    def __init__(
+        self,
+        to_count: int,
+        priority: bool = False,
+        consider_worker_production: bool = True,
+        priority_base_index: Optional[int] = None,
+    ):
         assert isinstance(to_count, int)
+        self.priority_base_index = priority_base_index
         self.to_count: int = to_count
         self.builder_tag: Optional[int] = None
         self.priority = priority
@@ -47,8 +54,12 @@ class Expand(ActBase):
         expand_here: "Zone" = None
         expand_now = False
         active_bases = self.current_active_base_count
+        zones = self.knowledge.expansion_zones
 
-        for zone in self.knowledge.expansion_zones:  # type: "Zone"
+        if self.priority_base_index is not None:
+            zones = sorted(zones, key=lambda z: z.zone_index == self.priority_base_index, reverse=True)
+
+        for zone in zones:  # type: "Zone"
             if expand_here is None and zone.should_expand_here:
                 if not self.expanding_in(zone):
                     expand_here = zone
