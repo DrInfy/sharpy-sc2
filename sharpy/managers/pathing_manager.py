@@ -58,7 +58,7 @@ class PathingManager(ManagerBase):
             equal_arrays = dif.all()
             print(equal_arrays)
         """
-        _data = np.fmax(path_grid, placement_grid).T
+        _data = np.fmax(path_grid.data_numpy, placement_grid.data_numpy).T
         self.path_finder_terrain = sc2pathlibp.PathFinder(_data)
         self.path_finder_terrain.normalize_influence(20)
 
