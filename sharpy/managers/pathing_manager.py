@@ -18,6 +18,7 @@ from sharpy.managers import ManagerBase
 import sc2pathlibp
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
+import numpy as np
 
 
 class PathingManager(ManagerBase):
@@ -41,16 +42,24 @@ class PathingManager(ManagerBase):
             game_info.terrain_height.data_numpy,
             game_info.playable_area,
         )
-        _data = [[0 for y in range(path_grid.height)] for x in range(path_grid.width)]
-
-        for x in range(0, path_grid.width):
-            for y in range(0, path_grid.height):
-                pathable = path_grid.is_set((x, y)) or placement_grid.is_set((x, y))
-                if pathable:
-                    _data[x][y] = 1
-
+        """
+            # Arrays are equal,  code for testing equality : 
+            a1= np.array([[0 for y in range(path_grid.height)] for x in range(path_grid.width)])
+            for x in range(0, path_grid.width):
+                for y in range(0, path_grid.height):
+                    pathable = path_grid.is_set((x, y)) or placement_grid.is_set((x, y))
+                    if pathable:
+                        a1[x][y] = 1
+            
+            a2 = np.fmax(m_d.path_arr, m_d.placement_arr).T
+            
+            dif = a1 == a2 
+            
+            equal_arrays = dif.all()
+            print(equal_arrays)
+        """
+        _data = np.fmax(path_grid, placement_grid).T
         self.path_finder_terrain = sc2pathlibp.PathFinder(_data)
-
         self.path_finder_terrain.normalize_influence(20)
 
     @property
