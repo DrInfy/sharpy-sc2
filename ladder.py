@@ -66,7 +66,7 @@ def run_ladder_game(bot):
     file_name = f"{opponent}_{time}"
     path = f"{folder}/{file_name}.log"
 
-    LoggingUtility.set_logger_file(log_level=get_config(False), path=path)
+    LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
 
     # Join ladder game
     g = join_ladder_game(host=host, port=host_port, players=[bot], realtime=args.RealTime, portconfig=portconfig)
@@ -132,11 +132,11 @@ def stand_alone_game(bot):
 
         file_name = f"Human{race}_{map_name}_{time}"
         path = f"{folder}/{file_name}.log"
-        LoggingUtility.set_logger_file(log_level=get_config(False), path=path)
+        LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
 
         return sc2.run_game(sc2.maps.get(map_name), [Human(race), bot], realtime=True)
 
     file_name = f"IngameAI_{map_name}_{time}"
     path = f"{folder}/{file_name}.log"
-    LoggingUtility.set_logger_file(log_level=get_config(False), path=path)
+    LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
     return sc2.run_game(sc2.maps.get(map_name), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)
