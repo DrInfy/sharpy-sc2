@@ -2,11 +2,13 @@ from enum import IntEnum
 from typing import Set, Dict, Any
 
 from sc2 import UnitTypeId, AbilityId
+from sc2.ids.buff_id import BuffId
 from sc2.ids.upgrade_id import UpgradeId
 from sharpy.managers import ManagerBase
 
 
 class GameVersion(IntEnum):
+    V_5_0_0 = 81009
     V_4_12_0 = 80188
     V_4_11_4 = 78285
     V_4_11_0 = 77379
@@ -46,6 +48,48 @@ class VersionManager(ManagerBase):
         pass
 
     def configure_enums(self):
+        if self.base_version < GameVersion.V_5_0_0:
+            self._set_enum_mapping(
+                UnitTypeId,
+                {
+                    UnitTypeId.INHIBITORZONESMALL: 1968,
+                    UnitTypeId.INHIBITORZONEMEDIUM: 1969,
+                    UnitTypeId.INHIBITORZONELARGE: 1970,
+                    UnitTypeId.ACCELERATIONZONESMALL: 1971,
+                    UnitTypeId.ACCELERATIONZONEMEDIUM: 1972,
+                    UnitTypeId.ACCELERATIONZONELARGE: 1973,
+                    UnitTypeId.ACCELERATIONZONEFLYINGSMALL: 1974,
+                    UnitTypeId.ACCELERATIONZONEFLYINGMEDIUM: 1975,
+                    UnitTypeId.ACCELERATIONZONEFLYINGLARGE: 1976,
+                    UnitTypeId.INHIBITORZONEFLYINGSMALL: 1977,
+                    UnitTypeId.INHIBITORZONEFLYINGMEDIUM: 1978,
+                    UnitTypeId.INHIBITORZONEFLYINGLARGE: 1979,
+                    UnitTypeId.ASSIMILATORRICH: 1980,
+                    UnitTypeId.EXTRACTORRICH: 1981,
+                    UnitTypeId.REFINERYRICH: 1960,
+                    UnitTypeId.MINERALFIELD450: 1982,
+                    UnitTypeId.MINERALFIELDOPAQUE: 1983,
+                    UnitTypeId.MINERALFIELDOPAQUE900: 1984,
+                },
+            )
+            self._set_enum_mapping(
+                AbilityId,
+                {
+                    AbilityId.BATTERYOVERCHARGE_BATTERYOVERCHARGE: 3801,
+                    AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD: 3803,
+                },
+            )
+            self._set_enum_mapping(
+                BuffId,
+                {
+                    BuffId.INHIBITORZONETEMPORALFIELD: 292,
+                    BuffId.RESONATINGGLAIVESPHASESHIFT: 293,
+                    BuffId.AMORPHOUSARMORCLOUD: 294,
+                    BuffId.RAVENSHREDDERMISSILEARMORREDUCTIONUISUBTRUCT: 295,
+                    BuffId.BATTERYOVERCHARGE: 296,
+                },
+            )
+
         if self.base_version == GameVersion.V_4_10_0:
             self._set_enum_mapping(
                 UnitTypeId,
