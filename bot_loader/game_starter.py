@@ -17,6 +17,7 @@ from sc2 import maps
 from sc2.paths import Paths
 from sc2.player import AbstractPlayer, Bot, Human
 from sharpy.knowledges import KnowledgeBot
+from sharpy.tools import LoggingUtility
 
 new_line = "\n"
 
@@ -56,17 +57,6 @@ known_melee_maps = (
 class GameStarter:
     def __init__(self, definitions: BotDefinitions) -> None:
         self.config = get_config()
-
-        log_level = self.config["general"]["log_level"]
-
-        self.root_logger = logging.getLogger()
-
-        # python-sc2 logs a ton of spam with log level DEBUG. We do not want that.
-        self.root_logger.setLevel(log_level)
-
-        # Remove handlers from python-sc2 so we don't get the same messages twice.
-        for handler in sc2.main.logger.handlers:
-            sc2.main.logger.removeHandler(handler)
 
         self.definitions = definitions
         self.players = definitions.playable
@@ -192,9 +182,7 @@ Builds:
         # Randomizer is to make it less likely that games started at the same time have same name
         file_name = f"{player2}_{map_name}_{time}_{randomizer}"
         path = f"{folder}/{file_name}.log"
-
-        handler = logging.FileHandler(path)
-        self.root_logger.addHandler(handler)
+        LoggingUtility.set_logger_file(log_level=self.config["general"]["log_level"], path=path)
 
         GameStarter.setup_bot(player1_bot, player1, player2, args)
         GameStarter.setup_bot(player2_bot, player2, player1, args)
@@ -214,8 +202,7 @@ Builds:
         )
 
         # release file handle
-        self.root_logger.removeHandler(handler)
-        handler.close()
+        sc2.main.logger.remove()
 
     @staticmethod
     def setup_bot(player: AbstractPlayer, bot_code, enemy_text: str, args):

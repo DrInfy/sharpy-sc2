@@ -1,5 +1,6 @@
 import logging
 import string
+import sys
 from configparser import ConfigParser
 from typing import Set, List, Optional, Dict, Callable, Type
 
@@ -130,6 +131,7 @@ class Knowledge:
         self._all_own: Units = Units([], self.ai)
         self.config: ConfigParser = self.ai.config
         self.logger = sc2.main.logger
+
         self.is_chat_allowed = self.config["general"].getboolean("chat")
         self._debug = self.config["general"].getboolean("debug")
 
@@ -540,12 +542,7 @@ class Knowledge:
         elif not self.config["general"].getboolean("frozen_log") and tag != "Build":
             return  # No print
 
-        if self.logger.hasHandlers():
-            # Write to the competition site log
-            self.logger.log(log_level, message)
-        else:
-            # Write to our own log configured in run_custom.py
-            logging.log(log_level, message)
+        self.logger.log(log_level, message)
 
     def _find_gather_point(self):
         self.gather_point = self.base_ramp.top_center.towards(self.base_ramp.bottom_center, -4)
