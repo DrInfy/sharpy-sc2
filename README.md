@@ -28,7 +28,7 @@ To build dummy bots for ladder, run ladder_zip.py. Bots will appear as individua
 
 ### Getting started
 
-Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/1.-Getting-Started) guide in wiki.
+Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/Getting-Started) guide in wiki.
 
 ## Contributing
 
