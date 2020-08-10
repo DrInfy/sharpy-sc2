@@ -29,21 +29,7 @@ class PathingManager(ManagerBase):
         self.found_points_air = []
 
     async def start(self, knowledge: "Knowledge"):
-        """
-        # Arrays are equal,  code for testing equality :
-            a1= np.array([[0 for y in range(path_grid.height)] for x in range(path_grid.width)])
-            for x in range(0, path_grid.width):
-                for y in range(0, path_grid.height):
-                    pathable = path_grid.is_set((x, y)) or placement_grid.is_set((x, y))
-                    if pathable:
-                        a1[x][y] = 1
-            a2 = np.fmax(path_grid.data_numpy, placement_grid.data_numpy).T
-            dif = a1 == a2
-            equal_arrays = dif.all()
-            print(equal_arrays)
-        """
         await super().start(knowledge)
-
         game_info: GameInfo = self.ai.game_info
         path_grid = game_info.pathing_grid
         placement_grid = game_info.placement_grid
