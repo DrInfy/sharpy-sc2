@@ -37,6 +37,7 @@ class BuildAddon(ActBase):
 
         if not self.knowledge.can_afford(self.unit_type):
             self.knowledge.reserve(cost.minerals, cost.vespene)
+            return False
 
         builder: Unit
         for builder in self.cache.own(self.unit_from_type).ready.idle:
@@ -49,10 +50,10 @@ class BuildAddon(ActBase):
 
                 if await self.ai.find_placement(UnitTypeId.SUPPLYDEPOT, center, 0, False):
                     self.tried_to_build_dict[builder.tag] = self.ai.time
-                    self.knowledge.print(f"[AddOn] {self.unit_type} to {center}")
+                    self.print(f"{self.unit_type} to {center}")
                     self.do(builder.build(self.unit_type))
                 else:
-                    self.knowledge.print("[AddOn] no space")
+                    self.print("no space")
         return False
 
     def get_count(self, unit_type: UnitTypeId) -> int:

@@ -59,7 +59,7 @@ class CycloneBot(KnowledgeBot):
         self.attack = PlanZoneAttack(40)
 
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
-        self.distribute_workers = PlanDistributeWorkers()
+        self.distribute_workers = DistributeWorkers()
 
         tactics = [
             PlanCancelBuilding(),

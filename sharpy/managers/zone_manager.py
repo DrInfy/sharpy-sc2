@@ -171,7 +171,8 @@ class ZoneManager(ManagerBase):
             # Recalculate improved gather points based on pathing
             # Ignore main base gather point
             path = self.expansion_zones[i].paths.get(zone_count - 1)
-            self.expansion_zones[i].gather_point = path.get_index(6)
+            if path.distance > 10:
+                self.expansion_zones[i].gather_point = path.get_index(6)
 
         if 2 not in self.gather_points:
             # 3rd base isn't in gather points, but if we need to go through 3rd to get to 2nd, it totally should be.

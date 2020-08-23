@@ -56,10 +56,10 @@ class MicroVoidrays(MicroStep):
 
         current_command = self.focus_fire(unit, current_command, None)
 
-        if not shoot:
-            if self.engaged_power.air_power < 1:
-                if unit.distance_to(current_command.target) > 2:
-                    return Action(current_command.target.position, False)
+        # if not shoot:
+        #     if self.engaged_power.air_power < 1:
+        #         if unit.distance_to(current_command.target) > 2:
+        #             return Action(current_command.target.position, False)
         return current_command
 
     def should_shoot(self, unit: Unit):

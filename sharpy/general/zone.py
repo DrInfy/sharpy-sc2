@@ -95,6 +95,16 @@ class Zone:
         if self.ramp is not None:
             self.gather_point = self.ramp.top_center.towards(self.center_location, 4)
 
+    @property
+    def is_island(self) -> bool:
+        """
+        Pathing is either blocked by non-walkable areas or with minerals
+        @return: True if the zone is an island
+        """
+        if self.zone_index == 0 or len(self.paths) == 0:
+            return False
+        return self.paths[0].distance <= 0
+
     def _init_behind_mineral_positions(self) -> List[Point2]:
         positions: List[Point2] = []
         possible_behind_mineral_positions: List[Point2] = []
@@ -104,18 +114,24 @@ class Zone:
         for mf in all_mf:  # type: Unit
             possible_behind_mineral_positions.append(self.center_location.towards(mf.position, 9))
 
-        positions.append(self.center_location.towards(all_mf.center, 9))  # Center
-        positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
-        positions.append(positions[0].furthest(possible_behind_mineral_positions))
+        if all_mf:
+            positions.append(self.center_location.towards(all_mf.center, 9))  # Center
+            positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
+            positions.append(positions[0].furthest(possible_behind_mineral_positions))
+
         return positions
 
     @property
     def behind_mineral_position_center(self) -> Point2:
-        return self.behind_mineral_positions[1]
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1]
+        return self.center_location
 
     @property
     def mineral_line_center(self) -> Point2:
-        return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        return self.center_location
 
     def calc_needs_evacuation(self):
         """
@@ -305,7 +321,11 @@ class Zone:
 
     @property
     def is_under_attack(self) -> bool:
-        return self.is_ours and self.power_balance < 0 or self.is_enemys and self.power_balance > 0
+        return (
+            (self.is_ours and self.assaulting_enemy_power.power > 5 or self.power_balance < 1)
+            or self.is_enemys
+            and self.power_balance > 0
+        )
 
     @property
     def safe_expand_here(self) -> bool:
@@ -395,7 +415,10 @@ class Zone:
             mf = self.ai.mineral_field.closest_to(closest_base)
             self.ai.do(unit.gather(mf))
 
-    def _find_ramp(self, ai):
+    def _find_ramp(self, ai) -> Optional[ExtendedRamp]:
+        if not self.ai.game_info.map_ramps:
+            return None
+
         if self.center_location in self.ai.enemy_start_locations or self.center_location == self.ai.start_location:
             ramps: List[Ramp] = [
                 ramp

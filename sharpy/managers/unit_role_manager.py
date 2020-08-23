@@ -18,7 +18,6 @@ class UnitRoleManager(ManagerBase):
     def __init__(self):
         super().__init__()
         self.role_count = UnitRoleManager.MAX_VALUE
-        self.chat_count = 0
         self.had_task_set: Set[int] = set()
         # If this is True, then units will drop their role if it wasn't set in previous iteration
         self.set_tag_each_iteration = False
@@ -260,8 +259,7 @@ class UnitRoleManager(ManagerBase):
         self.had_task_set.clear()
 
     async def post_update(self):
-        if self.debug:  # and self.chat_count < self.ai.time / 15:
-            self.chat_count += 1
+        if self.debug:
             idle = len(self.roles[UnitTask.Idle].tags)
             building = len(self.roles[UnitTask.Building].tags)
             gathering = len(self.roles[UnitTask.Gathering].tags)

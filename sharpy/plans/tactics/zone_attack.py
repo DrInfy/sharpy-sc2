@@ -170,7 +170,7 @@ class PlanZoneAttack(ActBase):
             self._start_retreat(retreat)
 
     def _should_attack(self, power: ExtendedPower) -> bool:
-        if self.attack_on_advantage:
+        if self.attack_on_advantage and self.ai.supply_used < 190:
             if (
                 self.game_analyzer.our_army_predict in at_least_clear_advantage
                 and self.game_analyzer.our_income_advantage in at_least_small_disadvantage

@@ -8,7 +8,7 @@ from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit
 from sharpy.plans.acts.zerg import MorphLair, ZergUnit, AutoOverLord
 from sharpy.plans.require import Supply
-from sharpy.plans.tactics import PlanDistributeWorkers
+from sharpy.plans.tactics import DistributeWorkers
 
 
 class CounterTerranTie(BuildOrder):
@@ -16,11 +16,11 @@ class CounterTerranTie(BuildOrder):
         """
         Build order package that replaces normal build order for Zerg with one that builds mutalisks to destroy terran
         flying buildings.
-        Add any PlanDistributeWorkers acts with orders
+        Add any DistributeWorkers acts with orders
         """
         cover_list = SequentialList(
             [
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 AutoOverLord(),
                 Step(None, ZergUnit(UnitTypeId.DRONE, 20), skip=Supply(198)),
                 StepBuildGas(4, None),

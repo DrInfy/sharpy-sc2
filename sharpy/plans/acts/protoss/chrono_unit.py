@@ -35,17 +35,17 @@ class ChronoUnit(ActBase):
             return True
 
         for target in self.cache.own(self.from_building).ready:  # type: Unit
-            for order in target.orders:  # type: UnitOrder
-                if order.ability.id == self.creation_ability:
-                    # boost here!
-                    if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
-                        for nexus in self.cache.own(UnitTypeId.NEXUS):
-                            if self.cd_manager.is_ready(
-                                nexus.tag, AbilityId.EFFECT_CHRONOBOOSTENERGYCOST
-                            ) and self.allow_new_action(nexus):
-                                self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                                self.print(f"Chrono {self.creation_ability.name}")
-                                self.casted += 1
+            if target.orders and target.orders[0].ability.id == self.creation_ability:
+                # boost here!
+                if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
+                    for nexus in self.cache.own(UnitTypeId.NEXUS):
+                        if self.cd_manager.is_ready(
+                            nexus.tag, AbilityId.EFFECT_CHRONOBOOSTENERGYCOST
+                        ) and self.allow_new_action(nexus):
+                            self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
+                            self.print(f"Chrono {self.creation_ability.name}")
+                            self.casted += 1
+                            return True  # TODO: better solution for real time, to prevent multiple duplicate chronos
         return True  # Never block
 
 

@@ -28,7 +28,7 @@ class BuildPosition(ActBase):
 
         position = self.position
 
-        worker = self.get_worker(position)
+        worker = self.get_worker_builder(position, self.builder_tag)
         if worker is None:
             return True  # No worker to build with.
 
@@ -64,16 +64,3 @@ class BuildPosition(ActBase):
     def set_worker(self, worker: Unit):
         self.knowledge.roles.set_task(UnitTask.Building, worker)
         self.builder_tag = worker.tag
-
-    def get_worker(self, position: Point2):
-        worker: Unit = None
-        if self.builder_tag is None:
-            free_workers = self.knowledge.roles.free_workers
-            if free_workers.exists:
-                worker = free_workers.closest_to(position)
-        else:
-            worker: Unit = self.ai.workers.find_by_tag(self.builder_tag)
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                self.builder_tag = None
-        return worker

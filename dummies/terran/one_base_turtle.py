@@ -61,7 +61,7 @@ class OneBaseTurtle(KnowledgeBot):
             LowerDepots(),
             PlanZoneDefense(),
             CallMule(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             Repair(),
             ContinueBuilding(),
             PlanZoneGatherTerran(),

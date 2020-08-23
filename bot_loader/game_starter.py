@@ -17,6 +17,7 @@ from sc2 import maps
 from sc2.paths import Paths
 from sc2.player import AbstractPlayer, Bot, Human
 from sharpy.knowledges import KnowledgeBot
+from sharpy.tools import LoggingUtility
 
 new_line = "\n"
 
@@ -57,17 +58,6 @@ class GameStarter:
     def __init__(self, definitions: BotDefinitions) -> None:
         self.config = get_config()
 
-        log_level = self.config["general"]["log_level"]
-
-        self.root_logger = logging.getLogger()
-
-        # python-sc2 logs a ton of spam with log level DEBUG. We do not want that.
-        self.root_logger.setLevel(log_level)
-
-        # Remove handlers from python-sc2 so we don't get the same messages twice.
-        for handler in sc2.main.logger.handlers:
-            sc2.main.logger.removeHandler(handler)
-
         self.definitions = definitions
         self.players = definitions.playable
         self.random_bots = definitions.random_bots
@@ -94,6 +84,7 @@ class GameStarter:
         return map_list
 
     def play(self):
+        # noinspection PyTypeChecker
         parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description="Run a game with custom parameters.",
@@ -134,6 +125,9 @@ Builds:
             "-r", "--release", help="Use only release config and ignore config local.", action="store_true"
         )
         parser.add_argument("-raw", "--raw_selection", help="Raw affects selection.", action="store_true")
+        parser.add_argument(
+            "--port", help="starting port to use, i.e. 10 would result in ports 10-17 being used to play."
+        )
 
         args = parser.parse_args()
 
@@ -188,9 +182,7 @@ Builds:
         # Randomizer is to make it less likely that games started at the same time have same name
         file_name = f"{player2}_{map_name}_{time}_{randomizer}"
         path = f"{folder}/{file_name}.log"
-
-        handler = logging.FileHandler(path)
-        self.root_logger.addHandler(handler)
+        LoggingUtility.set_logger_file(log_level=self.config["general"]["log_level"], path=path)
 
         GameStarter.setup_bot(player1_bot, player1, player2, args)
         GameStarter.setup_bot(player2_bot, player2, player1, args)
@@ -206,11 +198,11 @@ Builds:
             realtime=args.real_time,
             game_time_limit=(30 * 60),
             save_replay_as=f"{folder}/{file_name}.SC2Replay",
+            start_port=args.port,
         )
 
         # release file handle
-        self.root_logger.removeHandler(handler)
-        handler.close()
+        sc2.main.logger.remove()
 
     @staticmethod
     def setup_bot(player: AbstractPlayer, bot_code, enemy_text: str, args):

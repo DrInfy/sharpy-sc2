@@ -84,7 +84,7 @@ class MacroVoidray(KnowledgeBot):
             SequentialList(
                 PlanZoneDefense(),
                 RestorePower(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 Step(UnitReady(UnitTypeId.VOIDRAY, 3), attack),
                 PlanFinishEnemy(),

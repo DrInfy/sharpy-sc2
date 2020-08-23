@@ -45,18 +45,48 @@ difficulty = {
 
 
 class DummyBuilder:
-    def __init__(self, key: str, name: str, race: Race, file_name: str, bot_type: type) -> None:
+    def __init__(self, key: str, name: str, race: Race, file_name: str, bot_type: type, params_count: int = 0) -> None:
         self.key = key
         self.name = name
         self.race: Race = race
         self.file_name = file_name
         self.bot_type = bot_type
+        self.params_count = params_count
 
     def build_definition(self) -> Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]:
         race: str = self.race.name
         folder = race.lower()
         zip_builder = DummyZip(self.name, race, os.path.join("dummies", folder, self.file_name))
-        return (lambda params: Bot(self.race, self.bot_type()), zip_builder)
+        if self.params_count == 0:
+            return (lambda params: Bot(self.race, self.bot_type()), zip_builder)
+        if self.params_count == 1:
+            return (
+                lambda params: Bot(self.race, self.bot_type(BotDefinitions.index_check(params, 0, "default"))),
+                zip_builder,
+            )
+        if self.params_count == 2:
+            return (
+                lambda params: Bot(
+                    self.race,
+                    self.bot_type(
+                        BotDefinitions.index_check(params, 0, "default"),
+                        BotDefinitions.index_check(params, 1, "default"),
+                    ),
+                ),
+                zip_builder,
+            )
+        if self.params_count == 3:
+            return (
+                lambda params: Bot(
+                    self.race,
+                    self.bot_type(
+                        BotDefinitions.index_check(params, 0, "default"),
+                        BotDefinitions.index_check(params, 1, "default"),
+                        BotDefinitions.index_check(params, 2, "default"),
+                    ),
+                ),
+                zip_builder,
+            )
 
 
 class BotDefinitions:
@@ -124,7 +154,7 @@ class BotDefinitions:
 
     def _human(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         # Human, must be player 1
-        return {"human": ((lambda params: Human(races[self.index_check(params, 0, "random")])), None)}
+        return {"human": ((lambda params: Human(races[BotDefinitions.index_check(params, 0, "random")])), None)}
 
     def _ai(self) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         # Ingame ai, can be player 1 or 2 and cannot be published
@@ -132,9 +162,9 @@ class BotDefinitions:
             "ai": (
                 (
                     lambda params: Computer(
-                        races[self.index_check(params, 0, "random")],
-                        difficulty[self.index_check(params, 1, "veryhard")],
-                        builds[self.index_check(params, 2, "random")],
+                        races[BotDefinitions.index_check(params, 0, "random")],
+                        difficulty[BotDefinitions.index_check(params, 1, "veryhard")],
+                        builds[BotDefinitions.index_check(params, 2, "random")],
                     )
                 ),
                 None,
@@ -191,7 +221,8 @@ class BotDefinitions:
         assert ladder_zip is None or isinstance(ladder_zip, LadderZip)
         self.bots[key] = (func, ladder_zip)
 
-    def index_check(self, items: List[str], index: int, default: str) -> str:
+    @staticmethod
+    def index_check(items: List[str], index: int, default: Optional[str]) -> str:
         """
         Simple method for parsing arguments with a default value if argument index not foung
         @param items: arguments
@@ -209,7 +240,7 @@ class BotDefinitions:
             # Protoss
             DummyBuilder("4gate", "SharpRush", Race.Protoss, "gate4.py", Stalkers4Gate),
             DummyBuilder("adept", "SharpShades", Race.Protoss, "adept_allin.py", AdeptRush),
-            DummyBuilder("cannonrush", "SharpCannons", Race.Protoss, "cannon_rush.py", CannonRush),
+            DummyBuilder("cannonrush", "SharpCannons", Race.Protoss, "cannon_rush.py", CannonRush, params_count=1),
             DummyBuilder("disruptor", "SharpSpheres", Race.Protoss, "disruptor.py", SharpSphereBot),
             DummyBuilder("dt", "SharpShadows", Race.Protoss, "dark_templar_rush.py", DarkTemplarRush),
             DummyBuilder("robo", "SharpRobots", Race.Protoss, "robo.py", MacroRobo),
@@ -232,13 +263,14 @@ class BotDefinitions:
             # DummyBuilder("roachrush", "SharpShades", Race.Zerg, "adept_allin.py", RoachRush),
             # Terran
             DummyBuilder("banshee", "RustyScreams", Race.Terran, "banshees.py", Banshees),
-            DummyBuilder("bc", "FlyingRust", Race.Terran, "battle_cruisers.py", BattleCruisers),
+            DummyBuilder("bc", "FlyingRust", Race.Terran, "battle_cruisers.py", BattleCruisers, params_count=1),
             DummyBuilder("bio", "RustyInfantry", Race.Terran, "bio.py", BioBot),
             DummyBuilder("cyclone", "RustyLocks", Race.Terran, "cyclones.py", CycloneBot),
-            DummyBuilder("marine", "RustyMarines", Race.Terran, "marine_rush.py", MarineRushBot),
+            DummyBuilder("marine", "RustyMarines", Race.Terran, "marine_rush.py", MarineRushBot, params_count=1),
             DummyBuilder("oldrusty", "OldRusty", Race.Terran, "rusty.py", Rusty),
             DummyBuilder("tank", "RustyTanks", Race.Terran, "two_base_tanks.py", TwoBaseTanks),
             DummyBuilder("terranturtle", "RustyOneBaseTurtle", Race.Terran, "one_base_turtle.py", OneBaseTurtle),
+            DummyBuilder("saferaven", "SafeRaven", Race.Terran, "safe_tvt_raven.py", TerranSafeTvT),
         ]
 
         for bot in bots:
@@ -258,13 +290,13 @@ class BotDefinitions:
 
         buildable_only = {
             "cannonrush_1": DummyZip(
-                "SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 0"
+                "SharpCannonRush", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannonrush = 0"
             ),
             "cannonrush_2": DummyZip(
-                "SharpCannonContain", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 1"
+                "SharpCannonContain", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannonrush = 1"
             ),
             "cannonrush_3": DummyZip(
-                "SharpCannonExpand", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannon_rush = 2"
+                "SharpCannonExpand", "Protoss", os.path.join("dummies", "protoss", "cannon_rush.py"), "cannonrush = 2"
             ),
             "marine_1": DummyZip(
                 "RustyMarines1", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 0"
@@ -274,6 +306,9 @@ class BotDefinitions:
             ),
             "marine_3": DummyZip(
                 "RustyMarines3", "Terran", os.path.join("dummies", "terran", "marine_rush.py"), "marine = 2"
+            ),
+            "bcjump": DummyZip(
+                "FlyingRustJump", "Terran", os.path.join("dummies", "terran", "battle_cruisers.py"), "bc = 1"
             ),
         }
 

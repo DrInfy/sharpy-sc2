@@ -43,7 +43,7 @@ class OneBaseTempests(KnowledgeBot):
                 SequentialList(
                     PlanZoneDefense(),
                     RestorePower(),
-                    PlanDistributeWorkers(),
+                    DistributeWorkers(),
                     PlanZoneGather(),
                     Step(UnitExists(UnitTypeId.TEMPEST, 1, include_killed=True), attack),
                     PlanFinishEnemy(),

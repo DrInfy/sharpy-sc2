@@ -8,6 +8,7 @@ from aiohttp.web_ws import WebSocketResponse
 
 from bot_loader.killable_process import KillableProcess
 from bot_loader.ladder_bot import BotLadder
+from bot_loader.port_picker import pick_contiguous_unused_ports, return_ports
 from sc2 import run_game
 
 # noinspection PyProtectedMember
@@ -29,19 +30,25 @@ class MatchRunner:
 
         super().__init__()
 
-    def run_game(self, map_settings: str, players: List[AbstractPlayer], player1_id: str, **kwargs):
+    def run_game(
+        self, map_settings: str, players: List[AbstractPlayer], player1_id: str, start_port: Optional[str], **kwargs
+    ):
         if isinstance(players[0], BotLadder):
             raise Exception("Player 1 cannot be a ladder bot!")
+
+        # Port config
+        if start_port:
+            ports = range(int(start_port), int(start_port) + 7)
+        else:
+            ports = pick_contiguous_unused_ports(7)
+        portconfig = Portconfig()
+
+        portconfig.shared = ports[0]  # Not used
+        portconfig.server = [ports[1], ports[2]]
+        portconfig.players = [[ports[3], ports[4]], [ports[5], ports[6]]]
+
         if len(players) > 1 and isinstance(players[1], BotLadder):
             # host_only_args = ["save_replay_as", "rgb_render_config", "random_seed", "sc2_version"]
-
-            # Port config
-            portconfig = Portconfig()
-            ports = [portconfig.shared + p for p in range(1, 8)]
-
-            portconfig.shared = ports[0]  # Not used
-            portconfig.server = [ports[1], ports[2]]
-            portconfig.players = [[ports[3], ports[4]], [ports[5], ports[6]]]
 
             self.ladder_player2_port = portconfig.players[1][0]
 
@@ -55,6 +62,8 @@ class MatchRunner:
                     # ladder_bot.join_game(opponent_id, portconfig=portconfig)
                 )
             )
+
+            return_ports(ports)
 
             return result
         else:

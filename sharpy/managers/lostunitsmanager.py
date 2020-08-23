@@ -13,7 +13,6 @@ class LostUnitsManager(ManagerBase):
 
     def __init__(self):
         super().__init__()
-        self.hallucination_tags: List[int] = []
 
         self._my_lost_units: Dict[UnitTypeId, List[Unit]] = {}
         self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = {}
@@ -36,7 +35,7 @@ class LostUnitsManager(ManagerBase):
         unit = event.unit
         type_id = event.unit.type_id
 
-        if type_id in ignored_types or unit.tag in self.hallucination_tags:
+        if type_id in ignored_types or unit.is_hallucination:
             return
 
         # Find a mapping if there is one, or use the type_id as it is
@@ -59,13 +58,15 @@ class LostUnitsManager(ManagerBase):
         """Calculates lost resources for an enemy. Returns a tuple with (unit_count, minerals, gas)."""
         return self._calculate_lost_resources(self._enemy_lost_units)
 
-    def own_lost_type(self, unit_type: UnitTypeId) -> int:
-        real_type = self.unit_values.real_type(unit_type)
-        return len(self._my_lost_units.get(real_type, []))
+    def own_lost_type(self, unit_type: UnitTypeId, real_type=True) -> int:
+        if real_type:
+            unit_type = self.unit_values.real_type(unit_type)
+        return len(self._my_lost_units.get(unit_type, []))
 
-    def enemy_lost_type(self, unit_type: UnitTypeId) -> int:
-        real_type = self.unit_values.real_type(unit_type)
-        return len(self._enemy_lost_units.get(real_type, []))
+    def enemy_lost_type(self, unit_type: UnitTypeId, real_type=True) -> int:
+        if real_type:
+            unit_type = self.unit_values.real_type(unit_type)
+        return len(self._enemy_lost_units.get(unit_type, []))
 
     def _calculate_lost_resources(self, lost_units: Dict[UnitTypeId, List[Unit]]) -> tuple:
         lost_minerals = 0

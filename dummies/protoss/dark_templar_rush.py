@@ -128,7 +128,7 @@ class DarkTemplarRush(KnowledgeBot):
             PlanCancelBuilding(),
             PlanZoneDefense(),
             RestorePower(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             DtPush(),
             PlanZoneGather(),
             attack,

@@ -77,7 +77,7 @@ class MacroZergV2(KnowledgeBot):
         tactics = [
             PlanCancelBuilding(),
             InjectLarva(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             attack,
             PlanFinishEnemy(),
         ]

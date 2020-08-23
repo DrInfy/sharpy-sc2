@@ -1,5 +1,6 @@
 import logging
 import string
+import sys
 from configparser import ConfigParser
 from typing import Set, List, Optional, Dict, Callable, Type
 
@@ -124,12 +125,13 @@ class Knowledge:
 
     # noinspection PyAttributeOutsideInit
     def pre_start(self, ai: "KnowledgeBot", additional_managers: Optional[List[ManagerBase]]):
-        assert isinstance(ai, sc2.BotAI)
+        # assert isinstance(ai, sc2.BotAI)
         self.ai: "KnowledgeBot" = ai
         self._set_managers(additional_managers)
         self._all_own: Units = Units([], self.ai)
         self.config: ConfigParser = self.ai.config
         self.logger = sc2.main.logger
+
         self.is_chat_allowed = self.config["general"].getboolean("chat")
         self._debug = self.config["general"].getboolean("debug")
 
@@ -142,7 +144,7 @@ class Knowledge:
 
         # Cached ai fields:
         self._known_enemy_structures: Units = self.ai.enemy_structures
-        self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures
+        self._known_enemy_units: Units = self.ai.all_enemy_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units
         self._known_enemy_units_workers: Units = Units([], self.ai)
 
@@ -253,12 +255,12 @@ class Knowledge:
             ):
                 self.close_gates = False
 
-        self._all_own: Units = self.ai.units + self.ai.structures
+        self._all_own: Units = self.ai.all_own_units
         memory_units = self.memory_manager.ghost_units
         self._known_enemy_structures: Units = self.ai.enemy_structures.filter(
             lambda u: u.is_structure and u.type_id not in self.unit_values.not_really_structure
         )
-        self._known_enemy_units: Units = self.ai.enemy_units + self.ai.enemy_structures + memory_units
+        self._known_enemy_units: Units = self.ai.all_enemy_units + memory_units
         self._known_enemy_units_mobile: Units = self.ai.enemy_units + memory_units
 
         self._known_enemy_units_workers: Units = Units(
@@ -540,12 +542,7 @@ class Knowledge:
         elif not self.config["general"].getboolean("frozen_log") and tag != "Build":
             return  # No print
 
-        if self.logger.hasHandlers():
-            # Write to the competition site log
-            self.logger.log(log_level, message)
-        else:
-            # Write to our own log configured in run_custom.py
-            logging.log(log_level, message)
+        self.logger.log(log_level, message)
 
     def _find_gather_point(self):
         self.gather_point = self.base_ramp.top_center.towards(self.base_ramp.bottom_center, -4)

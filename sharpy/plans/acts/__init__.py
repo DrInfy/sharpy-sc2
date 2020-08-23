@@ -17,3 +17,5 @@ from .morph_warp_gates import MorphWarpGates
 from .position_building import PositionBuilding
 from .reserve import Reserve
 from .tech import Tech, ActTech
+from .workers import Workers
+from .auto_worker import AutoWorker

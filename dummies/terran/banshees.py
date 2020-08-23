@@ -25,7 +25,7 @@ class Banshees(KnowledgeBot):
         self.knowledge.print(f"Att at {attack_value}", "Build")
 
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
-        self.distribute_workers = PlanDistributeWorkers(4)
+        self.distribute_workers = DistributeWorkers(4)
         tactics = [
             PlanCancelBuilding(),
             LowerDepots(),

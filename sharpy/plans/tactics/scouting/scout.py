@@ -3,7 +3,7 @@ from typing import List, Set, Union
 from sc2 import UnitTypeId
 from sc2.units import Units
 from sharpy.managers.roles import UnitTask
-from sharpy.plans import SubActs
+from sharpy.plans import SubActs, Step
 from typing import TYPE_CHECKING
 
 from sharpy.plans.tactics.scouting.scout_base_action import ScoutBaseAction
@@ -16,7 +16,9 @@ if TYPE_CHECKING:
 class Scout(SubActs):
     units: Units
 
-    def __init__(self, unit_types: Union[UnitTypeId, Set[UnitTypeId]], unit_count: int, *args: ScoutBaseAction):
+    def __init__(
+        self, unit_types: Union[UnitTypeId, Set[UnitTypeId]], unit_count: int, *args: Union[Step, ScoutBaseAction]
+    ):
         """
         Scout act for all races, loops the given scout actions
         @param unit_types: Types of units accepted as scouts
@@ -66,7 +68,7 @@ class Scout(SubActs):
         count = len(self.orders)
         self.index = self.index % count
 
-        for looped in range(0, count):
+        for looped in range(0, count + 1):
             if looped == count:
                 self.ended = True
                 return True

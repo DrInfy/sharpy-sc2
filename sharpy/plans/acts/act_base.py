@@ -14,6 +14,7 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
+from sc2.constants import EQUIVALENTS_FOR_TECH_PROGRESS
 from sharpy.managers.roles import UnitTask
 
 build_commands = {
@@ -91,7 +92,8 @@ class ActBase(Component, ABC):
         pass
 
     def pending_build(self, unit_type: UnitTypeId) -> float:
-        return self.ai.already_pending(unit_type)
+        """ Only counts buildings that are commanded to be built, not ready builds are not included"""
+        return self.get_count(unit_type) - self.get_count(unit_type, include_pending=False)
 
     def pending_building_positions(self, unit_type: UnitTypeId) -> List[Point2]:
         """Returns positions of buildings of the specified type that have either been ordered to be built by a worker
@@ -170,34 +172,17 @@ class ActBase(Component, ABC):
         count = self.related_count(count, unit_type)
 
         if include_killed:
-            count += self.knowledge.lost_units_manager.own_lost_type(unit_type)
+            count += self.knowledge.lost_units_manager.own_lost_type(unit_type, real_type=False)
+            related = EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_type, None)
+            if related:
+                for related_type in related:
+                    count += self.knowledge.lost_units_manager.own_lost_type(related_type, real_type=False)
 
         return count
 
     def related_count(self, count, unit_type):
-        if unit_type == UnitTypeId.SPIRE:
-            count += self.cache.own(UnitTypeId.GREATERSPIRE).amount
-        if unit_type == UnitTypeId.WARPGATE:
-            count += self.cache.own(UnitTypeId.GATEWAY).amount
-        if unit_type == UnitTypeId.WARPPRISM:
-            count += self.cache.own(UnitTypeId.WARPPRISMPHASING).amount
-        if unit_type == UnitTypeId.LAIR:
-            count += self.cache.own(UnitTypeId.HIVE).amount
-        if unit_type == UnitTypeId.GATEWAY:
-            count += self.cache.own(UnitTypeId.WARPGATE).amount
-        if unit_type == UnitTypeId.COMMANDCENTER:
-            count += self.cache.own(UnitTypeId.ORBITALCOMMAND).amount
-            count += self.cache.own(UnitTypeId.PLANETARYFORTRESS).amount
-        if unit_type == UnitTypeId.HATCHERY:
-            count += self.cache.own(UnitTypeId.LAIR).amount
-            count += self.cache.own(UnitTypeId.HIVE).amount
-        if unit_type == UnitTypeId.SUPPLYDEPOT:
-            count += self.cache.own(UnitTypeId.SUPPLYDEPOTDROP).amount
-            count += self.cache.own(UnitTypeId.SUPPLYDEPOTLOWERED).amount
-        if unit_type == UnitTypeId.SIEGETANK:
-            count += self.cache.own(UnitTypeId.SIEGETANKSIEGED).amount
-        if unit_type == UnitTypeId.VIKINGFIGHTER:
-            count += self.cache.own(UnitTypeId.VIKINGASSAULT).amount
+        if unit_type in EQUIVALENTS_FOR_TECH_PROGRESS:
+            count += self.cache.own(EQUIVALENTS_FOR_TECH_PROGRESS[unit_type]).amount
         return count
 
     def get_worker_builder(self, position: Point2, priority_tag: int) -> Optional[Unit]:

@@ -7,3 +7,4 @@ from .banshees import Banshees
 from .bio import BioBot
 from .terran_random import RandomTerranBot
 from .one_base_turtle import OneBaseTurtle
+from .safe_tvt_raven import TerranSafeTvT

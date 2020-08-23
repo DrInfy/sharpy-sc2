@@ -1,6 +1,7 @@
-from typing import Optional, Callable, Union
+from typing import Optional, Callable, Union, List
 
 # Singular step of action
+from sc2.unit import Unit
 from sharpy.plans.acts import merge_to_act
 from sharpy.plans.require import merge_to_require
 from sharpy.plans.require.require_base import RequireBase
@@ -62,3 +63,9 @@ class Step(ActBase):
             return True
 
         return await self.action.execute()
+
+    def set_scouts(self, scouts: List[Unit]):
+        if self.action is not None:
+            assert hasattr(self.action, "set_scouts")
+            # noinspection PyUnresolvedReferences
+            self.action.set_scouts(scouts)

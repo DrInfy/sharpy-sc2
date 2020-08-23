@@ -74,7 +74,7 @@ class AdeptRush(KnowledgeBot):
             SequentialList(
                 PlanZoneDefense(),
                 RestorePower(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 DoubleAdeptScout(number),
                 attack,

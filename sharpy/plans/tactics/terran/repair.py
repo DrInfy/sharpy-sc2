@@ -15,24 +15,52 @@ class Repair(ActBase):
         roles: "UnitRoleManager" = self.knowledge.roles
         current_repairers = []
         for zone in self.knowledge.our_zones:
+            pre_repairer = 0
+            balance = zone.our_power.power - zone.assaulting_enemy_power.power
+            if balance < -5:
+                if balance < -10:
+                    pre_repairer = 6
+                else:
+                    pre_repairer = 3
+
+            repairing_zone_count = 0
+
+            for worker in zone.our_workers:  # type: Unit
+                if not worker.orders:
+                    continue
+                if worker.is_repairing:
+                    current_repairers.append(worker.tag)
+                    roles.set_task(UnitTask.Building, worker)
+                    repairing_zone_count += 1
+
             for unit in zone.our_units:
                 if self.should_repair(unit):
                     desired_count = self.solve_scv_count(zone, unit)
-                    repairing_this_count = 0
-                    for worker in zone.our_workers:  # type: Unit
-                        if not worker.orders:
-                            continue
-                        if worker.is_repairing:
-                            current_repairers.append(worker.tag)
-                            repairing_this_count += 1
 
-                    if repairing_this_count < desired_count:
+                    if repairing_zone_count < desired_count:
                         for worker in zone.our_workers:  # type: Unit
                             if not worker.is_repairing and worker.tag not in current_repairers:
                                 self.do(worker.repair(unit))
                                 current_repairers.append(worker.tag)
                                 roles.set_task(UnitTask.Building, worker)
+                                repairing_zone_count += 1
+                                if repairing_zone_count >= desired_count:
+                                    break
+
+            if repairing_zone_count < pre_repairer:
+                to_repair = zone.our_units.filter(lambda u: u.is_ready and (u.is_structure or u.is_mechanical))
+                enemies = zone.known_enemy_units
+                if to_repair and enemies:
+                    for worker in zone.our_workers:  # type: Unit
+                        if not worker.is_repairing and worker.tag not in current_repairers:
+                            closest = to_repair.closest_to(enemies.center)
+                            self.do(worker.repair(closest))
+                            current_repairers.append(worker.tag)
+                            roles.set_task(UnitTask.Building, worker)
+                            repairing_zone_count += 1
+                            if repairing_zone_count >= pre_repairer:
                                 break
+
         return True
 
     def should_repair(self, unit: Unit) -> bool:
@@ -49,9 +77,7 @@ class Repair(ActBase):
                 return True
         if unit.health_percentage < 0.3 and unit.is_structure:
             return True
-        if unit.health_percentage < 0.75 and (
-            unit.type_id == UnitTypeId.BATTLECRUISER or unit.type_id == UnitTypeId.SIEGETANK
-        ):
+        if unit.health_percentage < 0.75 and unit.is_mechanical:
             return True
         return False
 
