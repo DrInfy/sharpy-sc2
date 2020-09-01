@@ -1,23 +1,22 @@
 import logging
+from typing import Dict, List, Tuple, Union
+
+import numpy as np
 from math import floor
-from typing import List, Dict, Tuple, Union
-
 from sc2 import Race
-from sc2pathlibp import Sc2Map, MapType
-from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
-from sharpy.sc2math import point_normalize
-from sc2.ids.effect_id import EffectId
-from sc2.units import Units
-
-from sharpy.general.rocks import *
-
 from sc2.game_info import GameInfo
-
-from sharpy.managers import ManagerBase
-import sc2pathlibp
+from sc2.ids.effect_id import EffectId
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
+from sc2.units import Units
+
+import sc2pathlibp
+from sc2pathlibp import MapType, Sc2Map
+from sharpy.general.extended_power import ExtendedPower
+from sharpy.general.rocks import *
+from sharpy.managers import ManagerBase
+from sharpy.managers.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
+from sharpy.sc2math import point_normalize
 
 
 class PathingManager(ManagerBase):
@@ -31,7 +30,6 @@ class PathingManager(ManagerBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-
         game_info: GameInfo = self.ai.game_info
         path_grid = game_info.pathing_grid
         placement_grid = game_info.placement_grid
@@ -41,16 +39,9 @@ class PathingManager(ManagerBase):
             game_info.terrain_height.data_numpy,
             game_info.playable_area,
         )
-        _data = [[0 for y in range(path_grid.height)] for x in range(path_grid.width)]
 
-        for x in range(0, path_grid.width):
-            for y in range(0, path_grid.height):
-                pathable = path_grid.is_set((x, y)) or placement_grid.is_set((x, y))
-                if pathable:
-                    _data[x][y] = 1
-
+        _data = np.fmax(path_grid.data_numpy, placement_grid.data_numpy).T
         self.path_finder_terrain = sc2pathlibp.PathFinder(_data)
-
         self.path_finder_terrain.normalize_influence(20)
 
     @property
