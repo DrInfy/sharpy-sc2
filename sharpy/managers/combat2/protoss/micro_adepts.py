@@ -68,9 +68,10 @@ high_priority: Dict[UnitTypeId, int] = {
 
 
 class MicroAdepts(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self, micro_shades: bool = True):
+        super().__init__()
         self.prio_dict = high_priority
+        self.micro_shades = micro_shades
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
         shuffler = unit.tag % 10
@@ -79,18 +80,18 @@ class MicroAdepts(GenericMicro):
         enemy: Unit
 
         target = self.get_target(self.enemies_near_by, target, unit, shuffler)
+        if self.micro_shades:
+            shade_tag = self.cd_manager.adept_to_shade.get(unit.tag, None)
+            if shade_tag:
+                shade = self.cache.by_tag(shade_tag)
+                if shade:
+                    if target is None:
+                        nearby: Units = self.knowledge.unit_cache.enemy_in_range(shade.position, 12)
+                        target = self.get_target(nearby, target, shade, shuffler)
 
-        shade_tag = self.cd_manager.adept_to_shade.get(unit.tag, None)
-        if shade_tag:
-            shade = self.cache.by_tag(shade_tag)
-            if shade:
-                if target is None:
-                    nearby: Units = self.knowledge.unit_cache.enemy_in_range(shade.position, 12)
-                    target = self.get_target(nearby, target, shade, shuffler)
-
-                if target is not None:
-                    pos: Point2 = target.position
-                    self.ai.do(shade.move(pos.towards(unit, -1)))
+                    if target is not None:
+                        pos: Point2 = target.position
+                        self.ai.do(shade.move(pos.towards(unit, -1)))
 
         if self.move_type in {MoveType.SearchAndDestroy, MoveType.Assault} and self.model == CombatModel.RoachToStalker:
             if self.cd_manager.is_ready(unit.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT):

@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId, AbilityId
+from sc2 import UnitTypeId, AbilityId, Set
 from sc2.unit import Unit
 from .act_base import ActBase
 
@@ -17,15 +17,17 @@ class MorphBuilding(ActBase):
             self.knowledge.own_main_zone.center_location
         )
 
+        ignore_tags: Set[int] = set()
         for target in start_buildings:  # type: Unit
             if target.orders and target.orders[0].ability.id == self.ability_type:
                 target_count += 1
+                ignore_tags.add((target.tag))
 
         if target_count >= self.target_count:
             return True
 
         for target in start_buildings:
-            if target.is_ready:
+            if target.is_ready and target.tag not in ignore_tags:
                 if self.knowledge.can_afford(self.ability_type):
                     self.do(target(self.ability_type))
 

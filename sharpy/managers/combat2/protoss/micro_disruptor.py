@@ -10,8 +10,8 @@ NOVA_DURATION = 2.1
 
 
 class MicroDisruptor(MicroStep):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.last_used_any = 0
         self.tags_ready: List[int] = []
 
@@ -52,8 +52,8 @@ class MicroDisruptor(MicroStep):
 
 
 class MicroPurificationNova(MicroStep):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.spawned: Dict[int, float] = dict()
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:

@@ -1,4 +1,4 @@
-from typing import List, Union, Set, Iterable
+from typing import List, Union, Set, Iterable, Optional
 
 from sharpy.managers.manager_base import ManagerBase
 from sc2 import UnitTypeId, Race
@@ -17,9 +17,10 @@ class UnitRoleManager(ManagerBase):
 
     def __init__(self):
         super().__init__()
-
-        self.chat_count = 0
+        self.role_count = UnitRoleManager.MAX_VALUE
         self.had_task_set: Set[int] = set()
+        # If this is True, then units will drop their role if it wasn't set in previous iteration
+        self.set_tag_each_iteration = False
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -35,25 +36,17 @@ class UnitRoleManager(ManagerBase):
             self.peace_unit_types = []
 
         self.roles: List[UnitsInRole] = []
-        self.roles.append(UnitsInRole(UnitTask.Idle, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Building, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Gathering, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Scouting, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Moving, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Fighting, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Defending, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Attacking, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Reserved, self.cache, self.ai))
-        self.roles.append(UnitsInRole(UnitTask.Hallucination, self.cache, self.ai))
+        for index in range(0, self.role_count):
+            self.roles.append(UnitsInRole(index, self.cache, self.ai))
 
     def attack_ended(self):
-        attackers = self.roles[UnitTask.Attacking.value].units
-        self.roles[UnitTask.Idle.value].register_units(attackers)
-        self.roles[UnitTask.Attacking.value].clear()
+        attackers = self.roles[UnitTask.Attacking].units
+        self.roles[UnitTask.Idle].register_units(attackers)
+        self.roles[UnitTask.Attacking].clear()
 
-    def set_tasks(self, task: UnitTask, units: Units):
-        for i in range(0, UnitRoleManager.MAX_VALUE):
-            if i == task.value:
+    def set_tasks(self, task: Union[int, UnitTask], units: Units):
+        for i in range(0, self.role_count):
+            if i == task:
                 self.roles[i].register_units(units)
             else:
                 self.roles[i].remove_units(units)
@@ -62,14 +55,14 @@ class UnitRoleManager(ManagerBase):
             if unit.tag not in self.had_task_set:
                 self.had_task_set.add(unit.tag)
 
-    def is_in_role(self, task: UnitTask, unit: Unit) -> bool:
-        return unit.tag in self.roles[task.value].tags
+    def is_in_role(self, task: Union[int, UnitTask], unit: Unit) -> bool:
+        return unit.tag in self.roles[task].tags
 
-    def set_task(self, task: UnitTask, unit: Unit):
+    def set_task(self, task: Union[int, UnitTask], unit: Unit):
         if unit.tag not in self.had_task_set:
             self.had_task_set.add(unit.tag)
-        for i in range(0, UnitRoleManager.MAX_VALUE):
-            if i == task.value:
+        for i in range(0, self.role_count):
+            if i == task:
                 self.roles[i].register_unit(unit)
             else:
                 self.roles[i].remove_unit(unit)
@@ -85,33 +78,65 @@ class UnitRoleManager(ManagerBase):
             if unit is None:
                 return  # Unit doesn't exist, do nothing
 
-        for i in range(0, UnitRoleManager.MAX_VALUE):
-            if i == UnitTask.Idle.value:
+        for i in range(0, self.role_count):
+            if i == UnitTask.Idle:
                 self.roles[i].register_unit(unit)
             else:
                 self.roles[i].remove_unit(unit)
 
-    def units(self, task: UnitTask) -> Units:
-        return self.roles[task.value].units
+    def units(self, task: Union[int, UnitTask]) -> Units:
+        return self.roles[task].units
+
+    def refresh_task(self, unit: Unit):
+        self.had_task_set.add(unit.tag)
+
+    def refresh_tags(self, tags: Iterable[int]):
+        for tag in tags:
+            if tag not in self.had_task_set:
+                self.had_task_set.add(tag)
+
+    def refresh_tasks(self, units: Units):
+        for unit in units:
+            if unit.tag not in self.had_task_set:
+                self.had_task_set.add(unit.tag)
 
     @property
     def attacking_units(self) -> Units:
         """Returns all units that are currently attacking."""
-        attacking_units = self.roles[UnitTask.Attacking.value].units.copy()
-        moving_units = self.roles[UnitTask.Moving.value].units.copy()
+        attacking_units = Units(self.roles[UnitTask.Attacking].units.copy(), self.ai)
+        moving_units = self.roles[UnitTask.Moving].units.copy()
         # Combine lists
         attacking_units.extend(moving_units)
         return attacking_units
 
+    def get_types_from(self, types: Set[UnitTypeId], *args: Union[int, UnitTask]) -> Units:
+        units = self.cache.own(types)
+        all_tags: Set[int] = set()
+
+        if len(args) == 0:
+            all_tags = self.roles[UnitTask.Idle].tags
+        else:
+            for task in args:
+                tags = self.roles[task].tags
+                all_tags = all_tags.union(tags)
+
+        return units.tags_in(all_tags)
+
+    def get_unit_by_tag_from_task(self, tag: int, task: Union[int, UnitTask]) -> Optional[Unit]:
+        """ Get unit by its tag from the specified role. """
+        if tag in self.roles[task].tags:
+            return self.roles[task].units.by_tag(tag)
+        return None
+
     @property
     def hallucinated_units(self) -> Units:
         """Returns all units that are hallucinations."""
-        return self.roles[UnitTask.Hallucination.value].units
+        return self.roles[UnitTask.Hallucination].units
 
     @property
     def idle(self) -> Units:
         """Short cut to roles[Idle].units"""
-        return self.roles[UnitTask.Idle.value].units
+        return self.roles[UnitTask.Idle].units
 
     def get_defenders(self, power: ExtendedPower, position: Point2) -> Units:
         units = Units([], self.ai)
@@ -124,7 +149,12 @@ class UnitRoleManager(ManagerBase):
         return units
 
     def _defenders_from(
-        self, task: UnitTask, current_power: ExtendedPower, position: Point2, power: ExtendedPower, units: Units
+        self,
+        task: Union[int, UnitTask],
+        current_power: ExtendedPower,
+        position: Point2,
+        power: ExtendedPower,
+        units: Units,
     ):
         """ Get defenders from a task. """
         if current_power.is_enough_for(power):
@@ -135,7 +165,7 @@ class UnitRoleManager(ManagerBase):
         exclude_types.extend(self.knowledge.unit_values.worker_types)
         exclude_types.extend(self.peace_unit_types)
 
-        role_units = self.roles[task.value].units.exclude_type(exclude_types)
+        role_units = self.roles[task].units.exclude_type(exclude_types)
 
         unit: Unit
         for unit in role_units.sorted_by_distance_to(position):
@@ -156,29 +186,37 @@ class UnitRoleManager(ManagerBase):
                 return
         return
 
-    def all_from_task(self, task: UnitTask) -> Units:
-        return Units(self.roles[task.value].units, self.ai)
+    def all_from_task(self, task: Union[int, UnitTask]) -> Units:
+        return Units(self.roles[task].units, self.ai)
 
     @property
     def free_units(self) -> Units:
-        units: Units = Units(self.roles[UnitTask.Idle.value].units, self.ai)
-        units.extend(self.roles[UnitTask.Moving.value].units)
+        units: Units = Units(self.roles[UnitTask.Idle].units, self.ai)
+        units.extend(self.roles[UnitTask.Moving].units)
         return units
 
     @property
     def idle_workers(self) -> Units:
         """ Free workers, ie. gathering minerals or gas, or idling, and not dedicated to defending or scouting."""
-        units: Units = self.roles[UnitTask.Idle.value].units
+        units: Units = self.roles[UnitTask.Idle].units
         # Mules should not count for workers
         return units.of_type([UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV])
 
     @property
     def free_workers(self) -> Units:
         """ Free workers, ie. gathering minerals or gas, or idling, and not dedicated to defending or scouting."""
-        units: Units = Units(self.roles[UnitTask.Idle.value].units, self.ai)
-        units.extend(self.roles[UnitTask.Gathering.value].units)
+        units: Units = Units(self.roles[UnitTask.Idle].units, self.ai)
+        units.extend(self.roles[UnitTask.Gathering].units)
         # Mules should not count for workers
         return units.of_type([UnitTypeId.DRONE, UnitTypeId.PROBE, UnitTypeId.SCV])
+
+    def unit_role(self, unit: Unit) -> UnitTask:
+        for role in self.roles:
+            if unit.tag in role.tags:
+                return role.task
+
+        # This should not happen as all units should always have a task, but it'd be undetermined task
+        return UnitTask.Idle
 
     # Always update at the start of loop
     async def update(self):
@@ -187,53 +225,61 @@ class UnitRoleManager(ManagerBase):
             left_over = left_over.exclude_type(UnitTypeId.LARVA)
             self.clear_tasks(left_over.of_type(UnitTypeId.OVERLORDCOCOON))
 
-        for i in range(1, UnitRoleManager.MAX_VALUE):
+        if self.set_tag_each_iteration:
+            # Clear all unit tasks unless they were previously set
+            for unit in self.ai.units:
+                if unit.tag in self.had_task_set:
+                    continue
+
+                if unit.tag in self.roles[UnitTask.Idle].tags or unit.tag in self.roles[UnitTask.Gathering].tags:
+                    continue
+
+                self.clear_task(unit)
+
+        for i in range(1, self.role_count):
             self.roles[i].update()
             left_over = left_over.tags_not_in(self.roles[i].tags)
 
         left_over = left_over.tags_not_in(self.had_task_set).exclude_type(UnitTypeId.ADEPTPHASESHIFT)
 
-        self.roles[UnitTask.Idle.value].clear()
+        self.roles[UnitTask.Idle].clear()
         gatherers = left_over.collecting
-        self.roles[UnitTask.Gathering.value].register_units(gatherers)
+        self.roles[UnitTask.Gathering].register_units(gatherers)
 
         # Everything else goes to idle
-        self.roles[UnitTask.Idle.value].register_units(left_over.tags_not_in(gatherers.tags))
+        self.roles[UnitTask.Idle].register_units(left_over.tags_not_in(gatherers.tags))
 
         # reassign overlords and other to reserved so that they're not used for defense
         peace_units = left_over.of_type(self.peace_unit_types)
         self.set_tasks(UnitTask.Reserved, peace_units)
 
-        unit: Unit
         builders = left_over.filter(lambda unit: unit.is_constructing_scv)
         self.set_tasks(UnitTask.Building, builders)
 
         self.had_task_set.clear()
 
     async def post_update(self):
-        if self.debug:  # and self.chat_count < self.ai.time / 15:
-            self.chat_count += 1
-            idle = len(self.roles[UnitTask.Idle.value].tags)
-            building = len(self.roles[UnitTask.Building.value].tags)
-            gathering = len(self.roles[UnitTask.Gathering.value].tags)
-            scouting = len(self.roles[UnitTask.Scouting.value].tags)
-            moving = len(self.roles[UnitTask.Moving.value].tags)
-            fighting = len(self.roles[UnitTask.Fighting.value].tags)
-            defending = len(self.roles[UnitTask.Defending.value].tags)
-            attacking = len(self.roles[UnitTask.Attacking.value].tags)
-            reserved = len(self.roles[UnitTask.Reserved.value].tags)
-            hallucination = len(self.roles[UnitTask.Hallucination.value].tags)
+        if self.debug:
+            idle = len(self.roles[UnitTask.Idle].tags)
+            building = len(self.roles[UnitTask.Building].tags)
+            gathering = len(self.roles[UnitTask.Gathering].tags)
+            scouting = len(self.roles[UnitTask.Scouting].tags)
+            moving = len(self.roles[UnitTask.Moving].tags)
+            fighting = len(self.roles[UnitTask.Fighting].tags)
+            defending = len(self.roles[UnitTask.Defending].tags)
+            attacking = len(self.roles[UnitTask.Attacking].tags)
+            reserved = len(self.roles[UnitTask.Reserved].tags)
+            hallucination = len(self.roles[UnitTask.Hallucination].tags)
 
-            # enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
-            # power_text = f'{enemy_total_power.power} ({enemy_total_power.ground_power}/{enemy_total_power.air_power})'
-
-            # msg = f'{self.ai.time_formatted} I{idle} B{building} G{gathering} S{scouting} M{moving} ' \
-            #     f'F{fighting} D{defending} A{attacking} R{reserved} H{hallucination} ETP{power_text}'
             msg = (
                 f"I{idle} B{building} G{gathering} S{scouting} M{moving} "
                 f"F{fighting} D{defending} A{attacking} R{reserved} H{hallucination}"
             )
+
+            for index in range(10, self.role_count):
+                key = str(index)
+                count = len(self.roles[index].tags)
+                msg += f" {key}:{count}"
+
             client: Client = self.ai._client
             client.debug_text_2d(msg, Point2((0.4, 0.1)), None, 16)
-
-            # self.knowledge.print(msg)

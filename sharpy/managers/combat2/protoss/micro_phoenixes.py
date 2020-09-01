@@ -11,8 +11,10 @@ GRAVITON_BEAM_ENERGY = 50
 
 
 class MicroPhoenixes(MicroStep):
-    def __init__(self, knowledge):
+    def __init__(self, group_distance: float = -3):
         self.allow_lift = False
+        self.group_distance = group_distance
+
         # These unit types should be targets for graviton beam
         self.lift_priority: Dict[UnitTypeId, int] = {
             # Threaholds: 10 instant priority pickup
@@ -61,7 +63,7 @@ class MicroPhoenixes(MicroStep):
             UnitTypeId.ARCHON: -1,
             UnitTypeId.COLOSSUS: -1,
         }
-        super().__init__(knowledge)
+        super().__init__()
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         beaming_phoenixes = units.filter(
@@ -87,10 +89,15 @@ class MicroPhoenixes(MicroStep):
 
         # Phoenixes are generally faster than the rest of the army
 
-        # if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-        #     if self.group.ground_units:
-        #         # Regroup with the ground army
-        #         return Action(self.group.center, False)
+        if (
+            (self.move_type == MoveType.Assault or self.move_type == MoveType.SearchAndDestroy)
+            and self.engage_ratio < 0.25
+            and self.can_engage_ratio < 0.25
+            and len(self.closest_units) < 1
+        ):
+            if self.group.ground_units and isinstance(current_command.target, Point2):
+                # Regroup with the ground army
+                return Action(self.group.center.towards(current_command.target, self.group_distance), False)
 
         has_energy = unit.energy > GRAVITON_BEAM_ENERGY
 
@@ -138,8 +145,7 @@ class MicroPhoenixes(MicroStep):
             best_position = self.pather.find_low_inside_air(unit.position, closest.position, real_range)
 
             return Action(best_position, False)
-
+        if not current_command.is_attack:
+            # Look for a safe spot to stay in
+            current_command.target = self.pather.find_weak_influence_air(current_command.target, 10)
         return current_command
-
-    def print(self, msg):
-        self.knowledge.print(f"[MicroPhoenixes] {msg}")

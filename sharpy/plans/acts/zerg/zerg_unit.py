@@ -10,6 +10,7 @@ from sharpy.plans.acts.zerg.morph_units import (
     MorphOverseer,
     MorphBaneling,
     MorphLurker,
+    MorphOverseerTransport,
 )
 
 
@@ -33,6 +34,8 @@ class ZergUnit(BuildOrder):
             self.morph_unit = MorphRavager(to_count)
         elif unit_type == UnitTypeId.OVERSEER:
             self.morph_unit = MorphOverseer(to_count)
+        elif unit_type == UnitTypeId.OVERLORDTRANSPORT:
+            self.morph_unit = MorphOverseerTransport(to_count)
         else:
             self.morph_unit = None
 

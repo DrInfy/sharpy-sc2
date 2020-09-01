@@ -76,6 +76,7 @@ class PlanZoneAttack(ActBase):
 
         elif self.attack_retreat_started is not None:
             attacking_units = self.knowledge.roles.attacking_units
+            self.roles.refresh_tasks(attacking_units)
 
             for unit in attacking_units:
                 pos: Point2 = unit.position
@@ -125,9 +126,9 @@ class PlanZoneAttack(ActBase):
             attacking_status = moving_status = "unknown attack task"
 
         for unit in self.knowledge.roles.units(UnitTask.Moving):
-            self._client.debug_text_world(moving_status, unit.position3d)
+            self.client.debug_text_world(moving_status, unit.position3d)
         for unit in self.knowledge.roles.units(UnitTask.Attacking):
-            self._client.debug_text_world(attacking_status, unit.position3d)
+            self.client.debug_text_world(attacking_status, unit.position3d)
 
     def handle_attack(self, target):
         already_attacking: Units = self.knowledge.roles.units(UnitTask.Attacking)
@@ -143,6 +144,8 @@ class PlanZoneAttack(ActBase):
         for unit in already_attacking:
             # Only units in group are included to current combat force
             self.combat.add_unit(unit)
+
+        self.roles.refresh_tasks(already_attacking)
 
         for unit in self.knowledge.roles.free_units:
             if self.knowledge.should_attack(unit):
@@ -167,7 +170,7 @@ class PlanZoneAttack(ActBase):
             self._start_retreat(retreat)
 
     def _should_attack(self, power: ExtendedPower) -> bool:
-        if self.attack_on_advantage:
+        if self.attack_on_advantage and self.ai.supply_used < 190:
             if (
                 self.game_analyzer.our_army_predict in at_least_clear_advantage
                 and self.game_analyzer.our_income_advantage in at_least_small_disadvantage

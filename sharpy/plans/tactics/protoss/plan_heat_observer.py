@@ -1,5 +1,6 @@
 from typing import Optional, Tuple
 
+from sc2.unit import Unit
 from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
 from sharpy.mapping.heat_map import HeatMap
@@ -57,7 +58,8 @@ class PlanHeatObserver(ActBase):
 
         return True  # never block
 
-    async def assault_hot_spot(self, observer):
+    async def assault_hot_spot(self, observer: Unit):
+        self.roles.set_task(UnitTask.Reserved, observer)
         position = self.stealth_hotspot or self.gather_point
         self.combat.add_unit(observer)
         self.combat.execute(position)

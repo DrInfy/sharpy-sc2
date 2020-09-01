@@ -6,8 +6,8 @@ from sc2.units import Units
 
 
 class MicroBio(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.stim_required = 0
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:

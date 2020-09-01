@@ -15,69 +15,65 @@ class MacroRoach(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         build_steps_exps = [
-            Step(None, ActExpand(2)),
-            Step(RequiredUnitReady(UnitTypeId.SPAWNINGPOOL, 1), ActExpand(3)),
-            Step(RequiredSupply(80), MorphLair()),
-            ActExpand(4),
-            Step(RequiredSupply(100), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
+            Step(None, Expand(2)),
+            Step(UnitReady(UnitTypeId.SPAWNINGPOOL, 1), Expand(3)),
+            Step(Supply(80), MorphLair()),
+            Expand(4),
+            Step(Supply(100), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
         ]
 
         bsus = [
-            Step(RequiredUnitReady(UnitTypeId.LAIR, 1), None),
-            Step(RequiredUnitExists(UnitTypeId.ROACHWARREN, 1), ActTech(UpgradeId.GLIALRECONSTITUTION)),
+            Step(UnitReady(UnitTypeId.LAIR, 1), None),
+            Step(UnitExists(UnitTypeId.ROACHWARREN, 1), Tech(UpgradeId.GLIALRECONSTITUTION)),
         ]
 
         bsu = [
-            Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
-            Step(None, ActTech(UpgradeId.ZERGMISSILEWEAPONSLEVEL2)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
+            Step(UnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), Tech(UpgradeId.ZERGMISSILEWEAPONSLEVEL1)),
+            Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
+            Step(None, Tech(UpgradeId.ZERGMISSILEWEAPONSLEVEL2)),
+            Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
         ]
 
         buildings = [
-            Step(
-                RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
-                ActBuilding(UnitTypeId.SPAWNINGPOOL, 1),
-            ),
-            Step(RequiredUnitExists(UnitTypeId.QUEEN, 2), ActBuilding(UnitTypeId.ROACHWARREN, 1)),
+            Step(UnitExists(UnitTypeId.HATCHERY, 2, include_pending=True), ActBuilding(UnitTypeId.SPAWNINGPOOL, 1),),
+            Step(UnitExists(UnitTypeId.QUEEN, 2), ActBuilding(UnitTypeId.ROACHWARREN, 1)),
         ]
 
         extractors = [
-            StepBuildGas(1, RequiredUnitReady(UnitTypeId.SPAWNINGPOOL, 0.5)),
-            StepBuildGas(2, RequiredUnitReady(UnitTypeId.ROACHWARREN, 1)),
-            StepBuildGas(3, RequiredUnitExists(UnitTypeId.HATCHERY, 3)),
-            StepBuildGas(4, RequiredUnitReady(UnitTypeId.HATCHERY, 3)),
-            StepBuildGas(5, RequiredUnitExists(UnitTypeId.OVERLORD, 10)),
-            StepBuildGas(6, RequiredUnitExists(UnitTypeId.OVERLORD, 20)),
+            StepBuildGas(1, UnitReady(UnitTypeId.SPAWNINGPOOL, 0.5)),
+            StepBuildGas(2, UnitReady(UnitTypeId.ROACHWARREN, 1)),
+            StepBuildGas(3, UnitExists(UnitTypeId.HATCHERY, 3)),
+            StepBuildGas(4, UnitReady(UnitTypeId.HATCHERY, 3)),
+            StepBuildGas(5, UnitExists(UnitTypeId.OVERLORD, 10)),
+            StepBuildGas(6, UnitExists(UnitTypeId.OVERLORD, 20)),
         ]
 
         # 6 zerglings for early defence... needs fiery micro
         build_steps_units_early_defense = [
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 6)),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 2)),
+            Step(UnitExists(UnitTypeId.HATCHERY, 2), ActUnitOnce(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 6)),
             Step(
-                RequiredUnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
+                UnitExists(UnitTypeId.HATCHERY, 2, include_pending=True),
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 3),
             ),
             Step(
-                RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
+                UnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
                 ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 4),
             ),
         ]
         # Add the roaches to here
         build_steps_units = [
-            Step(RequiredUnitExists(UnitTypeId.HATCHERY, 2), ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 4)),
+            Step(UnitExists(UnitTypeId.HATCHERY, 2), ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA, 4)),
             Step(None, ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA, 4)),
             Step(
-                RequiredUnitExists(UnitTypeId.HATCHERY, 3, include_pending=True),
-                ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA),
+                UnitExists(UnitTypeId.HATCHERY, 3, include_pending=True), ActUnit(UnitTypeId.ROACH, UnitTypeId.LARVA),
             ),
         ]
 
         ravagers = [
-            Step(RequiredUnitReady(UnitTypeId.ROACH, 4), None),
-            Step(RequiredUnitReady(UnitTypeId.ROACHWARREN, 1), MorphRavager(5), skip_until=RequiredGas(200)),
-            Step(RequiredUnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=RequiredGas(300)),
+            Step(UnitReady(UnitTypeId.ROACH, 4), None),
+            Step(UnitReady(UnitTypeId.ROACHWARREN, 1), MorphRavager(5), skip_until=Gas(200)),
+            Step(UnitReady(UnitTypeId.ROACH, 10), MorphRavager(50), skip_until=Gas(300)),
         ]
 
         build = BuildOrder(
@@ -99,7 +95,7 @@ class MacroRoach(KnowledgeBot):
             PlanCancelBuilding(),
             SpreadCreep(),
             InjectLarva(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             PlanZoneDefense(),
             PlanZoneGather(),
             attack,

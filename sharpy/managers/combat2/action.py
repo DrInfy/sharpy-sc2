@@ -1,7 +1,7 @@
 from typing import Union, Optional
 
 from sc2 import AbilityId
-from sc2.position import Point2
+from sc2.position import Point2, Pointlike
 from sc2.unit import Unit
 from sc2.unit_command import UnitCommand
 
@@ -12,7 +12,7 @@ class Action:
 
     def __init__(
         self,
-        target: Optional[Union[Point2, Unit]],
+        target: Optional[Union[Point2, Pointlike, Unit]],
         is_attack: bool,
         ability: Optional[AbilityId] = None,
         debug_comment: Optional[str] = None,

@@ -9,6 +9,9 @@ from sharpy.managers import UnitValue
 
 
 class PlanZoneGatherTerran(ActBase):
+    gather_point: Point2
+    gather_set: sc2.List[int]
+
     def __init__(self):
         super().__init__()
 
@@ -25,6 +28,10 @@ class PlanZoneGatherTerran(ActBase):
         if self.gather_point != self.knowledge.gather_point:
             self.gather_set.clear()
             self.gather_point = self.knowledge.gather_point
+            main_ramp = self.knowledge.own_main_zone.ramp
+            if main_ramp and main_ramp.bottom_center.distance_to(self.gather_point) < 5:
+                # Nudge gather point just a slightly further
+                self.gather_point = self.gather_point.towards(main_ramp.bottom_center, -3)
 
         unit: Unit
         for unit in self.cache.own([sc2.UnitTypeId.BARRACKS, sc2.UnitTypeId.FACTORY]).tags_not_in(self.gather_set):

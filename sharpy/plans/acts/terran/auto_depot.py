@@ -16,7 +16,7 @@ class AutoDepot(GridBuilding):
 
     async def pylon_count_calc(self) -> int:
         growth_speed = 0
-        nexus_count = self.cache.own(
+        townhall_count = self.cache.own(
             {UnitTypeId.COMMANDCENTER, UnitTypeId.PLANETARYFORTRESS, UnitTypeId.ORBITALCOMMAND}
         ).ready.amount
 
@@ -28,9 +28,9 @@ class AutoDepot(GridBuilding):
         starport_count = self.cache.own(UnitTypeId.STARPORT).ready.amount
         starport_count += self.cache.own(UnitTypeId.STARPORTREACTOR).ready.amount
 
-        # Probes take 12 seconds to build
+        # Probes/scv take 12 seconds to build
         # https://liquipedia.net/starcraft2/Nexus_(Legacy_of_the_Void)
-        growth_speed += nexus_count / 12.0
+        growth_speed += townhall_count / 12.0
 
         # https://liquipedia.net/starcraft2/Barracks_(Legacy_of_the_Void)
         # fastest usage is marauder supply with 2 supply and train 21 seconds
@@ -40,7 +40,7 @@ class AutoDepot(GridBuilding):
         # fastest usage is helliom with 2 supply and build time of 21 seconds
         growth_speed += factory_count * 2 / 21.0
 
-        # https://liquipedia.net/starcraft2/Stargate_(Legacy_of_the_Void)
+        # https://liquipedia.net/starcraft2/Starport_(Legacy_of_the_Void)
         # We'll ues viking timing here
         growth_speed += starport_count * 2 / 30.0
 

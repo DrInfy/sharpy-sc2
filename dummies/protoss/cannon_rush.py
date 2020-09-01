@@ -188,11 +188,16 @@ class ProxyCannoneer(ActBase):
 
 
 class CannonRush(KnowledgeBot):
-    def __init__(self):
+    def __init__(self, build_name: str = "default"):
         super().__init__("Sharp Cannon")
+        self.build_name = build_name
 
     async def create_plan(self) -> BuildOrder:
-        rnd = select_build_index(self.knowledge, "build.cannon_rush", 0, 2)
+        if self.build_name == "default":
+            rnd = select_build_index(self.knowledge, "build.cannonrush", 0, 2)
+        else:
+            rnd = int(self.build_name)
+
         self.knowledge.building_solver.wall_type = WallType.NoWall
         rush_killed = RequireCustom(
             lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or self.time > 4 * 60
@@ -208,9 +213,9 @@ class CannonRush(KnowledgeBot):
         return BuildOrder(
             Step(
                 None,
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
-                skip=RequiredUnitExists(UnitTypeId.PROBE, 16),
-                skip_until=RequiredUnitReady(UnitTypeId.PYLON, 1),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                skip=UnitExists(UnitTypeId.PROBE, 16),
+                skip_until=UnitReady(UnitTypeId.PYLON, 1),
             ),
             ChronoAnyTech(0),
             SequentialList(
@@ -219,39 +224,36 @@ class CannonRush(KnowledgeBot):
                 Step(None, cannon_rush, skip=rush_killed),
                 BuildOrder(
                     [
-                        ActExpand(2),
+                        Expand(2),
                         ProtossUnit(UnitTypeId.PROBE, 30),
-                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                     ],
                     GridBuilding(UnitTypeId.GATEWAY, 2),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
-                    StepBuildGas(2),
+                    BuildGas(2),
                     AutoPylon(),
                     ProtossUnit(UnitTypeId.STALKER, 4, priority=True),
-                    StepBuildGas(3, skip=RequiredGas(300)),
-                    ActTech(UpgradeId.WARPGATERESEARCH),
+                    StepBuildGas(3, skip=Gas(300)),
+                    Tech(UpgradeId.WARPGATERESEARCH),
                     BuildOrder([]).forge_upgrades_all,
-                    Step(RequiredUnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), ActTech(UpgradeId.BLINKTECH)),
+                    Step(UnitReady(UnitTypeId.TWILIGHTCOUNCIL, 1), Tech(UpgradeId.BLINKTECH)),
                     [
                         ProtossUnit(UnitTypeId.PROBE, 22),
-                        Step(RequiredUnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
-                        StepBuildGas(3, skip=RequiredGas(300)),
+                        Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
+                        StepBuildGas(3, skip=Gas(300)),
                     ],
                     [ProtossUnit(UnitTypeId.STALKER, 100)],
                     [
-                        Step(
-                            RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1),
-                            GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),
-                        ),
-                        Step(RequiredUnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
-                        StepBuildGas(4, skip=RequiredGas(200)),
+                        Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1),),
+                        Step(UnitReady(UnitTypeId.CYBERNETICSCORE, 1), GridBuilding(UnitTypeId.GATEWAY, 7)),
+                        StepBuildGas(4, skip=Gas(200)),
                     ],
                 ),
             ),
             SequentialList(
                 PlanCancelBuilding(),
                 PlanZoneDefense(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 PlanZoneGather(),
                 PlanZoneAttack(6),
                 PlanFinishEnemy(),
@@ -345,7 +347,7 @@ class CannonRush(KnowledgeBot):
                 ]
             ),
             # Skip cannon rushing if we started nexus, or have over 750 minerals, the build is probably stuck
-            skip=RequiredAny([RequiredUnitExists(UnitTypeId.NEXUS, 2), RequiredMinerals(750)]),
+            skip=Any([UnitExists(UnitTypeId.NEXUS, 2), Minerals(750)]),
         )
 
     def cannon_rush(self) -> ActBase:
@@ -355,10 +357,10 @@ class CannonRush(KnowledgeBot):
                 [GridBuilding(UnitTypeId.PYLON, 1), GridBuilding(UnitTypeId.FORGE, 1, priority=True)],
                 ProxyCannoneer(),
                 ProtossUnit(UnitTypeId.PROBE, 18),
-                ChronoUnitProduction(UnitTypeId.PROBE, UnitTypeId.NEXUS),
+                ChronoUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS),
                 [
-                    Step(RequiredMinerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
-                    Step(RequiredMinerals(700), ActExpand(2), skip=RequiredUnitExists(UnitTypeId.NEXUS, 2)),
+                    Step(Minerals(400), GridBuilding(UnitTypeId.GATEWAY, 1)),
+                    Step(Minerals(700), Expand(2), skip=UnitExists(UnitTypeId.NEXUS, 2)),
                     GridBuilding(UnitTypeId.CYBERNETICSCORE, 1),
                 ],
             ]
@@ -388,9 +390,9 @@ class CannonRush(KnowledgeBot):
                         ),
                         skip=RequireCustom(lambda k: k.lost_units_manager.own_lost_type(UnitTypeId.PYLON) > 0),
                     ),
-                    ActExpand(2),
+                    Expand(2),
                     GridBuilding(UnitTypeId.GATEWAY, 1),
-                    ActDefensiveCannons(2, 0, 1),
+                    DefensiveCannons(2, 0, 1),
                 ],
             ]
         )

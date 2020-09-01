@@ -52,7 +52,9 @@ class Zone:
         self.could_have_enemy_workers_in = 0
 
         # All mineral fields on the zone
-        self._original_mineral_fields: Units = self.ai.expansion_locations.get(self.center_location, Units([], self.ai))
+        self._original_mineral_fields: Units = self.ai.expansion_locations_dict.get(
+            self.center_location, Units([], self.ai)
+        )
         self.mineral_fields: Units = Units(self._original_mineral_fields.copy(), self.ai)
 
         self.last_minerals: int = 10000000  # Arbitrary value just to ensure a lower value will get updated.
@@ -93,6 +95,16 @@ class Zone:
         if self.ramp is not None:
             self.gather_point = self.ramp.top_center.towards(self.center_location, 4)
 
+    @property
+    def is_island(self) -> bool:
+        """
+        Pathing is either blocked by non-walkable areas or with minerals
+        @return: True if the zone is an island
+        """
+        if self.zone_index == 0 or len(self.paths) == 0:
+            return False
+        return self.paths[0].distance <= 0
+
     def _init_behind_mineral_positions(self) -> List[Point2]:
         positions: List[Point2] = []
         possible_behind_mineral_positions: List[Point2] = []
@@ -102,18 +114,24 @@ class Zone:
         for mf in all_mf:  # type: Unit
             possible_behind_mineral_positions.append(self.center_location.towards(mf.position, 9))
 
-        positions.append(self.center_location.towards(all_mf.center, 9))  # Center
-        positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
-        positions.append(positions[0].furthest(possible_behind_mineral_positions))
+        if all_mf:
+            positions.append(self.center_location.towards(all_mf.center, 9))  # Center
+            positions.insert(0, positions[0].furthest(possible_behind_mineral_positions))
+            positions.append(positions[0].furthest(possible_behind_mineral_positions))
+
         return positions
 
     @property
     def behind_mineral_position_center(self) -> Point2:
-        return self.behind_mineral_positions[1]
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1]
+        return self.center_location
 
     @property
     def mineral_line_center(self) -> Point2:
-        return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        if self.behind_mineral_positions:
+            return self.behind_mineral_positions[1].towards(self.center_location, 4)
+        return self.center_location
 
     def calc_needs_evacuation(self):
         """
@@ -175,8 +193,8 @@ class Zone:
         self.known_enemy_power.clear()
         self.assaulting_enemy_power.clear()
 
-        self.our_units: Units = self.cache.own_in_range(self.center_location, self.radius)
-        self.known_enemy_units: Units = self.cache.enemy_in_range(self.center_location, self.radius)
+        # Own and enemy units are figured out in zone manager update.
+
         # Only add units that we can fight against
         self.known_enemy_units = self.known_enemy_units.filter(lambda x: x.cloak != 2)
         self.enemy_workers = self.known_enemy_units.of_type(self.unit_values.worker_types)
@@ -303,7 +321,11 @@ class Zone:
 
     @property
     def is_under_attack(self) -> bool:
-        return self.is_ours and self.power_balance < 0 or self.is_enemys and self.power_balance > 0
+        return (
+            (self.is_ours and self.assaulting_enemy_power.power > 5 or self.power_balance < 1)
+            or self.is_enemys
+            and self.power_balance > 0
+        )
 
     @property
     def safe_expand_here(self) -> bool:
@@ -323,12 +345,12 @@ class Zone:
     def our_photon_cannons(self) -> Units:
         """Returns any of our own static defenses on the zone."""
         # todo: make this work for Terran and Zerg and rename
-        return self.our_units(UnitTypeId.PHOTONCANNON).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.PHOTONCANNON)
 
     @property
     def our_batteries(self) -> Units:
         """Returns shield batteries."""
-        return self.our_units(UnitTypeId.SHIELDBATTERY).closer_than(10, self.center_location)
+        return self.our_units(UnitTypeId.SHIELDBATTERY)
 
     @property
     def enemy_static_defenses(self) -> Units:
@@ -393,22 +415,17 @@ class Zone:
             mf = self.ai.mineral_field.closest_to(closest_base)
             self.ai.do(unit.gather(mf))
 
-    def _find_ramp(self, ai):
+    def _find_ramp(self, ai) -> Optional[ExtendedRamp]:
+        if not self.ai.game_info.map_ramps:
+            return None
+
         if self.center_location in self.ai.enemy_start_locations or self.center_location == self.ai.start_location:
             ramps: List[Ramp] = [
                 ramp
                 for ramp in self.ai.game_info.map_ramps
-                if len(ramp.upper) == 2
+                if len(ramp.upper) in {2, 5}
                 and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS
             ]
-
-            if not ramps:
-                ramps: List[Ramp] = [
-                    ramp
-                    for ramp in self.ai.game_info.map_ramps
-                    if len(ramp.upper) <= 4
-                    and ramp.top_center.distance_to(self.center_location) < Zone.MAIN_ZONE_RAMP_MAX_RADIUS
-                ]
 
             if not len(ramps):
                 ramps: List[Ramp] = self.ai.game_info.map_ramps

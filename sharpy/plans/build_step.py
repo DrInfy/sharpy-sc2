@@ -1,8 +1,9 @@
-from typing import Optional, Callable, Union
+from typing import Optional, Callable, Union, List
 
 # Singular step of action
-from sharpy.plans.acts import ActCustom
-from sharpy.plans.require import RequireCustom
+from sc2.unit import Unit
+from sharpy.plans.acts import merge_to_act
+from sharpy.plans.require import merge_to_require
 from sharpy.plans.require.require_base import RequireBase
 from sharpy.plans.acts.act_base import ActBase
 from typing import TYPE_CHECKING
@@ -25,24 +26,10 @@ class Step(ActBase):
         assert skip_until is None or isinstance(skip_until, RequireBase) or isinstance(skip_until, Callable)
         super().__init__()
 
-        self.requirement = Step.merge_to_require(requirement)
-        self.action = Step.merge_to_act(action)
-        self.skip = Step.merge_to_require(skip)
-        self.skip_until = Step.merge_to_require(skip_until)
-
-    @staticmethod
-    def merge_to_act(obj: Optional[Union[ActBase, Callable[["Knowledge"], bool]]]) -> Optional[ActBase]:
-        if isinstance(obj, ActBase) or obj is None:
-            return obj
-        assert isinstance(obj, Callable)
-        return ActCustom(obj)
-
-    @staticmethod
-    def merge_to_require(obj: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]]) -> Optional[RequireBase]:
-        if isinstance(obj, RequireBase) or obj is None:
-            return obj
-        assert isinstance(obj, Callable)
-        return RequireCustom(obj)
+        self.requirement = merge_to_require(requirement)
+        self.action = merge_to_act(action)
+        self.skip = merge_to_require(skip)
+        self.skip_until = merge_to_require(skip_until)
 
     async def debug_draw(self):
         if self.requirement is not None:
@@ -56,13 +43,13 @@ class Step(ActBase):
 
     async def start(self, knowledge: "Knowledge"):
         if self.requirement is not None:
-            await self.requirement.start(knowledge)
+            await self.start_component(self.requirement, knowledge)
         if self.action is not None:
-            await self.action.start(knowledge)
+            await self.start_component(self.action, knowledge)
         if self.skip is not None:
-            await self.skip.start(knowledge)
+            await self.start_component(self.skip, knowledge)
         if self.skip_until is not None:
-            await self.skip_until.start(knowledge)
+            await self.start_component(self.skip_until, knowledge)
 
     async def execute(self) -> bool:
         if self.skip is not None and self.skip.check():
@@ -76,3 +63,9 @@ class Step(ActBase):
             return True
 
         return await self.action.execute()
+
+    def set_scouts(self, scouts: List[Unit]):
+        if self.action is not None:
+            assert hasattr(self.action, "set_scouts")
+            # noinspection PyUnresolvedReferences
+            self.action.set_scouts(scouts)

@@ -12,9 +12,9 @@ HOST_RANGE = 15
 class MicroSwarmHosts(MicroStep):
     """Micro Swarm Hosts."""
 
-    def __init__(self, knowledge) -> None:
+    def __init__(self) -> None:
         """Run setup."""
-        super().__init__(knowledge)
+        super().__init__()
         self.last_used_any = 0
         self.tags_ready: List[int] = []
 

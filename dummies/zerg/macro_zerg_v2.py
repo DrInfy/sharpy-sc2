@@ -1,3 +1,6 @@
+from typing import Optional, List
+
+from sharpy.managers import ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
@@ -13,46 +16,46 @@ from sc2.ids.upgrade_id import UpgradeId
 class MacroBuild(BuildOrder):
     def __init__(self):
         ultras = [
-            Step(RequiredUnitExists(UnitTypeId.ULTRALISKCAVERN, 1), None),
-            Step(RequiredGas(500), ActUnit(UnitTypeId.ULTRALISK, UnitTypeId.LARVA, priority=True)),
+            Step(UnitExists(UnitTypeId.ULTRALISKCAVERN, 1), None),
+            Step(Gas(500), ActUnit(UnitTypeId.ULTRALISK, UnitTypeId.LARVA, priority=True)),
         ]
 
         units = [
-            Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 100), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
+            Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 100), skip=UnitExists(UnitTypeId.HIVE, 1)),
             Step(None, ActUnit(UnitTypeId.DRONE, UnitTypeId.LARVA, 50)),
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), ActUnit(UnitTypeId.ZERGLING, UnitTypeId.LARVA), None),
         ]
 
         build_step_expansions = [
-            Step(None, ActExpand(999)),
+            Step(None, Expand(999)),
         ]
 
         queens = [
-            Step(RequiredUnitExists(UnitTypeId.SPAWNINGPOOL, 1), None),
-            Step(RequiredMinerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 5)),
+            Step(UnitExists(UnitTypeId.SPAWNINGPOOL, 1), None),
+            Step(Minerals(500), ActUnit(UnitTypeId.QUEEN, UnitTypeId.HATCHERY, 5)),
         ]
 
         pool_and_tech = [
             Step(None, ActBuilding(UnitTypeId.SPAWNINGPOOL, 1)),
             StepBuildGas(2, None),
-            Step(None, ActTech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
-            Step(RequiredGas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
-            Step(RequiredUnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
-            Step(None, MorphLair(), skip=RequiredUnitExists(UnitTypeId.HIVE, 1)),
+            Step(None, Tech(UpgradeId.ZERGLINGMOVEMENTSPEED)),
+            Step(Gas(120), ActBuilding(UnitTypeId.EVOLUTIONCHAMBER, 2)),
+            Step(UnitExists(UnitTypeId.EVOLUTIONCHAMBER, 1), Tech(UpgradeId.ZERGMELEEWEAPONSLEVEL1)),
+            Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL1)),
+            Step(None, MorphLair(), skip=UnitExists(UnitTypeId.HIVE, 1)),
             StepBuildGas(4, None),
-            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL2)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
+            Step(None, Tech(UpgradeId.ZERGMELEEWEAPONSLEVEL2)),
+            Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL2)),
             # Infestation pit required
             Step(None, ActBuilding(UnitTypeId.INFESTATIONPIT, 1)),
-            Step(RequiredUnitReady(UnitTypeId.INFESTATIONPIT, 1), MorphHive()),
-            Step(RequiredUnitReady(UnitTypeId.HIVE, 1), ActTech(UpgradeId.ZERGLINGATTACKSPEED)),
+            Step(UnitReady(UnitTypeId.INFESTATIONPIT, 1), MorphHive()),
+            Step(UnitReady(UnitTypeId.HIVE, 1), Tech(UpgradeId.ZERGLINGATTACKSPEED)),
             StepBuildGas(6, None),
             Step(None, ActBuilding(UnitTypeId.ULTRALISKCAVERN, 1)),
-            Step(None, ActTech(UpgradeId.ZERGMELEEWEAPONSLEVEL3)),
-            Step(None, ActTech(UpgradeId.ZERGGROUNDARMORSLEVEL3)),
-            Step(None, ActTech(UpgradeId.CHITINOUSPLATING)),
-            Step(None, ActTech(UpgradeId.ANABOLICSYNTHESIS)),
+            Step(None, Tech(UpgradeId.ZERGMELEEWEAPONSLEVEL3)),
+            Step(None, Tech(UpgradeId.ZERGGROUNDARMORSLEVEL3)),
+            Step(None, Tech(UpgradeId.CHITINOUSPLATING)),
+            Step(None, Tech(UpgradeId.ANABOLICSYNTHESIS)),
         ]
 
         super().__init__(self.overlords, ultras, units, build_step_expansions, queens, pool_and_tech)
@@ -64,13 +67,17 @@ class MacroZergV2(KnowledgeBot):
     def __init__(self):
         super().__init__("Macro zerg")
 
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        self.knowledge.combat_manager.default_rules.regroup = False
+        return None
+
     async def create_plan(self) -> BuildOrder:
         attack = PlanZoneAttack(120)
         attack.retreat_multiplier = 0.3
         tactics = [
             PlanCancelBuilding(),
             InjectLarva(),
-            PlanDistributeWorkers(),
+            DistributeWorkers(),
             attack,
             PlanFinishEnemy(),
         ]

@@ -8,8 +8,8 @@ from sc2.unit import Unit
 
 
 class MicroRavens(MicroStep):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.anti_armor_available = 0
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:

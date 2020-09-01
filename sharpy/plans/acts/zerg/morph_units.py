@@ -73,6 +73,17 @@ class MorphOverseer(MorphUnit):
         )
 
 
+class MorphOverseerTransport(MorphUnit):
+    def __init__(self, target_count: int):
+        super().__init__(
+            UnitTypeId.OVERLORD,
+            AbilityId.MORPH_OVERLORDTRANSPORT,
+            UnitTypeId.OVERLORDTRANSPORT,
+            UnitTypeId.TRANSPORTOVERLORDCOCOON,
+            target_count,
+        )
+
+
 class MorphBroodLord(MorphUnit):
     def __init__(self, target_count: int):
         super().__init__(

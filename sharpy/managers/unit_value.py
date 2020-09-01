@@ -1,5 +1,5 @@
 import logging
-from typing import Union, Optional, List, Dict
+from typing import Union, Optional, List, Dict, Callable
 
 from sharpy.general.unit_feature import UnitFeature
 from sc2 import Race, race_gas, race_townhalls
@@ -8,6 +8,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 from . import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
+from .version_manager import GameVersion
 
 buildings_2x2 = {
     UnitTypeId.SUPPLYDEPOT,
@@ -43,6 +44,7 @@ buildings_3x3 = {
     UnitTypeId.STARGATE,
     UnitTypeId.FLEETBEACON,
     UnitTypeId.ASSIMILATOR,
+    UnitTypeId.ASSIMILATORRICH,
     UnitTypeId.SPAWNINGPOOL,
     UnitTypeId.ROACHWARREN,
     UnitTypeId.HYDRALISKDEN,
@@ -51,6 +53,7 @@ buildings_3x3 = {
     UnitTypeId.NYDUSNETWORK,
     UnitTypeId.NYDUSCANAL,
     UnitTypeId.EXTRACTOR,
+    UnitTypeId.EXTRACTORRICH,
     UnitTypeId.INFESTATIONPIT,
     UnitTypeId.ULTRALISKCAVERN,
     UnitTypeId.BARRACKS,
@@ -61,6 +64,8 @@ buildings_3x3 = {
     UnitTypeId.FUSIONREACTOR,
     UnitTypeId.BUNKER,
     UnitTypeId.ARMORY,
+    UnitTypeId.REFINERY,
+    UnitTypeId.REFINERYRICH,
 }
 
 buildings_5x5 = {
@@ -71,6 +76,16 @@ buildings_5x5 = {
     UnitTypeId.COMMANDCENTER,
     UnitTypeId.ORBITALCOMMAND,
     UnitTypeId.PLANETARYFORTRESS,
+}
+
+BUILDING_IDS = buildings_5x5.union(buildings_3x3).union(buildings_2x2)
+REVERSE_MORPHS_DICT = {
+    UnitTypeId.LURKERMP: UnitTypeId.HYDRALISK,
+    UnitTypeId.BANELING: UnitTypeId.ZERGLING,
+    UnitTypeId.RAVAGER: UnitTypeId.ROACH,
+    UnitTypeId.OVERSEER: UnitTypeId.OVERLORD,
+    UnitTypeId.OVERLORDTRANSPORT: UnitTypeId.OVERLORD,
+    UnitTypeId.BROODLORD: UnitTypeId.CORRUPTOR,
 }
 
 
@@ -167,6 +182,7 @@ class UnitValue(ManagerBase):
         # By storing data in the instance, can skip import conflicts.
         super().__init__()
         self.combat_ignore = {UnitTypeId.OVERLORD, UnitTypeId.LARVA} | self.not_really_structure
+        self.init_range_dicts()
 
         self.unit_data = {
             # Units
@@ -242,37 +258,23 @@ class UnitValue(ManagerBase):
             UnitTypeId.LARVA: UnitData(0, 0, 0, 0),
             UnitTypeId.EGG: UnitData(0, 0, 0, 0),
             UnitTypeId.DRONE: UnitData(50, 0, 1, 0.5, 12, features=[UnitFeature.HitsGround]),
-            UnitTypeId.DRONEBURROWED: UnitData(50, 0, 1, 0.5, features=[UnitFeature.HitsGround]),
             UnitTypeId.QUEEN: UnitData(150, 0, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.QUEENBURROWED: UnitData(150, 0, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.ZERGLING: UnitData(25, 0, 0.5, 0.5, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ZERGLINGBURROWED: UnitData(25, 0, 0.5, 0.5, features=[UnitFeature.HitsGround]),
-            UnitTypeId.BANELINGCOCOON: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
+            UnitTypeId.BANELINGCOCOON: UnitData(25, 25, 0.5, 1, features=[]),
             UnitTypeId.BANELING: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
-            UnitTypeId.BANELINGBURROWED: UnitData(25, 25, 0.5, 1, features=[UnitFeature.HitsGround]),
             UnitTypeId.ROACH: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ROACHBURROWED: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.RAVAGER: UnitData(75 + 25, 75 + 25, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.RAVAGERBURROWED: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.RAVAGERCOCOON: UnitData(25, 75, 3, 3, features=[UnitFeature.HitsGround]),
+            UnitTypeId.RAVAGERCOCOON: UnitData(75 + 25, 75 + 25, 3, 3, features=[]),
             UnitTypeId.HYDRALISK: UnitData(100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.HYDRALISKBURROWED: UnitData(
-                100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
-            ),
             UnitTypeId.LURKERMP: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
-            UnitTypeId.LURKERMPBURROWED: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
+            UnitTypeId.LURKERMPEGG: UnitData(50, 100, 3, 3, features=[]),
             UnitTypeId.INFESTOR: UnitData(100, 150, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.INFESTORBURROWED: UnitData(
-                100, 150, 2, 0, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
-            ),
             UnitTypeId.INFESTEDTERRAN: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.INFESTEDCOCOON: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.SWARMHOSTMP: UnitData(100, 75, 3, 3, features=[UnitFeature.HitsGround]),
-            UnitTypeId.SWARMHOSTBURROWEDMP: UnitData(100, 75, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.LOCUSTMP: UnitData(0, 0, 0, 0.5),
             UnitTypeId.LOCUSTMPFLYING: UnitData(0, 0, 0, 0.5),
             UnitTypeId.ULTRALISK: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
-            UnitTypeId.ULTRALISKBURROWED: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
             UnitTypeId.OVERLORD: UnitData(100, 0, 0, 0.1, features=[UnitFeature.Flying]),
             UnitTypeId.OVERLORDCOCOON: UnitData(100, 0, 0, 0.1, features=[UnitFeature.Flying]),
             UnitTypeId.OVERLORDTRANSPORT: UnitData(100, 0, 0, 0.5, features=[UnitFeature.Flying]),
@@ -282,18 +284,17 @@ class UnitValue(ManagerBase):
             UnitTypeId.CHANGELINGMARINE: UnitData(0, 0, 0, 0.01),
             UnitTypeId.CHANGELINGMARINESHIELD: UnitData(0, 0, 0, 0.01),
             UnitTypeId.CHANGELINGZEALOT: UnitData(0, 0, 0, 0.01),
-            UnitTypeId.CHANGELINGZERGLING: UnitData(25, 0, 0, 0.01),
-            UnitTypeId.CHANGELINGZERGLINGWINGS: UnitData(25, 0, 0, 0.01),
+            UnitTypeId.CHANGELINGZERGLING: UnitData(0, 0, 0, 0.01),
+            UnitTypeId.CHANGELINGZERGLINGWINGS: UnitData(0, 0, 0, 0.01),
             UnitTypeId.MUTALISK: UnitData(
                 100, 100, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
             ),
-            UnitTypeId.MUTALISKEGG: UnitData(100, 100, 2, 0),
             UnitTypeId.CORRUPTOR: UnitData(150, 100, 2, 2, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.VIPER: UnitData(100, 200, 3, 3, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.BROODLORD: UnitData(
                 150 + 150, 150 + 100, 4, 6, features=[UnitFeature.HitsGround, UnitFeature.Flying]
             ),
-            UnitTypeId.BROODLORDCOCOON: UnitData(150 + 150, 150 + 100, 4, 4, features=[UnitFeature.Flying]),
+            UnitTypeId.BROODLORDCOCOON: UnitData(150 + 150, 150 + 100, 4, 6, features=[UnitFeature.Flying]),
             UnitTypeId.BROODLING: UnitData(0, 0, 0, 0.01),
             # Buildings
             # Terran
@@ -397,6 +398,60 @@ class UnitValue(ManagerBase):
             if UnitFeature.Detector in unit_data.features:
                 self.detectors.append(unit_data_key)
 
+    def init_range_dicts(self):
+        self._ground_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
+            UnitTypeId.RAVEN: lambda u: 9,
+            UnitTypeId.ORACLE: lambda u: 4,
+            UnitTypeId.CARRIER: lambda u: 8,
+            UnitTypeId.BATTLECRUISER: lambda u: 6,
+            UnitTypeId.DISRUPTOR: lambda u: 10,
+            UnitTypeId.BANELING: lambda u: 0.1,
+            UnitTypeId.SENTRY: lambda u: 5,
+            UnitTypeId.VOIDRAY: lambda u: 6,
+        }
+
+        self._air_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
+            UnitTypeId.RAVEN: lambda u: 9,
+            UnitTypeId.CARRIER: lambda u: 8,
+            UnitTypeId.BATTLECRUISER: lambda u: 6,
+            UnitTypeId.SENTRY: lambda u: 5,
+            UnitTypeId.VOIDRAY: lambda u: 6,
+        }
+
+        def lurker_range(unit: Unit):
+            if self.knowledge.version_manager.base_version < GameVersion.V_4_11_0:
+                return 8
+            else:
+                if unit.is_mine and self.ai.already_pending_upgrade(UpgradeId.LURKERRANGE) >= 1:
+                    return 10
+                return 8
+
+        def cyclone_range(unit: Unit):
+            if not unit.is_mine:
+                return 13  # worst case
+            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
+                return 7
+            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
+                return 13
+            return 7  # ?
+
+        def colossus_range(unit: Unit):
+            if not unit.is_mine:
+                if self.ai.time > 6 * 60:
+                    # Let's assume the worst, enemy has the upgrade!
+                    return 9
+                return 7
+
+            if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
+                return 9
+            return 7
+
+        self._ground_range_dict[UnitTypeId.LURKERMP] = lurker_range
+        self._ground_range_dict[UnitTypeId.LURKERMPBURROWED] = lurker_range
+        self._ground_range_dict[UnitTypeId.COLOSSUS] = colossus_range
+        self._ground_range_dict[UnitTypeId.CYCLONE] = cyclone_range
+        self._air_range_dict[UnitTypeId.CYCLONE] = cyclone_range
+
     async def update(self):
         pass
 
@@ -476,39 +531,15 @@ class UnitValue(ManagerBase):
         return 1.0 * health_percentage
 
     def ground_range(self, unit: Unit) -> float:
-        if unit.type_id == UnitTypeId.RAVEN and unit.energy >= 50:
-            return 9
-        if unit.type_id == UnitTypeId.ORACLE:
-            return 4
-        if unit.type_id == UnitTypeId.CARRIER:
-            return 8
-        if unit.type_id == UnitTypeId.BATTLECRUISER:
-            return 6
-        if unit.type_id == UnitTypeId.DISRUPTOR:
-            return 10
-        if unit.type_id == UnitTypeId.COLOSSUS:
-            if not unit.is_mine:
-                return 9  # Let's assume the worst, enemy has the upgrade!
-
-            if self.ai.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE) >= 1:
-                return 9
-            else:
-                return 7
-        if unit.type_id == UnitTypeId.CYCLONE:
-            if not unit.is_mine or self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.LOCKON_LOCKON):
-                return 7
-            if self.knowledge.cooldown_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
-                return 13
-
+        func = self._ground_range_dict.get(unit.type_id, None)
+        if func:
+            return func(unit)
         return unit.ground_range
 
     def air_range(self, unit: Unit) -> float:
-        if unit.type_id == UnitTypeId.RAVEN and unit.energy >= 50:
-            return 9
-        if unit.type_id == UnitTypeId.CARRIER:
-            return 8
-        if unit.type_id == UnitTypeId.BATTLECRUISER:
-            return 6
+        func = self._air_range_dict.get(unit.type_id, None)
+        if func:
+            return func(unit)
         return unit.air_range
 
     def can_shoot_air(self, unit: Unit) -> bool:
@@ -671,7 +702,6 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     UnitTypeId.OVERLORDCOCOON: UnitTypeId.OVERLORD,
     UnitTypeId.RAVAGERCOCOON: UnitTypeId.RAVAGER,
     UnitTypeId.LURKERMPBURROWED: UnitTypeId.LURKERMP,
-    UnitTypeId.LURKERMP: UnitTypeId.LURKERMP,
     UnitTypeId.QUEENBURROWED: UnitTypeId.QUEEN,
     UnitTypeId.CREEPTUMORBURROWED: UnitTypeId.CREEPTUMOR,
     UnitTypeId.INFESTORBURROWED: UnitTypeId.INFESTOR,
@@ -680,6 +710,7 @@ real_types: Dict[UnitTypeId, UnitTypeId] = {
     # Terran
     UnitTypeId.SIEGETANKSIEGED: UnitTypeId.SIEGETANK,
     UnitTypeId.VIKINGASSAULT: UnitTypeId.VIKINGFIGHTER,
+    UnitTypeId.THORAP: UnitTypeId.THOR,
     UnitTypeId.LIBERATORAG: UnitTypeId.LIBERATOR,
     UnitTypeId.WIDOWMINEBURROWED: UnitTypeId.WIDOWMINE,
     UnitTypeId.SUPPLYDEPOTLOWERED: UnitTypeId.SUPPLYDEPOT,

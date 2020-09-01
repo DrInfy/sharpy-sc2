@@ -35,16 +35,20 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.DRONE: 4,
     UnitTypeId.ZERGLING: 3,
     UnitTypeId.BANELING: 6,
+    UnitTypeId.BANELINGCOCOON: 6,
     UnitTypeId.ULTRALISK: 6,
     UnitTypeId.QUEEN: 5,
     UnitTypeId.ROACH: 6,
     UnitTypeId.RAVAGER: 8,
+    UnitTypeId.RAVAGERCOCOON: 8,
     UnitTypeId.HYDRALISK: 7,
     UnitTypeId.HYDRALISKBURROWED: 7,
     UnitTypeId.LURKERMP: 9,
+    UnitTypeId.LURKERMPEGG: 9,
     UnitTypeId.LURKERMPBURROWED: 9,
     UnitTypeId.INFESTOR: 10,
     UnitTypeId.BROODLORD: 10,
+    UnitTypeId.BROODLORDCOCOON: 10,
     UnitTypeId.MUTALISK: 6,
     UnitTypeId.CORRUPTOR: 8,
     UnitTypeId.INFESTEDTERRAN: 1,
@@ -70,8 +74,8 @@ high_priority: Dict[UnitTypeId, int] = {
 
 
 class MicroStalkers(GenericMicro):
-    def __init__(self, knowledge):
-        super().__init__(knowledge)
+    def __init__(self):
+        super().__init__()
         self.prio_dict = high_priority
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:

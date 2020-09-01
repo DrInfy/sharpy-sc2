@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Set
 
 from sharpy.sc2math import to_new_ticks
 from sc2.ids.buff_id import BuffId
@@ -26,6 +26,7 @@ class GridBuilding(ActBuilding):
         iterator: Optional[int] = None,
         priority: bool = False,
         allow_wall: bool = True,
+        consider_worker_production: bool = True,
     ):
         super().__init__(unit_type, to_count)
         self.allow_wall = allow_wall
@@ -33,7 +34,7 @@ class GridBuilding(ActBuilding):
         self.priority = priority
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
-        self.consider_worker_production = True
+        self.consider_worker_production = consider_worker_production
         self.building_solver: BuildingSolver = None
         self.make_pylon = None
 
@@ -50,8 +51,7 @@ class GridBuilding(ActBuilding):
 
         if count >= self.to_count:
             if self.builder_tag is not None:
-                self.knowledge.roles.clear_task(self.builder_tag)
-                self.builder_tag = None
+                self.clear_worker()
 
             return True  # Step is done
 
@@ -79,10 +79,15 @@ class GridBuilding(ActBuilding):
                 await self.make_pylon.execute()
             return False  # Stuck and cannot proceed
 
-        worker = self.get_worker(position)  # type: Unit
+        worker = self.get_worker_builder(position, self.builder_tag)  # type: Unit
 
         if worker is None:
+            self.builder_tag = None
             return False  # Cannot proceed
+
+        if self.has_build_order(worker):
+            self.set_worker(worker)
+            return False
 
         d = worker.distance_to(position)
         time = d / to_new_ticks(worker.movement_speed)
@@ -154,49 +159,16 @@ class GridBuilding(ActBuilding):
                     if moving_status != "":
                         moving_status += ", "
                     moving_status += order.ability.id.name
-                self._client.debug_text_world(moving_status, worker.position3d)
+                self.client.debug_text_world(moving_status, worker.position3d)
 
-    def get_worker(self, position: Point2):
-        worker: Unit = None
-        if self.builder_tag is None:
-            if self.knowledge.my_race == Race.Protoss:
-                builders: Units = self.knowledge.roles.all_from_task(UnitTask.Building).filter(
-                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
-                )
+    def set_worker(self, worker: Optional[Unit]) -> bool:
+        if worker:
+            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.builder_tag = worker.tag
+            return True
 
-                if builders:
-                    closest = None
-                    best_distance = 0
-                    for builder in builders:  # type: Unit
-                        if len(builder.orders) == 1:
-                            order: UnitOrder = builder.orders[0]
-                            if order.target is Point2:
-                                distance = position.distance_to_point2(order.target)
-                            else:
-                                distance = position.distance_to_point2(builder.position)
-                            if distance < 10 and (closest is None or distance < best_distance):
-                                best_distance = distance
-                                closest = builder
-                    worker = closest
-
-            if worker is None:
-                free_workers = self.knowledge.roles.free_workers.filter(
-                    lambda w: not w.has_buff(BuffId.ORACLESTASISTRAPTARGET)
-                )
-                if self.knowledge.my_race == Race.Terran:
-                    free_workers = free_workers.filter(lambda u: not self.has_build_order(u))
-                if free_workers.exists:
-                    worker = free_workers.closest_to(position)
-        else:
-            worker: Unit = self.cache.by_tag(self.builder_tag)
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                self.builder_tag = None
-        return worker
-
-    def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
-        self.builder_tag = worker.tag
+        self.builder_tag = None
+        return False
 
     def clear_worker(self):
         if self.builder_tag is not None:
@@ -240,10 +212,19 @@ class GridBuilding(ActBuilding):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
+            reserved_landing_locations: Set[Point2] = set(
+                self.knowledge.building_solver.structure_target_move_location.values()
+            )
             for point in self.building_solver.building_position:
                 if not self.allow_wall:
                     if point in self.building_solver.wall_buildings:
                         continue
+                # If a structure is landing here from AddonSwap() then dont use this location
+                if point in reserved_landing_locations:
+                    continue
+                # If this location has a techlab or reactor next to it, then don't create a new structure here
+                if point in self.knowledge.building_solver.free_addon_locations:
+                    continue
                 if not buildings.closer_than(1, point):
                     return point
 

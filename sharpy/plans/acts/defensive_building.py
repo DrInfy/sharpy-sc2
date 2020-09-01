@@ -2,6 +2,8 @@ import enum
 from math import floor
 from typing import Optional
 
+from sc2.unit import Unit
+from sharpy.managers.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.general.zone import Zone
 from sc2 import UnitTypeId, Race
@@ -29,9 +31,11 @@ class DefensiveBuilding(ActBase):
     ):
         super().__init__()
         self.to_count = to_count
+        self.exact = False
         self.unit_type = unit_type
         self.position_type = position_type
         self.to_base_index = to_base_index
+        self.builder_tag: Optional[int] = None
 
     async def execute(self) -> bool:
         is_done = True
@@ -63,18 +67,27 @@ class DefensiveBuilding(ActBase):
                     for y in range(-2, 2):
                         pos = int_pos + Point2((x, y))
                         if (
-                            pos.x > 0
-                            and pos.x < self.ai.state.creep.width
-                            and pos.y > 0
-                            and pos.y < self.ai.state.creep.height
+                            0 < pos.x < self.ai.state.creep.width
+                            and 0 < pos.y < self.ai.state.creep.height
                             and self.ai.state.creep.is_set(pos)
                         ):
                             can_build = True
                             break
 
             if can_build and self.knowledge.can_afford(self.unit_type):
-                self.knowledge.print(f"[DefensiveBuilding] building of type {self.unit_type} near {position}")
-                await self.ai.build(self.unit_type, near=position)
+                worker = self.get_worker_builder(position, self.builder_tag)
+                if worker is None:
+                    return True  # No worker to build with.
+
+                if not self.exact:
+                    position = await self.ai.find_placement(self.unit_type, position, 20)
+
+                if position is not None:
+                    self.print(f"Building {self.unit_type.name} to {position}")
+                    self.do(worker.build(self.unit_type, position))
+                    self.set_worker(worker)
+                else:
+                    self.print(f"Could not build {self.unit_type.name} to {position}")
             else:
                 is_done = False
             self.knowledge.reserve_costs(self.unit_type)
@@ -95,3 +108,7 @@ class DefensiveBuilding(ActBase):
         if self.position_type == DefensePosition.FarEntrance:
             return zone.center_location.towards(zone.gather_point, 9)
         assert False  # Exception?
+
+    def set_worker(self, worker: Unit):
+        self.knowledge.roles.set_task(UnitTask.Building, worker)
+        self.builder_tag = worker.tag

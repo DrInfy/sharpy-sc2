@@ -18,7 +18,7 @@ DATA_FOLDER = "data"
 
 
 class DataManager(ManagerBase):
-    data: OpponentData
+
     enabled: bool
     enable_write: bool
     last_result: Optional[GameResult]
@@ -26,6 +26,7 @@ class DataManager(ManagerBase):
 
     def __init__(self):
         self.last_result = None
+        self.data: Optional[OpponentData] = None
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):

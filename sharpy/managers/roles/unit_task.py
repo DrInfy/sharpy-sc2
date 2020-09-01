@@ -1,7 +1,7 @@
 import enum
 
 
-class UnitTask(enum.Enum):
+class UnitTask(enum.IntEnum):
     # Do NOT change order or the number values!
     Idle = 0
     Building = 1  # Worker only
@@ -12,4 +12,4 @@ class UnitTask(enum.Enum):
     Defending = 6  # Defending a zone
     Attacking = 7  # Attacking enemy base
     Reserved = 8  # Reserved for some unknown purpose, i.e. gate keeper
-    Hallucination = 9  # Not a real unit.
+    Hallucination = 9  # Not a real unit. Either a hallucination or changeling

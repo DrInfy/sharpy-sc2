@@ -4,15 +4,19 @@
 import argparse
 import asyncio
 import logging
+import os
+from datetime import datetime
 
 import aiohttp
 
+from config import get_config
 from sc2 import Race, Difficulty
 from sc2.client import Client
 
 import sc2
 from sc2.player import Computer, Human
 from sc2.protocol import ConnectionAlreadyClosed
+from sharpy.tools import LoggingUtility
 
 
 def run_ladder_game(bot):
@@ -25,6 +29,7 @@ def run_ladder_game(bot):
     parser.add_argument("--ComputerRace", type=str, nargs="?", help="Computer race")
     parser.add_argument("--ComputerDifficulty", type=str, nargs="?", help="Computer difficulty")
     parser.add_argument("--OpponentId", type=str, nargs="?", help="Opponent ID")
+    parser.add_argument("--RealTime", action="store_true", help="real time flag")
     args, unknown = parser.parse_known_args()
 
     if args.GamePort is None or args.StartPort is None:
@@ -49,8 +54,22 @@ def run_ladder_game(bot):
     portconfig.server = [ports[1], ports[2]]
     portconfig.players = [[ports[3], ports[4]]]
 
+    opponent = args.OpponentId
+    if not opponent:
+        opponent = "unknown"
+
+    folder = os.path.join("data", "games")
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+
+    time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
+    file_name = f"{opponent}_{time}"
+    path = f"{folder}/{file_name}.log"
+
+    LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
+
     # Join ladder game
-    g = join_ladder_game(host=host, port=host_port, players=[bot], realtime=False, portconfig=portconfig)
+    g = join_ladder_game(host=host, port=host_port, players=[bot], realtime=args.RealTime, portconfig=portconfig)
 
     # Run it
     result = asyncio.get_event_loop().run_until_complete(g)
@@ -65,6 +84,7 @@ async def join_ladder_game(
     ws_connection = await aiohttp.ClientSession().ws_connect(ws_url, timeout=120)
 
     client = Client(ws_connection)
+
     try:
         result = await sc2.main._play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
         if save_replay_as is not None:
@@ -85,6 +105,13 @@ def stand_alone_game(bot):
     print("Starting local game...")
     print("Play as human? (y / n)")
     input_human = input(">> ")
+    map_name = "AcropolisLE"
+
+    folder = os.path.join("data", "games")
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+    time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
+
     if input_human and input_human.lower() == "y":
         races = ["p", "z", "t", "r"]
         race = None
@@ -102,6 +129,14 @@ def stand_alone_game(bot):
                     race = Race.Random
                 else:
                     print(f'"{human_race}" not recognized.')
-        return sc2.run_game(sc2.maps.get("AcropolisLE"), [Human(race), bot], realtime=True)
 
-    return sc2.run_game(sc2.maps.get("AcropolisLE"), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)
+        file_name = f"Human{race}_{map_name}_{time}"
+        path = f"{folder}/{file_name}.log"
+        LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
+
+        return sc2.run_game(sc2.maps.get(map_name), [Human(race), bot], realtime=True)
+
+    file_name = f"IngameAI_{map_name}_{time}"
+    path = f"{folder}/{file_name}.log"
+    LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
+    return sc2.run_game(sc2.maps.get(map_name), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)

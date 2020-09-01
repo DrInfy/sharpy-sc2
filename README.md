@@ -8,7 +8,7 @@ Sharpy was created to make it as easy as possible to create practice dummies for
 
 Sharpy is a work in progress. The folder structure and classes are subject to change.
 
-**Build statuses**
+### Build statuses
 
 Master branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actions/badge.svg?branch=master)
 
@@ -16,7 +16,11 @@ Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actio
 
 ### Requirements
 
-Python 3.7 (>=3.8 is not supported yet)
+1. Python 3.7 64-bit
+   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) as the pathlib is built for 64-bit python 3.7
+1. Windows or Linux
+   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib)
+   * macOS (and possibly others as well) may be supported after [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) is built for it.
 
 ### Ladder Dummy Bots
 
@@ -24,7 +28,7 @@ To build dummy bots for ladder, run ladder_zip.py. Bots will appear as individua
 
 ### Getting started
 
-Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/1.-Getting-Started) guide in wiki.
+Read the [getting started](https://github.com/DrInfy/sharpy-sc2/wiki/Getting-Started) guide in wiki.
 
 ## Contributing
 
@@ -85,6 +89,22 @@ To install all development dependencies, use
 pip install -r requirements.dev.txt
 ```
 
+#### Pre-commit hooks
+
+To install git pre-commit hooks that will run black and flake8 (see below), use
+
+```
+pre-commit install
+```
+
+If you ever want to uninstall the hooks, use
+
+```
+pre-commit uninstall
+```
+
+or simply uninstall the `.git\hooks\pre-commit` file.
+
 ### Code Formatting
 
 sharpy-sc2 uses [Black](https://pypi.org/project/black/) for automatic Python source code formatting.
@@ -114,10 +134,16 @@ To run flake8 linting, use
 
 Tests are written using [pytest framework](https://docs.pytest.org/en/latest/getting-started.html).
 
-To run the tests, use
+To run all tests, use
 
 ```
 pytest
+```
+
+To run tests from a single test file, use `pytest path-to-file` eg.
+
+```
+pytest sharpy\knowledges\knowledge_test.py
 ```
 
 pytest follows standard test discovery rules and will run all tests in the current directory and its subdirectories.

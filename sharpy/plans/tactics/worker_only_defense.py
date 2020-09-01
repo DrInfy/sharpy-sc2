@@ -123,7 +123,7 @@ class PlanWorkerOnlyDefense(ActBase):
                 for unit in army:
                     await self.regroup_defend(army, combined_enemies, unit)
 
-            self.knowledge.combat_manager.execute(closest_enemy.position, MoveType.Assault)
+            self.combat.execute(closest_enemy.position, MoveType.Assault)
             self.free_others()
         else:
             return True  # Don't know how to defend against
@@ -268,4 +268,4 @@ class PlanWorkerOnlyDefense(ActBase):
             units: Units = self.knowledge.roles.units(UnitTask.Defending)
             for unit in units:
                 text = f"Worker Defending"
-                self._client.debug_text_world(text, unit.position3d)
+                self.client.debug_text_world(text, unit.position3d)

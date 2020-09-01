@@ -44,6 +44,10 @@ class WorkerScout(ActBase):
             self.last_locations.append(self.scout.position)
 
     async def select_scout(self):
+        if self.scout_tag is not None:
+            self.scout = self.roles.get_unit_by_tag_from_task(self.scout_tag, UnitTask.Scouting)
+            return
+
         workers = self.knowledge.roles.free_workers
         if not workers.exists:
             return
@@ -52,8 +56,7 @@ class WorkerScout(ActBase):
             closest_worker = workers.closest_to(self.current_target)
             self.scout_tag = closest_worker.tag
             self.knowledge.roles.set_task(UnitTask.Scouting, closest_worker)
-
-        self.scout = self.cache.by_tag(self.scout_tag)
+            self.scout = closest_worker
 
     def distance_to_scout(self, location):
         # Return sys.maxsize so that the sort function does not crash like it does with None
@@ -180,6 +183,8 @@ class WorkerScout(ActBase):
         if self.scout is None:
             # No one to scout
             return True  # Non blocking
+
+        self.roles.refresh_task(self.scout)
 
         if not len(self.scout_locations):
             # Nothing to scout

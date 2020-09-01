@@ -117,6 +117,7 @@ class PlanZoneDefense(ActBase):
                             defenders.power, defense_required, enemy_center, zone, zone_tags, zone_worker_defenders
                         )
 
+                self.roles.refresh_tags(self.combat.tags)
                 self.combat.execute(enemy_center, MoveType.SearchAndDestroy)
         return True  # never block
 
@@ -200,4 +201,4 @@ class PlanZoneDefense(ActBase):
                 unit = self.cache.by_tag(tag)
                 if unit:
                     text = f"Defending {zone}"
-                    self._client.debug_text_world(text, unit.position3d)
+                    self.client.debug_text_world(text, unit.position3d)
