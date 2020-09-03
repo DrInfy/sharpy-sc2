@@ -8,3 +8,4 @@ from .mutalisk import MutaliskBot
 from .roach_rush import RoachRush
 from .zerg_random import RandomZergBot
 from .lurkers import LurkerBot
+from .roach_burrow import RoachBurrowBot
