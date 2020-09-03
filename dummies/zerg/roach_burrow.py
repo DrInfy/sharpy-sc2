@@ -1,49 +1,74 @@
-from sc2 import Race, UnitTypeId
+from typing import Optional, List
+
+from sc2 import Race, UnitTypeId, AbilityId
 from sc2.ids.upgrade_id import UpgradeId
+from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.plans import BuildOrder
-from sharpy.plans.zerg import (
-    CounterTerranTie,
-    ZergUnit,
-    Step,
-    RequiredUnitExists,
-    SequentialList,
-    ActBuilding,
-    ActExpand,
-    AutoOverLord,
-    StepBuildGas,
-    ActUnit,
-    RequiredSupply,
-    RequiredGas,
-    ActTech,
-    PlanDistributeWorkers,
-    OverlordScout,
-    PlanFinishEnemy,
-    PlanZoneAttack,
-    InjectLarva,
-    PlanZoneDefense,
-    RequiredEnemyUnitExists,
-    MorphRavager,
-    PlanZoneGather,
-)
+from sharpy.managers import ManagerBase
+from sharpy.managers.combat2 import GenericMicro, Action
+from sharpy.plans.zerg import *
+
+
+class MicroBurrowRoaches(GenericMicro):
+    """
+    Basic micro for Roaches that uses burrow.
+
+    todo: take advantage of possible UpgradeId.TUNNELINGCLAWS and move while burrowed.
+    todo: maybe unburrow when under
+        * EffectId.SCANNERSWEEP,
+        * EffectId.PSISTORMPERSISTENT,
+        * revealed by raven/observer/overseer, etc.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.burrow_up_percentage = 0.7
+        self.burrow_down_percentage = 0.4
+
+    def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
+        burrow_ready = self.cd_manager.is_ready(unit.tag, AbilityId.BURROWDOWN_ROACH)
+
+        if unit.is_burrowed and unit.health_percentage > self.burrow_up_percentage:
+            return Action(None, False, AbilityId.BURROWUP_ROACH)
+
+        if not unit.is_burrowed and unit.health_percentage < self.burrow_down_percentage and burrow_ready:
+            return Action(None, False, AbilityId.BURROWDOWN_ROACH)
+
+        return super().unit_solve_combat(unit, current_command)
+
+
+class AutoRavager(ZergUnit):
+    def __init__(self):
+        """
+        @summary Make ravagers according to the enemy siege tanks and photon cannons
+        """
+        super().__init__(UnitTypeId.RAVAGER, 0, True, False)
+
+    async def execute(self) -> bool:
+        self.to_count = 0
+        self.to_count += self.knowledge.enemy_units_manager.unit_count(UnitTypeId.SIEGETANK)
+        self.to_count += self.knowledge.enemy_units_manager.unit_count(UnitTypeId.PHOTONCANNON)
+        return await super().execute()
 
 
 class RoachBurrowBuild(BuildOrder):
     def __init__(self):
         super().__init__(
+            Step(None, AutoRavager(), skip_until=Supply(20, SupplyType.Workers)),
+            Step(Any(Supply(13, SupplyType.Workers), SupplyLeft(0)), AutoOverLord()),
             SequentialList(
                 # Opener
-                Step(RequiredUnitExists(UnitTypeId.DRONE, 13), ZergUnit(UnitTypeId.OVERLORD, 2, priority=True)),
-                Step(RequiredUnitExists(UnitTypeId.DRONE, 16), ActExpand(2, priority=True)),
+                Step(UnitExists(UnitTypeId.DRONE, 13), ZergUnit(UnitTypeId.OVERLORD, 2, priority=True)),
+                Step(UnitExists(UnitTypeId.DRONE, 16), Expand(2, priority=True)),
                 StepBuildGas(1),
-                Step(RequiredSupply(17), ActBuilding(UnitTypeId.SPAWNINGPOOL)),
-                Step(RequiredSupply(20), ZergUnit(UnitTypeId.QUEEN, 1, priority=True)),
-                Step(RequiredSupply(20), ZergUnit(UnitTypeId.ZERGLING, 6)),
-                Step(RequiredGas(100), ActTech(UpgradeId.BURROW)),
-                Step(RequiredSupply(24), ActBuilding(UnitTypeId.ROACHWARREN)),
-                Step(RequiredSupply(24), ZergUnit(UnitTypeId.QUEEN, 2, priority=True)),
-                Step(RequiredSupply(27), ZergUnit(UnitTypeId.ROACH, 5)),
+                Step(Supply(17), ActBuilding(UnitTypeId.SPAWNINGPOOL)),
+                Step(Supply(20), ZergUnit(UnitTypeId.QUEEN, 1, priority=True)),
+                Step(Supply(20), ZergUnit(UnitTypeId.ZERGLING, 6)),
+                Step(Gas(100), Tech(UpgradeId.BURROW)),
+                Step(Supply(24), ActBuilding(UnitTypeId.ROACHWARREN)),
+                Step(Supply(24), ZergUnit(UnitTypeId.QUEEN, 2, priority=True)),
+                Step(Supply(27), ZergUnit(UnitTypeId.ROACH, 5)),
                 StepBuildGas(2),
                 Step(None, ZergUnit(UnitTypeId.ROACH, 999)),
             ),
@@ -52,35 +77,7 @@ class RoachBurrowBuild(BuildOrder):
                 ZergUnit(UnitTypeId.DRONE, 25),
                 # Step(self.zones_are_safe, ZergUnit(UnitTypeId.DRONE, 80), skip=self.ideal_workers_reached),
             ),
-            SequentialList(
-                # Overlords
-                AutoOverLord(),
-            ),
-            # todo: make ravagers acording to the number of siege tanks
-            # todo: how to make ravager morph priority?
-            SequentialList(Step(RequiredEnemyUnitExists(UnitTypeId.SIEGETANK, 1), MorphRavager(2))),
         )
-
-    # todo: turn into a require class?
-    # def zones_are_safe(self, knowledge: Knowledge) -> bool:
-    #     for zone in knowledge.zone_manager.expansion_zones:
-    #         if zone.is_ours and zone.is_under_attack:
-    #             return False
-    #
-    #     return knowledge.game_analyzer.army_can_survive
-
-    # todo: turn into a require class?
-    # def ideal_workers_reached(self, knowledge: Knowledge) -> bool:
-    #     ideal_workers = 0
-    #
-    #     for townhall in self.ai.townhalls:
-    #         ideal_workers += townhall.ideal_harvesters
-    #     for gas in self.ai.gas_buildings:
-    #         ideal_workers += gas.ideal_harvesters
-    #
-    #     current_workers = len(knowledge.unit_cache.own(UnitTypeId.DRONE))
-    #
-    #     return current_workers >= ideal_workers
 
 
 class RoachBurrowBot(KnowledgeBot):
@@ -91,16 +88,23 @@ class RoachBurrowBot(KnowledgeBot):
     def __init__(self):
         super().__init__("Blunt Burrow")
 
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        # Set the burrow roach micro
+        self.knowledge.combat_manager.default_rules.unit_micros[UnitTypeId.ROACH] = MicroBurrowRoaches()
+        return None
+
     async def create_plan(self) -> BuildOrder:
+        attack = PlanZoneAttack(8)
+        attack.retreat_multiplier = 0.01
         return BuildOrder(
             CounterTerranTie([RoachBurrowBuild()]),
             SequentialList(
                 OverlordScout(),
-                PlanDistributeWorkers(),
+                DistributeWorkers(),
                 InjectLarva(),
                 PlanZoneDefense(),
                 PlanZoneGather(),
-                PlanZoneAttack(8),
+                attack,
                 PlanFinishEnemy(),
             ),
         )
