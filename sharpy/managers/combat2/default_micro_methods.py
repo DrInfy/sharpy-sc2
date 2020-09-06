@@ -286,7 +286,10 @@ class DefaultMicroMethods:
 
     @staticmethod
     def ready_to_shoot(step: MicroStep, unit: Unit) -> bool:
-        delay_to_shoot = step.client.game_step + 1.5
+        if step.ai.realtime:
+            delay_to_shoot = 4.5  # 3 + 1.5 to be on the safe side of things
+        else:
+            delay_to_shoot = step.client.game_step + 1.5
 
         if unit.type_id == UnitTypeId.CYCLONE:
             if step.cd_manager.is_ready(unit.tag, AbilityId.CANCEL_LOCKON):
