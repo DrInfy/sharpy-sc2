@@ -8,6 +8,7 @@ from sharpy.managers import ManagerBase
 
 
 class GameVersion(IntEnum):
+    V_5_0_3 = 81433
     V_5_0_0 = 81009
     V_4_12_0 = 80188
     V_4_11_4 = 78285
@@ -48,6 +49,26 @@ class VersionManager(ManagerBase):
         pass
 
     def configure_enums(self):
+        if self.base_version < GameVersion.V_5_0_3:
+            self._set_enum_mapping(
+                UpgradeId,
+                {
+                    UpgradeId.ENHANCEDSHOCKWAVES: 296,
+                    UpgradeId.MICROBIALSHROUD: 297,
+                    UpgradeId.SUNDERINGIMPACT: 298,
+                    UpgradeId.AMPLIFIEDSHIELDING: 299,
+                    UpgradeId.PSIONICAMPLIFIERS: 300,
+                    UpgradeId.SECRETEDCOATING: 301,
+                },
+            )
+            self._set_enum_mapping(
+                BuffId,
+                {
+                    BuffId.AMORPHOUSARMORCLOUD: 295,
+                    BuffId.RAVENSHREDDERMISSILEARMORREDUCTIONUISUBTRUCT: 296,
+                    BuffId.BATTERYOVERCHARGE: 297,
+                },
+            )
         if self.base_version < GameVersion.V_5_0_0:
             self._set_enum_mapping(
                 UnitTypeId,
@@ -116,6 +137,9 @@ class VersionManager(ManagerBase):
             self.print(f"Setting {enum_key.name} to {enum_key.value}")
 
     def configure_upgrades(self):
+        if self.base_version < GameVersion.V_5_0_3:
+            self.disabled_upgrades.add(UpgradeId.TEMPESTGROUNDATTACKUPGRADE)
+
         if self.base_version < GameVersion.V_4_11_0:
             self.disabled_upgrades.add(UpgradeId.LURKERRANGE)
             self.disabled_upgrades.add(UpgradeId.MICROBIALSHROUD)
