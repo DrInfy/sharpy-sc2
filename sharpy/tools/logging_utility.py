@@ -11,7 +11,7 @@ class NonSharpyFilter:
         return not record["name"].startswith(self.module_name)
 
 
-LOG_FORMAT = "<bold><green>{time}</green> | <w>{message}</w></bold>"
+LOG_FORMAT = "<bold><green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <w>{message}</w></bold>"
 
 
 class LoggingUtility:

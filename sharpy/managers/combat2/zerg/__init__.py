@@ -6,3 +6,4 @@ from .micro_infestors import MicroInfestors
 from .micro_lurkers import MicroLurkers
 from .micro_vipers import MicroVipers
 from .micro_swarmhosts import MicroSwarmHosts
+from .micro_roaches import MicroRoaches
