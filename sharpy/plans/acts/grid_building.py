@@ -1,5 +1,7 @@
+from math import floor
 from typing import Optional, Set
 
+from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
@@ -22,7 +24,7 @@ class GridBuilding(ActBuilding):
     def __init__(
         self,
         unit_type: UnitTypeId,
-        to_count: int,
+        to_count: int = 1,
         iterator: Optional[int] = None,
         priority: bool = False,
         allow_wall: bool = True,
@@ -71,7 +73,7 @@ class GridBuilding(ActBuilding):
         elif self.knowledge.my_race == Race.Terran:
             position = self.position_terran(count)
         else:
-            raise ValueError(f"Position lookup for race {self.knowledge.my_race} not supported.")
+            position = self.position_zerg(count)
 
         if position is None:
             if self.make_pylon is not None:
@@ -105,6 +107,8 @@ class GridBuilding(ActBuilding):
                         await self.build_protoss(worker, count, position)
                     elif self.knowledge.my_race == Race.Terran:
                         await self.build_terran(worker, count, position)
+                    else:
+                        await self.build_zerg(worker, count, position)
                 return False
 
             if self.priority and wait_time < time:
@@ -201,6 +205,17 @@ class GridBuilding(ActBuilding):
 
         return future_position
 
+    def position_zerg(self, count) -> Optional[Point2]:
+        buildings = self.ai.structures
+        creep = self.ai.state.creep
+        future_position = None
+
+        for point in self.building_solver.building_position:
+            if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
+                return point
+
+        return future_position
+
     def position_terran(self, count) -> Optional[Point2]:
         is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
         buildings = self.ai.structures
@@ -284,6 +299,36 @@ class GridBuilding(ActBuilding):
                         # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
         self.print("GRID POSITION NOT FOUND !!!!")
 
+    async def build_zerg(self, worker: Unit, count, position: Point2):
+        if self.has_build_order(worker):
+            action = worker.build(self.unit_type, position, queue=True)
+
+            for order in worker.orders:
+                if order.ability.id == action.ability:
+                    # Don't add the same order twice
+                    return
+
+            self.do(action)
+
+        # try the selected position first
+        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
+        if not err:
+            self.print(f"Building {self.unit_type.name} to {position}")
+            return  # success
+
+        buildings = self.ai.structures
+        creep = self.ai.state.creep
+
+        for point in self.building_solver.building_position:
+            if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
+                err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
+                if not err:
+                    return  # success
+                else:
+                    pass
+                    # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
+        self.print("GRID POSITION NOT FOUND !!!!")
+
     async def build_terran(self, worker: Unit, count, position: Point2):
         if self.has_build_order(worker):
             action = worker.build(self.unit_type, position, queue=True)
@@ -324,6 +369,15 @@ class GridBuilding(ActBuilding):
                         pass
                         # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
         self.print("GRID POSITION NOT FOUND !!!!")
+
+    def is_on_creep(self, creep: PixelMap, point: Point2) -> bool:
+        x_original = floor(point.x) - 1
+        y_original = floor(point.y) - 1
+        for x in range(x_original, x_original + 5):
+            for y in range(y_original, y_original + 5):
+                if not creep.is_set(Point2((x, y))):
+                    return False
+        return True
 
     def prequisite_progress(self) -> float:
         """ Return progress in realtime seconds """

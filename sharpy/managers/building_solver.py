@@ -313,7 +313,7 @@ class BuildingSolver(ManagerBase):
                         continue
 
                     self.terran_grid(pos)
-        else:
+        elif self.knowledge.my_race == Race.Protoss:
             if zone_color == ZoneArea.OwnMainZone:
                 for x in x_range:
                     for y in y_range:
@@ -334,6 +334,32 @@ class BuildingSolver(ManagerBase):
                         continue
 
                     action(pos)
+        else:
+            for x in x_range:
+                for y in y_range:
+                    pos = Point2((x + center.x, y + center.y))
+                    area: GridArea = self.grid[pos]
+
+                    if area is None or area.ZoneIndex != zone_color:
+                        continue
+
+                    self.massive_zerg_grid(pos)
+
+            for x in x_range:
+                for y in y_range:
+                    pos = Point2((x + center.x, y + center.y))
+                    area: GridArea = self.grid[pos]
+
+                    if area is None or area.ZoneIndex != zone_color:
+                        continue
+
+                    self.zerg_grid(pos)
+
+            if zone_color == ZoneArea.OwnMainZone:
+                # sort building by their distance to our main withing the main zone
+                self._building_positions.get(BuildArea.Building).sort(
+                    key=lambda p: p.distance_to_point2(self.ai.start_location)
+                )
 
     def massive_grid(self, pos):
         rect = Rectangle(pos.x, pos.y, 6, 9)
@@ -366,20 +392,53 @@ class BuildingSolver(ManagerBase):
 
             self.grid.fill_rect(padding, fill_padding)
 
+    def massive_zerg_grid(self, pos):
+        rect = Rectangle(pos.x, pos.y, 6, 6)
+        padding = Rectangle(pos.x - 2, pos.y - 1, 10, 8)
+        padding2 = Rectangle(pos.x - 1, pos.y - 2, 8, 10)
+
+        if self.grid.query_rect(rect, is_empty):
+            buildings = [
+                pos + Point2((1.5, 1.5)),
+                pos + Point2((4.5, 1.5)),
+                pos + Point2((1.5, 4.5)),
+                pos + Point2((4.5, 4.5)),
+            ]
+
+            for gate_pos in buildings:
+                self.fill_and_save(gate_pos, BlockerType.Building3x3, BuildArea.Building)
+
+            self.grid.fill_rect(padding, fill_padding)
+            self.grid.fill_rect(padding2, fill_padding)
+
+    def zerg_grid(self, pos):
+        rect = Rectangle(pos.x, pos.y, 3, 3)
+        padding = Rectangle(pos.x, pos.y, 5, 5)
+
+        if self.grid.query_rect(rect, is_empty):
+            buildings = [
+                pos + Point2((1.5, 1.5)),
+            ]
+
+            for pos in buildings:
+                self.fill_and_save(pos, BlockerType.Building3x3, BuildArea.Building)
+
+            self.grid.fill_rect(padding, fill_padding)
+
     def terran_grid(self, pos):
         rect = Rectangle(pos.x, pos.y, 6, 5)
         padding = Rectangle(pos.x, pos.y, 7, 5)
 
         if self.grid.query_rect(rect, is_empty):
-            pylons = [pos + Point2((1, 4)), pos + Point2((1 + 2, 4)), pos + Point2((1 + 4, 4))]
-            gates = [
+            depots = [pos + Point2((1, 4)), pos + Point2((1 + 2, 4)), pos + Point2((1 + 4, 4))]
+            raxes = [
                 pos + Point2((1.5, 1.5)),
             ]
-            for pylon_pos in pylons:
-                self.fill_and_save(pylon_pos, BlockerType.Building2x2, BuildArea.Pylon)
+            for depot_pos in depots:
+                self.fill_and_save(depot_pos, BlockerType.Building2x2, BuildArea.Pylon)
 
-            for gate_pos in gates:
-                self.fill_and_save(gate_pos, BlockerType.Building3x3, BuildArea.Building)
+            for rax_pos in raxes:
+                self.fill_and_save(rax_pos, BlockerType.Building3x3, BuildArea.Building)
 
             self.grid.fill_rect(padding, fill_padding)
 

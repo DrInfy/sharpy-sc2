@@ -47,7 +47,6 @@ class PlanHeatObserver(ActBase):
             if observers.exists:
                 observer = observers.first
                 self.observer_tag = observer.tag
-                self.roles.set_task(UnitTask.Reserved, observer)
                 await self.assault_hot_spot(observer)
         else:
             observer = self.cache.by_tag(self.observer_tag)
