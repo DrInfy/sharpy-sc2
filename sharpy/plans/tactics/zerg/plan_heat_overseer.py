@@ -40,12 +40,11 @@ class PlanHeatOverseer(ActBase):
             return True
 
         if self.overseer_tag is None:
-            idle = self.roles.all_from_task(UnitTask.Idle)
-            overseers = idle(UnitTypeId.OVERSEER)
+            overseers = self.roles.get_types_from(
+                {UnitTypeId.OVERSEER}, UnitTask.Idle, UnitTask.Defending, UnitTask.Fighting, UnitTask.Attacking
+            )
             if overseers.exists:
                 overseer = overseers.first
-                self.overseer_tag = overseer.tag
-                self.roles.set_task(UnitTask.Reserved, overseer)
                 await self.assault_hot_spot(overseer)
         else:
             overseer = self.cache.by_tag(self.overseer_tag)
@@ -56,7 +55,15 @@ class PlanHeatOverseer(ActBase):
 
         return True  # never block
 
-    async def assault_hot_spot(self, observer):
+    async def assault_hot_spot(self, overseer):
+        self.roles.set_task(UnitTask.Reserved, overseer)
+        self.overseer_tag = overseer.tag
         position = self.stealth_hotspot or self.gather_point
-        self.combat.add_unit(observer)
+        self.combat.add_unit(overseer)
         self.combat.execute(position)
+
+    async def debug_actions(self):
+        if self.overseer_tag:
+            overseer = self.cache.by_tag(self.overseer_tag)
+            if overseer:
+                self.debug_text_on_unit(overseer, "HEAT OVERSEER!!")
