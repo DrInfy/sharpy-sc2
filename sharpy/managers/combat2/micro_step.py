@@ -34,6 +34,7 @@ class MicroStep(ABC, Component):
     delay_to_shoot: float
     enemies_near_by: Units
     closest_group: CombatUnits
+    closest_group_distance: float
 
     def __init__(self):
         self.enemy_groups: List[CombatUnits] = []
