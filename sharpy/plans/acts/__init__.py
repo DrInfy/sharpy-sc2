@@ -10,12 +10,12 @@ from .build_ramp import ActBuildingRamp
 from .cancel_building import CancelBuilding
 from .defensive_building import DefensePosition
 from .defensive_building import DefensiveBuilding
-from .expand import Expand, ActExpand
+from .expand import Expand
 from .grid_building import GridBuilding
 from .methods import merge_to_act
 from .morph_warp_gates import MorphWarpGates
 from .position_building import PositionBuilding
 from .reserve import Reserve
-from .tech import Tech, ActTech
+from .tech import Tech
 from .workers import Workers
 from .auto_worker import AutoWorker

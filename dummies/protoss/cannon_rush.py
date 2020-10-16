@@ -7,6 +7,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
+from sharpy.managers import ManagerBase
 from sharpy.managers.building_solver import WallType
 from sharpy.managers.roles import UnitTask
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
@@ -191,6 +192,10 @@ class CannonRush(KnowledgeBot):
     def __init__(self, build_name: str = "default"):
         super().__init__("Sharp Cannon")
         self.build_name = build_name
+
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        self.knowledge.roles.set_tag_each_iteration = True
+        return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:
         if self.build_name == "default":

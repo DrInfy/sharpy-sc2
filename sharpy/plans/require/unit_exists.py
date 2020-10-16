@@ -32,16 +32,3 @@ class UnitExists(RequireBase):
     def check(self) -> bool:
         count = self.get_count(self.unit_type, self.include_pending, self.include_killed, self.include_not_ready)
         return count >= self.count
-
-
-class RequiredUnitExists(UnitExists):
-    def __init__(
-        self,
-        unit_type: UnitTypeId,
-        count: int = 1,
-        include_pending: bool = False,
-        include_killed: bool = False,
-        include_not_ready: bool = True,
-    ):
-        warnings.warn("'RequiredUnitExists' is deprecated, use 'UnitExists' instead", DeprecationWarning, 2)
-        super().__init__(unit_type, count, include_pending, include_killed, include_not_ready)

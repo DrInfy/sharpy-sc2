@@ -1,10 +1,10 @@
-from .archon import Archon, ActArchon
+from .archon import Archon
 from .artosis_pylon import ArtosisPylon
 from .auto_pylon import AutoPylon
 from .chrono_any_tech import ChronoAnyTech
 from .chrono_tech import ChronoTech
-from .chrono_unit import ChronoUnit, ChronoUnitProduction
-from .defensive_cannons import DefensiveCannons, ActDefensiveCannons
+from .chrono_unit import ChronoUnit
+from .defensive_cannons import DefensiveCannons
 from .gate_unit import GateUnit
 from .protoss_unit import ProtossUnit
 from .restore_power import RestorePower
