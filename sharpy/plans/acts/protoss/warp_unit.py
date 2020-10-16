@@ -86,9 +86,3 @@ class WarpUnit(ActBase):
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
             self.knowledge.reserve(cost.minerals, cost.vespene)
         return False
-
-
-class ActWarpUnit(WarpUnit):
-    def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
-        warnings.warn("'ActWarpUnit' is deprecated, use 'WarpUnit' instead", DeprecationWarning, 2)
-        super().__init__(unit_type, to_count, priority)

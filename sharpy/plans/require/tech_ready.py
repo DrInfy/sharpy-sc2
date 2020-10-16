@@ -22,9 +22,3 @@ class TechReady(RequireBase):
         if self.ai.already_pending_upgrade(self.name) >= self.percentage:
             return True
         return False
-
-
-class RequiredTechReady(TechReady):
-    def __init__(self, upgrade: UpgradeId, percentage: float = 1):
-        warnings.warn("'RequiredTechReady' is deprecated, use 'TechReady' instead", DeprecationWarning, 2)
-        super().__init__(upgrade, percentage)

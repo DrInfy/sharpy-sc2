@@ -82,9 +82,3 @@ class DefensiveCannons(ActBase):
             return position.towards(target_pos, 3)
 
         return position.towards(zone.center_location, -2)
-
-
-class ActDefensiveCannons(DefensiveCannons):
-    def __init__(self, to_count_pre_base: int, additional_batteries: int = 0, to_base_index: Optional[int] = None):
-        warnings.warn("'ActDefensiveCannons' is deprecated, use 'DefensiveCannons' instead", DeprecationWarning, 2)
-        super().__init__(to_count_pre_base, additional_batteries, to_base_index)

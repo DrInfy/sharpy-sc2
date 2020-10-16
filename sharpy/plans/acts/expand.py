@@ -182,9 +182,3 @@ class Expand(ActBase):
                         return True
 
         return False
-
-
-class ActExpand(Expand):
-    def __init__(self, to_count: int, priority: bool = False, consider_worker_production: bool = True):
-        warnings.warn("'ActExpand' is deprecated, use 'Expand' instead", DeprecationWarning, 2)
-        super().__init__(to_count, priority, consider_worker_production)

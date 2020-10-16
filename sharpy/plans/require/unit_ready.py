@@ -22,9 +22,3 @@ class UnitReady(RequireBase):
 
         count += build_progress
         return count >= self.count
-
-
-class RequiredUnitReady(UnitReady):
-    def __init__(self, unit_type: UnitTypeId, count: float = 1):
-        warnings.warn("'RequiredUnitReady' is deprecated, use 'UnitReady' instead", DeprecationWarning, 2)
-        super().__init__(unit_type, count)

@@ -29,11 +29,3 @@ class EnemyUnitExistsAfter(RequireBase):
             return True
 
         return False
-
-
-class RequiredEnemyUnitExistsAfter(EnemyUnitExistsAfter):
-    def __init__(self, unit_type: UnitTypeId, count: int = 1):
-        warnings.warn(
-            "'RequiredEnemyUnitExistsAfter' is deprecated, use 'EnemyUnitExistsAfter' instead", DeprecationWarning, 2
-        )
-        super().__init__(unit_type, count)

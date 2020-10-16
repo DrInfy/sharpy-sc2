@@ -15,9 +15,3 @@ class Minerals(RequireBase):
         if self.ai.minerals > self.mineralRequirement:
             return True
         return False
-
-
-class RequiredMinerals(Minerals):
-    def __init__(self, mineral_requirement: int):
-        warnings.warn("'RequiredMinerals' is deprecated, use 'Minerals' instead", DeprecationWarning, 2)
-        super().__init__(mineral_requirement)

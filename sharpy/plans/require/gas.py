@@ -18,9 +18,3 @@ class Gas(RequireBase):
         if self.ai.vespene > self.vespene_requirement:
             return True
         return False
-
-
-class RequiredGas(Gas):
-    def __init__(self, vespene_requirement: int):
-        warnings.warn("'RequiredGas' is deprecated, use 'Gas' instead", DeprecationWarning, 2)
-        super().__init__(vespene_requirement)

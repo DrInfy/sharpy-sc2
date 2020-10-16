@@ -55,9 +55,3 @@ class Archon(ActBase):
     def on_unit_destroyed(self, event: UnitDestroyedEvent):
         if event.unit_tag in self.already_merging_tags:
             self.already_merging_tags.remove(event.unit_tag)
-
-
-class ActArchon(Archon):
-    def __init__(self, allowed_types: List[UnitTypeId]):
-        warnings.warn("'ActArchon' is deprecated, use 'Archon' instead", DeprecationWarning, 2)
-        super().__init__(allowed_types)

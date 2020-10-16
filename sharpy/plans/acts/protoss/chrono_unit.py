@@ -47,9 +47,3 @@ class ChronoUnit(ActBase):
                             self.casted += 1
                             return True  # TODO: better solution for real time, to prevent multiple duplicate chronos
         return True  # Never block
-
-
-class ChronoUnitProduction(ChronoUnit):
-    def __init__(self, name: UnitTypeId, from_building: UnitTypeId):
-        warnings.warn("'ChronoUnitProduction' is deprecated, use 'ChronoUnit' instead", DeprecationWarning, 2)
-        super().__init__(name, from_building)
