@@ -317,15 +317,3 @@ class DistributeWorkers(ActBase):
             self.do(worker.gather(work, queue=True))
         else:
             self.do(worker.gather(work))
-
-
-class PlanDistributeWorkers(DistributeWorkers):
-    def __init__(self, *args, **kwargs):
-        warnings.warn("'PlanDistributeWorkers' is deprecated, use 'DistributeWorkers' instead", DeprecationWarning, 2)
-        super().__init__(*args, **kwargs)
-
-
-class PlanDistributeWorkersV2(DistributeWorkers):
-    def __init__(self, *args, **kwargs):
-        warnings.warn("'PlanDistributeWorkersV2' is deprecated, use 'DistributeWorkers' instead", DeprecationWarning, 2)
-        super().__init__(*args, **kwargs)

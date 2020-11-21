@@ -27,11 +27,3 @@ class EnemyBuildingExists(RequireBase):
             return True
 
         return False
-
-
-class RequiredEnemyBuildingExists(EnemyBuildingExists):
-    def __init__(self, unit_type: UnitTypeId, count: int = 1):
-        warnings.warn(
-            "'RequiredEnemyBuildingExists' is deprecated, use 'EnemyBuildingExists' instead", DeprecationWarning, 2
-        )
-        super().__init__(unit_type, count)

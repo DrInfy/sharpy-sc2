@@ -47,13 +47,3 @@ class Any(RequireBase):
                 return True
 
         return False
-
-
-class RequiredAny(Any):
-    def __init__(
-        self,
-        conditions: Union[RequireBase, Callable[["Knowledge"], bool], List[RequireBase]],
-        *args: Union[RequireBase, Callable[["Knowledge"], bool]]
-    ):
-        warnings.warn("'RequiredAny' is deprecated, use 'Any' instead", DeprecationWarning, 2)
-        super().__init__(conditions, *args)

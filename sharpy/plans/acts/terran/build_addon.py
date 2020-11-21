@@ -63,9 +63,3 @@ class BuildAddon(ActBase):
         count += self.cache.own(unit_type).amount
 
         return count
-
-
-class ActBuildAddon(BuildAddon):
-    def __init__(self, unit_type: UnitTypeId, unit_from_type: UnitTypeId, to_count: int):
-        warnings.warn("'ActBuildAddon' is deprecated, use 'BuildAddon' instead", DeprecationWarning, 2)
-        super().__init__(unit_type, unit_from_type, to_count)

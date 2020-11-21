@@ -33,17 +33,12 @@ class MapInfo:
         self.ai: BotAI = knowledge.ai
         self.game_info: GameInfo = self.ai.game_info
 
-        game_info: GameInfo = knowledge.ai.game_info
         self.zone_radiuses: List[float] = [21, 17]
-        self.height_hash = np.sum(game_info.terrain_height.data_numpy)
         self.safe_first_expand = False
         self.swap_natural_with_third = False
 
         self.map = self.recognize_map()
-        if self.map != MapName.Unknown:
-            knowledge.print(f"Map recognized as {self.map.name}", type(self).__name__, stats=False)
-        else:
-            knowledge.print(f"Unknown map", type(self).__name__, stats=False, log_level=logging.WARNING)
+        knowledge.print(f"Map {self.game_info.map_name}", type(self).__name__, stats=False)
 
     def recognize_map(self) -> MapName:
 

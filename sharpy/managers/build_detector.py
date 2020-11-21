@@ -83,6 +83,10 @@ class BuildDetector(ManagerBase):
     def rush_detected(self):
         return self.rush_build != EnemyRushBuild.Macro
 
+    @property
+    def worker_rush_detected(self):
+        return self.rush_build == EnemyRushBuild.WorkerRush
+
     async def update(self):
         self._update_timings()
         self._rush_detection()
