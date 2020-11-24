@@ -1,6 +1,8 @@
 import os
-
+import sys
 import argparse
+
+sys.path.insert(1, "python-sc2")
 
 from bot_loader import BotDefinitions
 from version import update_version_txt
