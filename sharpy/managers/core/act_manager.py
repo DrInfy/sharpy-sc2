@@ -9,7 +9,7 @@ class ActManager(ManagerBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        await self._act.start_component(self, knowledge)
+        await self.start_component(self._act, knowledge)
 
     async def update(self):
         await self._act.execute()

@@ -5,7 +5,8 @@ from sc2.position import Point3
 from sc2.unit import Unit
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import Knowledge, KnowledgeBot
+    from sharpy.managers.interfaces import *
+    from sharpy.knowledges import *
     from sharpy.managers import *
 
 
@@ -23,7 +24,7 @@ class Component:
     cache: "UnitCacheManager"
     unit_values: "UnitValue"
     pather: "PathingManager"
-    combat: "GroupCombatManager"
+    combat: "ICombatManager"
     roles: "UnitRoleManager"
     zone_manager: "ZoneManager"
     cd_manager: "CooldownManager"
@@ -54,7 +55,7 @@ class Component:
     def debug(self):
         return self._debug and self.knowledge.debug
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         self._started = True
         self.knowledge = knowledge
         self._debug = self.knowledge.get_boolean_setting(f"debug.{type(self).__name__}")

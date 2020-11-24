@@ -82,7 +82,7 @@ class DataManager(ManagerBase):
 
     def real_update(self):
         if self.result.first_attacked is None:
-            for zone in self.knowledge.expansion_zones:
+            for zone in self.zone_manager.expansion_zones:
                 if zone.is_ours and zone.known_enemy_power.power > 10:
                     self.result.first_attacked = self.ai.time
 

@@ -39,7 +39,7 @@ class EnemyArmyPredicter(ManagerBase):
         self.mineral_updated_dict: Dict["Zone", float] = {}
         self.gas_dict: Dict[Point2, int] = {}
 
-        for zone in knowledge.expansion_zones:
+        for zone in zone_manager.expansion_zones:
             minerals = 0
             if zone.last_minerals is not None:
                 minerals = zone.last_minerals

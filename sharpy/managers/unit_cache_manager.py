@@ -3,6 +3,7 @@ from typing import Dict, Union, Optional, List, Iterable
 
 from scipy.spatial.ckdtree import cKDTree
 
+from sharpy.managers.interfaces import IUnitCache
 from sharpy.managers.unit_value import race_townhalls
 from sc2.constants import FakeEffectID
 from sc2.game_state import EffectData
@@ -18,12 +19,12 @@ if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
 
-class UnitCacheManager(ManagerBase):
+class UnitCacheManager(ManagerBase, IUnitCache):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""
 
     all_own: Units
     empty_units: Units
-    mineral_wall: Units
+    _mineral_wall: Units
 
     def __init__(self):
         super().__init__()
@@ -36,14 +37,22 @@ class UnitCacheManager(ManagerBase):
 
         self.own_numpy_vectors: List[np.ndarray] = []
         self.enemy_numpy_vectors: List[np.ndarray] = []
-        self.mineral_fields: Dict[Point2, Unit] = {}
-        self.mineral_wall: Units = {}
+        self._mineral_fields: Dict[Point2, Unit] = {}
+        self._mineral_wall: Units = {}
+
+    @property
+    def mineral_fields(self) -> Dict[Point2, Unit]:
+        return self._mineral_fields
+
+    @property
+    def mineral_wall(self) -> Units:
+        return self._mineral_wall
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.all_own: Units = Units([], self.ai)
         self.empty_units: Units = Units([], self.ai)
-        self.mineral_wall: Units = Units([], self.ai)
+        self._mineral_wall: Units = Units([], self.ai)
 
     def by_tag(self, tag: int) -> Optional[Unit]:
         return self.tag_cache.get(tag, None)
@@ -159,14 +168,14 @@ class UnitCacheManager(ManagerBase):
 
     async def post_update(self):
         if self.debug:
-            for mf in self.mineral_wall:
+            for mf in self._mineral_wall:
                 self.debug_text_on_unit(mf, "WALL")
 
     def update_minerals(self):
-        self.mineral_fields.clear()
-        self.mineral_wall.clear()
+        self._mineral_fields.clear()
+        self._mineral_wall.clear()
 
         for mf in self.ai.mineral_field:  # type: Unit
-            self.mineral_fields[mf.position] = mf
+            self._mineral_fields[mf.position] = mf
             if mf.position not in self.ai._resource_location_to_expansion_position_dict:
-                self.mineral_wall.append(mf)
+                self._mineral_wall.append(mf)

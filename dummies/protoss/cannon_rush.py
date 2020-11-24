@@ -28,8 +28,8 @@ class ProxyCannoneer(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.enemy_main: Point2 = self.knowledge.expansion_zones[-1].center_location
-        self.natural: Point2 = self.knowledge.expansion_zones[-2].center_location
+        self.enemy_main: Point2 = self.zone_manager.expansion_zones[-1].center_location
+        self.natural: Point2 = self.zone_manager.expansion_zones[-2].center_location
 
         self.enemy_ramp = self.knowledge.enemy_base_ramp
         d = self.enemy_main.distance_to(self.natural)
@@ -267,8 +267,8 @@ class CannonRush(KnowledgeBot):
 
     def cannon_contain(self) -> ActBase:
         self.knowledge.print(f"Cannon contain", "Build")
-        enemy_main = self.knowledge.expansion_zones[-1]
-        natural = self.knowledge.expansion_zones[-2]
+        enemy_main = self.zone_manager.expansion_zones[-1]
+        natural = self.zone_manager.expansion_zones[-2]
         enemy_ramp = self.knowledge.enemy_base_ramp
 
         return Step(
@@ -373,7 +373,7 @@ class CannonRush(KnowledgeBot):
 
     def cannon_expand(self) -> ActBase:
         self.knowledge.print(f"Cannon expand", "Build")
-        natural = self.knowledge.expansion_zones[-2]
+        natural = self.zone_manager.expansion_zones[-2]
         pylon_pos: Point2 = natural.behind_mineral_position_center
 
         return BuildOrder(

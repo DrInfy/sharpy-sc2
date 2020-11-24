@@ -27,7 +27,7 @@ class PlanZoneDefense(ActBase):
         await super().start(knowledge)
         self.worker_type: UnitTypeId = knowledge.my_worker_type
 
-        for i in range(0, len(self.knowledge.expansion_zones)):
+        for i in range(0, len(self.zone_manager.expansion_zones)):
             self.defender_tags[i] = []
             self.zone_seen_enemy[i] = -10
 
@@ -41,8 +41,8 @@ class PlanZoneDefense(ActBase):
 
         all_defenders = self.knowledge.roles.all_from_task(UnitTask.Defending)
 
-        for i in range(0, len(self.knowledge.expansion_zones)):
-            zone: "Zone" = self.knowledge.expansion_zones[i]
+        for i in range(0, len(self.zone_manager.expansion_zones)):
+            zone: "Zone" = self.zone_manager.expansion_zones[i]
             zone_tags = self.defender_tags[i]
 
             zone_defenders_all = all_defenders.tags_in(zone_tags)

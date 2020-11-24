@@ -24,7 +24,7 @@ class PositionBuilding(ActBuilding):
 
     async def actually_build(self, ai, count):
         # Go through zones so that furthest expansions are fortified first
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
         for i in range(0, len(zones)):
             zone = zones[i]
             if not zone.is_ours or zone.is_under_attack:

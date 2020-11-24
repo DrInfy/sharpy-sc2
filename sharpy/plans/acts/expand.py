@@ -54,7 +54,7 @@ class Expand(ActBase):
         expand_here: "Zone" = None
         expand_now = False
         active_bases = self.current_active_base_count
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
 
         if self.priority_base_index is not None:
             zones = sorted(zones, key=lambda z: z.zone_index == self.priority_base_index, reverse=True)

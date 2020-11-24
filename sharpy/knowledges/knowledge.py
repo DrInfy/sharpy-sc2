@@ -150,7 +150,7 @@ class Knowledge:
 
         self.heat_map = HeatMap(self.ai, self)
 
-        self.my_worker_type = self.unit_values.get_worker_type(self.my_race)
+        self.my_worker_type = UnitValue.get_worker_type(self.my_race)
 
     def get_str_setting(self, key: str) -> str:
         """

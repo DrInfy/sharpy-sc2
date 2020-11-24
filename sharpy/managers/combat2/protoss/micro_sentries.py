@@ -6,6 +6,7 @@ from sc2.position import Point2
 
 if TYPE_CHECKING:
     from sharpy.managers import *
+    from sharpy.knowledges import *
 
 from sc2 import AbilityId, Race
 from sc2.ids.buff_id import BuffId
@@ -31,13 +32,12 @@ class MicroSentries(GenericMicro):
         self.melee_power = 0
         self.upcoming_fields: List[Point2] = []
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
 
         ramp_ff_movement = 2
-        self.main_ramp_position: Point2 = self.knowledge.base_ramp.bottom_center.towards(
-            self.knowledge.base_ramp.top_center, ramp_ff_movement
-        )
+        ramp = self.zone_manager.expansion_zones[0].ramp
+        self.main_ramp_position: Point2 = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         self.upcoming_fields.clear()
@@ -87,8 +87,8 @@ class MicroSentries(GenericMicro):
 
         if self.move_type == MoveType.SearchAndDestroy and unit.energy >= FORCE_FIELD_ENERGY_COST:
             # Look for defensive force field on ramp or other choke
-            natural: Zone = self.knowledge.expansion_zones[1]
-            main: Zone = self.knowledge.expansion_zones[0]
+            natural: Zone = self.zone_manager.expansion_zones[1]
+            main: Zone = self.zone_manager.expansion_zones[0]
             d_natural = unit.distance_to(natural.center_location)
             d_main = unit.distance_to(main.center_location)
 

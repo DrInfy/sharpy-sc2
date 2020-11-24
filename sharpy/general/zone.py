@@ -459,7 +459,7 @@ class Zone:
         return found_ramp
 
     def our_wall(self):
-        if self != self.knowledge.expansion_zones[0] and self != self.knowledge.expansion_zones[1]:
+        if self != self.zone_manager.expansion_zones[0] and self != self.zone_manager.expansion_zones[1]:
             return False  # Not main base and not natural wall
 
         gate_position: Point2 = self.knowledge.gate_keeper_position

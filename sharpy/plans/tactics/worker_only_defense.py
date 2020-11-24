@@ -40,7 +40,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         combined_enemies: Units = Units([], self.ai)
 
-        for zone in self.knowledge.expansion_zones:  # type: Zone
+        for zone in self.zone_manager.expansion_zones:  # type: Zone
             if not zone.is_ours:
                 continue
 

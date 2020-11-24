@@ -149,7 +149,7 @@ class WorkerScout(ActBase):
 
     @property
     def current_target_is_enemy_ramp(self) -> bool:
-        for zone in self.knowledge.expansion_zones:  # type: Zone
+        for zone in self.zone_manager.expansion_zones:  # type: Zone
             if zone.ramp and self.current_target == zone.ramp.top_center:
                 return True
         return False

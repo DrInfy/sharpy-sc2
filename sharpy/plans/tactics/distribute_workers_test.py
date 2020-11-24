@@ -327,7 +327,7 @@ class TestDistributeWorkers:
         for worker in ai.workers:
             knowledge.roles.set_task(UnitTask.Gathering, worker)
 
-        knowledge.expansion_zones[0].needs_evacuation = True
+        zone_manager.expansion_zones[0].needs_evacuation = True
         await distribute_workers.start(knowledge)
         await distribute_workers.execute()
         assert len(ai.actions) == 1
@@ -348,7 +348,7 @@ class TestDistributeWorkers:
         set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
         knowledge = await mock_knowledge(ai)
         knowledge.roles.set_task(UnitTask.Gathering, worker1)
-        knowledge.expansion_zones[0].needs_evacuation = True
+        zone_manager.expansion_zones[0].needs_evacuation = True
         await distribute_workers.start(knowledge)
         await distribute_workers.execute()
         assert len(ai.actions) > 0

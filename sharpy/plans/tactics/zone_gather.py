@@ -134,7 +134,7 @@ class PlanZoneGather(ActBase):
             self.knowledge.roles.clear_task(self.blocker_tag)
             self.blocker_tag = None
 
-        main_zone = self.knowledge.expansion_zones[0]
+        main_zone = self.zone_manager.expansion_zones[0]
 
         for unit in main_zone.known_enemy_units:  # type: Unit
             if unit.is_flying or self.unit_values.defense_value(unit.type_id) == 0 or self.unit_values.is_worker(unit):

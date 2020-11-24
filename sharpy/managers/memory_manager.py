@@ -112,7 +112,7 @@ class MemoryManager(ManagerBase):
 
     def is_unit_visible(self, unit_tag: int) -> bool:
         """Returns true if the unit is visible on this frame."""
-        unit: Unit = self.knowledge.unit_cache.by_tag(unit_tag)
+        unit: Unit = self.cache.by_tag(unit_tag)
         return unit is not None and not unit.is_memory
 
     def on_unit_destroyed(self, event: UnitDestroyedEvent):

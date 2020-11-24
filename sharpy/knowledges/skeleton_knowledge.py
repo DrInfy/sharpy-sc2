@@ -9,7 +9,7 @@ from sharpy.general.zone import Zone
 from sharpy.events import UnitDestroyedEvent
 from sharpy.managers import *
 from sharpy.managers.enemy_units_manager import EnemyUnitsManager
-from sharpy.managers.interfaces import ILagHandler
+from sharpy.managers.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager
 from sharpy.mapping.heat_map import HeatMap
 from sharpy.mapping.map import MapInfo
 from sharpy.general.extended_ramp import ExtendedRamp
@@ -30,6 +30,8 @@ TManager = TypeVar("TManager")
 
 
 class SkeletonKnowledge:
+    my_worker_type: UnitTypeId
+
     def __init__(self):
         self.ai: "SkeletonBot" = None
         self.config: ConfigParser = None
@@ -43,6 +45,12 @@ class SkeletonKnowledge:
         self.reserved_minerals: int = 0
         self.reserved_gas: int = 0
         self.lag_handler: Optional[ILagHandler] = None
+        self.unit_values: Optional[IUnitValues] = None
+        self.pathing_manager: Optional[PathingManager] = None
+        self.zone_manager: Optional[ZoneManager] = None
+        self.cooldown_manager: Optional[CooldownManager] = None
+        self.roles: Optional[UnitRoleManager] = None
+        self.combat_manager: Optional[ICombatManager] = None
 
         # Event listeners
         self._on_unit_destroyed_listeners: List[Callable] = list()
@@ -52,15 +60,24 @@ class SkeletonKnowledge:
         return self._debug
 
     @property
+    def my_race(self):
+        return self.ai.race
+
+    @property
     def enemy_race(self) -> Race:
         """ Enemy random race gets updated when the bot meets one of the enemy units. """
         return self.ai.enemy_race
+
+    @property
+    def unit_cache(self) -> Optional[IUnitCache]:
+        return self.get_manager(IUnitCache)
 
     def pre_start(self, ai: "SkeletonBot", additional_managers: Optional[List[ManagerBase]]):
         # assert isinstance(ai, sc2.BotAI)
         self.ai: "SkeletonBot" = ai
         self._set_managers(additional_managers)
         self.config: ConfigParser = self.ai.config
+        self.my_worker_type = UnitValue.get_worker_type(self.my_race)
 
     def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
         """
@@ -91,10 +108,16 @@ class SkeletonKnowledge:
                 return manager
 
     async def start(self):
+        self.unit_values = self.get_manager(IUnitValues)
+        self.lag_handler = self.get_manager(ILagHandler)
+        self.pathing_manager = self.get_manager(PathingManager)
+        self.zone_manager = self.get_manager(ZoneManager)
+        self.cooldown_manager = self.get_manager(CooldownManager)
+        self.roles = self.get_manager(UnitRoleManager)
+        self.combat_manager = self.get_manager(ICombatManager)
+
         for manager in self.managers:
             await manager.start(self)
-
-        self.lag_handler = self.get_manager(ILagHandler)
 
     async def update(self, iteration: int):
         self.iteration = iteration
@@ -133,6 +156,17 @@ class SkeletonKnowledge:
         minerals = self.ai.minerals - self.reserved_minerals
         gas = self.ai.vespene - self.reserved_gas
         return cost.minerals <= minerals and cost.vespene <= max(0, gas) and enough_supply
+
+    def print(self, message: string, tag: string = None, stats: bool = True, log_level=logging.INFO):
+        """
+        Prints a message to log.
+
+        :param message: The message to print.
+        :param tag: An optional tag, which can be used to indicate the logging component.
+        :param stats: When true, stats such as time, minerals, gas, and supply are added to the log message.
+        :param log_level: Optional logging level. Default is INFO.
+        """
+        print(message)
 
     # region Knowledge event handlers
 

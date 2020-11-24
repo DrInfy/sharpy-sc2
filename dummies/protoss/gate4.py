@@ -1,6 +1,16 @@
 from typing import Optional, List
 
-from sharpy.managers import ManagerBase, UnitCacheManager, UnitValue, ZoneManager, PathingManager, GroupCombatManager
+from sharpy.managers import (
+    ManagerBase,
+    UnitCacheManager,
+    UnitValue,
+    ZoneManager,
+    PathingManager,
+    GroupCombatManager,
+    CooldownManager,
+    UnitRoleManager,
+    MemoryManager,
+)
 from sharpy.managers.core import ActManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
@@ -18,10 +28,13 @@ class Stalkers4Gate(SkeletonBot):
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
         return [
+            MemoryManager(),
             UnitCacheManager(),
             UnitValue(),
-            ZoneManager(),
+            UnitRoleManager(),
             PathingManager(),
+            ZoneManager(),
+            CooldownManager(),
             GroupCombatManager(),
             ActManager(self.create_plan()),
         ]

@@ -7,7 +7,6 @@ from sc2.unit import Unit
 from sharpy import sc2math
 from sharpy.general.path import Path
 from sharpy.managers.grids import BuildGrid, GridArea, ZoneArea
-from sharpy.mapping import MapInfo
 from sc2.game_info import Ramp
 from sc2.units import Units
 
@@ -34,11 +33,9 @@ class ZoneManager(ManagerBase):
         self.gather_points: List[int] = [0, 1]
         self.zone_sorted_by = None
         self.found_enemy_start: Optional[Point2] = None
-        self.map: MapInfo = None
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.map = knowledge.map
         self.init_zones()
 
     def init_zones(self):
@@ -130,27 +127,6 @@ class ZoneManager(ManagerBase):
         self.print("Zones sorted", stats=False, log_level=logging.DEBUG)
 
     def adjust_zones(self):
-        if self.map.swap_natural_with_third:
-            # Manual hack as the natural is 3rd base in distance
-            # Tested, actually works correctly
-            # Swaps 3rd base with 2nd
-            self.expansion_zones.insert(1, self.expansion_zones[2])
-            self.expansion_zones.pop(3)
-        # Set base radiuses
-        for i in range(0, len(self.map.zone_radiuses)):
-            self.expansion_zones[i].radius = self.map.zone_radiuses[i]
-        self.expansion_zones.reverse()
-        # Do the seame revers
-        if self.map.swap_natural_with_third:
-            # Manual hack as the natural is 3rd base in distance
-            # Tested, actually works correctly
-            # Swaps 3rd base with 2nd
-            self.expansion_zones.insert(1, self.expansion_zones[2])
-            self.expansion_zones.pop(3)
-        # Set base radiuses for enemy bases too
-        for i in range(0, len(self.map.zone_radiuses)):
-            self.expansion_zones[i].radius = self.map.zone_radiuses[i]
-        self.expansion_zones.reverse()
         self.gather_points = self._solve_gather_points()
         # reset caching of the enemy ramp
         self._cached_enemy_base_ramp = None

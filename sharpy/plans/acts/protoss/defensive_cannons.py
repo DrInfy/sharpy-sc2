@@ -32,7 +32,7 @@ class DefensiveCannons(ActBase):
         all_ready = True
 
         # Go through zones so that furthest expansions are fortified first
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
         for i in range(0, len(zones)):
             zone = zones[i]
             # Filter out zones that aren't ours and own zones that we are about to lose.

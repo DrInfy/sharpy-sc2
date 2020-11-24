@@ -24,9 +24,9 @@ class PlanHeatDefender(ActBase):
         self.roles = self.knowledge.roles
         self.combat.use_unit_micro = False
         self.check_zones = [
-            self.knowledge.expansion_zones[0],
-            self.knowledge.expansion_zones[1],
-            self.knowledge.expansion_zones[2],
+            self.zone_manager.expansion_zones[0],
+            self.zone_manager.expansion_zones[1],
+            self.zone_manager.expansion_zones[2],
         ]
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
 

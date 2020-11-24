@@ -196,12 +196,12 @@ class PlanZoneAttack(ActBase):
         multiplier = ENEMY_TOTAL_POWER_MULTIPLIER
 
         zone_count = 0
-        for zone in self.knowledge.expansion_zones:  # type: Zone
+        for zone in self.zone_manager.expansion_zones:  # type: Zone
             if zone.is_enemys:
                 zone_count += 1
 
-        enemy_main: Zone = self.knowledge.expansion_zones[-1]
-        enemy_natural: Zone = self.knowledge.expansion_zones[-2]
+        enemy_main: Zone = self.zone_manager.expansion_zones[-1]
+        enemy_natural: Zone = self.zone_manager.expansion_zones[-2]
 
         if zone_count == 1 and enemy_main.is_enemys:
             # We should seriously consider whether we want to crash and burn against a one base defense
@@ -285,7 +285,7 @@ class PlanZoneAttack(ActBase):
         self.print("Retreat stopped.")
 
     def _get_target(self) -> Optional[Point2]:
-        our_main = self.knowledge.expansion_zones[0].center_location
+        our_main = self.zone_manager.expansion_zones[0].center_location
         proxy_buildings = self.knowledge.known_enemy_structures.closer_than(70, our_main)
 
         if proxy_buildings.exists:
@@ -293,7 +293,7 @@ class PlanZoneAttack(ActBase):
 
         # Select expansion to attack.
         # Enemy main zone should the last element in expansion_zones.
-        enemy_zones = list(filter(lambda z: z.is_enemys, self.knowledge.expansion_zones))
+        enemy_zones = list(filter(lambda z: z.is_enemys, self.zone_manager.expansion_zones))
 
         best_zone = None
         best_score = 100000

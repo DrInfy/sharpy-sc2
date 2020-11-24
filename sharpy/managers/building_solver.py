@@ -26,6 +26,7 @@ from sc2.position import Point2, Point3
 from sharpy.general.extended_ramp import RampPosition
 
 from .grids import *
+from .interfaces.building_solver import IBuildingSolver
 
 
 class WallType(enum.IntEnum):
@@ -99,7 +100,7 @@ class WallFinder:
         return list
 
 
-class BuildingSolver(ManagerBase):
+class BuildingSolver(ManagerBase, IBuildingSolver):
     def __init__(self):
         super().__init__()
         self.grid: BuildGrid = None
@@ -180,9 +181,9 @@ class BuildingSolver(ManagerBase):
         await super().start(knowledge)
         self.grid = BuildGrid(self.knowledge)
 
-        self.color_zone(self.knowledge.expansion_zones[0], ZoneArea.OwnMainZone)
-        self.color_zone(self.knowledge.expansion_zones[1], ZoneArea.OwnNaturalZone)
-        self.color_zone(self.knowledge.expansion_zones[2], ZoneArea.OwnThirdZone)
+        self.color_zone(self.zone_manager.expansion_zones[0], ZoneArea.OwnMainZone)
+        self.color_zone(self.zone_manager.expansion_zones[1], ZoneArea.OwnNaturalZone)
+        self.color_zone(self.zone_manager.expansion_zones[2], ZoneArea.OwnThirdZone)
 
     async def update(self):
         if self.knowledge.iteration == 0:
@@ -271,11 +272,11 @@ class BuildingSolver(ManagerBase):
             list = self._building_positions.get(BuildArea.Building)
             list.sort(key=lambda k: start.distance_to_point2(k))
 
-        zone: Zone = self.knowledge.expansion_zones[1]
+        zone: Zone = self.zone_manager.expansion_zones[1]
         zone_color = ZoneArea.OwnNaturalZone
         self.fill_zone(zone.center_location, zone_color)
 
-        zone: Zone = self.knowledge.expansion_zones[2]
+        zone: Zone = self.zone_manager.expansion_zones[2]
         zone_color = ZoneArea.OwnThirdZone
         self.fill_zone(zone.center_location, zone_color)
 
@@ -499,7 +500,7 @@ class BuildingSolver(ManagerBase):
             self.wall_save(pylon, zealot, [gate, core])
 
     async def natural_wall(self) -> bool:
-        natural: Zone = self.knowledge.expansion_zones[1]
+        natural: Zone = self.zone_manager.expansion_zones[1]
 
         search_vector: Point2 = natural.center_location - natural.behind_mineral_position_center
         wall_finders: List[WallFinder] = []
@@ -572,7 +573,7 @@ class BuildingSolver(ManagerBase):
                         tester.create_block(gates, (3, 3))
                         tester.create_block(zealot, (1, 1))
                         path = tester.find_path(
-                            self.knowledge.expansion_zones[1].center_location, self.knowledge.enemy_start_location
+                            self.zone_manager.expansion_zones[1].center_location, self.knowledge.enemy_start_location
                         )
 
                         if path[1] > 0:

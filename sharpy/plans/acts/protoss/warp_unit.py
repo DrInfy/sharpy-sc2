@@ -50,7 +50,7 @@ class WarpUnit(ActBase):
             if len(attackers) > 0:
                 target_point = self.knowledge.enemy_main_zone.center_location
 
-            for zone in self.knowledge.expansion_zones:
+            for zone in self.zone_manager.expansion_zones:
                 if zone.is_ours and zone.known_enemy_power.power > 0:
                     target_point = zone.center_location
                     break

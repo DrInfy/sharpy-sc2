@@ -20,7 +20,7 @@ class PlanHeatOverseer(ActBase):
         await super().start(knowledge)
         self.heat_map: HeatMap = knowledge.heat_map
         self.roles = self.knowledge.roles
-        self.gather_point = self.knowledge.expansion_zones[0].center_location
+        self.gather_point = self.zone_manager.expansion_zones[0].center_location
 
     async def execute(self) -> bool:
         stealth_hotspot: Optional[Tuple[Point2, float]] = self.heat_map.get_stealth_hotspot()

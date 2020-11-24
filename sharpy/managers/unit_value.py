@@ -8,6 +8,7 @@ from sc2.unit import Unit
 from sc2.units import Units
 from . import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
+from .interfaces.unit_value import IUnitValues
 from .version_manager import GameVersion
 
 buildings_2x2 = {
@@ -111,7 +112,7 @@ class UnitData:
             self.features: List[UnitFeature] = features
 
 
-class UnitValue(ManagerBase):
+class UnitValue(ManagerBase, IUnitValues):
     worker_types = {UnitTypeId.SCV, UnitTypeId.MULE, UnitTypeId.DRONE, UnitTypeId.PROBE}
 
     gate_types = {
@@ -642,7 +643,8 @@ class UnitValue(ManagerBase):
         """Find a mapping if there is one, or use the unit_type as it is"""
         return real_types.get(unit_type, unit_type)
 
-    def get_worker_type(self, race: Race) -> Optional[UnitTypeId]:
+    @staticmethod
+    def get_worker_type(race: Race) -> Optional[UnitTypeId]:
         """Returns the basic worker type of each race. Does not support Random race."""
         if race == Race.Terran:
             return UnitTypeId.SCV

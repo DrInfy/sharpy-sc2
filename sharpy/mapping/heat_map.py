@@ -29,7 +29,7 @@ class HeatArea:
         self.last_enemy_power = ExtendedPower(knowledge.unit_values)
 
         d2 = 15
-        for zone in knowledge.expansion_zones:
+        for zone in zone_manager.expansion_zones:
             if zone.center_location.distance_to(self.center) < d2:
                 if ai.get_terrain_height(zone.center_location) == ai.get_terrain_height(self.center):
                     # if zone == self.knowledge.own_main_zone:

@@ -43,7 +43,7 @@ class DefensiveBuilding(ActBase):
         if pending_defense_count > 0:
             return True
         # Go through zones so that furthest expansions are fortified first
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
         for i in range(0, len(zones)):
             zone = zones[i]
             if not zone.is_ours or zone.is_under_attack:

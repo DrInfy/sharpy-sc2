@@ -135,7 +135,7 @@ class DummyZergAttack(ActBase):
 
         defend = False
 
-        for zone in self.knowledge.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             if zone.is_ours and zone.is_under_attack and zone.known_enemy_units:
                 ground_units = zone.known_enemy_units.not_flying
                 target = zone.known_enemy_units.closest_to(zone.center_location).position

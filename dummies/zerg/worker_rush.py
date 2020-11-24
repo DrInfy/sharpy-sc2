@@ -25,7 +25,7 @@ class DummyZergAttack(ActBase):
     async def execute(self) -> bool:
         target = self.knowledge.enemy_start_location
         defend = False
-        for zone in self.knowledge.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             if zone.is_ours and zone.is_under_attack:
                 ground_units = zone.known_enemy_units.not_flying
                 if zone.known_enemy_power.ground_presence > 0 and ground_units:
@@ -165,7 +165,7 @@ class WorkerAttack(ActBase):
             return True
 
         attack_zone = self.knowledge.enemy_main_zone
-        enemy_natural = self.knowledge.expansion_zones[-2]
+        enemy_natural = self.zone_manager.expansion_zones[-2]
 
         target = self.knowledge.enemy_start_location
         fighters = self.ai.workers.tags_in(self.tags)

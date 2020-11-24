@@ -15,7 +15,7 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 
 from .act_building import ActBuilding
-
+from ...managers.interfaces import IBuildingSolver
 
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
@@ -37,12 +37,12 @@ class GridBuilding(ActBuilding):
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
         self.consider_worker_production = consider_worker_production
-        self.building_solver: BuildingSolver = None
+        self.building_solver: IBuildingSolver = None
         self.make_pylon = None
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.building_solver = self.knowledge.building_solver
+        self.building_solver = self.knowledge.get_manager(IBuildingSolver)
 
         if self.unit_type != UnitTypeId.PYLON:
             self.make_pylon: Optional[GridBuilding] = GridBuilding(UnitTypeId.PYLON, 0, 2)
@@ -150,7 +150,7 @@ class GridBuilding(ActBuilding):
         return False
 
     def adjust_build_to_move(self, position: Point2) -> Point2:
-        closest_zone = position.closest(map_to_point2s_center(self.knowledge.expansion_zones))
+        closest_zone = position.closest(map_to_point2s_center(self.zone_manager.expansion_zones))
         return position.towards(closest_zone, 1)
 
     async def debug_actions(self):

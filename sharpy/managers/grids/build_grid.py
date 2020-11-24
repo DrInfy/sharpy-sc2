@@ -97,7 +97,7 @@ class BuildGrid(Grid):
                 cell.Area = BuildArea.InMineralLine
             return cell
 
-        for zone in self.knowledge.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             self.fill_area(zone.center_location, BlockerType.Building5x5, building_filler)
 
         for neutral_unit in ai.mineral_field:  # type: Unit
