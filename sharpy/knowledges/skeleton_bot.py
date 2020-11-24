@@ -3,16 +3,16 @@ import sys
 import time
 
 from sc2 import BotAI, UnitTypeId
+from sc2.units import Units
 from config import get_config, get_version
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Optional, List
+from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
 
 
 if TYPE_CHECKING:
     from sharpy.managers import ManagerBase
     from sc2.unit import Unit
-    from sc2.units import Units
-    from sharpy.knowledges import SkeletonKnowledge
 
 
 class SkeletonBot(BotAI):
@@ -24,14 +24,24 @@ class SkeletonBot(BotAI):
         self.run_custom = False
         self.realtime_worker = True
         self.realtime_split = True
+
+        self.last_game_loop = -1
+
         self.distance_calculation_method = 0
         # TODO: Remove this
         self.unit_command_uses_self_do = True
         # In general it is better to fail fast and early in order to fix things.
         self.crash_on_except = True
 
+    async def on_start(self):
+        """Allows initializing the bot when the game data is available."""
+        self.knowledge.pre_start(self, self.configure_managers())
+        await self.knowledge.start()
+
+        # self._log_start()
+
     @abstractmethod
-    def configure_managers(self) -> Optional[List[ManagerBase]]:
+    def configure_managers(self) -> Optional[List["ManagerBase"]]:
         """
         Override this for custom manager usage.
         Use this to override managers in knowledge
@@ -50,13 +60,13 @@ class SkeletonBot(BotAI):
 
             ns_step = time.perf_counter_ns()
             await self.knowledge.update(iteration)
-            await self.pre_step_execute()
-            await self.plan.execute()
+            # await self.pre_step_execute()
+            # await self.plan.execute()
 
             await self.knowledge.post_update()
 
-            if self.knowledge.debug:
-                await self.plan.debug_draw()
+            # if self.knowledge.debug:
+            #     await self.plan.debug_draw()
 
             ns_step = time.perf_counter_ns() - ns_step
             self.knowledge.step_took(ns_step)

@@ -60,6 +60,7 @@ class SkeletonKnowledge:
         # assert isinstance(ai, sc2.BotAI)
         self.ai: "SkeletonBot" = ai
         self._set_managers(additional_managers)
+        self.config: ConfigParser = self.ai.config
 
     def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
         """
@@ -103,6 +104,10 @@ class SkeletonKnowledge:
         for manager in self.managers:
             await manager.update()
 
+    async def post_update(self):
+        for manager in self.managers:
+            await manager.post_update()
+
     def step_took(self, ns_step: float):
         """ Time taken in nanosecond for the current step to run. """
         if self.lag_handler:
@@ -144,5 +149,36 @@ class SkeletonKnowledge:
     def fire_event(listeners, event):
         for listener in listeners:
             listener(event)
+
+    # endregion
+
+    # region Settings
+
+    def get_str_setting(self, key: str) -> str:
+        """
+        Returns a string setting from config.ini matching the key.
+
+        :param key: Key of the setting, eg. "builds.edge_protoss" for "edge_protoss" setting under [builds].
+        """
+        key = key.split(".")
+        return self.config[key[0]].get(key[1])
+
+    def get_int_setting(self, key: str) -> int:
+        """
+        Returns a boolean setting from config.ini matching the key.
+
+        :param key: Key of the setting, eg. "gameplay.disruptor_max_count" for "disruptor_max_count" setting under [gameplay].
+        """
+        key = key.split(".")
+        return self.config[key[0]].getint(key[1])
+
+    def get_boolean_setting(self, key: str) -> str:
+        """
+        Returns a boolean setting from config.ini matching the key.
+
+        :param key: Key of the setting, eg. "general.chat" for "chat" setting under [general].
+        """
+        key = key.split(".")
+        return self.config[key[0]].getboolean(key[1])
 
     # endregion
