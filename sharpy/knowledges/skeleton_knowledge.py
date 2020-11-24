@@ -1,0 +1,148 @@
+import logging
+import string
+import sys
+from configparser import ConfigParser
+from typing import Set, List, Optional, Dict, Callable, Type
+
+import sc2
+from sharpy.general.zone import Zone
+from sharpy.events import UnitDestroyedEvent
+from sharpy.managers import *
+from sharpy.managers.enemy_units_manager import EnemyUnitsManager
+from sharpy.managers.interfaces import ILagHandler
+from sharpy.mapping.heat_map import HeatMap
+from sharpy.mapping.map import MapInfo
+from sharpy.general.extended_ramp import ExtendedRamp
+from sc2 import Race
+from sc2.constants import *
+from sc2.data import Result
+from sc2.position import Point2
+from sc2.unit import Unit
+from sc2.units import Units
+from typing import TYPE_CHECKING, TypeVar
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import SkeletonBot
+
+
+root_logger = logging.getLogger()
+TManager = TypeVar("TManager")
+
+
+class SkeletonKnowledge:
+    def __init__(self):
+        self.ai: "SkeletonBot" = None
+        self.config: ConfigParser = None
+        self._debug: bool = False
+
+        self.action_handler: ActionHandler = ActionHandler()
+        self.version_manager: VersionManager = VersionManager()
+        self.managers: List[ManagerBase] = []
+
+        self.iteration: int = 0
+        self.reserved_minerals: int = 0
+        self.reserved_gas: int = 0
+        self.lag_handler: Optional[ILagHandler] = None
+
+        # Event listeners
+        self._on_unit_destroyed_listeners: List[Callable] = list()
+
+    @property
+    def debug(self) -> bool:
+        return self._debug
+
+    @property
+    def enemy_race(self) -> Race:
+        """ Enemy random race gets updated when the bot meets one of the enemy units. """
+        return self.ai.enemy_race
+
+    def pre_start(self, ai: "SkeletonBot", additional_managers: Optional[List[ManagerBase]]):
+        # assert isinstance(ai, sc2.BotAI)
+        self.ai: "SkeletonBot" = ai
+        self._set_managers(additional_managers)
+
+    def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
+        """
+        Sets managers to be updated.
+        This is not intended to be used outside of Knowledge.
+        Use KnowledgeBot.configure_managers to configure your managers.
+
+        @param additional_managers: Additional list of custom managers
+        """
+        self.managers: List[ManagerBase] = [
+            self.version_manager,
+            self.action_handler,
+        ]
+
+        if additional_managers:
+            self.managers.extend(additional_managers)
+
+    def get_manager(self, manager_type: Type[TManager]) -> Optional[TManager]:
+        """
+        Get manager by its type. Because the implementation can pretty slow, it is recommended to
+        fetch the required manager types in Component `start` in order to not slow the bot down.
+
+        @param manager_type: type of manager to be requested. i.e. `DataManager`
+        @return: Manager of requested type, if one is found.
+        """
+        for manager in self.managers:
+            if issubclass(type(manager), manager_type):
+                return manager
+
+    async def start(self):
+        for manager in self.managers:
+            await manager.start(self)
+
+        self.lag_handler = self.get_manager(ILagHandler)
+
+    async def update(self, iteration: int):
+        self.iteration = iteration
+        self.reserved_minerals = 0
+        self.reserved_gas = 0
+
+        for manager in self.managers:
+            await manager.update()
+
+    def step_took(self, ns_step: float):
+        """ Time taken in nanosecond for the current step to run. """
+        if self.lag_handler:
+            ms_step = ns_step / 1000 / 1000
+            self.lag_handler.step_took(ms_step)
+
+    def reserve(self, minerals: int, gas: int):
+        self.reserved_minerals += minerals
+        self.reserved_gas += gas
+
+    def can_afford(self, item_id: sc2.Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
+        """Tests if the player has enough resources to build a unit or cast an ability even after reservations."""
+        enough_supply = True
+        if isinstance(item_id, UnitTypeId):
+            unit = self.ai._game_data.units[item_id.value]
+            cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
+            if check_supply_cost:
+                enough_supply = self.ai.can_feed(item_id)
+        elif isinstance(item_id, UpgradeId):
+            cost = self.ai._game_data.upgrades[item_id.value].cost
+        else:
+            cost = self.ai._game_data.calculate_ability_cost(item_id)
+        minerals = self.ai.minerals - self.reserved_minerals
+        gas = self.ai.vespene - self.reserved_gas
+        return cost.minerals <= minerals and cost.vespene <= max(0, gas) and enough_supply
+
+    # region Knowledge event handlers
+
+    # todo: if this is useful, it should be refactored as a more general solution
+
+    def register_on_unit_destroyed_listener(self, func: Callable[[UnitDestroyedEvent], None]):
+        assert isinstance(func, Callable)
+        self._on_unit_destroyed_listeners.append(func)
+
+    def unregister_on_unit_destroyed_listener(self, func):
+        raise NotImplementedError()
+
+    @staticmethod
+    def fire_event(listeners, event):
+        for listener in listeners:
+            listener(event)
+
+    # endregion
