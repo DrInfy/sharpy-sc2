@@ -9,6 +9,11 @@ from sharpy.managers.combat2 import MicroRules, MoveType
 
 
 class ICombatManager(ABC):
+    @property
+    @abstractmethod
+    def tags(self) -> List[int]:
+        pass
+
     @abstractmethod
     def add_unit(self, unit: Unit):
         pass

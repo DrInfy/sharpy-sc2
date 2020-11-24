@@ -11,7 +11,7 @@ from sharpy.managers import (
     UnitRoleManager,
     MemoryManager,
 )
-from sharpy.managers.core import ActManager
+from sharpy.managers.core import ActManager, GatherPointSolver
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *
@@ -36,11 +36,13 @@ class Stalkers4Gate(SkeletonBot):
             ZoneManager(),
             CooldownManager(),
             GroupCombatManager(),
+            GatherPointSolver(),
             ActManager(self.create_plan()),
         ]
 
     def create_plan(self) -> BuildOrder:
         attack = PlanZoneAttack(6)
+        attack.attack_on_advantage = False  # Disables requirement for game analyzer
         return BuildOrder(
             Step(
                 None,

@@ -4,6 +4,7 @@ from sc2 import AbilityId, UnitTypeId
 
 import sc2
 from sharpy.managers.combat2 import MoveType
+from sharpy.managers.interfaces.gather_point_solver import IGatherPointSolver
 from sharpy.plans.acts import ActBase
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -14,11 +15,17 @@ from sharpy.managers import UnitValue
 
 
 class PlanZoneGather(ActBase):
+    gather_point_solver: IGatherPointSolver
+
     def __init__(self):
         super().__init__()
 
         self.gather_set: sc2.List[int] = []
         self.blocker_tag: Optional[int] = None
+
+    @property
+    def gather_point(self) -> Point2:
+        return self.gather_point_solver.gather_point
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
@@ -26,7 +33,7 @@ class PlanZoneGather(ActBase):
         self.defender_types: list
         self.knowledge = knowledge
         self.unit_values: UnitValue = knowledge.unit_values
-        self.gather_point = self.knowledge.gather_point
+        self.gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
 
     def should_hold_position(self, target_position: Point2) -> bool:
         close_enemies = self.knowledge.known_enemy_units.filter(lambda u: not u.is_flying and not u.is_structure)

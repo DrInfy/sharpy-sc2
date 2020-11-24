@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional, List
 
+from sharpy.managers import GameAnalyzer
 from sharpy.plans.acts import ActBase
 from sharpy.managers.game_states.advantage import (
     at_least_small_disadvantage,
@@ -60,7 +61,7 @@ class PlanZoneAttack(ActBase):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
         self.pather: PathingManager = self.knowledge.pathing_manager
-        self.game_analyzer: GameAnalyzer = self.knowledge.game_analyzer
+        self.game_analyzer: GameAnalyzer = self.knowledge.get_manager(GameAnalyzer)
 
     async def execute(self) -> bool:
         target = self._get_target()

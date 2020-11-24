@@ -36,10 +36,14 @@ class GroupCombatManager(ManagerBase):
         await super().start(knowledge)
         self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.pather: PathingManager = self.knowledge.pathing_manager
-        self.tags: List[int] = []
+        self._tags: List[int] = []
         self.all_enemy_power = ExtendedPower(self.unit_values)
 
         await self.default_rules.start(knowledge)
+
+    @property
+    def tags(self) -> List[int]:
+        return self._tags
 
     @property
     def regroup_threshold(self) -> float:
@@ -79,7 +83,7 @@ class GroupCombatManager(ManagerBase):
         if unit.type_id in ignored:  # Just no
             return
 
-        self.tags.append(unit.tag)
+        self._tags.append(unit.tag)
 
     def add_units(self, units: Units):
         for unit in units:
@@ -87,7 +91,7 @@ class GroupCombatManager(ManagerBase):
 
     def get_all_units(self) -> Units:
         units = Units([], self.ai)
-        for tag in self.tags:
+        for tag in self._tags:
             unit = self.cache.by_tag(tag)
             if unit:
                 units.append(unit)
@@ -110,7 +114,7 @@ class GroupCombatManager(ManagerBase):
 
         self.rules.handle_groups_func(self, target, move_type)
 
-        self.tags.clear()
+        self._tags.clear()
 
     def faster_group_should_regroup(self, group1: CombatUnits, group2: Optional[CombatUnits]) -> bool:
         if not group2:
