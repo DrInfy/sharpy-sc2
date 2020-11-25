@@ -16,7 +16,7 @@ class ArchonManager(ManagerBase):
         pass  # Do nothing
 
     async def post_update(self):
-        for unit in self.knowledge.all_own:
+        for unit in self.ai.all_own_units:
             if unit.is_selected:
                 if unit.tag not in self.controlled_tags:
                     self.controlled_tags.add(unit.tag)

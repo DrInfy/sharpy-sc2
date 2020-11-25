@@ -31,6 +31,7 @@ class MicroSentries(GenericMicro):
         self.range_power = 0
         self.melee_power = 0
         self.upcoming_fields: List[Point2] = []
+        self.building_solver: Optional[BuildingSolver] = None
 
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
@@ -38,6 +39,7 @@ class MicroSentries(GenericMicro):
         ramp_ff_movement = 2
         ramp = self.zone_manager.expansion_zones[0].ramp
         self.main_ramp_position: Point2 = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
+        self.building_solver = knowledge.get_manager(BuildingSolver)
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
         self.upcoming_fields.clear()
@@ -94,18 +96,19 @@ class MicroSentries(GenericMicro):
 
             if d_natural < 15 and d_natural < d_main and self.closest_group_distance < 10:
                 # Sentry is at the natural
-                zealot_pos: Point2 = self.knowledge.building_solver.zealot_position
-                if self.knowledge.enemy_race == Race.Zerg and natural.our_wall() and zealot_pos:
-                    # Protect gate keeper
-                    our_keepers = self.cache.own_in_range(zealot_pos, 2).not_structure
-                    combined_health = 0
-                    for keeper in our_keepers:  # type: Unit
-                        combined_health += keeper.health + keeper.shield
+                if self.building_solver:
+                    zealot_pos: Point2 = self.building_solver.zealot_position
+                    if self.knowledge.enemy_race == Race.Zerg and natural.our_wall() and zealot_pos:
+                        # Protect gate keeper
+                        our_keepers = self.cache.own_in_range(zealot_pos, 2).not_structure
+                        combined_health = 0
+                        for keeper in our_keepers:  # type: Unit
+                            combined_health += keeper.health + keeper.shield
 
-                    if combined_health < 70:
-                        action = self.should_force_field(zealot_pos.towards(self.closest_group.center, 0.6))
-                        if action:
-                            return action
+                        if combined_health < 70:
+                            action = self.should_force_field(zealot_pos.towards(self.closest_group.center, 0.6))
+                            if action:
+                                return action
 
                 if self.model == CombatModel.StalkerToSpeedlings:
                     # Protect buildings

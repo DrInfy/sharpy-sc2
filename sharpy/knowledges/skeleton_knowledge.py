@@ -107,6 +107,20 @@ class SkeletonKnowledge:
             if issubclass(type(manager), manager_type):
                 return manager
 
+    def get_required_manager(self, manager_type: Type[TManager]) -> TManager:
+        """
+        Get manager by its type. Because the implementation can pretty slow, it is recommended to
+        fetch the required manager types in Component `start` in order to not slow the bot down.
+        Throws an except if no manager if the specified type is found.
+
+        @param manager_type: type of manager to be requested. i.e. `DataManager`
+        @return: Manager of requested type
+        """
+        manager = self.get_manager(manager_type)
+        if not manager:
+            raise KeyError(manager_type)
+        return manager
+
     async def start(self):
         self.unit_values = self.get_manager(IUnitValues)
         self.lag_handler = self.get_manager(ILagHandler)
@@ -214,5 +228,21 @@ class SkeletonKnowledge:
         """
         key = key.split(".")
         return self.config[key[0]].getboolean(key[1])
+
+    # endregion
+
+    # region Map Height
+
+    def get_z(self, point: Point2):
+        return self.terrain_to_z_height(self.ai.get_terrain_height(point))
+
+    def terrain_to_z_height(self, h):
+        """Gets correct z from versions 4.9.0+"""
+        return -16 + 32 * h / 255
+
+    def z_height_to_terrain(self, z):
+        """Gets correct height from versions 4.9.0+"""
+        h = (z + 16) / 32 * 255
+        return h
 
     # endregion

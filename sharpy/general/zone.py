@@ -16,8 +16,7 @@ import enum
 
 if TYPE_CHECKING:
     from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
-
-from sharpy.managers import ZoneManager
+    from sharpy.managers import ZoneManager
 
 
 class ZoneResources(enum.Enum):
@@ -36,7 +35,7 @@ class Zone:
     ZONE_RADIUS_SQUARED = ZONE_RADIUS ** 2
     VESPENE_GEYSER_DISTANCE = 10
 
-    def __init__(self, center_location, is_start_location, knowledge: "SkeletonKnowledge"):
+    def __init__(self, center_location, is_start_location, knowledge: "SkeletonKnowledge", zone_manager: "ZoneManager"):
         self.center_location: Point2 = center_location
         self.is_start_location: bool = is_start_location
 
@@ -44,7 +43,7 @@ class Zone:
         self.ai: sc2.BotAI = knowledge.ai
         self.cache: "UnitCacheManager" = knowledge.unit_cache
         self.unit_values: "UnitValue" = knowledge.unit_values
-        self.zone_manager = knowledge.get_manager(ZoneManager)
+        self.zone_manager = zone_manager
         self.needs_evacuation = False
         self._is_enemys = False
 
@@ -317,10 +316,6 @@ class Zone:
         return not self.is_ours and not self.is_enemys
 
     @property
-    def expanding_to(self) -> bool:
-        return self.knowledge.expanding_to == self
-
-    @property
     def is_ours(self) -> bool:
         """ Is there a town hall of ours in this zone or have we walled it off?"""
         return self.our_townhall is not None or self.our_wall()
@@ -464,17 +459,18 @@ class Zone:
 
         return found_ramp
 
-    def our_wall(self):
-        if self != self.zone_manager.expansion_zones[0] and self != self.zone_manager.expansion_zones[1]:
-            return False  # Not main base and not natural wall
+    def our_wall(self) -> bool:
+        """
+        Does the natural wall hold in this zone? We should count it as our zone if it has a wall,
+        even without a town hall.
+        @return: True when natural wall should be defended
+        """
+        if self != self.zone_manager.expansion_zones[1]:
+            return False  # Not a natural wall
 
-        gate_position: Point2 = self.knowledge.gate_keeper_position
-        if gate_position is not None and self.knowledge.base_ramp.top_center.distance_to(gate_position) < 6:
-            # Main base ramp
-            return False
+        # TODO: Terran & Zerg versions?
 
-        if gate_position is not None and gate_position.distance_to(self.center_location) < 20:
-            if self.our_units.of_type({UnitTypeId.GATEWAY, UnitTypeId.WARPGATE, UnitTypeId.CYBERNETICSCORE}):
-                # Natural wall should be up
-                return True
+        if len(self.our_units.of_type({UnitTypeId.GATEWAY, UnitTypeId.WARPGATE, UnitTypeId.CYBERNETICSCORE})) > 1:
+            # Natural wall should be up
+            return True
         return False

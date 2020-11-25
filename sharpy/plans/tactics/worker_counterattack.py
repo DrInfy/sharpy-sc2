@@ -38,7 +38,7 @@ class WorkerCounterAttack(ActBase):
             return self.handle_counter()
         if self.knowledge.build_detector.rush_build == EnemyRushBuild.WorkerRush:
             # Wait until enemy is close enough
-            if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.knowledge.all_own.filter(
+            if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.ai.all_own_units.filter(
                 lambda u: u.shield_health_percentage < 0.75
             ):
                 self.was_active = True

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sc2.position import Point2
 from sharpy.general.extended_ramp import ExtendedRamp
 from sharpy.managers import ManagerBase
@@ -7,12 +9,20 @@ from sharpy.managers.interfaces.gather_point_solver import IGatherPointSolver
 class GatherPointSolver(ManagerBase, IGatherPointSolver):
     base_ramp: ExtendedRamp
 
+    def __init__(self):
+        super().__init__()
+        self._expanding_to: Optional[Point2] = None
+
     @property
     def gather_point(self) -> Point2:
         return self._gather_point
 
-    def __init__(self):
-        super().__init__()
+    @property
+    def expanding_to(self) -> Optional[Point2]:
+        return self._expanding_to
+
+    def set_expanding_to(self, target: Point2) -> None:
+        self._expanding_to = target
 
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
@@ -30,7 +40,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
 
         for i in range(start, len(self.zone_manager.expansion_zones)):
             zone = self.zone_manager.expansion_zones[i]
-            if zone.expanding_to:
+            if self._expanding_to == zone.center_location:
                 self._gather_point = zone.gather_point
             elif zone.is_ours:
                 if len(self.zone_manager.gather_points) > i:

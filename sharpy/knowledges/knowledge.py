@@ -544,22 +544,6 @@ class Knowledge:
 
         self.logger.log(log_level, message)
 
-    def _find_gather_point(self):
-        self.gather_point = self.base_ramp.top_center.towards(self.base_ramp.bottom_center, -4)
-        start = 1
-        if self.map.safe_first_expand:
-            start = 2
-
-        for i in range(start, len(self.zone_manager.expansion_zones)):
-            zone = self.zone_manager.expansion_zones[i]
-            if zone.expanding_to:
-                self.gather_point = zone.gather_point
-            elif zone.is_ours:
-                if len(self.zone_manager.gather_points) > i:
-                    self.gather_point = self.zone_manager.expansion_zones[
-                        self.zone_manager.gather_points[i]
-                    ].gather_point
-
     def get_z(self, point: Point2):
         return self.terrain_to_z_height(self.ai.get_terrain_height(point))
 

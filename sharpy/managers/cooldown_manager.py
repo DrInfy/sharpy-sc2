@@ -22,16 +22,16 @@ class CooldownManager(ManagerBase):
 
     async def update(self):
         self.available_dict.clear()
-        if len(self.knowledge.all_own) < 1:
+        if len(self.ai.all_own_units) < 1:
             return
         try:
-            result: List[List[AbilityId]] = await self.ai.get_available_abilities(self.knowledge.all_own)
+            result: List[List[AbilityId]] = await self.ai.get_available_abilities(self.ai.all_own_units)
         except Exception as e:
             self.print(f"Get available abilities failed: {e}")
             return
 
-        for i in range(0, len(self.knowledge.all_own)):
-            self.available_dict[self.knowledge.all_own[i].tag] = result[i]
+        for i in range(0, len(self.ai.all_own_units)):
+            self.available_dict[self.ai.all_own_units[i].tag] = result[i]
 
         shades = self.cache.own(UnitTypeId.ADEPTPHASESHIFT)
 

@@ -7,6 +7,9 @@ from sc2 import UnitTypeId, Race, AbilityId, common_pb
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
+from ...managers import ZoneManager
+from ...managers.interfaces import IIncomeCalculator
+from ...managers.interfaces.gather_point_solver import IGatherPointSolver
 
 
 def get_new_townhall_type(race: Race):
@@ -22,6 +25,10 @@ train_worker_abilitites = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTR
 
 
 class Expand(ActBase):
+    gather_manager: IGatherPointSolver
+    zone_manager: ZoneManager
+    income_calculator: IIncomeCalculator
+
     def __init__(
         self,
         to_count: int,
@@ -46,9 +53,15 @@ class Expand(ActBase):
     def current_active_base_count(self) -> int:
         count = 0
 
-        count += len(self.knowledge.our_zones_with_minerals)
+        count += len(self.zone_manager.our_zones_with_minerals)
 
         return count
+
+    async def start(self, knowledge: "SkeletonKnowledge"):
+        await super().start(knowledge)
+        self.gather_manager = knowledge.get_required_manager(IGatherPointSolver)
+        self.zone_manager = knowledge.get_required_manager(ZoneManager)
+        self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
 
     async def execute(self) -> bool:
         expand_here: "Zone" = None
@@ -116,11 +129,11 @@ class Expand(ActBase):
         unit = self.ai._game_data.units[self.townhall_type.value]
         cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
 
-        if self.knowledge.income_calculator.mineral_income > 0 and self.consider_worker_production:
+        if self.income_calculator.mineral_income > 0 and self.consider_worker_production:
             for town_hall in self.ai.townhalls:  # type: Unit
                 # TODO: Zerg(?)
                 if town_hall.orders:
-                    starting_next_worker_in = -50 / self.knowledge.income_calculator.mineral_income
+                    starting_next_worker_in = -50 / self.income_calculator.mineral_income
                     for order in town_hall.orders:  # type: UnitOrder
                         if order.ability.id in train_worker_abilitites:
                             starting_next_worker_in += 12 * (1 - order.progress)
@@ -130,7 +143,7 @@ class Expand(ActBase):
                 else:
                     available_minerals -= 50  # should start producing workers soon now
 
-        if available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals:
+        if available_minerals + time * self.income_calculator.mineral_income >= cost.minerals:
             # Go wait
             self.set_worker(worker)
 

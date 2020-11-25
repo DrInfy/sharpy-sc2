@@ -45,7 +45,7 @@ class ZoneManager(ManagerBase):
             if exp_loc in self.ai.enemy_start_locations:
                 is_start_location = True
 
-            self.zones[exp_loc] = Zone(exp_loc, is_start_location, self.knowledge)
+            self.zones[exp_loc] = Zone(exp_loc, is_start_location, self.knowledge, self)
 
         self.expansion_zones = list(self.zones.values())
 
@@ -336,7 +336,7 @@ class ZoneManager(ManagerBase):
     @property
     def unscouted_zones(self) -> List[Zone]:
         """Returns a list of all zones that have not been scouted."""
-        unscouted = [z for z in self.zone_manager.all_zones if not z.is_scouted_at_least_once]
+        unscouted = [z for z in self.all_zones if not z.is_scouted_at_least_once]
         return unscouted
 
     @property
@@ -431,6 +431,12 @@ class ZoneManager(ManagerBase):
         return zones
 
     @property
+    def our_zones(self) -> List[Zone]:
+        """Returns all of our own zones."""
+        ours = [z for z in self.zone_manager.all_zones if z.is_ours]
+        return ours
+
+    @property
     def enemy_start_zones(self) -> List[Zone]:
         """Returns all zones that are possible enemy start locations."""
         filtered = [z for z in self.all_zones if z.is_start_location]
@@ -447,6 +453,12 @@ class ZoneManager(ManagerBase):
         """Returns possible enemy start zones that have not been scouted. Similar to unscouted_enemy_start_locations."""
         unscouted = [z for z in self.enemy_start_zones if not z.is_scouted_at_least_once]
         return unscouted
+
+    @property
+    def our_zones_with_minerals(self) -> List[Zone]:
+        """Returns all of our zones that have minerals."""
+        filtered = filter(lambda z: z.our_townhall and z.has_minerals, self.our_zones)
+        return list(filtered)
 
     @property
     def own_main_zone(self) -> Zone:
