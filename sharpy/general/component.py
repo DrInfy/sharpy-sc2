@@ -18,11 +18,11 @@ class Component:
     """
 
     # Shortcuts to various managers
-    knowledge: "Knowledge"
-    ai: "KnowledgeBot"
+    knowledge: "SkeletonKnowledge"
+    ai: "SkeletonBot"
     client: Client
-    cache: "UnitCacheManager"
-    unit_values: "UnitValue"
+    cache: "IUnitCache"
+    unit_values: "IUnitValues"
     pather: "PathingManager"
     combat: "ICombatManager"
     roles: "UnitRoleManager"

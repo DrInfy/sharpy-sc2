@@ -28,7 +28,7 @@ class PathingManager(ManagerBase):
         self.found_points = []
         self.found_points_air = []
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
         game_info: GameInfo = self.ai.game_info
         path_grid = game_info.pathing_grid
@@ -127,7 +127,7 @@ class PathingManager(ManagerBase):
         self.set_rocks(self.path_finder_terrain)
         self.set_rocks(self.map)
 
-        for building in self.ai.structures + self.knowledge.known_enemy_structures:  # type: Unit
+        for building in self.ai.structures + self.ai.enemy_structures:  # type: Unit
             if building.type_id in buildings_2x2:
                 self.map.create_block(building.position, (2, 2))
             elif building.type_id in buildings_3x3:

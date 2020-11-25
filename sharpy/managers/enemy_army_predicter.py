@@ -90,7 +90,7 @@ class EnemyArmyPredicter(ManagerBase):
         self.predicted_enemy_power.clear()
 
         self.predicted_enemy_composition.clear()
-        gas_miners = self.knowledge.known_enemy_structures.of_type(
+        gas_miners = self.ai.enemy_structures.of_type(
             [UnitTypeId.ASSIMILATOR, UnitTypeId.EXTRACTOR, UnitTypeId.REFINERY]
         )
 

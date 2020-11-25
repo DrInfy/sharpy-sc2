@@ -10,6 +10,16 @@ from sc2.units import Units
 class IUnitCache(ABC):
     @property
     @abstractmethod
+    def own_unit_cache(self) -> Dict[UnitTypeId, Units]:
+        pass
+
+    @property
+    @abstractmethod
+    def enemy_unit_cache(self) -> Dict[UnitTypeId, Units]:
+        pass
+
+    @property
+    @abstractmethod
     def own_townhalls(self) -> Units:
         """Returns all of our own townhalls."""
         pass

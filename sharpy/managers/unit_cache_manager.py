@@ -29,8 +29,8 @@ class UnitCacheManager(ManagerBase, IUnitCache):
     def __init__(self):
         super().__init__()
         self.tag_cache: Dict[int, Unit] = {}
-        self.own_unit_cache: Dict[UnitTypeId, Units] = {}
-        self.enemy_unit_cache: Dict[UnitTypeId, Units] = {}
+        self._own_unit_cache: Dict[UnitTypeId, Units] = {}
+        self._enemy_unit_cache: Dict[UnitTypeId, Units] = {}
         self.own_tree: Optional[cKDTree] = None
         self.enemy_tree: Optional[cKDTree] = None
         self.force_fields: List[EffectData] = []
@@ -39,6 +39,14 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.enemy_numpy_vectors: List[np.ndarray] = []
         self._mineral_fields: Dict[Point2, Unit] = {}
         self._mineral_wall: Units = {}
+
+    @property
+    def own_unit_cache(self) -> Dict[UnitTypeId, Units]:
+        return self._own_unit_cache
+
+    @property
+    def enemy_unit_cache(self) -> Dict[UnitTypeId, Units]:
+        return self._enemy_unit_cache
 
     @property
     def mineral_fields(self) -> Dict[Point2, Unit]:
@@ -68,11 +76,11 @@ class UnitCacheManager(ManagerBase, IUnitCache):
     def own(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all own units of the specified type(s)."""
         if isinstance(type_id, UnitTypeId):
-            return self.own_unit_cache.get(type_id, self.empty_units)
+            return self._own_unit_cache.get(type_id, self.empty_units)
 
         units = Units([], self.ai)
         for single_type in type_id:  # type: UnitTypeId
-            units.extend(self.own_unit_cache.get(single_type, self.empty_units))
+            units.extend(self._own_unit_cache.get(single_type, self.empty_units))
         return units
 
     @property
@@ -84,11 +92,11 @@ class UnitCacheManager(ManagerBase, IUnitCache):
     def enemy(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all enemy units of the specified type(s)."""
         if isinstance(type_id, UnitTypeId):
-            return self.enemy_unit_cache.get(type_id, self.empty_units)
+            return self._enemy_unit_cache.get(type_id, self.empty_units)
 
         units = Units([], self.ai)
         for single_type in type_id:  # type: UnitTypeId
-            units.extend(self.enemy_unit_cache.get(single_type, self.empty_units))
+            units.extend(self._enemy_unit_cache.get(single_type, self.empty_units))
         return units
 
     @property
@@ -123,28 +131,28 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.update_minerals()
 
         self.tag_cache.clear()
-        self.own_unit_cache.clear()
-        self.enemy_unit_cache.clear()
+        self._own_unit_cache.clear()
+        self._enemy_unit_cache.clear()
         self.force_fields.clear()
 
         self.own_numpy_vectors = []
         self.enemy_numpy_vectors = []
-        self.all_own = self.knowledge.all_own
+        self.all_own = self.ai.all_own_units
 
         for unit in self.all_own:
-            units = self.own_unit_cache.get(unit.type_id, Units([], self.ai))
+            units = self._own_unit_cache.get(unit.type_id, Units([], self.ai))
             if units.amount == 0:
-                self.own_unit_cache[unit.type_id] = units
+                self._own_unit_cache[unit.type_id] = units
             units.append(unit)
             self.own_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 
-        for unit in self.knowledge.known_enemy_units:
+        for unit in self.ai.all_enemy_units:
             if unit.is_memory:
                 self.tag_cache[unit.tag] = unit
 
-            units = self.enemy_unit_cache.get(unit.type_id, Units([], self.ai))
+            units = self._enemy_unit_cache.get(unit.type_id, Units([], self.ai))
             if units.amount == 0:
-                self.enemy_unit_cache[unit.type_id] = units
+                self._enemy_unit_cache[unit.type_id] = units
             units.append(unit)
             self.enemy_numpy_vectors.append(np.array([unit.position.x, unit.position.y]))
 

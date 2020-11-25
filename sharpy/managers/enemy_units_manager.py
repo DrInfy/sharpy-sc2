@@ -122,10 +122,7 @@ class EnemyUnitsManager(ManagerBase):
         if self._enemy_cloak_trigger:
             return
 
-        if (
-            self.unit_count(UnitTypeId.DARKTEMPLAR) > 0
-            or self.knowledge.known_enemy_structures(UnitTypeId.DARKSHRINE).exists
-        ):
+        if self.unit_count(UnitTypeId.DARKTEMPLAR) > 0 or self.ai.enemy_structures(UnitTypeId.DARKSHRINE).exists:
             self._enemy_cloak_trigger = True
 
         if self.unit_count(UnitTypeId.MOTHERSHIP) > 0:
@@ -137,12 +134,12 @@ class EnemyUnitsManager(ManagerBase):
         if self.unit_count(UnitTypeId.WIDOWMINE) > 0:
             self._enemy_cloak_trigger = True
 
-        if self.unit_count(UnitTypeId.GHOST) > 0 or self.knowledge.known_enemy_structures(UnitTypeId.GHOSTACADEMY):
+        if self.unit_count(UnitTypeId.GHOST) > 0 or self.ai.enemy_structures(UnitTypeId.GHOSTACADEMY):
             self._enemy_cloak_trigger = True
 
         if (
             self.unit_count(UnitTypeId.LURKER) > 0
-            or self.knowledge.known_enemy_structures.of_type([UnitTypeId.LURKERDENMP, UnitTypeId.LURKERDEN]).exists
+            or self.ai.enemy_structures.of_type([UnitTypeId.LURKERDENMP, UnitTypeId.LURKERDEN]).exists
         ):
             self._enemy_cloak_trigger = True
 

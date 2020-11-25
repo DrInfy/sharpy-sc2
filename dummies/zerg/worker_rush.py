@@ -69,8 +69,8 @@ class DummyZergAttack(ActBase):
         return True
 
     async def select_attack_target(self):
-        if self.knowledge.known_enemy_structures.exists:
-            target = self.knowledge.known_enemy_structures.closest_to(self.ai.start_location).position
+        if self.ai.enemy_structures.exists:
+            target = self.ai.enemy_structures.closest_to(self.ai.start_location).position
         else:
             target = self.ai.enemy_start_locations[0]
 
@@ -195,8 +195,8 @@ class WorkerAttack(ActBase):
         return True
 
     async def select_attack_target(self):
-        if self.knowledge.known_enemy_structures.exists:
-            target = self.knowledge.known_enemy_structures.closest_to(self.ai.start_location).position
+        if self.ai.enemy_structures.exists:
+            target = self.ai.enemy_structures.closest_to(self.ai.start_location).position
         else:
             target = self.ai.enemy_start_locations[0]
 

@@ -28,37 +28,37 @@ class CompositionGuesser:
         # else:
         if self.knowledge.enemy_race == Race.Zerg:
             self.add_units(UnitTypeId.ROACH, 1, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.GREATERSPIRE).exists:
+            if self.ai.enemy_structures(UnitTypeId.GREATERSPIRE).exists:
                 self.add_units(UnitTypeId.BROODLORD, 5, additional_guess)
                 self.add_units(UnitTypeId.CORRUPTOR, 5, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.SPIRE).exists:
+            if self.ai.enemy_structures(UnitTypeId.SPIRE).exists:
                 self.add_units(UnitTypeId.MUTALISK, 6, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.HYDRALISK).exists:
+            if self.ai.enemy_structures(UnitTypeId.HYDRALISK).exists:
                 self.add_units(UnitTypeId.HYDRALISK, 10, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.ROACHWARREN).exists:
+            if self.ai.enemy_structures(UnitTypeId.ROACHWARREN).exists:
                 self.add_units(UnitTypeId.ROACH, 10, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.SPAWNINGPOOL).exists:
+            if self.ai.enemy_structures(UnitTypeId.SPAWNINGPOOL).exists:
                 self.add_units(UnitTypeId.ZERGLING, 4, additional_guess)
                 if self.knowledge.lost_units_manager.enemy_lost_type(UnitTypeId.ZERGLING) > 10:
                     self.add_units(UnitTypeId.ZERGLING, 20, additional_guess)
 
         elif self.knowledge.enemy_race == Race.Protoss:
-            if self.knowledge.known_enemy_structures(UnitTypeId.FLEETBEACON).exists:
+            if self.ai.enemy_structures(UnitTypeId.FLEETBEACON).exists:
                 self.add_units(UnitTypeId.TEMPEST, 3, additional_guess)
-            elif self.knowledge.known_enemy_structures(UnitTypeId.STARGATE).exists:
+            elif self.ai.enemy_structures(UnitTypeId.STARGATE).exists:
                 if self.history(UnitTypeId.PHOENIX) > self.history(UnitTypeId.VOIDRAY):
                     self.add_units(UnitTypeId.PHOENIX, 5, additional_guess)
                 else:
                     self.add_units(UnitTypeId.VOIDRAY, 5, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.DARKSHRINE).exists:
+            if self.ai.enemy_structures(UnitTypeId.DARKSHRINE).exists:
                 self.add_units(UnitTypeId.DARKTEMPLAR, 4, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.TEMPLARARCHIVE).exists:
+            if self.ai.enemy_structures(UnitTypeId.TEMPLARARCHIVE).exists:
                 self.add_units(UnitTypeId.HIGHTEMPLAR, 4, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.ROBOTICSBAY).exists:
+            if self.ai.enemy_structures(UnitTypeId.ROBOTICSBAY).exists:
                 self.add_units(UnitTypeId.COLOSSUS, 2, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.ROBOTICSFACILITY).exists:
+            if self.ai.enemy_structures(UnitTypeId.ROBOTICSFACILITY).exists:
                 self.add_units(UnitTypeId.IMMORTAL, 4, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists:
+            if self.ai.enemy_structures(UnitTypeId.CYBERNETICSCORE).exists:
                 if self.history(UnitTypeId.STALKER) > self.history(UnitTypeId.ADEPT) and self.history(
                     UnitTypeId.STALKER
                 ) > self.history(UnitTypeId.ZEALOT):
@@ -68,8 +68,8 @@ class CompositionGuesser:
                 elif self.history(UnitTypeId.ZEALOT):
                     self.add_units(UnitTypeId.ZEALOT, 10, additional_guess)
             if (
-                not self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
-                and self.knowledge.known_enemy_structures(UnitTypeId.WARPGATE).exists
+                not self.ai.enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
+                and self.ai.enemy_structures(UnitTypeId.WARPGATE).exists
             ):
                 self.add_units(UnitTypeId.ZEALOT, 8, additional_guess)
             if len(additional_guess):
@@ -77,22 +77,22 @@ class CompositionGuesser:
 
         elif self.knowledge.enemy_race == Race.Terran:
             self.add_units(UnitTypeId.MARAUDER, 1, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.FUSIONCORE).exists:
+            if self.ai.enemy_structures(UnitTypeId.FUSIONCORE).exists:
                 self.add_units(UnitTypeId.BATTLECRUISER, 3, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.GHOSTACADEMY).exists:
+            if self.ai.enemy_structures(UnitTypeId.GHOSTACADEMY).exists:
                 self.add_units(UnitTypeId.GHOST, 5, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.STARPORTREACTOR).exists:
+            if self.ai.enemy_structures(UnitTypeId.STARPORTREACTOR).exists:
                 self.add_units(UnitTypeId.VIKINGFIGHTER, 4, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.STARPORTTECHLAB).exists:
+            if self.ai.enemy_structures(UnitTypeId.STARPORTTECHLAB).exists:
                 self.add_units(UnitTypeId.BANSHEE, 2, additional_guess)
                 self.add_units(UnitTypeId.RAVEN, 2, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.FACTORYTECHLAB).exists:
+            if self.ai.enemy_structures(UnitTypeId.FACTORYTECHLAB).exists:
                 self.add_units(UnitTypeId.SIEGETANK, 4, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.BARRACKSTECHLAB).exists:
+            if self.ai.enemy_structures(UnitTypeId.BARRACKSTECHLAB).exists:
                 self.add_units(UnitTypeId.MARAUDER, 5, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.BARRACKSREACTOR).exists:
+            if self.ai.enemy_structures(UnitTypeId.BARRACKSREACTOR).exists:
                 self.add_units(UnitTypeId.MARINE, 10, additional_guess)
-            if self.knowledge.known_enemy_structures(UnitTypeId.BARRACKS).amount > 2:
+            if self.ai.enemy_structures(UnitTypeId.BARRACKS).amount > 2:
                 self.add_units(UnitTypeId.MARINE, 10, additional_guess)
 
         return additional_guess

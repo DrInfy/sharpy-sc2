@@ -201,11 +201,11 @@ class BuildDetector(ManagerBase):
         if self.ai.time < 125:
             # early game and we have seen enemy Nexus
             close_gateways = (
-                self.knowledge.known_enemy_structures(UnitTypeId.GATEWAY)
+                self.ai.enemy_structures(UnitTypeId.GATEWAY)
                 .closer_than(30, self.knowledge.enemy_main_zone.center_location)
                 .amount
             )
-            core = self.knowledge.known_enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
+            core = self.ai.enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
 
             gates = self.cache.enemy(UnitTypeId.GATEWAY).amount
             robos = self.cache.enemy(UnitTypeId.ROBOTICSFACILITY).amount
@@ -221,7 +221,7 @@ class BuildDetector(ManagerBase):
                     self._set_rush(EnemyRushBuild.Zealots)
             elif gates + robos > 2:
                 self._set_rush(EnemyRushBuild.RoboRush)
-            # if self.knowledge.known_enemy_structures(UnitTypeId.FORGE).exists:
+            # if self.ai.enemy_structures(UnitTypeId.FORGE).exists:
             #     self._set_rush(EnemyRushBuild.CannonRush)
 
     def _terran_rushes(self):
@@ -238,16 +238,16 @@ class BuildDetector(ManagerBase):
         if self.ai.time < 120:
             # early game and we have seen enemy CC
             close_barracks = (
-                self.knowledge.known_enemy_structures(UnitTypeId.BARRACKS)
+                self.ai.enemy_structures(UnitTypeId.BARRACKS)
                 .closer_than(30, self.knowledge.enemy_main_zone.center_location)
                 .amount
             )
 
-            barracks = self.knowledge.known_enemy_structures(UnitTypeId.BARRACKS).amount
-            factories = self.knowledge.known_enemy_structures(UnitTypeId.FACTORY).amount
+            barracks = self.ai.enemy_structures(UnitTypeId.BARRACKS).amount
+            factories = self.ai.enemy_structures(UnitTypeId.FACTORY).amount
 
             if (
-                self.knowledge.known_enemy_structures(UnitTypeId.BARRACKSTECHLAB).amount == barracks
+                self.ai.enemy_structures(UnitTypeId.BARRACKSTECHLAB).amount == barracks
                 and barracks >= 1
                 and factories == 0
             ):
@@ -283,7 +283,7 @@ class BuildDetector(ManagerBase):
         if (
             self.ai.time > 120
             and self.ai.time < 130
-            and self.knowledge.known_enemy_structures(UnitTypeId.HATCHERY).amount == 1
+            and self.ai.enemy_structures(UnitTypeId.HATCHERY).amount == 1
             and self.knowledge.building_started_before(UnitTypeId.SPAWNINGPOOL, 70)
         ):
             return self._set_rush(EnemyRushBuild.OneHatcheryAllIn)

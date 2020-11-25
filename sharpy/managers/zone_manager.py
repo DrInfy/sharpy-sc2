@@ -151,18 +151,17 @@ class ZoneManager(ManagerBase):
                 self.expansion_zones[i].gather_point = path.get_index(6)
 
         if 2 not in self.gather_points:
-            # 3rd base isn't in gather points, but if we need to go through 3rd to get to 2nd, it totally should be.
+            # 3rd base isn't in gather points.
+            # however if we need to go through 3rd to get to enemy base from 2nd, it totally should be.
             path = self.expansion_zones[2].paths.get(zone_count - 1)
-            grid: BuildGrid = self.knowledge.building_solver.grid
-            for i in range(5, min(20, len(path.path))):
-                target = path.path[i]
+            path_to_third = self.expansion_zones[2].paths.get(3)
+            last_path_index = len(path_to_third.path) - 1
 
-                area: GridArea = grid.get(target[0], target[1])
-                if area.ZoneIndex == ZoneArea.OwnThirdZone:
-                    if len(self.gather_points) > 2:
-                        self.gather_points.insert(2, 2)
-                    else:
-                        self.gather_points.append(2)
+            if path_to_third.get_index(last_path_index).distance_to_point2(path.get_index(last_path_index)) < 10:
+                if len(self.gather_points) > 2:
+                    self.gather_points.insert(2, 2)
+                else:
+                    self.gather_points.append(2)
 
     def _solve_gather_points(self) -> List[int]:
         gather_points = [0, 1]
@@ -295,7 +294,7 @@ class ZoneManager(ManagerBase):
         # Figure out all the zones the units are set in
         tags_in_zones: Dict[int, List[int]] = {}
 
-        for tag in self.knowledge.known_enemy_units.tags:
+        for tag in self.ai.all_enemy_units.tags:
             # Create empty arrays for easy code later
             tags_in_zones[tag] = []
 
@@ -335,12 +334,18 @@ class ZoneManager(ManagerBase):
     # region Properties
 
     @property
+    def unscouted_zones(self) -> List[Zone]:
+        """Returns a list of all zones that have not been scouted."""
+        unscouted = [z for z in self.zone_manager.all_zones if not z.is_scouted_at_least_once]
+        return unscouted
+
+    @property
     def known_enemy_structures_at_start_height(self) -> Units:
         """Returns known enemy structures that are at the height of start locations."""
         any_start_location = self.ai.enemy_start_locations[0]
         start_location_height = self.ai.get_terrain_height(any_start_location)
 
-        return self.knowledge.known_enemy_structures.filter(
+        return self.ai.enemy_structures.filter(
             lambda structure: self.ai.get_terrain_height(structure) == start_location_height
         )
 

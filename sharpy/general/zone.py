@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import TYPE_CHECKING, Optional, List, Dict
 
 import sc2
 from sharpy.general.extended_ramp import ExtendedRamp
@@ -13,6 +13,11 @@ from sc2.units import Units
 from sharpy.general.extended_power import ExtendedPower
 
 import enum
+
+if TYPE_CHECKING:
+    from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
+
+from sharpy.managers import ZoneManager
 
 
 class ZoneResources(enum.Enum):
@@ -31,7 +36,7 @@ class Zone:
     ZONE_RADIUS_SQUARED = ZONE_RADIUS ** 2
     VESPENE_GEYSER_DISTANCE = 10
 
-    def __init__(self, center_location, is_start_location, knowledge):
+    def __init__(self, center_location, is_start_location, knowledge: "SkeletonKnowledge"):
         self.center_location: Point2 = center_location
         self.is_start_location: bool = is_start_location
 
@@ -39,6 +44,7 @@ class Zone:
         self.ai: sc2.BotAI = knowledge.ai
         self.cache: "UnitCacheManager" = knowledge.unit_cache
         self.unit_values: "UnitValue" = knowledge.unit_values
+        self.zone_manager = knowledge.get_manager(ZoneManager)
         self.needs_evacuation = False
         self._is_enemys = False
 
@@ -284,7 +290,7 @@ class Zone:
 
         # We are going to presume that the enemy has a town hall even if we don't see one
         self._is_enemys = self.enemy_townhall is not None or (
-            self == self.knowledge.enemy_main_zone and self in self.knowledge.unscouted_zones
+            self == self.zone_manager.enemy_main_zone and self in self.zone_manager.unscouted_zones
         )
 
     @property

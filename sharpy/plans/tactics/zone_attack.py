@@ -287,7 +287,7 @@ class PlanZoneAttack(ActBase):
 
     def _get_target(self) -> Optional[Point2]:
         our_main = self.zone_manager.expansion_zones[0].center_location
-        proxy_buildings = self.knowledge.known_enemy_structures.closer_than(70, our_main)
+        proxy_buildings = self.ai.enemy_structures.closer_than(70, our_main)
 
         if proxy_buildings.exists:
             return proxy_buildings.closest_to(our_main).position
@@ -312,7 +312,7 @@ class PlanZoneAttack(ActBase):
         if best_zone is not None:
             return best_zone.center_location
 
-        if self.knowledge.known_enemy_structures.exists:
-            return self.knowledge.known_enemy_structures.closest_to(our_main).position
+        if self.ai.enemy_structures.exists:
+            return self.ai.enemy_structures.closest_to(our_main).position
 
         return None
