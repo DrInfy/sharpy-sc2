@@ -1,15 +1,14 @@
 # import sc2
 import random
-from typing import Optional
 
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList
-from sc2 import BotAI, UnitTypeId, AbilityId, Race
+from sc2 import UnitTypeId, Race
 from sc2.position import Point2
 
 from sharpy.knowledges import KnowledgeBot

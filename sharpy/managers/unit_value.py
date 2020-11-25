@@ -1,14 +1,14 @@
 import logging
-from typing import Union, Optional, List, Dict, Callable
+from typing import Union, Optional, List, Callable
 
 from sharpy.general.unit_feature import UnitFeature
-from sc2 import Race, race_gas, race_townhalls
+from sc2 import Race, race_townhalls
 from sc2.constants import *
 from sc2.unit import Unit
 from sc2.units import Units
 from . import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
-from .interfaces.unit_value import IUnitValues
+from sharpy.interfaces import IUnitValues
 from .version_manager import GameVersion
 
 buildings_2x2 = {

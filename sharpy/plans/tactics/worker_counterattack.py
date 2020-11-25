@@ -1,14 +1,11 @@
-from typing import List, Tuple
+from typing import List
 
 from sc2.position import Point2
-from sharpy.managers import UnitValue
 from sharpy.managers.build_detector import EnemyRushBuild
-from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
 from sharpy.managers.roles import UnitTask
 from sharpy.general.zone import Zone
 
-from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 

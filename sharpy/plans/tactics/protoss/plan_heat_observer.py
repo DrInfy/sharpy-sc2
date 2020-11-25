@@ -1,7 +1,6 @@
 from typing import Optional, Tuple
 
 from sc2.unit import Unit
-from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
 from sharpy.mapping.heat_map import HeatMap
 from sharpy.managers.roles import UnitTask

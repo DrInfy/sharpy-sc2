@@ -5,7 +5,7 @@ from sc2.position import Point3
 from sc2.unit import Unit
 
 if TYPE_CHECKING:
-    from sharpy.managers.interfaces import *
+    from sharpy.interfaces import *
     from sharpy.knowledges import *
     from sharpy.managers import *
 

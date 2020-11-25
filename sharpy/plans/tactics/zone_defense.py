@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, Race
 from sc2.unit import Unit

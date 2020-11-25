@@ -5,28 +5,21 @@ from math import floor
 from typing import Dict, List, Optional, Tuple, Set
 
 import numpy as np
-from s2clientprotocol.debug_pb2 import Color
 
 import sc2pathlibp
 from sharpy.constants import Constants
 from sharpy import sc2math
-from sharpy.sc2math import spiral
 from sharpy.general.zone import Zone
 from sc2 import Race
 
-from sharpy.managers.grids import *
 from sc2.client import Client
-from sc2.pixel_map import PixelMap
 
-from sc2.game_info import GameInfo
-
-import sc2
 from sharpy.managers.manager_base import ManagerBase
 from sc2.position import Point2, Point3
 from sharpy.general.extended_ramp import RampPosition
 
 from .grids import *
-from .interfaces.building_solver import IBuildingSolver
+from sharpy.interfaces import IBuildingSolver
 
 
 class WallType(enum.IntEnum):
@@ -232,8 +225,6 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
                     self.wall_type = WallType.NoWall
                 elif self.knowledge.enemy_race == Race.Protoss:
                     self.wall_type = WallType.ProtossMainProtoss
-                elif self.knowledge.rush_distance < 100:
-                    self.wall_type = WallType.ProtossMainZerg
                 else:
                     self.wall_type = WallType.ProtossNaturalOneUnit
             elif self.knowledge.my_race == Race.Terran:

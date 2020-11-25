@@ -3,19 +3,16 @@ from typing import Optional, Set
 
 from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
-from sc2.ids.buff_id import BuffId
-from sc2.units import Units
 
 import sc2
-from sharpy.managers import BuildingSolver
 from sharpy.managers.roles import UnitTask
 from sharpy.utils import map_to_point2s_center
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.position import Point2
-from sc2.unit import Unit, UnitOrder
+from sc2.unit import Unit
 
 from .act_building import ActBuilding
-from ...managers.interfaces import IBuildingSolver
+from sharpy.interfaces import IBuildingSolver
 
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 

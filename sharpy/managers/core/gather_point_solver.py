@@ -3,7 +3,7 @@ from typing import Optional
 from sc2.position import Point2
 from sharpy.general.extended_ramp import ExtendedRamp
 from sharpy.managers import ManagerBase
-from sharpy.managers.interfaces.gather_point_solver import IGatherPointSolver
+from sharpy.interfaces import IGatherPointSolver
 
 
 class GatherPointSolver(ManagerBase, IGatherPointSolver):

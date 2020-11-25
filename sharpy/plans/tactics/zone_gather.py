@@ -3,8 +3,8 @@ from typing import Optional
 from sc2 import AbilityId, UnitTypeId
 
 import sc2
-from sharpy.managers.combat2 import MoveType
-from sharpy.managers.interfaces.gather_point_solver import IGatherPointSolver
+from sharpy.combat import MoveType
+from sharpy.interfaces import IGatherPointSolver
 from sharpy.plans.acts import ActBase
 from sc2.position import Point2
 from sc2.unit import Unit

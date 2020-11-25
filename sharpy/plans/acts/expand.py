@@ -1,12 +1,10 @@
-import warnings
 from typing import TYPE_CHECKING, Optional
 
 from sharpy.general.zone import Zone
 from sharpy.managers.roles import UnitTask
 from sharpy.managers import ZoneManager, UnitRoleManager
-from sharpy.managers.interfaces import IIncomeCalculator, IGatherPointSolver
+from sharpy.interfaces import IIncomeCalculator, IGatherPointSolver
 from sc2 import UnitTypeId, Race, AbilityId, common_pb
-from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
 

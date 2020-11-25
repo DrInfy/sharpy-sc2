@@ -1,4 +1,5 @@
 import string
+from typing import TYPE_CHECKING
 
 from s2clientprotocol.debug_pb2 import Color
 from sc2 import UnitTypeId
@@ -16,9 +17,12 @@ from sharpy.managers.grids.zone_area import ZoneArea
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
 
+if TYPE_CHECKING:
+    from sharpy.knowledges import *
+
 
 class BuildGrid(Grid):
-    def __init__(self, knowledge):
+    def __init__(self, knowledge: "SkeletonKnowledge"):
         """
 
         :type knowledge: Knowledge
@@ -28,6 +32,7 @@ class BuildGrid(Grid):
         super().__init__(self.game_info.placement_grid.width, self.game_info.placement_grid.height)
         # noinspection PyUnresolvedReferences
         self.knowledge = knowledge  # type: Knowledge
+        self.zone_manager = knowledge.zone_manager
         self.Generate(ai)
         self.SolveCliffs(ai)
         self.townhall_color = Point3((200, 170, 55))

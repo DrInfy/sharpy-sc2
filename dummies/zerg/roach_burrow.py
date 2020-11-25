@@ -4,9 +4,9 @@ from sc2 import Race, UnitTypeId, AbilityId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
 
-from sharpy.knowledges import KnowledgeBot, Knowledge
+from sharpy.knowledges import KnowledgeBot
 from sharpy.managers import ManagerBase
-from sharpy.managers.combat2 import GenericMicro, Action
+from sharpy.combat import GenericMicro, Action
 from sharpy.plans.zerg import *
 
 

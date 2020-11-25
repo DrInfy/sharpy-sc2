@@ -1,9 +1,9 @@
 from typing import List, Dict, Optional, Union
 
-from sharpy.managers.combat2 import *
+from sharpy.combat import *
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.managers import UnitCacheManager, PathingManager, ManagerBase
-from sharpy.managers.combat2 import Action
+from sharpy.combat import Action
 from sc2.units import Units
 
 from sc2 import UnitTypeId
@@ -13,11 +13,6 @@ import numpy as np
 from sklearn.cluster import DBSCAN
 
 # IMPORTANT, do NOT remove these. Used for pyinstaller to include all files.
-import sklearn.utils._cython_blas
-import sklearn.neighbors.typedefs
-import sklearn.neighbors.quad_tree
-import sklearn.tree
-import sklearn.tree._utils
 
 ignored = {UnitTypeId.MULE, UnitTypeId.LARVA, UnitTypeId.EGG}
 

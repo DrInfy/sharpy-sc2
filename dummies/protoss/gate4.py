@@ -1,16 +1,6 @@
 from typing import Optional, List
 
-from sharpy.managers import (
-    ManagerBase,
-    UnitCacheManager,
-    UnitValue,
-    ZoneManager,
-    PathingManager,
-    GroupCombatManager,
-    CooldownManager,
-    UnitRoleManager,
-    MemoryManager,
-)
+from sharpy.managers import *
 from sharpy.managers.core import ActManager, GatherPointSolver
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
@@ -34,6 +24,8 @@ class Stalkers4Gate(SkeletonBot):
             UnitRoleManager(),
             PathingManager(),
             ZoneManager(),
+            BuildingSolver(),
+            IncomeCalculator(),
             CooldownManager(),
             GroupCombatManager(),
             GatherPointSolver(),

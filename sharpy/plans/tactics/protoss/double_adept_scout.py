@@ -1,15 +1,14 @@
 from typing import List, Dict, Optional
 
-from sharpy.managers.combat2.protoss import MicroAdepts
+from sharpy.combat.protoss import MicroAdepts
 from sharpy.plans.acts import ActBase
-from sharpy.managers import CooldownManager, GroupCombatManager
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
 from sharpy.general.zone import Zone
-from sharpy.managers.combat2 import MoveType, MicroRules
+from sharpy.combat import MoveType, MicroRules
 from sharpy.managers.roles import UnitTask
 
 

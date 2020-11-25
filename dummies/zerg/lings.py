@@ -1,6 +1,6 @@
 import random
 
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *

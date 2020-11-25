@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 
 from sharpy.managers import GameAnalyzer
 from sharpy.plans.acts import ActBase
@@ -16,7 +16,7 @@ from sc2.units import Units
 
 from sharpy.managers.roles import UnitTask
 from sharpy.knowledges import Knowledge
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 from sharpy.general.extended_power import ExtendedPower
 from typing import TYPE_CHECKING
 

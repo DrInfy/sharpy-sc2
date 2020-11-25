@@ -1,24 +1,15 @@
 import logging
 import string
-import sys
 from configparser import ConfigParser
-from typing import Set, List, Optional, Dict, Callable, Type
+from typing import List, Optional, Callable, Type
 
 import sc2
-from sharpy.general.zone import Zone
 from sharpy.events import UnitDestroyedEvent
 from sharpy.managers import *
-from sharpy.managers.enemy_units_manager import EnemyUnitsManager
-from sharpy.managers.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager
-from sharpy.mapping.heat_map import HeatMap
-from sharpy.mapping.map import MapInfo
-from sharpy.general.extended_ramp import ExtendedRamp
+from sharpy.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager
 from sc2 import Race
 from sc2.constants import *
-from sc2.data import Result
 from sc2.position import Point2
-from sc2.unit import Unit
-from sc2.units import Units
 from typing import TYPE_CHECKING, TypeVar
 
 if TYPE_CHECKING:

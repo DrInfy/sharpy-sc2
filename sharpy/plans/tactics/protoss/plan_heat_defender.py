@@ -1,7 +1,7 @@
 from typing import List
 
 from sc2.units import Units
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 
 from sharpy.plans.acts import ActBase
 from sharpy.managers.roles import UnitTask
