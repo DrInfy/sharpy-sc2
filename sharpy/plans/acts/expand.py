@@ -1,15 +1,17 @@
 import warnings
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sharpy.general.zone import Zone
 from sharpy.managers.roles import UnitTask
+from sharpy.managers import ZoneManager, UnitRoleManager
+from sharpy.managers.interfaces import IIncomeCalculator, IGatherPointSolver
 from sc2 import UnitTypeId, Race, AbilityId, common_pb
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
-from ...managers import ZoneManager
-from ...managers.interfaces import IIncomeCalculator
-from ...managers.interfaces.gather_point_solver import IGatherPointSolver
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import *
 
 
 def get_new_townhall_type(race: Race):
@@ -28,6 +30,7 @@ class Expand(ActBase):
     gather_manager: IGatherPointSolver
     zone_manager: ZoneManager
     income_calculator: IIncomeCalculator
+    roles: UnitRoleManager
 
     def __init__(
         self,
@@ -62,6 +65,7 @@ class Expand(ActBase):
         self.gather_manager = knowledge.get_required_manager(IGatherPointSolver)
         self.zone_manager = knowledge.get_required_manager(ZoneManager)
         self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
+        self.roles = knowledge.get_required_manager(UnitRoleManager)
 
     async def execute(self) -> bool:
         expand_here: "Zone" = None
@@ -92,7 +96,7 @@ class Expand(ActBase):
         pending_count = self.pending_build(self.townhall_type)
 
         # Inform our logic that we're looking to expand
-        self.knowledge.expanding_to = expand_here
+        self.gather_manager.set_expanding_to(expand_here.center_location)
 
         if pending_count:
             if self.has_build_order(worker):

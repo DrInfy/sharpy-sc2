@@ -23,6 +23,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
 
     def set_expanding_to(self, target: Point2) -> None:
         self._expanding_to = target
+        self._find_gather_point()  # Re check the gather point
 
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
