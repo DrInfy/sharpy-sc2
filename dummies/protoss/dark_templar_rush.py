@@ -22,8 +22,8 @@ class DtPush(ActBase):
             attack_dt = dts[1]
             self.do(harash_dt.move(zone.center_location))
             self.do(attack_dt.attack(zone.center_location))
-            self.knowledge.roles.set_task(UnitTask.Reserved, harash_dt)
-            self.knowledge.roles.set_task(UnitTask.Reserved, attack_dt)
+            self.roles.set_task(UnitTask.Reserved, harash_dt)
+            self.roles.set_task(UnitTask.Reserved, attack_dt)
             self.ninja_dt_tag = harash_dt.tag
 
         elif self.dt_push_started:

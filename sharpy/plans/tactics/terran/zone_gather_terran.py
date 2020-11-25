@@ -42,7 +42,7 @@ class PlanZoneGatherTerran(ActBase):
             self.gather_set.append(unit.tag)
 
         units = []
-        units.extend(self.knowledge.roles.idle)
+        units.extend(self.roles.idle)
 
         for unit in units:
             if self.knowledge.should_attack(unit):

@@ -22,7 +22,7 @@ class ActBuildingRamp(ActBuilding):
 
         if count >= self.to_count:
             if self.builder_tag is not None:
-                self.knowledge.roles.clear_task(self.builder_tag)
+                self.roles.clear_task(self.builder_tag)
                 self.builder_tag = None
 
             return True  # Step is done
@@ -58,10 +58,10 @@ class ActBuildingRamp(ActBuilding):
     def get_worker(self, position: Point2):
         worker: Unit = None
         if self.builder_tag is None:
-            free_workers = self.knowledge.roles.free_workers
+            free_workers = self.roles.free_workers
             if free_workers.exists:
                 worker = free_workers.closest_to(position)
-                self.knowledge.roles.set_task(UnitTask.Building, worker)
+                self.roles.set_task(UnitTask.Building, worker)
                 self.builder_tag = worker.tag
         else:
             worker: Unit = self.ai.workers.find_by_tag(self.builder_tag)

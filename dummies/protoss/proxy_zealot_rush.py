@@ -47,7 +47,7 @@ class ProxyZealots(ActBase):
         if not worker:
             return
 
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
+        self.roles.set_task(UnitTask.Reserved, worker)
 
         if not self.has_build_order(worker):
             if (

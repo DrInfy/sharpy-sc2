@@ -48,14 +48,14 @@ class WorkerScout(ActBase):
             self.scout = self.roles.get_unit_by_tag_from_task(self.scout_tag, UnitTask.Scouting)
             return
 
-        workers = self.knowledge.roles.free_workers
+        workers = self.roles.free_workers
         if not workers.exists:
             return
 
         if self.scout_tag is None:
             closest_worker = workers.closest_to(self.current_target)
             self.scout_tag = closest_worker.tag
-            self.knowledge.roles.set_task(UnitTask.Scouting, closest_worker)
+            self.roles.set_task(UnitTask.Scouting, closest_worker)
             self.scout = closest_worker
 
     def distance_to_scout(self, location):

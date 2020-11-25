@@ -34,8 +34,8 @@ class DarkTemplarAttack(ActBase):
             attack_dt = dts[1]
             self.do(harash_dt.move(zone.center_location))
             self.do(attack_dt.attack(zone.center_location))
-            self.knowledge.roles.set_task(UnitTask.Reserved, harash_dt)
-            self.knowledge.roles.set_task(UnitTask.Reserved, attack_dt)
+            self.roles.set_task(UnitTask.Reserved, harash_dt)
+            self.roles.set_task(UnitTask.Reserved, attack_dt)
             self.ninja_dt_tag = harash_dt.tag
             self.attack_dt_tag = attack_dt.tag
 
@@ -48,7 +48,7 @@ class DarkTemplarAttack(ActBase):
     async def attack_with_dt(self):
         attack_dt: Unit = self.cache.by_tag(self.attack_dt_tag)
         if attack_dt is not None:
-            self.knowledge.roles.set_task(UnitTask.Reserved, attack_dt)
+            self.roles.set_task(UnitTask.Reserved, attack_dt)
             await self.attack_command(attack_dt)
 
     async def attack_command(self, unit: Unit):
@@ -65,7 +65,7 @@ class DarkTemplarAttack(ActBase):
     async def harash_with_dt(self):
         harash_dt: Unit = self.cache.by_tag(self.ninja_dt_tag)
         if harash_dt is not None:
-            self.knowledge.roles.set_task(UnitTask.Reserved, harash_dt)
+            self.roles.set_task(UnitTask.Reserved, harash_dt)
             enemy_workers = self.cache.enemy_in_range(harash_dt.position, 15).of_type(
                 [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
             )
@@ -75,7 +75,7 @@ class DarkTemplarAttack(ActBase):
             elif harash_dt.shield_health_percentage < 1:
                 await self.attack_command(harash_dt)
             elif harash_dt.distance_to(self.knowledge.enemy_start_location) < 5:
-                self.knowledge.roles.clear_task(harash_dt)
+                self.roles.clear_task(harash_dt)
                 self.ninja_dt_tag = 0
             else:
                 self.do(harash_dt.move(self.knowledge.enemy_start_location))

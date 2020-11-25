@@ -21,7 +21,7 @@ class PlanHeatDefender(ActBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.roles = self.knowledge.roles
+        self.roles = self.roles
         self.combat.use_unit_micro = False
         self.check_zones = [
             self.zone_manager.expansion_zones[0],
@@ -33,7 +33,7 @@ class PlanHeatDefender(ActBase):
     async def execute(self) -> bool:
 
         if self.adept_tag is None:
-            adepts: Units = self.knowledge.roles.free_units()(UnitTypeId.ADEPT)
+            adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
             if adepts.exists:
                 adept = adepts.first
                 self.adept_tag = adept.tag

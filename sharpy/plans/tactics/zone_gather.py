@@ -42,7 +42,7 @@ class PlanZoneGather(ActBase):
             if not enemy_near:
                 return False
 
-            attackers = self.knowledge.roles.attacking_units
+            attackers = self.roles.attacking_units
             if attackers:
                 attacker_near = attackers.closest_distance_to(target_position) < 5
                 return not attacker_near
@@ -71,7 +71,7 @@ class PlanZoneGather(ActBase):
         await self.manage_blocker()
 
         units = []
-        units.extend(self.knowledge.roles.idle)
+        units.extend(self.roles.idle)
 
         for unit in units:
             if self.knowledge.should_attack(unit):
@@ -88,17 +88,17 @@ class PlanZoneGather(ActBase):
             if self.blocker_tag is not None:
                 unit = self.cache.by_tag(self.blocker_tag)
                 if unit is not None and self.knowledge.close_gates:
-                    self.knowledge.roles.set_task(UnitTask.Reserved, unit)
+                    self.roles.set_task(UnitTask.Reserved, unit)
 
                     if unit.type_id in {UnitTypeId.STALKER, UnitTypeId.IMMORTAL} and self.cache.own(UnitTypeId.ZEALOT):
                         # Swap expensive blocker to a zaalot
                         new_blocker = self.get_blocker(self.ai, target_position)
                         if new_blocker is not None:
-                            self.knowledge.roles.clear_task(unit)
+                            self.roles.clear_task(unit)
                             # Register tag
                             unit = new_blocker
                             self.blocker_tag = unit.tag
-                            self.knowledge.roles.set_task(UnitTask.Reserved, unit)
+                            self.roles.set_task(UnitTask.Reserved, unit)
 
                     if self.should_hold_position(target_position):
                         if unit.distance_to(target_position) < 0.2:
@@ -130,7 +130,7 @@ class PlanZoneGather(ActBase):
                 if unit is not None:
                     # Register tag
                     self.blocker_tag = unit.tag
-                    self.knowledge.roles.set_task(UnitTask.Reserved, unit)
+                    self.roles.set_task(UnitTask.Reserved, unit)
                     self.do(unit.attack(target_position))
 
     async def remove_gate_keeper(self):
@@ -138,7 +138,7 @@ class PlanZoneGather(ActBase):
             unit = self.cache.by_tag(self.blocker_tag)
             if unit is not None:
                 self.do(unit.attack(self.knowledge.gather_point))
-            self.knowledge.roles.clear_task(self.blocker_tag)
+            self.roles.clear_task(self.blocker_tag)
             self.blocker_tag = None
 
         main_zone = self.zone_manager.expansion_zones[0]
@@ -174,7 +174,7 @@ class PlanZoneGather(ActBase):
         return unit
 
     def get_blocker_type(self, unit_type: sc2.UnitTypeId, ai: sc2.BotAI, position: Point2) -> Optional[Unit]:
-        units = self.knowledge.roles.free_units(unit_type).closer_than(15, position)
+        units = self.roles.free_units(unit_type).closer_than(15, position)
         if units.exists:
             return units.closest_to(position)
         return None

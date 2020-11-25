@@ -404,7 +404,7 @@ class Zone:
         return power
 
     def go_mine(self, unit: Unit):
-        self.knowledge.roles.clear_task(unit)
+        self.roles.clear_task(unit)
 
         if len(self.mineral_fields) > 0:
             # Go to mine in this zone

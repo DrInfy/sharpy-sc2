@@ -36,7 +36,7 @@ class WarpUnit(ActBase):
             return True
 
         warpgates = self.cache.own(UnitTypeId.WARPGATE)
-        attackers: Units = self.knowledge.roles.units(UnitTask.Attacking)
+        attackers: Units = self.roles.units(UnitTask.Attacking)
 
         unit_type = self.unit_type
         if unit_type == UnitTypeId.ARCHON:

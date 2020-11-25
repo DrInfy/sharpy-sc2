@@ -29,7 +29,7 @@ class HallucinatedPhoenixScout(ActBase):
     async def execute(self) -> bool:
         phoenix = await self.get_hallucinated_phoenix()
         if phoenix:
-            self.knowledge.roles.set_task(UnitTask.Scouting, phoenix)
+            self.roles.set_task(UnitTask.Scouting, phoenix)
             self.move_phoenix(phoenix)
         if not phoenix and self.should_send_scout:
             # We should have a Phoenix on the next iteration
@@ -39,7 +39,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     async def get_hallucinated_phoenix(self) -> Optional[Unit]:
         if self.current_phoenix_tag is not None:
-            phoenix = self.knowledge.roles.units(UnitTask.Scouting).find_by_tag(self.current_phoenix_tag)
+            phoenix = self.roles.units(UnitTask.Scouting).find_by_tag(self.current_phoenix_tag)
             if phoenix is not None:
                 return phoenix
             # Phoenix does not exist anymore

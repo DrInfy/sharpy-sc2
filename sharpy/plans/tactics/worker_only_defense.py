@@ -46,7 +46,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
             combined_enemies |= zone.known_enemy_units
 
-        already_defending: Units = self.knowledge.roles.units(UnitTask.Defending)
+        already_defending: Units = self.roles.units(UnitTask.Defending)
 
         if not combined_enemies:
             if self.was_active:
@@ -58,7 +58,7 @@ class PlanWorkerOnlyDefense(ActBase):
         # for unit in already_defending:
         #     # return workers back to base that have wandered too far away
         #     if unit.type_id in self.unit_values.worker_types and unit.distance_to(self.ai.start_location) > 30:
-        #         self.knowledge.roles.clear_task(unit)
+        #         self.roles.clear_task(unit)
         #         unit.gather(self.gather_mf)
 
         worker_only = combined_enemies.amount == combined_enemies.of_type(self.unit_values.worker_types).amount
@@ -106,7 +106,7 @@ class PlanWorkerOnlyDefense(ActBase):
             if not army:
                 return False  # No army to fight with, waiting for one.
 
-            self.knowledge.roles.set_tasks(UnitTask.Defending, army)
+            self.roles.set_tasks(UnitTask.Defending, army)
             # my_closest = army.closest_to(closest_enemy.position)
             # center = army.center
 
@@ -229,7 +229,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         if fighters:
             for fighter in fighters:  # type: Unit
-                self.knowledge.roles.set_task(UnitTask.Defending, fighter)
+                self.roles.set_task(UnitTask.Defending, fighter)
                 self.do(fighter.attack(target))
                 self.defender_tags.append(fighter.tag)
                 return
@@ -241,7 +241,7 @@ class PlanWorkerOnlyDefense(ActBase):
                     count += 1
                     self.do(unit.attack(target))
                     self.defender_tags.append(unit.tag)
-                    self.knowledge.roles.set_task(UnitTask.Defending, unit)
+                    self.roles.set_task(UnitTask.Defending, unit)
                     if count >= defender_count:
                         return
 
@@ -250,14 +250,14 @@ class PlanWorkerOnlyDefense(ActBase):
                 count += 1
                 self.do(unit.attack(target))
                 self.defender_tags.append(unit.tag)
-                self.knowledge.roles.set_task(UnitTask.Defending, unit)
+                self.roles.set_task(UnitTask.Defending, unit)
                 if count >= defender_count:
                     return
 
     def free_others(self):
-        already_defending: Units = self.knowledge.roles.units(UnitTask.Defending)
+        already_defending: Units = self.roles.units(UnitTask.Defending)
         to_clear = already_defending.tags_not_in(self.defender_tags)
-        self.knowledge.roles.clear_tasks(to_clear)
+        self.roles.clear_tasks(to_clear)
 
         for unit in to_clear:
             if unit.is_gathering or unit.is_attacking:
@@ -265,7 +265,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
     async def debug_actions(self):
         if self.was_active:
-            units: Units = self.knowledge.roles.units(UnitTask.Defending)
+            units: Units = self.roles.units(UnitTask.Defending)
             for unit in units:
                 text = f"Worker Defending"
                 self.client.debug_text_world(text, unit.position3d)

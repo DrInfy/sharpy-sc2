@@ -62,5 +62,5 @@ class BuildPosition(ActBase):
         return False
 
     def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
+        self.roles.set_task(UnitTask.Building, worker)
         self.builder_tag = worker.tag

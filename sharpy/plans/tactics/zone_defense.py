@@ -39,7 +39,7 @@ class PlanZoneDefense(ActBase):
     async def execute(self) -> bool:
         unit: Unit
 
-        all_defenders = self.knowledge.roles.all_from_task(UnitTask.Defending)
+        all_defenders = self.roles.all_from_task(UnitTask.Defending)
 
         for i in range(0, len(self.zone_manager.expansion_zones)):
             zone: "Zone" = self.zone_manager.expansion_zones[i]
@@ -59,7 +59,7 @@ class PlanZoneDefense(ActBase):
                         zone.last_scouted_center == self.knowledge.ai.time
                         or self.zone_seen_enemy[i] + PlanZoneDefense.ZONE_CLEAR_TIMEOUT < self.ai.time
                     ):
-                        self.knowledge.roles.clear_tasks(zone_defenders_all)
+                        self.roles.clear_tasks(zone_defenders_all)
                         zone_defenders.clear()
                         zone_tags.clear()
                         continue  # Zone is well under control.
@@ -85,21 +85,21 @@ class PlanZoneDefense(ActBase):
                     defenders.add_unit(unit)
 
                 # Add units to defenders that are being warped in.
-                for unit in self.knowledge.roles.units(UnitTask.Idle).not_ready:
+                for unit in self.roles.units(UnitTask.Idle).not_ready:
                     if unit.distance_to(zone.center_location) < zone.radius:
                         # unit is idle in the zone, add to defenders
                         self.combat.add_unit(unit)
-                        self.knowledge.roles.set_task(UnitTask.Defending, unit)
+                        self.roles.set_task(UnitTask.Defending, unit)
                         zone_tags.append(unit.tag)
 
                 if not defenders.is_enough_for(defense_required):
                     defense_required.substract_power(defenders)
-                    for unit in self.knowledge.roles.get_defenders(defense_required, zone.center_location):
+                    for unit in self.roles.get_defenders(defense_required, zone.center_location):
                         if unit.distance_to(zone.center_location) < zone.radius:
                             # Only count units that are close as defenders
                             defenders.add_unit(unit)
 
-                        self.knowledge.roles.set_task(UnitTask.Defending, unit)
+                        self.roles.set_task(UnitTask.Defending, unit)
                         self.combat.add_unit(unit)
                         zone_tags.append(unit.tag)
 
@@ -190,7 +190,7 @@ class PlanZoneDefense(ActBase):
             # Let's use ones with shield left
             if defenders < defense_count_panic and (worker.shield > 3 or killing_probes):
                 zone_tags.append(worker.tag)
-                self.knowledge.roles.set_task(UnitTask.Defending, worker)
+                self.roles.set_task(UnitTask.Defending, worker)
                 defenders += self.unit_values.defense_value(worker.type_id)
                 self.combat.add_unit(worker)
 

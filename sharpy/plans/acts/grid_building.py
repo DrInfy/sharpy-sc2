@@ -167,7 +167,7 @@ class GridBuilding(ActBuilding):
 
     def set_worker(self, worker: Optional[Unit]) -> bool:
         if worker:
-            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.roles.set_task(UnitTask.Building, worker)
             self.builder_tag = worker.tag
             return True
 
@@ -176,7 +176,7 @@ class GridBuilding(ActBuilding):
 
     def clear_worker(self):
         if self.builder_tag is not None:
-            self.knowledge.roles.clear_task(self.builder_tag)
+            self.roles.clear_task(self.builder_tag)
             self.builder_tag = None
 
     def position_protoss(self, count) -> Optional[Point2]:

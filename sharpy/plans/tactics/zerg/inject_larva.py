@@ -10,7 +10,7 @@ from sc2.unit import Unit, UnitOrder
 class InjectLarva(ActBase):
     """
     When using force_inject_on_larva, use the following in KnowledgeBot:
-    self.knowledge.roles.set_tag_each_iteration = True
+    self.roles.set_tag_each_iteration = True
 
     @param force_inject_on_larva how many larva until we force a queen to inject a townhall, set to negative for never.
     """

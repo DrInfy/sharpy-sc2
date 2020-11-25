@@ -42,7 +42,7 @@ class DoubleAdeptScout(ActBase):
 
     async def execute(self) -> bool:
         if self.knowledge.possible_rush_detected:
-            self.knowledge.roles.clear_tasks(self.scout_tags)
+            self.roles.clear_tasks(self.scout_tags)
             self.scout_tags.clear()
             return True  # Never block
 
@@ -208,17 +208,17 @@ class DoubleAdeptScout(ActBase):
     async def end_scout(self):
         self.started = False
         self.ended = True
-        self.knowledge.roles.clear_tasks(self.scout_tags)
+        self.roles.clear_tasks(self.scout_tags)
         self.scout_tags.clear()
         self.is_behind_minerals = False
 
     async def check_start(self):
-        adepts: Units = self.knowledge.roles.free_units()(UnitTypeId.ADEPT)
+        adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
         if adepts.amount >= self.adepts_to_start:
             self.started = True
 
             for adept in adepts:
                 self.scout_tags.append(adept.tag)
-                self.knowledge.roles.set_tasks(UnitTask.Scouting, adepts)
+                self.roles.set_tasks(UnitTask.Scouting, adepts)
                 if len(self.scout_tags) >= self.adepts_to_start:
                     return

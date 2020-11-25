@@ -67,7 +67,7 @@ class ProxyCannoneer(ActBase):
         return False
 
     async def micro_cannon_worker(self, worker):
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
+        self.roles.set_task(UnitTask.Reserved, worker)
 
         if self.has_build_order(worker):
             return
@@ -93,7 +93,7 @@ class ProxyCannoneer(ActBase):
             self.ai.do(worker.move(target))
 
     async def micro_pylon_worker(self, worker):
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
+        self.roles.set_task(UnitTask.Reserved, worker)
         if self.has_build_order(worker):
             return
 
@@ -164,7 +164,7 @@ class ProxyCannoneer(ActBase):
         if worker:
             return worker
 
-        available_workers = self.knowledge.roles.free_workers
+        available_workers = self.roles.free_workers
         if not available_workers:
             return None
 
@@ -179,7 +179,7 @@ class ProxyCannoneer(ActBase):
         if worker:
             return worker
 
-        available_workers = self.knowledge.roles.free_workers
+        available_workers = self.roles.free_workers
         if not available_workers:
             return None
 
@@ -194,7 +194,7 @@ class CannonRush(KnowledgeBot):
         self.build_name = build_name
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
-        self.knowledge.roles.set_tag_each_iteration = True
+        self.roles.set_tag_each_iteration = True
         return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:

@@ -29,7 +29,7 @@ class DodgeRampAttack(PlanZoneAttack):
         return await super().execute()
 
     async def small_retreat(self):
-        attacking_units = self.knowledge.roles.attacking_units
+        attacking_units = self.roles.attacking_units
         natural = self.zone_manager.expansion_zones[-2]
 
         for unit in attacking_units:

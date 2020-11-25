@@ -76,7 +76,7 @@ class PlanZoneAttack(ActBase):
             self.handle_attack(target)
 
         elif self.attack_retreat_started is not None:
-            attacking_units = self.knowledge.roles.attacking_units
+            attacking_units = self.roles.attacking_units
             self.roles.refresh_tasks(attacking_units)
 
             for unit in attacking_units:
@@ -84,7 +84,7 @@ class PlanZoneAttack(ActBase):
                 at_gather_point = pos.distance_to(self.knowledge.gather_point) < RETREAT_STOP_DISTANCE_SQUARED
                 if at_gather_point:
                     # self.print(f"Unit {unit.type_id} {unit.tag} has reached gather point. Stopping retreat.")
-                    self.knowledge.roles.clear_task(unit)
+                    self.roles.clear_task(unit)
                 elif self.status == AttackStatus.Withdraw:
                     self.combat.add_unit(unit)
                 else:
@@ -96,9 +96,9 @@ class PlanZoneAttack(ActBase):
                 # Stop retreat next turn
                 self._stop_retreat()
         else:
-            self.knowledge.roles.attack_ended()
+            self.roles.attack_ended()
             attackers = Units([], self.ai)
-            for unit in self.knowledge.roles.free_units:
+            for unit in self.roles.free_units:
                 if self.knowledge.should_attack(unit):
                     attackers.append(unit)
 
@@ -126,13 +126,13 @@ class PlanZoneAttack(ActBase):
         else:
             attacking_status = moving_status = "unknown attack task"
 
-        for unit in self.knowledge.roles.units(UnitTask.Moving):
+        for unit in self.roles.units(UnitTask.Moving):
             self.client.debug_text_world(moving_status, unit.position3d)
-        for unit in self.knowledge.roles.units(UnitTask.Attacking):
+        for unit in self.roles.units(UnitTask.Attacking):
             self.client.debug_text_world(attacking_status, unit.position3d)
 
     def handle_attack(self, target):
-        already_attacking: Units = self.knowledge.roles.units(UnitTask.Attacking)
+        already_attacking: Units = self.roles.units(UnitTask.Attacking)
         if not already_attacking.exists:
             self.print("No attacking units, starting retreat")
             # All attacking units have been destroyed.
@@ -148,16 +148,16 @@ class PlanZoneAttack(ActBase):
 
         self.roles.refresh_tasks(already_attacking)
 
-        for unit in self.knowledge.roles.free_units:
+        for unit in self.roles.free_units:
             if self.knowledge.should_attack(unit):
-                if not self.knowledge.roles.is_in_role(UnitTask.Attacking, unit) and (
+                if not self.roles.is_in_role(UnitTask.Attacking, unit) and (
                     unit.distance_to(center) > 20 or unit.distance_to(front_runner) > 20
                 ):
-                    self.knowledge.roles.set_task(UnitTask.Moving, unit)
+                    self.roles.set_task(UnitTask.Moving, unit)
                     # Unit should start moving to target position.
                     self.combat.add_unit(unit)
                 else:
-                    self.knowledge.roles.set_task(UnitTask.Attacking, unit)
+                    self.roles.set_task(UnitTask.Attacking, unit)
                     already_attacking.append(unit)
                     # Unit should start moving to target position.
                     self.combat.add_unit(unit)
@@ -229,7 +229,7 @@ class PlanZoneAttack(ActBase):
         return False
 
     def _start_attack(self, power: ExtendedPower, attackers: Units):
-        self.knowledge.roles.set_tasks(UnitTask.Attacking, attackers)
+        self.roles.set_tasks(UnitTask.Attacking, attackers)
         self.status = AttackStatus.Attacking
         self.print(f"Attack started at {power.power:.2f} power.")
 
@@ -282,7 +282,7 @@ class PlanZoneAttack(ActBase):
     def _stop_retreat(self):
         self.status = AttackStatus.NotActive
         self.attack_retreat_started = None
-        self.knowledge.roles.attack_ended()
+        self.roles.attack_ended()
         self.print("Retreat stopped.")
 
     def _get_target(self) -> Optional[Point2]:
@@ -299,8 +299,8 @@ class PlanZoneAttack(ActBase):
         best_zone = None
         best_score = 100000
         start_position = self.knowledge.gather_point
-        if self.knowledge.roles.attacking_units:
-            start_position = self.knowledge.roles.attacking_units.center
+        if self.roles.attacking_units:
+            start_position = self.roles.attacking_units.center
 
         for zone in enemy_zones:  # type: Zone
             not_like_points = zone.center_location.distance_to(start_position)

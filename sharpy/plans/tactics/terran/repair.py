@@ -12,7 +12,7 @@ class Repair(ActBase):
         super().__init__()
 
     async def execute(self) -> bool:
-        roles: "UnitRoleManager" = self.knowledge.roles
+        roles: "UnitRoleManager" = self.roles
         current_repairers = []
         for zone in self.knowledge.our_zones:
             pre_repairer = 0

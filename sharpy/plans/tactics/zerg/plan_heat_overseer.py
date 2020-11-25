@@ -19,7 +19,7 @@ class PlanHeatOverseer(ActBase):
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.heat_map: HeatMap = knowledge.heat_map
-        self.roles = self.knowledge.roles
+        self.roles = self.roles
         self.gather_point = self.zone_manager.expansion_zones[0].center_location
 
     async def execute(self) -> bool:

@@ -137,7 +137,7 @@ class DistributeWorkers(ActBase):
 
     def calc_gas_workers_target(self) -> int:
         """Target count for workers harvesting gas."""
-        worker_count = self.knowledge.roles.free_workers.amount
+        worker_count = self.roles.free_workers.amount
         max_workers_at_gas = self.active_gas_buildings.amount * MAX_WORKERS_PER_GAS
 
         estimate = round((worker_count - 8) / 2)

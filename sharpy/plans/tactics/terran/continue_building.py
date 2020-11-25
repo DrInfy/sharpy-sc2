@@ -21,7 +21,7 @@ class ContinueBuilding(ActBase):
                 ):
 
                     self.knowledge.print(f"[Building continue] {building.type_id} {building.position}")
-                    workers = self.knowledge.roles.free_workers()
+                    workers = self.roles.free_workers()
                     if workers.exists:
                         scv = workers.closest_to(building)
                         self.do(scv(AbilityId.SMART, building))

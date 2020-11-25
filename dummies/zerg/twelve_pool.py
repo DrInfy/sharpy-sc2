@@ -17,7 +17,7 @@ class PlanZoneAttack2(PlanZoneAttack):
         self.retreat_multiplier = 0  # never retreat, never surrender
 
         for unit in drones:
-            self.knowledge.roles.set_task(UnitTask.Attacking, unit)
+            self.roles.set_task(UnitTask.Attacking, unit)
 
         return super()._start_attack(power, attackers)
 

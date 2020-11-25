@@ -11,7 +11,7 @@ class PlanMainDefender(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.roles = self.knowledge.roles
+        self.roles = self.roles
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
 
     async def execute(self):
