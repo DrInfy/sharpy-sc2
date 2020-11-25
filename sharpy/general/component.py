@@ -65,7 +65,7 @@ class Component:
         self.client = self.ai._client
         self.pather = self.knowledge.pathing_manager
         self.combat = self.knowledge.combat_manager
-        self.roles = self.roles
+        self.roles = self.knowledge.roles
         self.zone_manager = self.knowledge.zone_manager
         self.cd_manager = knowledge.cooldown_manager
 
