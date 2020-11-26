@@ -29,7 +29,7 @@ class WorkerRallyPoint(ActBase):
             self.ability = AbilityId.RALLY_HATCHERY_WORKERS
 
     def set_rally_point(self):
-        for zone in self.knowledge.our_zones:
+        for zone in self.zone_manager.our_zones:
             best_mineral_field = zone.check_best_mineral_field()
 
             if zone.our_townhall:

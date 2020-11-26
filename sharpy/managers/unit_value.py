@@ -459,6 +459,20 @@ class UnitValue(ManagerBase, IUnitValues):
     async def post_update(self):
         pass
 
+    def should_attack(self, unit: Unit):
+        """Returns boolean whether unit should participate in an attack. Ignores structures, workers and other non attacking types."""
+        if unit.type_id in self.combat_ignore:
+            return False
+        if self.ai.race == Race.Zerg and unit.type_id == UnitTypeId.QUEEN:
+            return False
+        if (
+            unit.type_id == UnitTypeId.INTERCEPTOR
+            or unit.type_id == UnitTypeId.ADEPTPHASESHIFT
+            or unit.type_id == UnitTypeId.MULE
+        ):
+            return False
+        return not unit.is_structure and unit.type_id not in self.worker_types
+
     def building_start_time(self, game_time: float, type_id: UnitTypeId, build_progress: float):
         """Calculates when building construction started. This can be used to eg. detect early rushes."""
         build_time = self.build_time(type_id)

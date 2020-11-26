@@ -241,7 +241,7 @@ class GroupCombatManager(ManagerBase):
         if self.cache.enemy_numpy_vectors:
             clustering = DBSCAN(eps=self.enemy_group_distance, min_samples=1).fit(self.cache.enemy_numpy_vectors)
             # print(clustering.labels_)
-            units = self.knowledge.known_enemy_units
+            units = self.ai.all_enemy_units
             for index in range(0, len(clustering.labels_)):
                 unit = units[index]
                 if unit.type_id in self.unit_values.combat_ignore or not unit.can_be_attacked:

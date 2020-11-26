@@ -185,12 +185,12 @@ class GridBuilding(ActBuilding):
         iterator = self.get_iterator(is_pylon, count)
 
         if is_pylon:
-            for point in self.building_solver.pylon_position[::iterator]:
+            for point in self.building_solver.buildings2x2[::iterator]:
                 if not buildings.closer_than(1, point):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
-            for point in self.building_solver.building_position[::iterator]:
+            for point in self.building_solver.buildings3x3[::iterator]:
                 if not self.allow_wall:
                     if point in self.building_solver.wall_buildings:
                         continue
@@ -207,7 +207,7 @@ class GridBuilding(ActBuilding):
         creep = self.ai.state.creep
         future_position = None
 
-        for point in self.building_solver.building_position:
+        for point in self.building_solver.buildings3x3:
             if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
                 return point
 
@@ -219,7 +219,7 @@ class GridBuilding(ActBuilding):
         future_position = None
 
         if is_depot:
-            for point in self.building_solver.pylon_position:
+            for point in self.building_solver.buildings2x2:
                 if not buildings.closer_than(1, point):
                     return point
         else:
@@ -227,7 +227,7 @@ class GridBuilding(ActBuilding):
             reserved_landing_locations: Set[Point2] = set(
                 self.knowledge.building_solver.structure_target_move_location.values()
             )
-            for point in self.building_solver.building_position:
+            for point in self.building_solver.buildings3x3:
                 if not self.allow_wall:
                     if point in self.building_solver.wall_buildings:
                         continue
@@ -276,7 +276,7 @@ class GridBuilding(ActBuilding):
         iterator = self.get_iterator(is_pylon, count)
 
         if is_pylon:
-            for point in self.building_solver.pylon_position[::iterator]:
+            for point in self.building_solver.buildings2x2[::iterator]:
 
                 if not buildings.closer_than(1, point):
                     err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
@@ -286,7 +286,7 @@ class GridBuilding(ActBuilding):
                         pass
                         # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
         else:
-            for point in self.building_solver.building_position[::iterator]:
+            for point in self.building_solver.buildings3x3[::iterator]:
                 if not buildings.closer_than(1, point) and matrix.covers(point):
                     err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
                     if not err:
@@ -316,7 +316,7 @@ class GridBuilding(ActBuilding):
         buildings = self.ai.structures
         creep = self.ai.state.creep
 
-        for point in self.building_solver.building_position:
+        for point in self.building_solver.buildings3x3:
             if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
                 err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
                 if not err:
@@ -347,7 +347,7 @@ class GridBuilding(ActBuilding):
         buildings = self.ai.structures
 
         if is_depot:
-            for point in self.building_solver.pylon_position[::1]:
+            for point in self.building_solver.buildings2x2[::1]:
 
                 if not buildings.closer_than(1, point):
                     err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
@@ -357,7 +357,7 @@ class GridBuilding(ActBuilding):
                         pass
                         # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
         else:
-            for point in self.building_solver.building_position[::1]:
+            for point in self.building_solver.buildings3x3[::1]:
                 if not buildings.closer_than(1, point):
                     err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
                     if not err:

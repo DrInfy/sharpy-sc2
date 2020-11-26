@@ -55,7 +55,7 @@ class DarkTemplarAttack(ActBase):
         self.combat.add_unit(unit)
         target = self.knowledge.enemy_start_location
 
-        units: Units = self.knowledge.known_enemy_units
+        units: Units = self.ai.all_enemy_units
         units = units.not_flying
         if units:
             target = units.closest_to(unit).position

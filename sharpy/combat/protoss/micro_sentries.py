@@ -98,7 +98,7 @@ class MicroSentries(GenericMicro):
             if d_natural < 15 and d_natural < d_main and self.closest_group_distance < 10:
                 # Sentry is at the natural
                 if self.building_solver:
-                    zealot_pos: Point2 = self.building_solver.zealot_position
+                    zealot_pos: Point2 = self.building_solver._zealot
                     if self.knowledge.enemy_race == Race.Zerg and natural.our_wall() and zealot_pos:
                         # Protect gate keeper
                         our_keepers = self.cache.own_in_range(zealot_pos, 2).not_structure

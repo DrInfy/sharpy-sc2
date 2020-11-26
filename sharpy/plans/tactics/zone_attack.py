@@ -234,9 +234,7 @@ class PlanZoneAttack(ActBase):
         self.print(f"Attack started at {power.power:.2f} power.")
 
     def _should_retreat(self, fight_center: Point2, already_attacking: Units) -> AttackStatus:
-        enemy_local_units: Units = self.knowledge.known_enemy_units.closer_than(
-            PlanZoneAttack.DISTANCE_TO_INCLUDE, fight_center
-        )
+        enemy_local_units: Units = self.ai.all_enemy_units.closer_than(PlanZoneAttack.DISTANCE_TO_INCLUDE, fight_center)
 
         if self.knowledge.enemy_worker_type is not None:
             enemy_local_units = enemy_local_units.exclude_type(self.knowledge.enemy_worker_type)

@@ -2,6 +2,7 @@ from typing import Optional, List
 
 from sharpy.managers import *
 from sharpy.managers.core import ActManager, GatherPointSolver
+from sharpy.managers import EnemyUnitsManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *
@@ -19,6 +20,7 @@ class Stalkers4Gate(SkeletonBot):
     def configure_managers(self) -> Optional[List[ManagerBase]]:
         return [
             MemoryManager(),
+            EnemyUnitsManager(),
             UnitCacheManager(),
             UnitValue(),
             UnitRoleManager(),

@@ -1,6 +1,7 @@
 from typing import Dict, Set, List, KeysView
 
 from sharpy.events import UnitDestroyedEvent
+from sharpy.interfaces import IEnemyUnitsManager
 from sharpy.managers.manager_base import ManagerBase
 from sharpy.unit_count import UnitCount
 from sc2 import UnitTypeId, Result
@@ -11,7 +12,7 @@ from sharpy.general.extended_power import ExtendedPower
 from sharpy.managers.unit_value import UnitValue, REVERSE_MORPHS_DICT
 
 
-class EnemyUnitsManager(ManagerBase):
+class EnemyUnitsManager(ManagerBase, IEnemyUnitsManager):
     """Keeps track of enemy units and structures.
 
         Note that the class has many limitations, it does not account that
@@ -87,7 +88,7 @@ class EnemyUnitsManager(ManagerBase):
         self.cloak_check()
         types_check = set()
 
-        for unit in self.knowledge.known_enemy_units:  # type: Unit
+        for unit in self.ai.all_enemy_units:  # type: Unit
             real_type = self.unit_values.real_type(unit.type_id)
 
             if real_type not in types_check:
@@ -145,7 +146,7 @@ class EnemyUnitsManager(ManagerBase):
 
     def danger_value(self, danger_for_unit: Unit, position: Point2) -> float:
         danger = 0
-        for unit in self.knowledge.known_enemy_units:
+        for unit in self.ai.all_enemy_units:
             if not unit.is_ready:
                 continue
             real_range = self.unit_values.real_range(unit, danger_for_unit)

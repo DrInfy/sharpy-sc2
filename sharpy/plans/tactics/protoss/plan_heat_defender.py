@@ -51,7 +51,7 @@ class PlanHeatDefender(ActBase):
         return True  # never block
 
     async def assault_hot_spot(self, adept):
-        ground_enemies = self.knowledge.known_enemy_units_mobile.not_flying
+        ground_enemies = self.ai.enemy_units.not_flying
         if ground_enemies.exists:
             closest = ground_enemies.closest_to(adept)
             if self.tag_shift_used_dict.get(adept.tag, 0) + self.cooldown < self.knowledge.ai.time:

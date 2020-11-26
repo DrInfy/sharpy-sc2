@@ -258,7 +258,7 @@ class PlanAddonSwap(ActBase):
             self.knowledge.building_solver.structure_target_move_location.values()
         )
 
-        for point in self.knowledge.building_solver.building_position:
+        for point in self.knowledge.building_solver.buildings3x3:
             # If a structure is landing here from AddonSwap() then dont use this location
             if point in reserved_landing_locations:
                 continue

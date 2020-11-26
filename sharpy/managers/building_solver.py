@@ -100,10 +100,10 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
         self.wall_type = WallType.Auto
 
         self._building_positions: Dict[BuildArea, List[Point2]] = dict()
-        self.zealot_position: Optional[Point2] = None
+        self._zealot: Optional[Point2] = None
 
-        self.wall_buildings: List[Point2] = []
-        self.wall_pylons: List[Point2] = []
+        self._wall3x3: List[Point2] = []
+        self._wall2x2: List[Point2] = []
 
         self.wall_finders_v = [
             # Pure vertical walls
@@ -163,12 +163,36 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
         self.structure_target_move_location: Dict[int, Point2] = {}
 
     @property
-    def pylon_position(self) -> List[Point2]:
+    def zealot(self) -> Optional[Point2]:
+        return self._zealot
+
+    @property
+    def wall2x2(self) -> List[Point2]:
+        return self._wall2x2
+
+    @property
+    def wall3x3(self) -> List[Point2]:
+        return self._wall3x3
+
+    @property
+    def not_wall2x2(self) -> List[Point2]:
+        return [item for item in self._building_positions.get(BuildArea.Pylon, []) if item not in self._wall2x2]
+
+    @property
+    def not_wall3x3(self) -> List[Point2]:
+        return [item for item in self._building_positions.get(BuildArea.Building, []) if item not in self._wall3x3]
+
+    @property
+    def buildings2x2(self) -> List[Point2]:
         return self._building_positions.get(BuildArea.Pylon, [])
 
     @property
-    def building_position(self) -> List[Point2]:
+    def buildings3x3(self) -> List[Point2]:
         return self._building_positions.get(BuildArea.Building, [])
+
+    @property
+    def buildings5x5(self) -> List[Point2]:
+        return []
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -186,9 +210,9 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
         if self.debug:
             client: "Client" = self.ai._client
 
-            if self.zealot_position:
-                x = self.zealot_position.x
-                y = self.zealot_position.y
+            if self._zealot:
+                x = self._zealot.x
+                y = self._zealot.y
                 z = self.knowledge.get_z(Point2((x, y)))
                 c1 = Point3((x - 0.25, y - 0.25, z))
                 c2 = Point3((x + 0.25, y + 0.25, z + 2))
@@ -246,16 +270,16 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
             self.grid.save("buildGrid.bmp")
 
     def terran_depot_wall(self):
-        main: Zone = self.knowledge.own_main_zone
+        main: Zone = self.zone_manager.own_main_zone
         if main.ramp.ramp.depot_in_middle:
-            self.wall_pylons = list(main.ramp.ramp.corner_depots)
-            self.wall_pylons.append(main.ramp.ramp.depot_in_middle)
-            for pos in self.wall_pylons:
+            self._wall2x2 = list(main.ramp.ramp.corner_depots)
+            self._wall2x2.append(main.ramp.ramp.depot_in_middle)
+            for pos in self._wall2x2:
                 self.fill_and_save(pos, BlockerType.Building2x2, BuildArea.Pylon)
 
     def solve_buildings(self):
-        start: Point2 = self.knowledge.own_main_zone.center_location
-        zone: Zone = self.knowledge.own_main_zone
+        start: Point2 = self.zone_manager.own_main_zone.center_location
+        zone: Zone = self.zone_manager.own_main_zone
         zone_color = ZoneArea.OwnMainZone
         self.fill_zone(zone.center_location, zone_color)
 
@@ -564,7 +588,7 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
                         tester.create_block(gates, (3, 3))
                         tester.create_block(zealot, (1, 1))
                         path = tester.find_path(
-                            self.zone_manager.expansion_zones[1].center_location, self.knowledge.enemy_start_location
+                            self.zone_manager.expansion_zones[1].center_location, self.zone_manager.enemy_start_location
                         )
 
                         if path[1] > 0:
@@ -623,10 +647,10 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
         assert isinstance(pylon, Point2)
         assert isinstance(zealot, Point2)
 
-        self.zealot_position = zealot
+        self._zealot = zealot
 
-        self.wall_buildings = gates
-        self.wall_pylons = [pylon]
+        self._wall3x3 = gates
+        self._wall2x2 = [pylon]
 
         self.fill_and_save(pylon, BlockerType.Building4x4, BuildArea.BuildingPadding)
         for gate in gates:

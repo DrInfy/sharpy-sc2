@@ -1,42 +1,51 @@
 from typing import Optional
 
-from sc2 import AbilityId, UnitTypeId
+from sc2 import AbilityId, UnitTypeId, Race
 
 import sc2
 from sharpy.combat import MoveType
-from sharpy.interfaces import IGatherPointSolver
+from sharpy.interfaces import IGatherPointSolver, IBuildingSolver, IEnemyUnitsManager
 from sharpy.plans.acts import ActBase
 from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.managers.roles import UnitTask
-from sharpy.knowledges import Knowledge
+from sharpy.knowledges import SkeletonKnowledge
 from sharpy.managers import UnitValue
 
 
 class PlanZoneGather(ActBase):
     gather_point_solver: IGatherPointSolver
+    building_solver: IBuildingSolver
+    enemy_units_manager: IEnemyUnitsManager
 
     def __init__(self):
         super().__init__()
 
         self.gather_set: sc2.List[int] = []
         self.blocker_tag: Optional[int] = None
+        self.current_gather_point = Point2((0, 0))
+        self.close_gates = True
 
     @property
     def gather_point(self) -> Point2:
-        return self.gather_point_solver.gather_point
+        return self.current_gather_point_solver.gather_point
 
-    async def start(self, knowledge: Knowledge):
+    async def start(self, knowledge: SkeletonKnowledge):
         await super().start(knowledge)
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
+
         self.my_race = self.ai.race
         self.defender_types: list
         self.knowledge = knowledge
         self.unit_values: UnitValue = knowledge.unit_values
-        self.gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
+        self.base_ramp = self.zone_manager.expansion_zones[0].ramp
+        self.close_gates = self.ai.enemy_race == Race.Zerg and self.ai.enemy_race != Race.Zerg
+        self.current_gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
 
     def should_hold_position(self, target_position: Point2) -> bool:
-        close_enemies = self.knowledge.known_enemy_units.filter(lambda u: not u.is_flying and not u.is_structure)
+        close_enemies = self.ai.all_enemy_units.filter(lambda u: not u.is_flying and not u.is_structure)
         if close_enemies.exists:
             enemy_near = close_enemies.closest_distance_to(target_position) < 7
             if not enemy_near:
@@ -54,9 +63,9 @@ class PlanZoneGather(ActBase):
 
     async def execute(self) -> bool:
         unit: Unit
-        if self.gather_point != self.knowledge.gather_point:
+        if self.current_gather_point != self.gather_point:
             self.gather_set.clear()
-            self.gather_point = self.knowledge.gather_point
+            self.current_gather_point = self.gather_point
 
         unit: Unit
         for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
@@ -64,7 +73,7 @@ class PlanZoneGather(ActBase):
         ):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
-            pos = pos.towards(self.knowledge.gather_point, 3)
+            pos = pos.towards(self.current_gather_point, 3)
             self.do(unit(sc2.AbilityId.RALLY_BUILDING, pos))
             self.gather_set.append(unit.tag)
 
@@ -74,20 +83,29 @@ class PlanZoneGather(ActBase):
         units.extend(self.roles.idle)
 
         for unit in units:
-            if self.knowledge.should_attack(unit):
-                d2 = unit.position.distance_to(self.gather_point)
+            if self.unit_values.should_attack(unit):
+                d2 = unit.position.distance_to(self.current_gather_point)
                 if d2 > 6.5:
                     self.combat.add_unit(unit)
 
-        self.combat.execute(self.gather_point, MoveType.Assault)
+        self.combat.execute(self.current_gather_point, MoveType.Assault)
         return True  # Always non blocking
 
+    def update_gates(self):
+        if self.close_gates:
+            lings = self.enemy_units_manager.unit_count(UnitTypeId.ZERGLING)
+            if (
+                self.enemy_units_manager.unit_count(UnitTypeId.ROACH) > lings
+                or self.enemy_units_manager.unit_count(UnitTypeId.HYDRALISK) > lings
+            ):
+                self.close_gates = False
+
     async def manage_blocker(self):
-        target_position = self.knowledge.gate_keeper_position
+        target_position = self.building_solver.zealot
         if target_position is not None:
             if self.blocker_tag is not None:
                 unit = self.cache.by_tag(self.blocker_tag)
-                if unit is not None and self.knowledge.close_gates:
+                if unit is not None and self.close_gates:
                     self.roles.set_task(UnitTask.Reserved, unit)
 
                     if unit.type_id in {UnitTypeId.STALKER, UnitTypeId.IMMORTAL} and self.cache.own(UnitTypeId.ZEALOT):
@@ -103,18 +121,15 @@ class PlanZoneGather(ActBase):
                     if self.should_hold_position(target_position):
                         if unit.distance_to(target_position) < 0.2:
                             self.do(unit.hold_position())
-                        elif (
-                            self.knowledge.known_enemy_units_mobile.exists
-                            and self.knowledge.known_enemy_units_mobile.closest_distance_to(unit) < 2
-                        ):
+                        elif self.ai.enemy_units.exists and self.ai.enemy_units.closest_distance_to(unit) < 2:
                             self.do(unit.attack(target_position))
                         else:
                             self.do(unit.move(target_position))
                     else:
-                        if self.knowledge.natural_wall:
+                        if self.natural_wall:
                             chill_position = target_position
                         else:
-                            top_center = self.knowledge.base_ramp.top_center
+                            top_center = self.base_ramp.top_center
                             chill_position = target_position.towards(top_center, -1)
 
                         if unit.distance_to(chill_position) > 4:
@@ -124,7 +139,7 @@ class PlanZoneGather(ActBase):
                 else:
                     await self.remove_gate_keeper()
 
-            elif self.knowledge.close_gates:
+            elif self.close_gates:
                 # We need someone to block our wall.
                 unit = self.get_blocker(self.ai, target_position)
                 if unit is not None:
@@ -133,11 +148,16 @@ class PlanZoneGather(ActBase):
                     self.roles.set_task(UnitTask.Reserved, unit)
                     self.do(unit.attack(target_position))
 
+    @property
+    def natural_wall(self) -> bool:
+        natural = self.zone_manager.expansion_zones[1]
+        return natural.is_ours and natural.our_wall()
+
     async def remove_gate_keeper(self):
         if self.blocker_tag is not None:
             unit = self.cache.by_tag(self.blocker_tag)
             if unit is not None:
-                self.do(unit.attack(self.knowledge.gather_point))
+                self.do(unit.attack(self.current_gather_point))
             self.roles.clear_task(self.blocker_tag)
             self.blocker_tag = None
 
@@ -153,7 +173,7 @@ class PlanZoneGather(ActBase):
                 # It hasn't gone up the ramp yet.
                 continue
 
-            if self.knowledge.base_ramp.top_center.distance_to(unit.position) < 3.16:
+            if self.base_ramp.top_center.distance_to(unit.position) < 3.16:
                 # Enemy is probaly stuck in the ramp entrance
                 continue
             # Enemy is inside our base, remove gate keeper!

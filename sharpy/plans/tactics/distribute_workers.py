@@ -112,7 +112,7 @@ class DistributeWorkers(ActBase):
         """All gas buildings that are on a safe zone and could use more workers."""
         result = Units([], self.ai)
 
-        for zone in self.knowledge.our_zones:  # type: Zone
+        for zone in self.zone_manager.our_zones:  # type: Zone
             if zone.is_under_attack:
                 continue
 
@@ -126,7 +126,7 @@ class DistributeWorkers(ActBase):
         """All gas buildings that are on a safe zone and could use more workers."""
         result = Units([], self.ai)
 
-        for zone in self.knowledge.our_zones:  # type: Zone
+        for zone in self.zone_manager.our_zones:  # type: Zone
             if zone.is_under_attack:
                 continue
 

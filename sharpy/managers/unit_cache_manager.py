@@ -121,7 +121,7 @@ class UnitCacheManager(ManagerBase, IUnitCache):
             return units
 
         for index in self.enemy_tree.query_ball_point(np.array([position.x, position.y]), range):
-            units.append(self.knowledge.known_enemy_units[index])
+            units.append(self.ai.all_enemy_units[index])
 
         if only_targetable:
             return units.filter(lambda x: x.can_be_attacked or x.is_snapshot)

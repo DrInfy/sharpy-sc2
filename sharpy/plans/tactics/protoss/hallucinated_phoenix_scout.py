@@ -66,7 +66,7 @@ class HallucinatedPhoenixScout(ActBase):
             if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (
                 another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST
             ):
-                if self.knowledge.known_enemy_units_mobile.closer_than(15, sentry):
+                if self.ai.enemy_units.closer_than(15, sentry):
                     # Don't make combat hallucinated phoenixes1
                     continue
 

@@ -29,7 +29,7 @@ class DtPush(ActBase):
         elif self.dt_push_started:
             harash_dt = self.ai.units.find_by_tag(self.ninja_dt_tag)
             if harash_dt is not None:
-                enemy_workers = self.knowledge.known_enemy_units.of_type(
+                enemy_workers = self.ai.all_enemy_units.of_type(
                     [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
                 )
                 if enemy_workers.exists:

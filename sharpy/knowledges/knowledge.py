@@ -189,7 +189,7 @@ class Knowledge:
 
     @property
     def gate_keeper_position(self) -> Optional[Point2]:
-        return self.building_solver.zealot_position
+        return self.building_solver._zealot
 
     @property
     def debug(self) -> bool:

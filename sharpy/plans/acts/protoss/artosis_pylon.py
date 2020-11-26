@@ -16,12 +16,12 @@ class ArtosisPylon(GridBuilding):
         buildings = self.knowledge.ai.structures
         best_count = 0
 
-        for point in self.building_solver.pylon_position:
+        for point in self.building_solver.buildings2x2:
             if buildings.closer_than(1, point):
                 continue
 
             gate_count = 0
-            for position in self.building_solver.building_position:
+            for position in self.building_solver.buildings3x3:
                 if self.building_solver.grid[position].ZoneIndex != ZoneArea.OwnMainZone:
                     # Not in main zone
                     continue

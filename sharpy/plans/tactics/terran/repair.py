@@ -14,7 +14,7 @@ class Repair(ActBase):
     async def execute(self) -> bool:
         roles: "UnitRoleManager" = self.roles
         current_repairers = []
-        for zone in self.knowledge.our_zones:
+        for zone in self.zone_manager.our_zones:
             pre_repairer = 0
             balance = zone.our_power.power - zone.assaulting_enemy_power.power
             if balance < -5:

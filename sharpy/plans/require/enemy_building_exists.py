@@ -19,7 +19,7 @@ class EnemyBuildingExists(RequireBase):
         self.count = count
 
     def check(self) -> bool:
-        enemy_count = self.knowledge.known_enemy_units(self.unit_type).amount
+        enemy_count = self.ai.all_enemy_units(self.unit_type).amount
         if enemy_count is None:
             return False
 

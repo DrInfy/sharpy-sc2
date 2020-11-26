@@ -290,7 +290,7 @@ class BuildDetector(ManagerBase):
 
         # 12 pool zerglings are at 1min 22sec or 82 sec
         # 13 pool zerglings are at 1m 27sec or 87 sec
-        if self.knowledge.known_enemy_units_mobile(UnitTypeId.ZERGLING):
+        if self.ai.enemy_units(UnitTypeId.ZERGLING):
             # todo: any kind of unit detection requires determining where they are on the map
             if self.ai.time < 92:
                 # self.print(f"Early zerglings at {self.ai.time} seconds.")

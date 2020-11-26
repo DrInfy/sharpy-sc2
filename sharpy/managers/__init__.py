@@ -19,3 +19,4 @@ from .action_issued import ActionHandler
 from .unit_value import UnitValue
 from .version_manager import VersionManager
 from .archon import ArchonManager
+from .enemy_units_manager import EnemyUnitsManager

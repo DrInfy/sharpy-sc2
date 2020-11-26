@@ -83,7 +83,7 @@ class HeatMap:
     def __stealth_update(self):
         time_change = self.ai.time - self.last_quick_update
 
-        for unit in self.knowledge.known_enemy_units:  # type: Unit
+        for unit in self.ai.all_enemy_units:  # type: Unit
             if unit.is_cloaked:
                 own_close = self.cache.own_in_range(unit.position, 12).not_flying
                 area = self.get_zone(unit.position)
@@ -101,7 +101,7 @@ class HeatMap:
         time_change = self.ai.time - self.last_update
         self.last_update = self.ai.time
 
-        for unit in self.knowledge.known_enemy_units_mobile:
+        for unit in self.ai.enemy_units:
             area = self.get_zone(unit.position)
             area.last_enemy_power.add_unit(unit)
 
