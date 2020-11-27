@@ -62,8 +62,9 @@ class BuildGas(ActBase):
                         exists = True
                         break
                 if not exists:
-                    score = geyser.vespene_contents - 0.01 * self.knowledge.own_main_zone.center_location.distance_to(
-                        geyser
+                    score = (
+                        geyser.vespene_contents
+                        - 0.01 * self.zone_manager.own_main_zone.center_location.distance_to(geyser)
                     )
                     if score > best_score:
                         self.best_gas = geyser

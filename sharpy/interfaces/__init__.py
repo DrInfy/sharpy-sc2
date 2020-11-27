@@ -6,3 +6,4 @@ from .building_solver import IBuildingSolver
 from .income_calculator import IIncomeCalculator
 from .gather_point_solver import IGatherPointSolver
 from .enemy_units_manager import IEnemyUnitsManager
+from .lost_units_manager import ILostUnitsManager

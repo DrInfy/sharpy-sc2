@@ -22,7 +22,7 @@ class WorkerCounterAttack(ActBase):
         self.gather_mf = self.solve_optimal_mineral_field()
 
     def solve_optimal_mineral_field(self) -> Unit:
-        main: Zone = self.knowledge.own_main_zone
+        main: Zone = self.zone_manager.own_main_zone
         for mf in main.mineral_fields:  # type: Unit
             if len(main.mineral_fields.closer_than(2, mf.position)) > 2:
                 return mf

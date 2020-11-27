@@ -1,5 +1,6 @@
 from typing import Tuple
 
+from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator
 from sharpy.managers import EnemyArmyPredicter
 from sharpy.managers.game_states.advantage import (
     at_least_clear_disadvantage,
@@ -46,6 +47,8 @@ class GameAnalyzer(ManagerBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        self.lost_units_manager = knowledge.get_required_manager(ILostUnitsManager)
+        self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
         self.enemy_predicter: EnemyArmyPredicter = knowledge.enemy_army_predicter
         self.our_power = ExtendedPower(self.unit_values)
         self.enemy_power: ExtendedPower = ExtendedPower(self.unit_values)
@@ -63,14 +66,14 @@ class GameAnalyzer(ManagerBase):
         self.our_power.clear()
         self.our_zones = 0
         self.enemy_zones = 0
-        our_income = self.knowledge.income_calculator.mineral_income + self.knowledge.income_calculator.gas_income
+        our_income = self.income_calculator.mineral_income + self.income_calculator.gas_income
 
         if self.knowledge.my_worker_type is None:
             # random and we haven't seen enemy race yat
             enemy_workers = 12
         else:
-            enemy_workers = self.knowledge.enemy_units_manager.enemy_worker_count
-            if not self.knowledge.enemy_main_zone.is_scouted_at_least_once:
+            enemy_workers = self.enemy_units_manager.enemy_worker_count
+            if not self.zone_manager.enemy_main_zone.is_scouted_at_least_once:
                 enemy_workers += 12
 
         mineral_fields = 0
@@ -125,7 +128,7 @@ class GameAnalyzer(ManagerBase):
 
     async def post_update(self):
         if self.debug:
-            msg = f"Our income: {self.knowledge.income_calculator.mineral_income} / {round(self.knowledge.income_calculator.gas_income)}"
+            msg = f"Our income: {self.income_calculator.mineral_income} / {round(self.income_calculator.gas_income)}"
             msg += f"\nEnemy income: {self.enemy_mineral_income} / {round(self.enemy_gas_income)}"
             msg += (
                 f"\nResources: {round(self._our_income_advantage)}+{self.our_zones - self.enemy_zones}"
@@ -292,7 +295,7 @@ class GameAnalyzer(ManagerBase):
         enemy_types: List[UnitTypeId] = []
         enemy_types_left: Dict[UnitTypeId, int] = {}
 
-        lost_data = self.knowledge.lost_units_manager.get_own_enemy_lost_units()
+        lost_data = self.lost_units_manager.get_own_enemy_lost_units()
         own_lost: Dict[UnitTypeId, List[Unit]] = lost_data[0]
         enemy_lost: Dict[UnitTypeId, List[Unit]] = lost_data[1]
 
@@ -303,7 +306,7 @@ class GameAnalyzer(ManagerBase):
             val = own_types_left.get(type_id, 0)
             own_types_left[type_id] = val + units.amount
 
-        for unit_count in self.knowledge.enemy_units_manager.enemy_composition:  # type: UnitCount
+        for unit_count in self.enemy_units_manager.enemy_composition:  # type: UnitCount
             unit_type = unit_count.enemy_type
             if unit_type not in enemy_types:
                 enemy_types.append(unit_type)

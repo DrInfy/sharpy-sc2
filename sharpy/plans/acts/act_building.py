@@ -45,7 +45,7 @@ class ActBuilding(ActBase):
 
     def get_random_build_location(self) -> Point2:
         """Calculates building position."""
-        start_point = self.knowledge.own_main_zone.center_location
+        start_point = self.zone_manager.own_main_zone.center_location
         if self.ai.townhalls.exists and self.ai.structures.amount > 8:
             start_point = self.ai.townhalls.random.position
 

@@ -1,6 +1,7 @@
 from typing import List, Dict, Tuple
 
 from sharpy.events import UnitDestroyedEvent
+from sharpy.interfaces.lost_units_manager import ILostUnitsManager
 from sharpy.managers import ManagerBase
 from sc2 import UnitTypeId, Result
 from sc2.unit import Unit
@@ -8,7 +9,7 @@ from sc2.unit import Unit
 from sharpy.managers.enemy_units_manager import ignored_types
 
 
-class LostUnitsManager(ManagerBase):
+class LostUnitsManager(ManagerBase, ILostUnitsManager):
     """Keeps track of lost units. Both ours and enemies."""
 
     def __init__(self):

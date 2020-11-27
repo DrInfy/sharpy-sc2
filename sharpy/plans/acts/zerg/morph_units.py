@@ -23,7 +23,7 @@ class MorphUnit(ActBase):
     async def execute(self) -> bool:
         target_count = self.cache.own(self.result_type).amount
         start_units: Units = self.cache.own(self.unit_type).ready.sorted_by_distance_to(
-            self.knowledge.own_main_zone.center_location
+            self.zone_manager.own_main_zone.center_location
         )
         cocoon_units = self.cache.own(self.cocoon_type)
 

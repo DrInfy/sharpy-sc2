@@ -59,7 +59,7 @@ class DarkTemplarRush(KnowledgeBot):
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 14)),
             Step(None, None, UnitExists(UnitTypeId.PYLON, 1)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 16 + 3 + 3)),
-            Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), Expand(2)),
+            Step(RequireCustom(lambda k: self.zone_manager.own_main_zone.minerals_running_low), Expand(2)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 30)),
             GridBuilding(UnitTypeId.GATEWAY, 5),
             BuildGas(3),

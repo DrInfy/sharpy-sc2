@@ -20,6 +20,7 @@ class Stalkers4Gate(SkeletonBot):
     def configure_managers(self) -> Optional[List[ManagerBase]]:
         return [
             MemoryManager(),
+            LostUnitsManager(),
             EnemyUnitsManager(),
             UnitCacheManager(),
             UnitValue(),

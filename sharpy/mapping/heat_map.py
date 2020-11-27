@@ -32,7 +32,7 @@ class HeatArea:
         for zone in zone_manager.expansion_zones:
             if zone.center_location.distance_to(self.center) < d2:
                 if ai.get_terrain_height(zone.center_location) == ai.get_terrain_height(self.center):
-                    # if zone == self.knowledge.own_main_zone:
+                    # if zone == self.zone_manager.own_main_zone:
                     #     print("MAIN ZONE")
                     self.zone = zone
 

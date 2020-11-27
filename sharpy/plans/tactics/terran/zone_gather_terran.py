@@ -28,7 +28,7 @@ class PlanZoneGatherTerran(ActBase):
         if self.gather_point != self.knowledge.gather_point:
             self.gather_set.clear()
             self.gather_point = self.knowledge.gather_point
-            main_ramp = self.knowledge.own_main_zone.ramp
+            main_ramp = self.zone_manager.own_main_zone.ramp
             if main_ramp and main_ramp.bottom_center.distance_to(self.gather_point) < 5:
                 # Nudge gather point just a slightly further
                 self.gather_point = self.gather_point.towards(main_ramp.bottom_center, -3)

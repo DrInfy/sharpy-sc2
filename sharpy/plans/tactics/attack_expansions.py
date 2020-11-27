@@ -25,7 +25,7 @@ class PlanFinishEnemy(ActBase):
         return True
 
     async def find_attack_position(self, ai):
-        main_pos = self.knowledge.own_main_zone.center_location
+        main_pos = self.zone_manager.own_main_zone.center_location
 
         target = random.choice(list(ai.expansion_locations_list))
         last_distance2 = target.distance_to(main_pos)
