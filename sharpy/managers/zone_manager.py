@@ -6,7 +6,7 @@ import sc2pathlibp
 from sc2.unit import Unit
 from sharpy import sc2math
 from sharpy.general.path import Path
-from sharpy.managers.grids import BuildGrid, GridArea, ZoneArea
+from sharpy.interfaces import IZoneManager
 from sc2.game_info import Ramp
 from sc2.units import Units
 
@@ -15,7 +15,7 @@ from sharpy.general.zone import Zone
 from sc2.position import Point2, Point3
 
 
-class ZoneManager(ManagerBase):
+class ZoneManager(ManagerBase, IZoneManager):
 
     # region Init
 

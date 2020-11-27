@@ -7,3 +7,4 @@ from .income_calculator import IIncomeCalculator
 from .gather_point_solver import IGatherPointSolver
 from .enemy_units_manager import IEnemyUnitsManager
 from .lost_units_manager import ILostUnitsManager
+from .zone_manager import IZoneManager
