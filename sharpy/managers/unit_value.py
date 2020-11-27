@@ -113,6 +113,7 @@ class UnitData:
 
 
 class UnitValue(ManagerBase, IUnitValues):
+    _my_worker_type: UnitTypeId
     worker_types = {UnitTypeId.SCV, UnitTypeId.MULE, UnitTypeId.DRONE, UnitTypeId.PROBE}
 
     gate_types = {
@@ -183,6 +184,7 @@ class UnitValue(ManagerBase, IUnitValues):
         # By storing data in the instance, can skip import conflicts.
         super().__init__()
         self.combat_ignore = {UnitTypeId.OVERLORD, UnitTypeId.LARVA} | self.not_really_structure
+        self._enemy_worker_type: Optional[UnitTypeId] = None
         self.init_range_dicts()
 
         self.unit_data = {
@@ -399,6 +401,16 @@ class UnitValue(ManagerBase, IUnitValues):
             if UnitFeature.Detector in unit_data.features:
                 self.detectors.append(unit_data_key)
 
+    @property
+    def enemy_worker_type(self) -> Optional[UnitTypeId]:
+        if self._enemy_worker_type is None:
+            self._enemy_worker_type = self.get_worker_type(self.ai.enemy_race)
+        return self._enemy_worker_type
+
+    @property
+    def my_worker_type(self) -> Optional[UnitTypeId]:
+        return self._my_worker_type
+
     def init_range_dicts(self):
         self._ground_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
             UnitTypeId.RAVEN: lambda u: 9,
@@ -452,6 +464,10 @@ class UnitValue(ManagerBase, IUnitValues):
         self._ground_range_dict[UnitTypeId.COLOSSUS] = colossus_range
         self._ground_range_dict[UnitTypeId.CYCLONE] = cyclone_range
         self._air_range_dict[UnitTypeId.CYCLONE] = cyclone_range
+
+    async def start(self, knowledge: "SkeletonKnowledge"):
+        await super().start(knowledge)
+        self._my_worker_type = self.get_worker_type(knowledge.ai.race)
 
     async def update(self):
         pass

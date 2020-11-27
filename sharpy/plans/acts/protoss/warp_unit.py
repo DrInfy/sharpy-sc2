@@ -2,7 +2,7 @@ import warnings
 
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
-from sharpy.interfaces import IGatherPointSolver
+from sharpy.interfaces import IGatherPointSolver, IZoneManager
 
 from sharpy.managers.roles import UnitTask
 from sc2.units import Units
@@ -13,6 +13,7 @@ class WarpUnit(ActBase):
     """Use Warp Gates (Protoss) to build units."""
 
     gather_point_solver: IGatherPointSolver
+    zone_manager: IZoneManager
 
     def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
@@ -28,7 +29,7 @@ class WarpUnit(ActBase):
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
-        # self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
 
     @property
     def is_done(self) -> bool:

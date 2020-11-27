@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional
 
+from sharpy.interfaces import IGatherPointSolver, IZoneManager, IEnemyUnitsManager
 from sharpy.managers import GameAnalyzer
 from sharpy.plans.acts import ActBase
 from sharpy.managers.game_states.advantage import (
@@ -22,6 +23,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sharpy.managers import *
+    from sharpy.knowledges import SkeletonKnowledge
 
 
 ENEMY_TOTAL_POWER_MULTIPLIER = 1.2
@@ -43,6 +45,10 @@ class AttackStatus(Enum):
 
 
 class PlanZoneAttack(ActBase):
+    gather_point_solver: IGatherPointSolver
+    zone_manager: IZoneManager
+    enemy_units_manager: IEnemyUnitsManager
+
     DISTANCE_TO_INCLUDE = 18
     DISTANCE2_TO_INCLUDE = 18 * 18
     RETREAT_POWER_PERCENTAGE = 0.8
@@ -57,11 +63,14 @@ class PlanZoneAttack(ActBase):
         self.attack_on_advantage = True
         self.status = AttackStatus.NotActive
 
-    async def start(self, knowledge: Knowledge):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
         self.pather: PathingManager = self.knowledge.pathing_manager
         self.game_analyzer: GameAnalyzer = self.knowledge.get_manager(GameAnalyzer)
+        self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
 
     async def execute(self) -> bool:
         target = self._get_target()
@@ -81,7 +90,7 @@ class PlanZoneAttack(ActBase):
 
             for unit in attacking_units:
                 pos: Point2 = unit.position
-                at_gather_point = pos.distance_to(self.knowledge.gather_point) < RETREAT_STOP_DISTANCE_SQUARED
+                at_gather_point = pos.distance_to(self.gather_point_solver.gather_point) < RETREAT_STOP_DISTANCE_SQUARED
                 if at_gather_point:
                     # self.print(f"Unit {unit.type_id} {unit.tag} has reached gather point. Stopping retreat.")
                     self.roles.clear_task(unit)
@@ -90,7 +99,7 @@ class PlanZoneAttack(ActBase):
                 else:
                     self.combat.add_unit(unit)
 
-            self.combat.execute(self.knowledge.gather_point, MoveType.DefensiveRetreat)
+            self.combat.execute(self.gather_point_solver.gather_point, MoveType.DefensiveRetreat)
 
             if self.attack_retreat_started + RETREAT_TIME < self.ai.time:
                 # Stop retreat next turn
@@ -99,7 +108,7 @@ class PlanZoneAttack(ActBase):
             self.roles.attack_ended()
             attackers = Units([], self.ai)
             for unit in self.roles.free_units:
-                if self.knowledge.should_attack(unit):
+                if self.unit_values.should_attack(unit):
                     attackers.append(unit)
 
             own_power = self.unit_values.calc_total_power(attackers)
@@ -149,7 +158,7 @@ class PlanZoneAttack(ActBase):
         self.roles.refresh_tasks(already_attacking)
 
         for unit in self.roles.free_units:
-            if self.knowledge.should_attack(unit):
+            if self.unit_values.should_attack(unit):
                 if not self.roles.is_in_role(UnitTask.Attacking, unit) and (
                     unit.distance_to(center) > 20 or unit.distance_to(front_runner) > 20
                 ):
@@ -192,7 +201,7 @@ class PlanZoneAttack(ActBase):
                 # Our army is smaller but economy is better, focus on defence!
                 return False
 
-        enemy_total_power: ExtendedPower = self.knowledge.enemy_units_manager.enemy_total_power
+        enemy_total_power: ExtendedPower = self.enemy_units_manager.enemy_total_power
         enemy_total_power.multiply(ENEMY_TOTAL_POWER_MULTIPLIER)
         multiplier = ENEMY_TOTAL_POWER_MULTIPLIER
 
@@ -236,8 +245,8 @@ class PlanZoneAttack(ActBase):
     def _should_retreat(self, fight_center: Point2, already_attacking: Units) -> AttackStatus:
         enemy_local_units: Units = self.ai.all_enemy_units.closer_than(PlanZoneAttack.DISTANCE_TO_INCLUDE, fight_center)
 
-        if self.knowledge.enemy_worker_type is not None:
-            enemy_local_units = enemy_local_units.exclude_type(self.knowledge.enemy_worker_type)
+        if self.unit_values.enemy_worker_type is not None:
+            enemy_local_units = enemy_local_units.exclude_type(self.unit_values.enemy_worker_type)
 
         own_local_power = self.unit_values.calc_total_power(already_attacking)
         enemy_local_power = self.unit_values.calc_total_power(enemy_local_units)
@@ -296,7 +305,7 @@ class PlanZoneAttack(ActBase):
 
         best_zone = None
         best_score = 100000
-        start_position = self.knowledge.gather_point
+        start_position = self.gather_point_solver.gather_point
         if self.roles.attacking_units:
             start_position = self.roles.attacking_units.center
 

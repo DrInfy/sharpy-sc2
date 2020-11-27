@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABC
 from typing import List, Tuple, Dict, Optional
 
-from sc2 import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
@@ -9,6 +8,11 @@ from sharpy.general.zone import Zone
 
 
 class IZoneManager(ABC):
+    @property
+    @abstractmethod
+    def expansion_zones(self) -> List[Zone]:
+        pass
+
     @property
     @abstractmethod
     def unscouted_zones(self) -> List[Zone]:

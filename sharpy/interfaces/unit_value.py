@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Union
+from typing import Union, Optional
 
 from sc2 import UnitTypeId
 from sc2.unit import Unit
@@ -8,6 +8,11 @@ from sharpy.general.extended_power import ExtendedPower
 
 
 class IUnitValues(ABC):
+    @property
+    @abstractmethod
+    def enemy_worker_type(self) -> Optional[UnitTypeId]:
+        pass
+
     @abstractmethod
     def building_start_time(self, game_time: float, type_id: UnitTypeId, build_progress: float):
         """Calculates when building construction started. This can be used to eg. detect early rushes."""
@@ -93,4 +98,9 @@ class IUnitValues(ABC):
     @abstractmethod
     def calc_total_power(self, units: Units) -> ExtendedPower:
         """Calculates total power for the given units (either own or enemy)."""
+        pass
+
+    @abstractmethod
+    def should_attack(self, unit: Unit):
+        """ Determines if the unit is something that should attack. """
         pass
