@@ -6,7 +6,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 HALLUCINATION_ENERGY_COST = 75
 

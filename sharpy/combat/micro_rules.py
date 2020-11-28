@@ -17,7 +17,7 @@ from .default_micro_methods import DefaultMicroMethods
 
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
-    from sharpy.managers.group_combat_manager import GroupCombatManager
+    from sharpy.combat.group_combat_manager import GroupCombatManager
 
 
 class MicroRules(Component):

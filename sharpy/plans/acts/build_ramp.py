@@ -6,7 +6,7 @@ from sc2.unit import Unit
 from sharpy.general.extended_ramp import ExtendedRamp, RampPosition
 
 # Build a building on a ramp
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 
 class ActBuildingRamp(ActBuilding):

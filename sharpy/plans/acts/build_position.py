@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sc2 import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit

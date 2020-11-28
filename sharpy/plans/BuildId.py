@@ -1,7 +1,7 @@
 from typing import Union
 from sc2 import UnitTypeId, Race
 from sc2.constants import ALL_GAS
-from sharpy.managers.unit_value import buildings_5x5, buildings_3x3, buildings_2x2, BUILDING_IDS
+from sharpy.managers.core.unit_value import buildings_5x5, BUILDING_IDS
 from sharpy.plans.acts import ActBase, GridBuilding, Expand, Workers, BuildGas
 from sharpy.plans.acts.protoss import ProtossUnit
 from sharpy.plans.acts.terran import TerranUnit

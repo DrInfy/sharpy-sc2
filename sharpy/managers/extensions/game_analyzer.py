@@ -1,22 +1,20 @@
-from typing import Tuple
-
 from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator, IGameAnalyzer, IEnemyUnitsManager
 from sharpy.managers import EnemyArmyPredicter
-from sharpy.managers.game_states.advantage import (
+from sharpy.managers.extensions.game_states.advantage import (
     at_least_clear_disadvantage,
     at_least_clear_advantage,
     at_least_advantage,
     at_least_small_disadvantage,
     at_least_small_advantage,
 )
-from sharpy.managers.income_calculator import GAS_MINE_RATE
+from sharpy.managers.core.income_calculator import GAS_MINE_RATE
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.tools import IntervalFunc
 from sharpy.unit_count import UnitCount
 from sc2 import UnitTypeId, Result, List, Dict
 
-from sharpy.managers.manager_base import ManagerBase
-from sharpy.managers.game_states import *
+from sharpy.managers.core.manager_base import ManagerBase
+from sharpy.managers.extensions.game_states import *
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units

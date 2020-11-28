@@ -1,5 +1,5 @@
 from sc2.unit_command import UnitCommand
-from .manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sc2 import BotAI, List, Set, AbilityId
 from sc2.unit import Unit
 

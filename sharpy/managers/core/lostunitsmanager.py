@@ -6,7 +6,7 @@ from sharpy.managers import ManagerBase
 from sc2 import UnitTypeId, Result
 from sc2.unit import Unit
 
-from sharpy.managers.enemy_units_manager import ignored_types
+from sharpy.managers.core.enemy_units_manager import ignored_types
 
 
 class LostUnitsManager(ManagerBase, ILostUnitsManager):

@@ -5,7 +5,7 @@ from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
 
 import sc2
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.utils import map_to_point2s_center
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.position import Point2

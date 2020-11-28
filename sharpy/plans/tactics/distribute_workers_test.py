@@ -1,27 +1,22 @@
 import math
 import sys
 from random import randint
-from typing import Dict, Optional, Union
+from typing import Optional, Union
 
-import numpy
 import pytest
 from unittest import mock
 
 from sc2 import UnitTypeId, Race, BotAI, AbilityId
 from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE, IS_MINE
-from sc2.distances import DistanceCalculation
-from sc2.ids.upgrade_id import UpgradeId
-from sc2.pixel_map import PixelMap
 from sc2.position import Point2
 from sc2.unit import Unit
-from sc2.units import Units
 
 from .distribute_workers import DistributeWorkers
 from ...general.zone import Zone
-from ...knowledges import Knowledge, KnowledgeBot, SkeletonKnowledge
+from ...knowledges import SkeletonKnowledge
 from ...managers import UnitCacheManager, UnitRoleManager, ZoneManager, PathingManager
-from ...managers.roles import UnitTask
-from ...managers.unit_value import BUILDING_IDS, UnitValue
+from sharpy.managers.core.roles import UnitTask
+from sharpy.managers.core.unit_value import BUILDING_IDS, UnitValue
 
 MAIN_POINT = Point2((10, 10))
 NATURAL_POINT = Point2((10, 60))

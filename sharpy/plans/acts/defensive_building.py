@@ -3,7 +3,7 @@ from math import floor
 from typing import Optional
 
 from sc2.unit import Unit
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.general.zone import Zone
 from sc2 import UnitTypeId, Race

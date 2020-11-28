@@ -1,10 +1,10 @@
 import random
-from typing import List, Optional, Dict, Set
+from typing import Optional, Dict, Set
 import numpy as np
 
 from sc2.units import Units
 from sharpy.managers import BuildingSolver
-from sharpy.managers.grids import BlockerType, BuildArea
+from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2

@@ -4,7 +4,7 @@ from sc2.units import Units
 from sharpy.combat import MoveType
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 import sc2
 from sc2 import UnitTypeId

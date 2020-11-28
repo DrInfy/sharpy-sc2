@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 from sc2.unit import Unit
 from sharpy.plans.acts import ActBase
 from sharpy.mapping.heat_map import HeatMap
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId
 from sc2.position import Point2

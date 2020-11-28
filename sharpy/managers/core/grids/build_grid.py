@@ -2,18 +2,17 @@ import string
 from typing import TYPE_CHECKING
 
 from s2clientprotocol.debug_pb2 import Color
-from sc2 import UnitTypeId
 
 from sharpy import sc2math
-from sharpy.managers.grids.build_area import BuildArea
-from sharpy.managers.grids.cliff import Cliff
+from sharpy.managers.core.grids import BuildArea
+from sharpy.managers.core.grids.cliff import Cliff
 from sc2.pixel_map import PixelMap
 from sharpy.general.rocks import *
 from sc2.game_info import GameInfo
 
 import sc2
-from sharpy.managers.grids import Grid, GridArea, BlockerType
-from sharpy.managers.grids.zone_area import ZoneArea
+from sharpy.managers.core.grids import Grid, GridArea, BlockerType
+from sharpy.managers.core.grids.zone_area import ZoneArea
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
 

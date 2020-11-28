@@ -2,9 +2,8 @@ from enum import Enum
 from typing import Optional
 
 from sharpy.interfaces import IGatherPointSolver, IZoneManager, IEnemyUnitsManager
-from sharpy.managers import GameAnalyzer
 from sharpy.plans.acts import ActBase
-from sharpy.managers.game_states.advantage import (
+from sharpy.managers.extensions.game_states.advantage import (
     at_least_small_disadvantage,
     at_least_small_advantage,
     at_least_clear_advantage,
@@ -15,8 +14,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
-from sharpy.knowledges import Knowledge
+from sharpy.managers.core.roles import UnitTask
 from sharpy.combat import MoveType
 from sharpy.general.extended_power import ExtendedPower
 from typing import TYPE_CHECKING

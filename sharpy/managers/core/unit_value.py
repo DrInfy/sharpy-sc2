@@ -6,10 +6,10 @@ from sc2 import Race, race_townhalls
 from sc2.constants import *
 from sc2.unit import Unit
 from sc2.units import Units
-from . import ManagerBase
+from sharpy.managers import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.interfaces import IUnitValues
-from .version_manager import GameVersion
+from sharpy.managers.core.version_manager import GameVersion
 
 buildings_2x2 = {
     UnitTypeId.SUPPLYDEPOT,

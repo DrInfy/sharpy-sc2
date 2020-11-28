@@ -1,6 +1,4 @@
-from sc2 import UnitTypeId
-
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sc2.unit import Unit
 
 MINERAL_MINE_RATE = 1  # this isn't needed in calculations

@@ -1,10 +1,8 @@
-import warnings
-
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 from sharpy.interfaces import IGatherPointSolver, IZoneManager
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sc2.units import Units
 from sharpy.plans.acts.act_base import ActBase
 

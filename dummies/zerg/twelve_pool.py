@@ -1,13 +1,13 @@
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.zerg import *
-from sharpy.plans import BuildOrder, Step, StepBuildGas
+from sharpy.plans import BuildOrder, Step
 from sharpy.knowledges import KnowledgeBot
-from sc2 import BotAI, UnitTypeId, AbilityId, Race
+from sc2 import UnitTypeId, Race
 from sc2.units import Units
 
 

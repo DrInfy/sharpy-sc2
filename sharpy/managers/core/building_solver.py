@@ -14,7 +14,7 @@ from sc2 import Race
 
 from sc2.client import Client
 
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sc2.position import Point2, Point3
 from sharpy.general.extended_ramp import RampPosition
 

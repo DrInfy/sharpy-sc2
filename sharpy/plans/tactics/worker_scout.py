@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sharpy.constants import Constants
 from sharpy.knowledges import Knowledge
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.sc2math import points_on_circumference_sorted
 from sharpy.tools import IntervalFunc

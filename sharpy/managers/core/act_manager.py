@@ -1,11 +1,14 @@
 from sharpy.managers import ManagerBase
-from sharpy.plans.acts import ActBase
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sharpy.plans.acts import ActBase
 
 
 class ActManager(ManagerBase):
-    def __init__(self, act: ActBase) -> None:
+    def __init__(self, act: "ActBase") -> None:
         super().__init__()
-        self._act: ActBase = act
+        self._act: "ActBase" = act
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)

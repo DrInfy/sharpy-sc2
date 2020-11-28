@@ -1,6 +1,6 @@
 from typing import List
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.ids.buff_id import BuffId

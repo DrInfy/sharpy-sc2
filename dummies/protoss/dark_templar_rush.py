@@ -1,4 +1,4 @@
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans.protoss import *
 from sc2 import BotAI, UnitTypeId, AbilityId, Race

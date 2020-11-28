@@ -1,12 +1,12 @@
 import enum
 import sys
-from typing import Dict, List, Optional, Set, TYPE_CHECKING
-from sharpy.managers.manager_base import ManagerBase
+from typing import Dict, List, TYPE_CHECKING
+from sharpy.managers.core.manager_base import ManagerBase
 
 if TYPE_CHECKING:
     from sharpy.managers import *
 
-from sc2 import UnitTypeId, AbilityId, Race
+from sc2 import UnitTypeId, Race
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units

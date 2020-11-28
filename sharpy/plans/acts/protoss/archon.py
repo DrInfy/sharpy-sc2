@@ -5,7 +5,7 @@ from sharpy.events import UnitDestroyedEvent
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts.act_base import ActBase
 
 

@@ -1,8 +1,8 @@
 import random
-from typing import List, Optional
+from typing import Optional
 
 from sharpy.managers import BuildingSolver
-from sharpy.managers.grids import BlockerType, BuildArea
+from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2

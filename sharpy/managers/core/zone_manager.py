@@ -10,7 +10,7 @@ from sharpy.interfaces import IZoneManager
 from sc2.game_info import Ramp
 from sc2.units import Units
 
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.general.zone import Zone
 from sc2.position import Point2, Point3
 

@@ -1,16 +1,14 @@
-import json
 import os
 from typing import Optional
-from uuid import uuid4
 
 import jsonpickle
 from datetime import datetime
 from pathlib import Path
 
 from sc2 import Result, Tuple
-from sharpy.managers.build_detector import EnemyRushBuild, EnemyMacroBuild
+from sharpy.managers.extensions.build_detector import EnemyRushBuild, EnemyMacroBuild
 
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.tools import IntervalFunc
 from sharpy.tools.opponent_data import GameResult, OpponentData
 

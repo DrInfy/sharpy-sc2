@@ -5,7 +5,7 @@ from sharpy.managers import UnitRoleManager
 from sc2 import UnitTypeId
 from sc2.unit import Unit
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 
 

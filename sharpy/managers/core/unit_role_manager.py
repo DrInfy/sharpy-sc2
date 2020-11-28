@@ -1,6 +1,6 @@
 from typing import List, Union, Set, Iterable, Optional
 
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sc2 import UnitTypeId, Race
 from sc2.client import Client
 from sc2.position import Point2
@@ -8,8 +8,8 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.roles import UnitTask
-from sharpy.managers.roles.units_in_role import UnitsInRole
+from sharpy.managers.core.roles import UnitTask
+from sharpy.managers.core.roles import UnitsInRole
 
 
 class UnitRoleManager(ManagerBase):

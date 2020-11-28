@@ -1,11 +1,11 @@
 from typing import Dict, Optional, List
 
-from sharpy.managers.manager_base import ManagerBase
-from sharpy.managers.enemy_units_manager import EnemyUnitsManager
+from sharpy.managers.core.manager_base import ManagerBase
+from sharpy.managers.core.enemy_units_manager import EnemyUnitsManager
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.predict.composition_guesser import CompositionGuesser
+from sharpy.managers.extensions.predict.composition_guesser import CompositionGuesser
 from sharpy.unit_count import UnitCount
-from sharpy.managers.lostunitsmanager import LostUnitsManager
+from sharpy.managers.core.lostunitsmanager import LostUnitsManager
 
 from sharpy.tools.interval_func import IntervalFuncAsync
 from sc2 import UnitTypeId, Race

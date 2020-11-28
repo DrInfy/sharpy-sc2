@@ -1,7 +1,7 @@
 # Starts all out attack with workers on specified unit supply that is not workers
 import random
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sc2.unit import Unit
 

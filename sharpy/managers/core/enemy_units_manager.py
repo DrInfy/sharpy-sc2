@@ -2,14 +2,14 @@ from typing import Dict, Set, List, KeysView
 
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces import IEnemyUnitsManager
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.unit_count import UnitCount
 from sc2 import UnitTypeId, Result
 from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.unit_value import UnitValue, REVERSE_MORPHS_DICT
+from sharpy.managers.core.unit_value import UnitValue, REVERSE_MORPHS_DICT
 
 
 class EnemyUnitsManager(ManagerBase, IEnemyUnitsManager):

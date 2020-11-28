@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional, Set
 
-from sharpy.managers.manager_base import ManagerBase
+from sharpy.managers.core.manager_base import ManagerBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 from sc2.units import Units

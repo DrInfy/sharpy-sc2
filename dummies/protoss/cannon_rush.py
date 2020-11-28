@@ -8,8 +8,8 @@ from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.managers import ManagerBase
-from sharpy.managers.building_solver import WallType
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.building_solver import WallType
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *

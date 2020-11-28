@@ -1,9 +1,9 @@
 from typing import List
 
 from sc2.position import Point2
-from sharpy.managers.build_detector import EnemyRushBuild
+from sharpy.managers.extensions.build_detector import EnemyRushBuild
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
 
 from sc2.unit import Unit

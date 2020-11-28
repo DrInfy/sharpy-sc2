@@ -9,7 +9,7 @@ from sharpy.combat import CombatUnits, MoveType, MicroStep, Action
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sharpy.managers.group_combat_manager import GroupCombatManager
+    from sharpy.combat.group_combat_manager import GroupCombatManager
 
 ignored_types = {UnitTypeId.LARVA, UnitTypeId.EGG}
 

@@ -9,7 +9,7 @@ from sc2.units import Units
 
 from sharpy.general.zone import Zone
 from sharpy.combat import MoveType, MicroRules
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 
 class DoubleAdeptScout(ActBase):

@@ -1,14 +1,13 @@
-from typing import List, Dict, Optional
+from typing import Optional
 
 from sharpy.knowledges import Knowledge
 from sharpy.plans.acts import ActBase
-from sharpy.managers import CooldownManager, GroupCombatManager
-from sc2 import UnitTypeId, AbilityId
-from sc2.position import Point2
+from sharpy.managers import GroupCombatManager
+from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 
 class DarkTemplarAttack(ActBase):

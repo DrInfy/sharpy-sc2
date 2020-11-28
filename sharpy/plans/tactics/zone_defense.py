@@ -7,7 +7,7 @@ from sc2.unit import Unit
 
 from sharpy.knowledges import Knowledge
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.general.extended_power import ExtendedPower
 from sc2.units import Units
 

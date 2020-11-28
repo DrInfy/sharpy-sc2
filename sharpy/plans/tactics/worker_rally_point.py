@@ -1,9 +1,6 @@
-from typing import Optional, List
 from sharpy.plans.acts import ActBase
 
-from sharpy.managers.roles import UnitTask
-from sc2 import UnitTypeId, Race, AbilityId
-from sc2.unit import Unit
+from sc2 import Race, AbilityId
 from sharpy.tools import IntervalFunc
 
 

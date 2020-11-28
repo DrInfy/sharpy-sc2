@@ -1,21 +1,16 @@
-import string
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
 import sc2
 from sc2.ids.buff_id import BuffId
 from sharpy.general.component import Component
-from sharpy.managers import UnitValue
-from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
 from sc2 import AbilityId, Race, UnitTypeId
-from sc2.client import Client
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
-from sc2.units import Units
 from sc2.constants import EQUIVALENTS_FOR_TECH_PROGRESS
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 build_commands = {
     # Protoss

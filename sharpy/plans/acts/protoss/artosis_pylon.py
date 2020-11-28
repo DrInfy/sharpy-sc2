@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sharpy.managers.grids import ZoneArea
+from sharpy.managers.core.grids import ZoneArea
 from sharpy.plans.acts.grid_building import GridBuilding
 from sharpy.constants import Constants
 from sc2 import UnitTypeId

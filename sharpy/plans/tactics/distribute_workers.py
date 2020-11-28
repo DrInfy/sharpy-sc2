@@ -1,15 +1,14 @@
-import warnings
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 
 from sc2.constants import IS_COLLECTING, ALL_GAS
 from sharpy.managers import UnitRoleManager
-from sharpy.managers.unit_value import buildings_5x5
+from sharpy.managers.core.unit_value import buildings_5x5
 from sharpy.plans.acts import ActBase
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
-from sc2 import UnitTypeId, Race, AbilityId
+from sharpy.managers.core.roles import UnitTask
+from sc2 import AbilityId
 from sc2.unit import Unit, UnitOrder
 
 from sharpy.knowledges import Knowledge

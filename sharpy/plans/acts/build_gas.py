@@ -1,9 +1,8 @@
 from typing import Optional
 
 import sc2
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
-from sharpy.plans.require import RequireBase
 from sc2 import UnitTypeId, BotAI, Race
 from sc2.constants import ALL_GAS
 from sc2.unit import Unit
