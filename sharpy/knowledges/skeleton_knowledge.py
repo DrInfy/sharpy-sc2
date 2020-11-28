@@ -5,7 +5,7 @@ from typing import List, Optional, Callable, Type
 
 import sc2
 from sharpy.events import UnitDestroyedEvent
-from sharpy.managers import *
+from sharpy.managers.core import *
 from sharpy.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager, ILogManager, IZoneManager
 from sc2 import Race
 from sc2.constants import *

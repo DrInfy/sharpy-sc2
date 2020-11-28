@@ -4,7 +4,7 @@ from typing import Dict, Set, Deque, List
 from sc2.position import Point2
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces import IMemoryManager
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units

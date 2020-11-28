@@ -3,18 +3,21 @@ from typing import TYPE_CHECKING
 
 from s2clientprotocol.debug_pb2 import Color
 
-from sharpy import sc2math
-from sharpy.managers.core.grids import BuildArea
-from sharpy.managers.core.grids.cliff import Cliff
 from sc2.pixel_map import PixelMap
-from sharpy.general.rocks import *
 from sc2.game_info import GameInfo
 
 import sc2
-from sharpy.managers.core.grids import Grid, GridArea, BlockerType
-from sharpy.managers.core.grids.zone_area import ZoneArea
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
+
+from sharpy import sc2math
+from sharpy.general.rocks import *
+from .build_area import BuildArea
+from .cliff import Cliff
+from .grid import Grid
+from .grid_area import GridArea
+from .blocker_type import BlockerType
+from .zone_area import ZoneArea
 
 if TYPE_CHECKING:
     from sharpy.knowledges import *

@@ -1,7 +1,7 @@
 import random
 from typing import Optional
 
-from sharpy.managers import BuildingSolver
+from sharpy.managers.core import BuildingSolver
 from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId

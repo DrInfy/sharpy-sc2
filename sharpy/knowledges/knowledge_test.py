@@ -2,7 +2,7 @@ import pytest
 from unittest import mock
 
 from sharpy.knowledges import Knowledge
-from sharpy.managers import DataManager, ManagerBase
+from sharpy.managers.core import DataManager, ManagerBase
 
 
 class TestDataManager(DataManager):

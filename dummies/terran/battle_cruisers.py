@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from sharpy.knowledges import KnowledgeBot
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *

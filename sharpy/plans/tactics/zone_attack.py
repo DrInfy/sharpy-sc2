@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from sharpy.interfaces import IGatherPointSolver, IZoneManager, IEnemyUnitsManager
+from sharpy.managers.extensions import GameAnalyzer
 from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions.game_states.advantage import (
     at_least_small_disadvantage,
@@ -20,7 +21,7 @@ from sharpy.general.extended_power import ExtendedPower
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sharpy.managers import *
+    from sharpy.managers.core import *
     from sharpy.knowledges import SkeletonKnowledge
 
 
@@ -46,6 +47,7 @@ class PlanZoneAttack(ActBase):
     gather_point_solver: IGatherPointSolver
     zone_manager: IZoneManager
     enemy_units_manager: IEnemyUnitsManager
+    game_analyzer: Optional[GameAnalyzer]
 
     DISTANCE_TO_INCLUDE = 18
     DISTANCE2_TO_INCLUDE = 18 * 18

@@ -4,7 +4,7 @@ from typing import Dict, List, TYPE_CHECKING
 from sharpy.managers.core.manager_base import ManagerBase
 
 if TYPE_CHECKING:
-    from sharpy.managers import *
+    from sharpy.managers.core import *
 
 from sc2 import UnitTypeId, Race
 from sc2.position import Point2

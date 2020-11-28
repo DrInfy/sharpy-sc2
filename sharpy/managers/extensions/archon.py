@@ -1,6 +1,6 @@
 from typing import Set
 
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 
 
 class ArchonManager(ManagerBase):

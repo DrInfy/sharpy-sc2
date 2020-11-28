@@ -1,8 +1,8 @@
 from typing import Optional
 
-from sharpy.knowledges import Knowledge
+from sharpy.interfaces import ICombatManager, IZoneManager
+from sharpy.knowledges import SkeletonKnowledge
 from sharpy.plans.acts import ActBase
-from sharpy.managers import GroupCombatManager
 from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
@@ -11,16 +11,19 @@ from sharpy.managers.core.roles import UnitTask
 
 
 class DarkTemplarAttack(ActBase):
+    combat: ICombatManager
+    zone_manager: IZoneManager
+
     def __init__(self):
         self.dt_push_started = False
         self.ninja_dt_tag: Optional[int] = None
         self.attack_dt_tag: Optional[int] = None
-        self.combat: GroupCombatManager = None
         super().__init__()
 
-    async def start(self, knowledge: Knowledge):
-        self.combat = knowledge.combat_manager
-        return await super().start(knowledge)
+    async def start(self, knowledge: SkeletonKnowledge):
+        await super().start(knowledge)
+        self.combat = knowledge.get_required_manager(ICombatManager)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
 
     async def execute(self) -> bool:
         # Start dark templar attack
@@ -28,7 +31,7 @@ class DarkTemplarAttack(ActBase):
         if dts.amount >= 2 and not self.dt_push_started:
             self.dt_push_started = True
             dts = dts.random_group_of(2)
-            zone = self.knowledge.enemy_main_zone
+            zone = self.zone_manager.enemy_main_zone
             harash_dt = dts[0]
             attack_dt = dts[1]
             self.do(harash_dt.move(zone.center_location))
@@ -52,7 +55,7 @@ class DarkTemplarAttack(ActBase):
 
     async def attack_command(self, unit: Unit):
         self.combat.add_unit(unit)
-        target = self.knowledge.enemy_start_location
+        target = self.zone_manager.enemy_start_location
 
         units: Units = self.ai.all_enemy_units
         units = units.not_flying
@@ -73,8 +76,8 @@ class DarkTemplarAttack(ActBase):
                 self.do(harash_dt.attack(target))
             elif harash_dt.shield_health_percentage < 1:
                 await self.attack_command(harash_dt)
-            elif harash_dt.distance_to(self.knowledge.enemy_start_location) < 5:
+            elif harash_dt.distance_to(self.zone_manager.enemy_start_location) < 5:
                 self.roles.clear_task(harash_dt)
                 self.ninja_dt_tag = 0
             else:
-                self.do(harash_dt.move(self.knowledge.enemy_start_location))
+                self.do(harash_dt.move(self.zone_manager.enemy_start_location))

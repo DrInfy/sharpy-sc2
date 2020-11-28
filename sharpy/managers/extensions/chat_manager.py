@@ -1,6 +1,6 @@
 from typing import Optional, Callable
 
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 
 
 class ChatManager(ManagerBase):

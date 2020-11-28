@@ -12,7 +12,7 @@ from sharpy.general.component import Component
 
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge, KnowledgeBot
-    from sharpy.managers import UnitCacheManager, UnitValue
+    from sharpy.managers.core import UnitCacheManager, UnitValue
 
 
 class ManagerBase(ABC, Component):

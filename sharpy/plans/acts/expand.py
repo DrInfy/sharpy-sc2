@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sharpy.general.zone import Zone
 from sharpy.managers.core.roles import UnitTask
-from sharpy.managers import ZoneManager, UnitRoleManager
+from sharpy.managers.core import ZoneManager, UnitRoleManager
 from sharpy.interfaces import IIncomeCalculator, IGatherPointSolver
 from sc2 import UnitTypeId, Race, AbilityId, common_pb
 from sc2.unit import Unit, UnitOrder

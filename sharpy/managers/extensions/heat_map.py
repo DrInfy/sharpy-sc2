@@ -3,7 +3,9 @@ from typing import List, Optional, Tuple
 
 import sc2
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers import UnitCacheManager
+from sharpy.interfaces import IUnitCache, IUnitValues
+from sharpy.managers.core import ManagerBase
+from sharpy.managers.core import UnitCacheManager
 from sharpy.tools import IntervalFunc
 from sc2.pixel_map import PixelMap
 from sc2.position import Point2
@@ -13,10 +15,9 @@ SLOT_SIZE = 5
 
 
 class HeatArea:
-    def __init__(self, ai: sc2.BotAI, knowledge: "Knowledge", x: int, y: int, x2: int, y2: int):
-        self.ai = ai
+    def __init__(self, knowledge: "SkeletonKnowledge", x: int, y: int, x2: int, y2: int):
+        self.ai = knowledge.ai
         self.knowledge = knowledge
-        self.cache: UnitCacheManager = self.knowledge.unit_cache
         self.bottom_left_x = x
         self.bottom_left_y = y
         self.top_right_x = x2
@@ -27,11 +28,12 @@ class HeatArea:
         self.heat: float = 0
         self.stealth_heat: float = 0
         self.last_enemy_power = ExtendedPower(knowledge.unit_values)
+        zone_manager = knowledge.zone_manager
 
         d2 = 15
         for zone in zone_manager.expansion_zones:
             if zone.center_location.distance_to(self.center) < d2:
-                if ai.get_terrain_height(zone.center_location) == ai.get_terrain_height(self.center):
+                if self.ai.get_terrain_height(zone.center_location) == self.ai.get_terrain_height(self.center):
                     # if zone == self.zone_manager.own_main_zone:
                     #     print("MAIN ZONE")
                     self.zone = zone
@@ -54,13 +56,20 @@ class HeatArea:
         return self.ai.state.visibility.data_numpy[self._y, self._x] == 2
 
 
-class HeatMap:
-    def __init__(self, ai: sc2.BotAI, knowledge: "Knowledge"):
-        self.ai = ai
-        self.knowledge = knowledge
-        self.cache: UnitCacheManager = self.knowledge.unit_cache
-        self.unit_values: "UnitValue" = knowledge.unit_values
-        self.updater = IntervalFunc(ai, self.__real_update, 0.5)
+class HeatMapManager(ManagerBase):
+    cache: IUnitCache
+    unit_values: IUnitValues
+    updater: IntervalFunc
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    async def start(self, knowledge: "SkeletonKnowledge"):
+        await super().start(knowledge)
+        self.updater = IntervalFunc(knowledge.ai, self.__real_update, 0.5)
+        self.cache = knowledge.get_required_manager(IUnitCache)
+
+    def init_heat_map(self, knowledge: "SkeletonKnowledge"):
         grid: PixelMap = knowledge.ai._game_info.placement_grid
         height = grid.height
         width = grid.width
@@ -72,13 +81,16 @@ class HeatMap:
             for x in range(0, self.slots_w):
                 x2 = min(x * SLOT_SIZE + SLOT_SIZE, width - 1)
                 y2 = min(y * SLOT_SIZE + SLOT_SIZE, height - 1)
-                self.heat_areas.append(HeatArea(ai, knowledge, x * SLOT_SIZE, y * SLOT_SIZE, x2, y2))
+                self.heat_areas.append(HeatArea(knowledge, x * SLOT_SIZE, y * SLOT_SIZE, x2, y2))
         self.last_update = 0
         self.last_quick_update = 0
 
     def update(self):
         self.__stealth_update()
         self.updater.execute()
+
+    async def post_update(self):
+        pass
 
     def __stealth_update(self):
         time_change = self.ai.time - self.last_quick_update

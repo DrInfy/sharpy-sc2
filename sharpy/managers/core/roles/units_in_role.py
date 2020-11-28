@@ -1,15 +1,17 @@
-from typing import List, Union, Set
+from typing import List, Union, Set, TYPE_CHECKING
 
-from sharpy.managers import UnitCacheManager
 from sc2 import BotAI
 from sc2.unit import Unit
 from sc2.units import Units
 
 from .unit_task import UnitTask
 
+if TYPE_CHECKING:
+    from sharpy.managers.core import UnitCacheManager
+
 
 class UnitsInRole:
-    def __init__(self, task: Union[int, UnitTask], cache: UnitCacheManager, ai: BotAI):
+    def __init__(self, task: Union[int, UnitTask], cache: "UnitCacheManager", ai: BotAI):
         self.task = task
         self.units: Units = Units([], ai)
         self.tags: Set[int] = set()

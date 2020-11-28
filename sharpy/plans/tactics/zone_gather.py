@@ -11,7 +11,7 @@ from sc2.unit import Unit
 
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import SkeletonKnowledge
-from sharpy.managers import UnitValue
+from sharpy.managers.core import UnitValue
 
 
 class PlanZoneGather(ActBase):

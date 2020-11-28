@@ -3,7 +3,7 @@ from typing import List, Dict, Optional, Union
 from sharpy.combat import *
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.interfaces import ICombatManager
-from sharpy.managers import UnitCacheManager, PathingManager, ManagerBase
+from sharpy.managers.core import UnitCacheManager, PathingManager, ManagerBase
 from sharpy.combat import Action
 from sc2.units import Units
 

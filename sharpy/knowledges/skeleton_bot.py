@@ -11,7 +11,7 @@ from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
 
 
 if TYPE_CHECKING:
-    from sharpy.managers import ManagerBase
+    from sharpy.managers.core import ManagerBase
     from sc2.unit import Unit
 
 

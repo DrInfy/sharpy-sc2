@@ -1,6 +1,6 @@
 from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator, IGameAnalyzer, IEnemyUnitsManager
-from sharpy.managers import EnemyArmyPredicter
-from sharpy.managers.extensions.game_states.advantage import (
+from .enemy_army_predicter import EnemyArmyPredicter
+from .game_states.advantage import (
     at_least_clear_disadvantage,
     at_least_clear_advantage,
     at_least_advantage,

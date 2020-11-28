@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
 
 from sc2.constants import IS_COLLECTING, ALL_GAS
-from sharpy.managers import UnitRoleManager
+from sharpy.managers.core import UnitRoleManager
 from sharpy.managers.core.unit_value import buildings_5x5
 from sharpy.plans.acts import ActBase
 from sc2.ids.buff_id import BuffId

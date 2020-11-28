@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Optional
 
@@ -6,7 +7,8 @@ from datetime import datetime
 from pathlib import Path
 
 from sc2 import Result, Tuple
-from sharpy.managers.extensions.build_detector import EnemyRushBuild, EnemyMacroBuild
+from sharpy.interfaces import IGameAnalyzer
+from sharpy.managers.extensions.build_detector import EnemyRushBuild, EnemyMacroBuild, BuildDetector
 
 from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.tools import IntervalFunc
@@ -16,7 +18,8 @@ DATA_FOLDER = "data"
 
 
 class DataManager(ManagerBase):
-
+    game_analyzer: IGameAnalyzer
+    build_detector: BuildDetector
     enabled: bool
     enable_write: bool
     last_result: Optional[GameResult]
@@ -27,8 +30,13 @@ class DataManager(ManagerBase):
         self.data: Optional[OpponentData] = None
         super().__init__()
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
+        self.game_analyzer = knowledge.get_required_manager(IGameAnalyzer)
+        self.build_detector = knowledge.get_manager(BuildDetector)
+        if self.build_detector:
+            self.print(f"No BuildDecector found, enemy build data cannot be saved", False, logging.WARNING)
+
         self.enabled = self.ai.opponent_id is not None
         self.enable_write = self.knowledge.config["general"].getboolean("write_data")
         self.file_name = DATA_FOLDER + os.sep + str(self.ai.opponent_id) + ".json"
@@ -85,9 +93,9 @@ class DataManager(ManagerBase):
                     self.result.first_attacked = self.ai.time
 
         # Pre emptive write in case on end does not trigger properly
-        if self.result.result != 1 and self.knowledge.game_analyzer.predicting_victory:
+        if self.result.result != 1 and self.game_analyzer.predicting_victory:
             self.write_victory()
-        elif self.result.result != -1 and self.knowledge.game_analyzer.predicting_defeat:
+        elif self.result.result != -1 and self.game_analyzer.predicting_defeat:
             self.write_defeat()
 
     @property
@@ -113,8 +121,9 @@ class DataManager(ManagerBase):
         self.solve_write_data()
 
     def solve_write_data(self):
-        self.result.enemy_build = int(self.knowledge.build_detector.rush_build)
-        self.result.enemy_macro_build = int(self.knowledge.build_detector.macro_build)
+        if self.build_detector:
+            self.result.enemy_build = int(self.build_detector.rush_build)
+            self.result.enemy_macro_build = int(self.build_detector.macro_build)
         self.result.game_duration = self.ai.time
         self.write_results()
 

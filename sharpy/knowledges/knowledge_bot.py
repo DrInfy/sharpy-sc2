@@ -5,7 +5,7 @@ from abc import abstractmethod
 
 from sc2.units import Units
 from sharpy.knowledges import Knowledge
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from config import get_config, get_version
 from sc2 import BotAI, Result, Optional, UnitTypeId, List
 from sc2.unit import Unit

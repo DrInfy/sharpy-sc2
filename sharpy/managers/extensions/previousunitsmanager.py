@@ -1,7 +1,7 @@
 from typing import Dict
 
 from sc2.position import Point2
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sc2.unit import Unit
 
 

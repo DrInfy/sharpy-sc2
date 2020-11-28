@@ -7,7 +7,7 @@ from sc2.unit import Unit
 if TYPE_CHECKING:
     from sharpy.interfaces import *
     from sharpy.knowledges import *
-    from sharpy.managers import *
+    from sharpy.managers.core import *
 
 
 class Component:

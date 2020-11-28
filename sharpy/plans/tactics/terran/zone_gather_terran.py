@@ -5,7 +5,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.knowledges import Knowledge
-from sharpy.managers import UnitValue
+from sharpy.managers.core import UnitValue
 
 
 class PlanZoneGatherTerran(ActBase):

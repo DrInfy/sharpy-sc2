@@ -1,6 +1,6 @@
-from sharpy.managers.core.grids import BuildArea
-from sharpy.managers.core.grids.zone_area import ZoneArea
-from sharpy.managers.core.grids.cliff import Cliff
+from .build_area import BuildArea
+from .zone_area import ZoneArea
+from .cliff import Cliff
 
 
 class GridArea:

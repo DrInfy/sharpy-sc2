@@ -5,7 +5,7 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sharpy.combat import GenericMicro, Action
 from sharpy.plans.zerg import *
 
@@ -90,7 +90,7 @@ class RoachBurrowBot(KnowledgeBot):
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
         # Set the burrow roach micro
-        self.knowledge.combat_manager.default_rules.unit_micros[UnitTypeId.ROACH] = MicroBurrowRoaches()
+        self.knowledge.combat.default_rules.unit_micros[UnitTypeId.ROACH] = MicroBurrowRoaches()
         return None
 
     async def create_plan(self) -> BuildOrder:

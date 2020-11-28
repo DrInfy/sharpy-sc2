@@ -6,10 +6,8 @@ from typing import List, Optional, Callable, Type
 import sc2
 from sharpy.general.zone import Zone
 from sharpy.events import UnitDestroyedEvent
-from sharpy.managers import *
+from sharpy.managers.core import *
 from sharpy.managers.core.enemy_units_manager import EnemyUnitsManager
-from sharpy.mapping.heat_map import HeatMap
-from sharpy.mapping.map import MapInfo
 from sharpy.general.extended_ramp import ExtendedRamp
 from sc2 import Race
 from sc2.constants import *

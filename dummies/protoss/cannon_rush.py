@@ -7,7 +7,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sharpy.managers.core.building_solver import WallType
 from sharpy.managers.core.roles import UnitTask
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas

@@ -16,7 +16,7 @@ import enum
 
 if TYPE_CHECKING:
     from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
-    from sharpy.managers import ZoneManager
+    from sharpy.managers.core import ZoneManager
 
 
 class ZoneResources(enum.Enum):

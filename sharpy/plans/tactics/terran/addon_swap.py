@@ -3,7 +3,7 @@ from typing import Optional, Set, Dict, List, Callable
 
 from sc2.position import Point2, Point3
 from sc2.units import Units
-from sharpy.managers import BuildingSolver
+from sharpy.managers.core import BuildingSolver
 from sharpy.plans.acts import ActBase
 from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId, AbilityId

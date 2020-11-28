@@ -3,7 +3,7 @@ from typing import Optional, Dict, Set
 import numpy as np
 
 from sc2.units import Units
-from sharpy.managers import BuildingSolver
+from sharpy.managers.core import BuildingSolver
 from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId

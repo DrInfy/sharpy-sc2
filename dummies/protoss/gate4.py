@@ -1,8 +1,10 @@
 from typing import Optional, List
 
-from sharpy.managers import *
+from sharpy.combat.group_combat_manager import GroupCombatManager
+from sharpy.managers.core import *
 from sharpy.managers.core import ActManager, GatherPointSolver
-from sharpy.managers import EnemyUnitsManager
+from sharpy.managers.core import EnemyUnitsManager
+from sharpy.managers.extensions import MemoryManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *

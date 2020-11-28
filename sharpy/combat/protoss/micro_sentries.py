@@ -6,7 +6,7 @@ from sc2.position import Point2
 from sharpy.interfaces.building_solver import IBuildingSolver
 
 if TYPE_CHECKING:
-    from sharpy.managers import *
+    from sharpy.managers.core import *
     from sharpy.knowledges import *
 
 from sc2 import AbilityId, Race

@@ -1,6 +1,6 @@
 from sc2.position import Point2
 
-from sharpy.managers import UnitValue
+from sharpy.managers.core import UnitValue
 from .sc2math import points_on_circumference, points_on_circumference_sorted
 from sc2 import UnitTypeId
 
