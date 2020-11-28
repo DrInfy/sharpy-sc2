@@ -2,7 +2,7 @@ from typing import List, Dict, Tuple
 
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces.lost_units_manager import ILostUnitsManager
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 from sc2 import UnitTypeId, Result
 from sc2.unit import Unit
 

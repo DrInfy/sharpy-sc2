@@ -14,7 +14,7 @@ import sc2pathlibp
 from sc2pathlibp import MapType, Sc2Map
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.general.rocks import *
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 from sharpy.managers.core.unit_value import buildings_2x2, buildings_3x3, buildings_5x5
 from sharpy.sc2math import point_normalize
 

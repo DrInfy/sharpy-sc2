@@ -1,4 +1,4 @@
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

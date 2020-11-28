@@ -4,7 +4,7 @@ from typing import Set, Dict, Any
 from sc2 import UnitTypeId, AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.upgrade_id import UpgradeId
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 
 
 class GameVersion(IntEnum):

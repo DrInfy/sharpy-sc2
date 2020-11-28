@@ -6,7 +6,7 @@ from sc2 import Race, race_townhalls
 from sc2.constants import *
 from sc2.unit import Unit
 from sc2.units import Units
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.interfaces import IUnitValues
 from sharpy.managers.core.version_manager import GameVersion

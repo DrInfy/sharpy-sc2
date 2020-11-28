@@ -5,7 +5,7 @@ from typing import Any
 
 import sc2
 from sharpy.interfaces import ILogManager
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 
 root_logger = logging.getLogger()
 

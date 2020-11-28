@@ -2,7 +2,7 @@ from typing import Optional
 
 from sc2.position import Point2
 from sharpy.general.extended_ramp import ExtendedRamp
-from sharpy.managers import ManagerBase
+from .manager_base import ManagerBase
 from sharpy.interfaces import IGatherPointSolver
 
 
