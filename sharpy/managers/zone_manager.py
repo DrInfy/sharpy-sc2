@@ -57,7 +57,7 @@ class ZoneManager(ManagerBase, IZoneManager):
         self._zones_truly_sorted = self.enemy_start_location_found
         self.zone_sorted_by = self.enemy_start_location
 
-    def _path_distance(self, start: Point2, end: Point2):
+    def _path_distance(self, start: Point2, end: Point2) -> float:
         path = Path(self.knowledge.pathing_manager.path_finder_terrain.find_path(start, end))
         if path.distance > 0:
             return path.distance

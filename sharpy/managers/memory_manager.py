@@ -3,6 +3,7 @@ from typing import Dict, Set, Deque, List
 
 from sc2.position import Point2
 from sharpy.events import UnitDestroyedEvent
+from sharpy.interfaces import IMemoryManager
 from sharpy.managers import ManagerBase
 from sc2 import UnitTypeId
 from sc2.unit import Unit
@@ -11,7 +12,7 @@ from sc2.units import Units
 MAX_SNAPSHOTS_PER_UNIT = 10
 
 
-class MemoryManager(ManagerBase):
+class MemoryManager(ManagerBase, IMemoryManager):
     """Manages memories of where enemy units have last been seen.
 
     Structures are ignored because they have two tags. One for the real building and another
@@ -82,6 +83,12 @@ class MemoryManager(ManagerBase):
 
         for tag in memory_tags_to_remove:
             self._memory_units_by_tag.pop(tag)
+
+        memory_units = self.ghost_units
+
+        # Merge enemy data with memories
+        self.ai.enemy_units = self.ai.enemy_units + memory_units
+        self.ai.all_enemy_units = self.ai.all_enemy_units + memory_units
 
     async def post_update(self):
         if not self.debug:

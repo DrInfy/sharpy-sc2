@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator
+from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator, IGameAnalyzer, IEnemyUnitsManager
 from sharpy.managers import EnemyArmyPredicter
 from sharpy.managers.game_states.advantage import (
     at_least_clear_disadvantage,
@@ -22,9 +22,16 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 
-class GameAnalyzer(ManagerBase):
+class GameAnalyzer(ManagerBase, IGameAnalyzer):
+    lost_units_manager: ILostUnitsManager
+    enemy_units_manager: IEnemyUnitsManager
+    income_calculator: IIncomeCalculator
+    enemy_predicter: EnemyArmyPredicter
+
     def __init__(self):
         super().__init__()
+        self.enemy_predicter = EnemyArmyPredicter()
+
         self._enemy_air_percentage = 0
         self._our_income_advantage = 0
         self._our_predicted_army_advantage = 0
@@ -47,9 +54,12 @@ class GameAnalyzer(ManagerBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        await self.enemy_predicter.start(knowledge)
+
         self.lost_units_manager = knowledge.get_required_manager(ILostUnitsManager)
         self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
-        self.enemy_predicter: EnemyArmyPredicter = knowledge.enemy_army_predicter
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
+
         self.our_power = ExtendedPower(self.unit_values)
         self.enemy_power: ExtendedPower = ExtendedPower(self.unit_values)
         self.enemy_predict_power: ExtendedPower = ExtendedPower(self.unit_values)

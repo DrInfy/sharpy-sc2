@@ -6,11 +6,13 @@ from typing import List, Optional, Callable, Type
 import sc2
 from sharpy.events import UnitDestroyedEvent
 from sharpy.managers import *
-from sharpy.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager
+from sharpy.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager, ILogManager, IZoneManager
 from sc2 import Race
 from sc2.constants import *
 from sc2.position import Point2
 from typing import TYPE_CHECKING, TypeVar
+
+from sharpy.managers.core import LogManager
 
 if TYPE_CHECKING:
     from sharpy.knowledges import SkeletonBot
@@ -35,6 +37,7 @@ class SkeletonKnowledge:
         self.iteration: int = 0
         self.reserved_minerals: int = 0
         self.reserved_gas: int = 0
+        self.log_manager: ILogManager = LogManager()
         self.lag_handler: Optional[ILagHandler] = None
         self.unit_values: Optional[IUnitValues] = None
         self.pathing_manager: Optional[PathingManager] = None
@@ -79,6 +82,7 @@ class SkeletonKnowledge:
         @param additional_managers: Additional list of custom managers
         """
         self.managers: List[ManagerBase] = [
+            self.log_manager,
             self.version_manager,
             self.action_handler,
         ]
@@ -116,7 +120,7 @@ class SkeletonKnowledge:
         self.unit_values = self.get_manager(IUnitValues)
         self.lag_handler = self.get_manager(ILagHandler)
         self.pathing_manager = self.get_manager(PathingManager)
-        self.zone_manager = self.get_manager(ZoneManager)
+        self.zone_manager = self.get_manager(IZoneManager)
         self.cooldown_manager = self.get_manager(CooldownManager)
         self.roles = self.get_manager(UnitRoleManager)
         self.combat_manager = self.get_manager(ICombatManager)
@@ -171,7 +175,7 @@ class SkeletonKnowledge:
         :param stats: When true, stats such as time, minerals, gas, and supply are added to the log message.
         :param log_level: Optional logging level. Default is INFO.
         """
-        print(message)
+        self.log_manager.print(message, tag, stats, log_level)
 
     # region Knowledge event handlers
 
