@@ -70,7 +70,7 @@ class Knowledge:
         self.combat_manager: GroupCombatManager = GroupCombatManager()
         self.chat_manager: ChatManager = ChatManager()
         self.memory_manager: MemoryManager = MemoryManager()
-        self.action_handler: ActionHandler = ActionHandler()
+        self.action_handler: ActionManager = ActionManager()
         self.version_manager: VersionManager = VersionManager()
         self.managers: List[ManagerBase] = []
 

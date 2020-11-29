@@ -3,7 +3,7 @@ from .act_manager import ActManager
 from .gather_point_solver import GatherPointSolver
 from .log_manager import LogManager
 from .version_manager import VersionManager
-from .action_manager import ActionHandler
+from .action_manager import ActionManager
 from .unit_cache_manager import UnitCacheManager
 from .zone_manager import ZoneManager
 from .cooldown_manager import CooldownManager

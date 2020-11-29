@@ -3,6 +3,9 @@ import sys
 import time
 
 from sc2 import BotAI, UnitTypeId
+from sc2.constants import abilityid_to_unittypeid
+from sc2.game_data import Cost
+from sc2.unit_command import UnitCommand
 from sc2.units import Units
 from config import get_config, get_version
 from abc import abstractmethod
@@ -126,3 +129,69 @@ class SkeletonBot(BotAI):
                 await self.synchronous_do(townhall.train(UnitTypeId.PROBE))
             if townhall.type_id == UnitTypeId.HATCHERY:
                 await self.synchronous_do(self.units(UnitTypeId.LARVA).first.train(UnitTypeId.DRONE))
+
+    def do(
+        self,
+        action: UnitCommand,
+        subtract_cost: bool = False,
+        subtract_supply: bool = False,
+        can_afford_check: bool = False,
+        ignore_warning: bool = False,
+    ) -> bool:
+        """ Adds a unit action to the 'self.actions' list which is then executed at the end of the frame.
+
+        Training a unit::
+
+            # Train an SCV from a random idle command center
+            cc = self.townhalls.idle.random_or(None)
+            # self.townhalls can be empty or there are no idle townhalls
+            if cc and self.can_afford(UnitTypeId.SCV):
+                cc.train(UnitTypeId.SCV)
+
+        Building a building::
+
+            # Building a barracks at the main ramp, requires 150 minerals and a depot
+            worker = self.workers.random_or(None)
+            barracks_placement_position = self.main_base_ramp.barracks_correct_placement
+            if worker and self.can_afford(UnitTypeId.BARRACKS):
+                worker.build(UnitTypeId.BARRACKS, barracks_placement_position)
+
+        Moving a unit::
+
+            # Move a random worker to the center of the map
+            worker = self.workers.random_or(None)
+            # worker can be None if all are dead
+            if worker:
+                worker.move(self.game_info.map_center)
+
+        :param action:
+        :param subtract_cost:
+        :param subtract_supply:
+        :param can_afford_check:
+        """
+        if not self.unit_command_uses_self_do and isinstance(action, bool):
+            raise ValueError("You have used self.do(). This is no longer allowed in sharpy")
+
+        assert isinstance(
+            action, UnitCommand
+        ), f"Given unit command is not a command, but instead of type {type(action)}"
+
+        if subtract_cost:
+            cost: Cost = self._game_data.calculate_ability_cost(action.ability)
+            if can_afford_check and not (self.minerals >= cost.minerals and self.vespene >= cost.vespene):
+                # Dont do action if can't afford
+                return False
+            self.minerals -= cost.minerals
+            self.vespene -= cost.vespene
+
+        if subtract_supply and action.ability in abilityid_to_unittypeid:
+            unit_type = abilityid_to_unittypeid[action.ability]
+            required_supply = self.calculate_supply_cost(unit_type)
+            # Overlord has -8
+            if required_supply > 0:
+                self.supply_used += required_supply
+                self.supply_left -= required_supply
+
+        self.actions.append(action)
+        self.unit_tags_received_action.add(action.unit.tag)
+        return True

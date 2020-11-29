@@ -30,7 +30,7 @@ class SkeletonKnowledge:
         self.config: ConfigParser = None
         self._debug: bool = False
 
-        self.action_handler: ActionHandler = ActionHandler()
+        self.action_handler: ActionManager = ActionManager()
         self.version_manager: VersionManager = VersionManager()
         self.managers: List[ManagerBase] = []
 
