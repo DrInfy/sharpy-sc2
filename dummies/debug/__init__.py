@@ -5,3 +5,4 @@ from .use_neural_parasite_dummy import UseNeuralParasiteDummy
 from .detect_neural_parasite_dummy import DetectNeuralParasiteDummy
 from .idle_dummy import IdleDummy
 from .expand_bot import ExpandDummy
+from .template_skeleton_bot import TemplateSkeletonBot

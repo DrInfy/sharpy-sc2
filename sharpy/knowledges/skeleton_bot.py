@@ -60,6 +60,7 @@ class SkeletonBot(BotAI):
 
             ns_step = time.perf_counter_ns()
             await self.knowledge.update(iteration)
+            await self.execute()
             # await self.pre_step_execute()
             # await self.plan.execute()
 
@@ -78,6 +79,13 @@ class SkeletonBot(BotAI):
             if self.crash_on_except:
                 # This crashes the bot and causes it to lose the match.
                 raise
+
+    async def execute(self):
+        """
+        Override this for your custom custom code after managers have updated their code
+        @return: None
+        """
+        pass
 
     async def on_before_start(self):
         """
@@ -117,4 +125,4 @@ class SkeletonBot(BotAI):
             if townhall.type_id == UnitTypeId.NEXUS:
                 await self.synchronous_do(townhall.train(UnitTypeId.PROBE))
             if townhall.type_id == UnitTypeId.HATCHERY:
-                await self.synchronous_do(townhall.train(UnitTypeId.DRONE))
+                await self.synchronous_do(self.units(UnitTypeId.LARVA).first.train(UnitTypeId.DRONE))

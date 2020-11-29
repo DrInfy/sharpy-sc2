@@ -200,6 +200,7 @@ class BotDefinitions:
         """ Debug bots won't have zip function. """
         debug_bots = {
             "debugidle": (lambda params: Bot(Race.Protoss, IdleDummy())),
+            "debugtemplate": (lambda params: Bot(Race.Zerg, TemplateSkeletonBot())),
             "debugunits": (lambda params: Bot(Race.Zerg, DebugUnitsDummy())),
             "debugrestorepower": (lambda params: Bot(Race.Protoss, RestorePowerDummy())),
             "debuguseneural": (lambda params: Bot(Race.Zerg, UseNeuralParasiteDummy())),
