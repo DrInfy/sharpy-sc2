@@ -623,8 +623,7 @@ class UnitValue(ManagerBase, IUnitValues):
 
         return True
 
-    @staticmethod
-    def is_worker(unit: Union[Unit, UnitTypeId]):
+    def is_worker(self, unit: Union[Unit, UnitTypeId]):
         if type(unit) is Unit:
             unit_type = unit.type_id
         else:

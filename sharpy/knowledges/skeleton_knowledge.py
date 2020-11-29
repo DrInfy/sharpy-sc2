@@ -5,9 +5,19 @@ from typing import List, Optional, Callable, Type
 
 import sc2
 from sharpy.events import UnitDestroyedEvent
+from sharpy.interfaces.data_manager import IDataManager
 from sharpy.managers.core import *
-from sharpy.interfaces import ILagHandler, IUnitCache, IUnitValues, ICombatManager, ILogManager, IZoneManager
-from sc2 import Race
+from sharpy.interfaces import (
+    ILagHandler,
+    IUnitCache,
+    IUnitValues,
+    ICombatManager,
+    ILogManager,
+    IZoneManager,
+    IPostStart,
+    IPreviousUnitsManager,
+)
+from sc2 import Race, Result
 from sc2.constants import *
 from sc2.position import Point2
 from typing import TYPE_CHECKING, TypeVar
@@ -45,6 +55,7 @@ class SkeletonKnowledge:
         self.cooldown_manager: Optional[CooldownManager] = None
         self.roles: Optional[UnitRoleManager] = None
         self.combat_manager: Optional[ICombatManager] = None
+        self.previous_units_manager: Optional[IPreviousUnitsManager] = None
 
         # Event listeners
         self._on_unit_destroyed_listeners: List[Callable] = list()
@@ -124,9 +135,15 @@ class SkeletonKnowledge:
         self.cooldown_manager = self.get_manager(CooldownManager)
         self.roles = self.get_manager(UnitRoleManager)
         self.combat_manager = self.get_manager(ICombatManager)
+        self.data_manager = self.get_manager(IDataManager)
+        self.previous_units_manager = self.get_manager(IPreviousUnitsManager)
 
         for manager in self.managers:
             await manager.start(self)
+
+        for manager in self.managers:
+            if isinstance(manager, IPostStart):
+                await manager.post_start()
 
     async def update(self, iteration: int):
         self.iteration = iteration
@@ -179,19 +196,50 @@ class SkeletonKnowledge:
 
     # region Knowledge event handlers
 
+    async def on_unit_destroyed(self, unit_tag: int):
+        # BotAI._units_previous_map[unit_tag] does not contain enemies. :(
+
+        unit = self.previous_units_manager.last_unit(unit_tag)
+        if unit:
+            self.fire_event(self._on_unit_destroyed_listeners, UnitDestroyedEvent(unit_tag, unit))
+        else:
+            self.print(f"Unknown unit destroyed: {unit_tag}", log_level=logging.DEBUG)
+
     # todo: if this is useful, it should be refactored as a more general solution
 
     def register_on_unit_destroyed_listener(self, func: Callable[[UnitDestroyedEvent], None]):
         assert isinstance(func, Callable)
+        if self.previous_units_manager is None:
+            raise Exception("Previous units manager needs the be set to register for the unit destroyed event")
         self._on_unit_destroyed_listeners.append(func)
 
     def unregister_on_unit_destroyed_listener(self, func):
-        raise NotImplementedError()
+        self._on_unit_destroyed_listeners.remove(func)
 
     @staticmethod
     def fire_event(listeners, event):
         for listener in listeners:
             listener(event)
+
+    async def on_end(self, game_result: Result):
+        self.print(f"Result: {game_result.name}", stats=False)
+        self.print(f"Duration: {self.ai.time_formatted}", stats=False)
+
+        try:
+            step_time_min = round(self.ai.step_time[0])
+            self.print(f"Step time min: {step_time_min}", stats=False)
+        except OverflowError:
+            # step_time_min is infinite at the start and can cause an unnecessary exception.
+            pass
+
+        step_time_avg = round(self.ai.step_time[1])
+        self.print(f"Step time avg: {step_time_avg}", stats=False)
+
+        step_time_max = round(self.ai.step_time[2])
+        self.print(f"Step time max: {step_time_max}", stats=False)
+
+        for manager in self.managers:
+            await manager.on_end(game_result)
 
     # endregion
 

@@ -72,7 +72,7 @@ class Component:
     def print(self, msg: str, stats: bool = True):
         self.knowledge.print(msg, type(self).__name__, stats)
 
-    async def start_component(self, component: "Component", knowledge: "Knowledge"):
+    async def start_component(self, component: "Component", knowledge: "SkeletonKnowledge"):
         component.parent_key = self.key
         await component.start(knowledge)
 

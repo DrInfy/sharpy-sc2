@@ -1,3 +1,4 @@
+from sharpy.interfaces import IIncomeCalculator
 from sharpy.managers.core.manager_base import ManagerBase
 from sc2.unit import Unit
 
@@ -5,7 +6,7 @@ MINERAL_MINE_RATE = 1  # this isn't needed in calculations
 GAS_MINE_RATE = 0.9433962264
 
 
-class IncomeCalculator(ManagerBase):
+class IncomeCalculator(ManagerBase, IIncomeCalculator):
     def __init__(self):
         super().__init__()
         self._mineral_income = 0

@@ -14,6 +14,10 @@ class IUnitValues(ABC):
         pass
 
     @abstractmethod
+    def is_worker(self, unit: Union[Unit, UnitTypeId]):
+        pass
+
+    @abstractmethod
     def building_start_time(self, game_time: float, type_id: UnitTypeId, build_progress: float):
         """Calculates when building construction started. This can be used to eg. detect early rushes."""
         pass

@@ -1,192 +1,61 @@
 import logging
 import sys
 import threading
-from abc import abstractmethod
+from abc import abstractmethod, ABC
+from typing import TYPE_CHECKING
 
 from sc2.units import Units
-from sharpy.knowledges import Knowledge
-from sharpy.managers.core import ManagerBase
+from sharpy.knowledges.skeleton_bot import SkeletonBot
+from sharpy.combat.group_combat_manager import GroupCombatManager
+from sharpy.managers.core import *
+from sharpy.managers.extensions import *
 from config import get_config, get_version
 from sc2 import BotAI, Result, Optional, UnitTypeId, List
 from sc2.unit import Unit
 import time
 
-from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from sharpy.knowledges import BuildOrder
 
 
-class KnowledgeBot(BotAI):
+class KnowledgeBot(SkeletonBot, ABC):
     """Base class for bots that are built around Knowledge class."""
 
-    def __init__(self, name: str):
-        super().__init__()
-        self.name = name
-        self.config = get_config()
-        self.knowledge: Knowledge = None
-        self.plan: "BuildOrder" = None
-        self.knowledge = Knowledge()
-        self.start_plan = True
-        self.run_custom = False
-        self.realtime_worker = True
-        self.realtime_split = True
-        self.last_game_loop = -1
-        self.distance_calculation_method = 0
-        self.unit_command_uses_self_do = True
+    async def on_start(self):
+        """Allows initializing the bot when the game data is available."""
+        managers = [
+            MemoryManager(),
+            LostUnitsManager(),
+            EnemyUnitsManager(),
+            UnitCacheManager(),
+            UnitValue(),
+            UnitRoleManager(),
+            PathingManager(),
+            ZoneManager(),
+            BuildingSolver(),
+            IncomeCalculator(),
+            CooldownManager(),
+            GroupCombatManager(),
+            GatherPointSolver(),
+            PreviousUnitsManager(),
+            GameAnalyzer(),
+            DataManager(),
+        ]
 
-    async def real_init(self):
-        self.knowledge.pre_start(self, self.configure_managers())
+        user_managers = self.configure_managers()
+        if user_managers:
+            managers.extend(user_managers)
+        managers.append(CustomFuncManager(self.pre_step_execute))
+        managers.append(ActManager(self.create_plan))
+        self.knowledge.pre_start(self, managers)
         await self.knowledge.start()
-        self.plan = await self.create_plan()
-        if self.start_plan:
-            await self.plan.start(self.knowledge)
 
-        self._log_start()
-
-    def configure_managers(self) -> Optional[List[ManagerBase]]:
-        """
-        Override this for custom manager usage.
-        Use this to override managers in knowledge
-        @return: Optional list of new managers
-        """
-        return None
-
-    async def chat_init(self):
-        if self.knowledge.is_chat_allowed:
-            msg = self._create_start_msg()
-            await self.chat_send(msg)
-
-    def _create_start_msg(self) -> str:
-        msg: str = ""
-
-        if self.name is not None:
-            msg += self.name
-
-        version = get_version()
-        if len(version) >= 2:
-            msg += f" {version[0]} {version[1]}"
-
-        return msg
-
-    async def chat_send(self, message: str, team_only: bool = False):
-        # todo: refactor to use chat manager?
-        self.knowledge.print(message, "Chat")
-        await super().chat_send(message, team_only)
+    def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        return []
 
     @abstractmethod
     async def create_plan(self) -> "BuildOrder":
         pass
 
-    async def on_before_start(self):
-        """
-        Override this in your bot class. This function is called before "on_start"
-        and before expansion locations are calculated.
-        Not all data is available yet.
-        """
-
-        # Start building first worker before doing any heavy calculations
-        # This is only needed for real time, but we don't really know whether the game is real time or not.
-        await self.start_first_worker()
-        self._client.game_step = int(self.config["general"]["game_step_size"])
-
-        if self.realtime_split:
-            # Split workers
-            mfs = self.mineral_field.closer_than(10, self.townhalls.first.position)
-            workers = Units(self.workers, self)
-
-            for mf in mfs:  # type: Unit
-                if workers:
-                    worker = workers.closest_to(mf)
-                    self.do(worker.gather(mf))
-                    workers.remove(worker)
-
-            for w in workers:  # type: Unit
-                self.do(w.gather(mfs.closest_to(w)))
-            await self._do_actions(self.actions)
-            self.actions.clear()
-
-    async def on_start(self):
-        """Allows initializing the bot when the game data is available."""
-        await self.real_init()
-
-    async def on_step(self, iteration):
-        try:
-            if iteration == 10:
-                await self.chat_init()
-
-            if not self.realtime and self.last_game_loop == self.state.game_loop:
-                self.realtime = True
-                self.client.game_step = 1
-                return
-
-            self.last_game_loop = self.state.game_loop
-
-            ns_step = time.perf_counter_ns()
-            await self.knowledge.update(iteration)
-            await self.pre_step_execute()
-            await self.plan.execute()
-
-            await self.knowledge.post_update()
-
-            if self.knowledge.debug:
-                await self.plan.debug_draw()
-
-            ns_step = time.perf_counter_ns() - ns_step
-            ms_step = ns_step / 1000 / 1000
-
-            if ms_step > 100:
-                self.knowledge.print(
-                    f"Step {self.state.game_loop} took {round(ms_step)} ms.",
-                    "LAG",
-                    stats=False,
-                    log_level=logging.WARNING,
-                )
-
-        except:  # noqa, catch all exceptions
-            e = sys.exc_info()[0]
-            logging.exception(e)
-
-            # do we want to raise the exception and crash? or try to go on? :/
-            raise
-
     async def pre_step_execute(self):
         pass
-
-    async def on_unit_destroyed(self, unit_tag: int):
-        if self.knowledge.ai is not None:
-            await self.knowledge.on_unit_destroyed(unit_tag)
-
-    async def on_unit_created(self, unit: Unit):
-        if self.knowledge.ai is not None:
-            await self.knowledge.on_unit_created(unit)
-
-    async def on_building_construction_started(self, unit: Unit):
-        if self.knowledge.ai is not None:
-            await self.knowledge.on_building_construction_started(unit)
-
-    async def on_building_construction_complete(self, unit: Unit):
-        if self.knowledge.ai is not None:
-            await self.knowledge.on_building_construction_complete(unit)
-
-    async def on_end(self, game_result: Result):
-        if self.knowledge.ai is not None:
-            await self.knowledge.on_end(game_result)
-
-    def _log_start(self):
-        def log(message):
-            self.knowledge.print(message, tag="Start", stats=False)
-
-        log(f"My race: {self.knowledge.my_race.name}")
-        log(f"Opponent race: {self.knowledge.enemy_race.name}")
-        log(f"OpponentId: {self.opponent_id}")
-
-    async def start_first_worker(self):
-        if self.townhalls and self.realtime_worker:
-            townhall = self.townhalls.first
-            if townhall.type_id == UnitTypeId.COMMANDCENTER:
-                await self.synchronous_do(townhall.train(UnitTypeId.SCV))
-            if townhall.type_id == UnitTypeId.NEXUS:
-                await self.synchronous_do(townhall.train(UnitTypeId.PROBE))
-            if townhall.type_id == UnitTypeId.HATCHERY:
-                await self.synchronous_do(townhall.train(UnitTypeId.DRONE))

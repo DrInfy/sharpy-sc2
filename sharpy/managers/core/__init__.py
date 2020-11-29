@@ -14,3 +14,4 @@ from .lostunitsmanager import LostUnitsManager
 from .pathing_manager import PathingManager
 from .unit_value import UnitValue
 from .enemy_units_manager import EnemyUnitsManager
+from .previousunitsmanager import PreviousUnitsManager

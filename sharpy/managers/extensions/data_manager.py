@@ -8,6 +8,7 @@ from pathlib import Path
 
 from sc2 import Result, Tuple
 from sharpy.interfaces import IGameAnalyzer
+from sharpy.interfaces.data_manager import IDataManager
 from sharpy.managers.extensions.build_detector import EnemyRushBuild, EnemyMacroBuild, BuildDetector
 
 from sharpy.managers.core.manager_base import ManagerBase
@@ -17,7 +18,7 @@ from sharpy.tools.opponent_data import GameResult, OpponentData
 DATA_FOLDER = "data"
 
 
-class DataManager(ManagerBase):
+class DataManager(ManagerBase, IDataManager):
     game_analyzer: IGameAnalyzer
     build_detector: BuildDetector
     enabled: bool

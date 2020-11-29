@@ -32,6 +32,11 @@ class IUnitCache(ABC):
 
     @property
     @abstractmethod
+    def enemy_workers(self) -> Units:
+        pass
+
+    @property
+    @abstractmethod
     def mineral_fields(self) -> Dict[Point2, Unit]:
         pass
 

@@ -1,5 +1,6 @@
 from typing import List
 
+from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -10,11 +11,13 @@ from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
-from sharpy.knowledges import Knowledge, KnowledgeBot
+from sharpy.knowledges import SkeletonKnowledge, KnowledgeBot
 from sc2.position import Point2
 
 
 class BuildBio(BuildOrder):
+    zone_manager: IZoneManager
+
     def __init__(self):
         self.worker_rushed = False
         self.rush_bunker = BuildPosition(UnitTypeId.BUNKER, Point2((0, 0)), exact=True)
@@ -177,15 +180,16 @@ class BuildBio(BuildOrder):
 
         super().__init__([warn, scv, opener, buildings, dt_counter, dt_counter2, tech, mech, air, marines, use_money])
 
-    async def start(self, knowledge: "Knowledge"):
-        self.rush_bunker.position = knowledge.base_ramp.ramp.barracks_in_middle
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.rush_bunker.position = self.zone_manager.expansion_zones[0].ramp.barracks_in_middle
 
     async def execute(self) -> bool:
         if not self.worker_rushed and self.ai.time < 120:
-            self.worker_rushed = self.knowledge.known_enemy_workers.filter(
+            self.worker_rushed = self.cache.enemy_workers.filter(
                 lambda u: u.distance_to(self.ai.start_location)
-                < u.distance_to(self.knowledge.likely_enemy_start_location)
+                < u.distance_to(self.zone_manager.likely_enemy_start_location)
             )
 
         return await super().execute()

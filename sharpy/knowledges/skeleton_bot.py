@@ -2,13 +2,13 @@ import logging
 import sys
 import time
 
-from sc2 import BotAI, UnitTypeId
+from sc2 import BotAI, UnitTypeId, Result
 from sc2.constants import abilityid_to_unittypeid
 from sc2.game_data import Cost
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
 from config import get_config, get_version
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING, Optional, List
 from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
 
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from sc2.unit import Unit
 
 
-class SkeletonBot(BotAI):
+class SkeletonBot(BotAI, ABC):
     def __init__(self, name: str):
         self.knowledge = SkeletonKnowledge()
         self.name = name
@@ -39,8 +39,6 @@ class SkeletonBot(BotAI):
         """Allows initializing the bot when the game data is available."""
         self.knowledge.pre_start(self, self.configure_managers())
         await self.knowledge.start()
-
-        # self._log_start()
 
     @abstractmethod
     def configure_managers(self) -> Optional[List["ManagerBase"]]:
@@ -132,6 +130,12 @@ class SkeletonBot(BotAI):
                 townhall.train(UnitTypeId.PROBE)
             if townhall.type_id == UnitTypeId.HATCHERY:
                 self.units(UnitTypeId.LARVA).first.train(UnitTypeId.DRONE)
+
+    async def on_unit_destroyed(self, unit_tag: int):
+        await self.knowledge.on_unit_destroyed(unit_tag)
+
+    async def on_end(self, game_result: Result):
+        await self.knowledge.on_end(game_result)
 
     def do(
         self,

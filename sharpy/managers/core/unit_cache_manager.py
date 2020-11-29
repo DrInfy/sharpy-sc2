@@ -25,6 +25,7 @@ class UnitCacheManager(ManagerBase, IUnitCache):
     all_own: Units
     empty_units: Units
     _mineral_wall: Units
+    _enemy_workers: Units
 
     def __init__(self):
         super().__init__()
@@ -49,6 +50,10 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         return self._enemy_unit_cache
 
     @property
+    def enemy_workers(self) -> Units:
+        return self._enemy_workers
+
+    @property
     def mineral_fields(self) -> Dict[Point2, Unit]:
         return self._mineral_fields
 
@@ -61,6 +66,7 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.all_own: Units = Units([], self.ai)
         self.empty_units: Units = Units([], self.ai)
         self._mineral_wall: Units = Units([], self.ai)
+        self._enemy_workers: Units = Units([], self.ai)
 
     def by_tag(self, tag: int) -> Optional[Unit]:
         return self.tag_cache.get(tag, None)
@@ -173,6 +179,8 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         for effect in self.ai.state.effects:
             if effect.id == FakeEffectID.get(UnitTypeId.FORCEFIELD.value):
                 self.force_fields.append(effect)
+
+        self._enemy_workers = self.enemy([UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE])
 
     async def post_update(self):
         if self.debug:

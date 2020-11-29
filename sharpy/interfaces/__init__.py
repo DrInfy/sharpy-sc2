@@ -11,3 +11,5 @@ from .zone_manager import IZoneManager
 from .memory_manager import IMemoryManager
 from .log_manager import ILogManager
 from .game_analyzer import IGameAnalyzer
+from .post_start import IPostStart
+from .previous_units_manager import IPreviousUnitsManager

@@ -1,18 +1,32 @@
+import asyncio
+
 from .manager_base import ManagerBase
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Coroutine, Union, Callable
+
+from sharpy.interfaces import IPostStart
 
 if TYPE_CHECKING:
+    from sharpy.knowledges import SkeletonKnowledge
     from sharpy.plans.acts import ActBase
 
 
-class ActManager(ManagerBase):
-    def __init__(self, act: "ActBase") -> None:
-        super().__init__()
-        self._act: "ActBase" = act
+class ActManager(ManagerBase, IPostStart):
+    _act: "ActBase"
 
-    async def start(self, knowledge: "Knowledge"):
+    def __init__(self, act_or_func: Union[Callable[[], Coroutine], "ActBase"]) -> None:
+        super().__init__()
+        self._act_or_func: Union[Callable[[], Coroutine], "ActBase"] = act_or_func
+
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
-        await self.start_component(self._act, knowledge)
+
+    async def post_start(self):
+        if asyncio.iscoroutinefunction(self._act_or_func):
+            self._act = await self._act_or_func()
+        else:
+            self._act = self._act_or_func
+
+        await self.start_component(self._act, self.knowledge)
 
     async def update(self):
         await self._act.execute()

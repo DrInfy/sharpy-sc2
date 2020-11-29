@@ -1,5 +1,6 @@
 from typing import Dict, Optional, List
 
+from sharpy.interfaces import IEnemyUnitsManager, ILostUnitsManager, IUnitValues, IZoneManager
 from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.managers.core.enemy_units_manager import EnemyUnitsManager
 from sharpy.general.extended_power import ExtendedPower
@@ -18,18 +19,14 @@ MINERAL_MINING_SPEED = 1800.0 / 15 / 60 / 2
 
 
 class EnemyArmyPredicter(ManagerBase):
+    enemy_units_manager: IEnemyUnitsManager
+    lost_units_manager: ILostUnitsManager
+    unit_values: IUnitValues
+    updater: IntervalFuncAsync
+    zone_manager: IZoneManager
+
     def __init__(self):
         super().__init__()
-
-    async def start(self, knowledge: "Knowledge"):
-        await super().start(knowledge)
-        self.enemy_units_manager: EnemyUnitsManager = self.knowledge.enemy_units_manager
-
-        self.lost_units_manager: LostUnitsManager = knowledge.lost_units_manager
-        self.unit_values: "UnitValue" = knowledge.unit_values
-
-        self.updater = IntervalFuncAsync(self.ai, self._real_update, INTERVAL)
-
         self.enemy_base_value_minerals = 400 + 12 * 50 + 50
         self.enemy_known_worker_count = 12
 
@@ -39,7 +36,17 @@ class EnemyArmyPredicter(ManagerBase):
         self.mineral_updated_dict: Dict["Zone", float] = {}
         self.gas_dict: Dict[Point2, int] = {}
 
-        for zone in zone_manager.expansion_zones:
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
+
+        self.lost_units_manager = knowledge.get_required_manager(ILostUnitsManager)
+        self.unit_values = knowledge.get_required_manager(IUnitValues)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+
+        self.updater = IntervalFuncAsync(self.ai, self._real_update, INTERVAL)
+
+        for zone in self.zone_manager.expansion_zones:
             minerals = 0
             if zone.last_minerals is not None:
                 minerals = zone.last_minerals
@@ -134,7 +141,7 @@ class EnemyArmyPredicter(ManagerBase):
         mined_minerals_predict: float = 0
         worker_count_per_base = 12  # TODO: Just random guess
 
-        for zone in self.knowledge.enemy_expansion_zones:
+        for zone in self.zone_manager.enemy_expansion_zones:
             current_minerals = zone.last_minerals
             if current_minerals is None:
                 current_minerals = 0

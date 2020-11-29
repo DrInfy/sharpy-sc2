@@ -1,11 +1,12 @@
-from typing import Dict
+from typing import Dict, Optional
 
 from sc2.position import Point2
+from sharpy.interfaces import IPreviousUnitsManager
 from sharpy.managers.core import ManagerBase
 from sc2.unit import Unit
 
 
-class PreviousUnitsManager(ManagerBase):
+class PreviousUnitsManager(ManagerBase, IPreviousUnitsManager):
     """Keeps track of units from the previous iteration. Useful for checking eg. which unit died."""
 
     def __init__(self):
@@ -17,6 +18,9 @@ class PreviousUnitsManager(ManagerBase):
 
     async def update(self):
         pass
+
+    def last_unit(self, tag: int) -> Optional[Unit]:
+        return self.previous_units.get(tag, None)
 
     def last_position(self, unit: Unit) -> Point2:
         """
