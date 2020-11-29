@@ -36,6 +36,7 @@ class KnowledgeBot(SkeletonBot, ABC):
             IncomeCalculator(),
             CooldownManager(),
             GroupCombatManager(),
+            HeatMapManager(),
             GatherPointSolver(),
             PreviousUnitsManager(),
             GameAnalyzer(),

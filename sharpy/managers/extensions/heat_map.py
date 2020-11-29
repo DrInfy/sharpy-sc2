@@ -68,6 +68,7 @@ class HeatMapManager(ManagerBase):
         await super().start(knowledge)
         self.updater = IntervalFunc(knowledge.ai, self.__real_update, 0.5)
         self.cache = knowledge.get_required_manager(IUnitCache)
+        self.init_heat_map(knowledge)
 
     def init_heat_map(self, knowledge: "SkeletonKnowledge"):
         grid: PixelMap = knowledge.ai._game_info.placement_grid
@@ -85,7 +86,7 @@ class HeatMapManager(ManagerBase):
         self.last_update = 0
         self.last_quick_update = 0
 
-    def update(self):
+    async def update(self):
         self.__stealth_update()
         self.updater.execute()
 

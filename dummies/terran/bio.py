@@ -183,13 +183,12 @@ class BuildBio(BuildOrder):
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
-        self.rush_bunker.position = self.zone_manager.expansion_zones[0].ramp.barracks_in_middle
+        self.rush_bunker.position = self.zone_manager.expansion_zones[0].ramp.ramp.barracks_in_middle
 
     async def execute(self) -> bool:
         if not self.worker_rushed and self.ai.time < 120:
             self.worker_rushed = self.cache.enemy_workers.filter(
-                lambda u: u.distance_to(self.ai.start_location)
-                < u.distance_to(self.zone_manager.likely_enemy_start_location)
+                lambda u: u.distance_to(self.ai.start_location) < u.distance_to(self.zone_manager.enemy_start_location)
             )
 
         return await super().execute()

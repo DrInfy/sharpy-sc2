@@ -4,7 +4,6 @@ from typing import Optional, Set
 from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
 
-import sc2
 from sharpy.managers.core.roles import UnitTask
 from sharpy.utils import map_to_point2s_center
 from sc2 import UnitTypeId, AbilityId, Race
@@ -12,12 +11,15 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from .act_building import ActBuilding
-from sharpy.interfaces import IBuildingSolver
+from sharpy.interfaces import IBuildingSolver, IIncomeCalculator
 
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
 class GridBuilding(ActBuilding):
+    building_solver: IBuildingSolver
+    income_calculator: IIncomeCalculator
+
     def __init__(
         self,
         unit_type: UnitTypeId,
@@ -37,10 +39,10 @@ class GridBuilding(ActBuilding):
         self.building_solver: IBuildingSolver = None
         self.make_pylon = None
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
-        self.building_solver = self.knowledge.get_manager(IBuildingSolver)
-
+        self.building_solver = self.knowledge.get_required_manager(IBuildingSolver)
+        self.income_calculator = self.knowledge.get_required_manager(IIncomeCalculator)
         if self.unit_type != UnitTypeId.PYLON:
             self.make_pylon: Optional[GridBuilding] = GridBuilding(UnitTypeId.PYLON, 0, 2)
             await self.make_pylon.start(knowledge)
@@ -119,11 +121,11 @@ class GridBuilding(ActBuilding):
             available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
             available_gas = self.ai.vespene - self.knowledge.reserved_gas
 
-            if self.consider_worker_production and self.knowledge.income_calculator.mineral_income > 0:
+            if self.consider_worker_production and self.income_calculator.mineral_income > 0:
                 for town_hall in self.ai.townhalls:  # type: Unit
                     # TODO: Zerg(?)
                     if town_hall.orders:
-                        starting_next_probe_in = -50 / self.knowledge.income_calculator.mineral_income
+                        starting_next_probe_in = -50 / self.income_calculator.mineral_income
                         order = town_hall.orders[0]  # Only consider first order
                         if order.ability.id in worker_trainers:
                             starting_next_probe_in += 12 * (1 - order.progress)
@@ -134,8 +136,8 @@ class GridBuilding(ActBuilding):
                         available_minerals -= 50  # should start producing workers soon now
 
             if (
-                available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals
-                and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene
+                available_minerals + time * self.income_calculator.mineral_income >= cost.minerals
+                and available_gas + time * self.income_calculator.gas_income >= cost.vespene
             ):
                 # Go wait
                 self.set_worker(worker)
@@ -224,18 +226,16 @@ class GridBuilding(ActBuilding):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
-            reserved_landing_locations: Set[Point2] = set(
-                self.knowledge.building_solver.structure_target_move_location.values()
-            )
+            reserved_landing_locations: Set[Point2] = set(self.building_solver.structure_target_move_location.values())
             for point in self.building_solver.buildings3x3:
                 if not self.allow_wall:
-                    if point in self.building_solver.wall_buildings:
+                    if point in self.building_solver.wall3x3:
                         continue
                 # If a structure is landing here from AddonSwap() then dont use this location
                 if point in reserved_landing_locations:
                     continue
                 # If this location has a techlab or reactor next to it, then don't create a new structure here
-                if point in self.knowledge.building_solver.free_addon_locations:
+                if point in self.building_solver.free_addon_locations:
                     continue
                 if not buildings.closer_than(1, point):
                     return point

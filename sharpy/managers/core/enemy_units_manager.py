@@ -47,7 +47,7 @@ class EnemyUnitsManager(ManagerBase, IEnemyUnitsManager):
     @property
     def enemy_worker_count(self) -> int:
         """Returns the amount of workers we know the enemy has"""
-        worker_type = self.knowledge.enemy_worker_type
+        worker_type = self.unit_values.enemy_worker_type
         return self.unit_count(worker_type)
 
     @property

@@ -12,6 +12,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
     def __init__(self):
         super().__init__()
         self._expanding_to: Optional[Point2] = None
+        self._gather_point = Point2((0, 0))
 
     @property
     def gather_point(self) -> Point2:

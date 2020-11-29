@@ -10,6 +10,7 @@ from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
 from sc2.constants import EQUIVALENTS_FOR_TECH_PROGRESS
+from sharpy.interfaces import ILostUnitsManager
 from sharpy.managers.core.roles import UnitTask
 
 build_commands = {
@@ -61,20 +62,18 @@ build_commands = {
 
 
 class ActBase(Component, ABC):
+    lost_units_manager: ILostUnitsManager
+
     async def debug_draw(self):
         if self.debug:
             await self.debug_actions()
 
+    async def start(self, knowledge: "SkeletonKnowledge"):
+        await super().start(knowledge)
+        self.lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)
+
     async def debug_actions(self):
         pass
-
-    def allow_new_action(self, unit: Unit) -> bool:
-        """
-        Only use this check for critical orders that must not duplicated
-        :param unit: unit that wants to make a new action
-        :return: True if it allowed
-        """
-        return self.knowledge.action_handler.allow_action(unit)
 
     @abstractmethod
     async def execute(self) -> bool:
@@ -163,11 +162,11 @@ class ActBase(Component, ABC):
         count = self.related_count(count, unit_type)
 
         if include_killed:
-            count += self.knowledge.lost_units_manager.own_lost_type(unit_type, real_type=False)
+            count += self.lost_units_manager.own_lost_type(unit_type, real_type=False)
             related = EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_type, None)
             if related:
                 for related_type in related:
-                    count += self.knowledge.lost_units_manager.own_lost_type(related_type, real_type=False)
+                    count += self.lost_units_manager.own_lost_type(related_type, real_type=False)
 
         return count
 
