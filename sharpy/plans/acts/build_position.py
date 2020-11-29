@@ -39,7 +39,7 @@ class BuildPosition(ActBase):
 
             if position is not None:
                 self.print(f"Building {self.unit_type.name} to {position}")
-                self.do(worker.build(self.unit_type, position))
+                worker.build(self.unit_type, position)
                 self.set_worker(worker)
             else:
                 self.print(f"Could not build {self.unit_type.name} to {position}")
@@ -55,7 +55,7 @@ class BuildPosition(ActBase):
 
                 if worker is not None:
                     self.set_worker(worker)
-                    self.do(worker.move(position))
+                    worker.move(position)
 
             self.knowledge.reserve(cost.minerals, cost.vespene)
 

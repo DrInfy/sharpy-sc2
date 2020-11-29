@@ -22,7 +22,7 @@ class CallMule(ActBase):
             if building.energy > self.on_energy:
                 mule_target = self.solve_target()
                 if mule_target is not None:
-                    self.do(building(AbilityId.CALLDOWNMULE_CALLDOWNMULE, mule_target))
+                    building(AbilityId.CALLDOWNMULE_CALLDOWNMULE, mule_target)
 
         return True
 

@@ -100,13 +100,13 @@ class DoubleAdeptScout(ActBase):
                         adept, adept.position
                     ) < self.knowledge.enemy_units_manager.danger_value(adept, shade.position):
                         # It's safer to not phase shift
-                        self.do(adept(AbilityId.CANCEL_ADEPTPHASESHIFT))
+                        adept(AbilityId.CANCEL_ADEPTPHASESHIFT)
                         continue
 
             if self.cd_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT) and (
                 shade_distance < 11 or shade_distance > 30
             ):
-                self.do(adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target))
+                adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target)
                 self.cd_manager.used_ability(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
                 self.target_changed = False
                 self.print(f"Using phase shift to: {self.adept_target}")

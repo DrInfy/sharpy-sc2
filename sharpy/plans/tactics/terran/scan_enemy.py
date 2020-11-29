@@ -9,9 +9,10 @@ from sc2.unit import Unit
 
 
 class ScanEnemy(ActBase):
+    heat_map: HeatMapManager
+
     def __init__(self, interval_seconds=60):
         super().__init__()
-        self.heat_map: HeatMap = None
         self.interval_seconds = interval_seconds
         self.last_scan = 0
         self.last_stealth_scan = 0
@@ -42,7 +43,7 @@ class ScanEnemy(ActBase):
         for building in buildings:
             if building.energy > 50:
                 if scan_target is not None:
-                    self.do(building(AbilityId.SCANNERSWEEP_SCAN, scan_target))
+                    building(AbilityId.SCANNERSWEEP_SCAN, scan_target)
                     if stealth:
                         self.last_stealth_scan = ai.time
                     self.last_scan = ai.time
@@ -52,7 +53,7 @@ class ScanEnemy(ActBase):
         current_zone = None
         best_score = 1
         default_score = 1000
-        for zone in self.knowledge.enemy_expansion_zones:
+        for zone in self.zone_manager.enemy_expansion_zones:
             score = default_score + (self.ai.time - zone.last_scouted_center)
             default_score -= 100
             if score > best_score or current_zone is None:

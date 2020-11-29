@@ -113,7 +113,7 @@ class GridBuilding(ActBuilding):
                 self.set_worker(worker)
                 self.knowledge.reserve(cost.minerals, cost.vespene)
                 if not self.has_build_order(worker):
-                    self.do(worker.move(self.adjust_build_to_move(position)))
+                    worker.move(self.adjust_build_to_move(position))
 
         elif self.priority and wait_time < time:
             available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
@@ -142,7 +142,7 @@ class GridBuilding(ActBuilding):
                 self.knowledge.reserve(cost.minerals, cost.vespene)
 
                 if not self.has_build_order(worker):
-                    self.do(worker.move(self.adjust_build_to_move(position)))
+                    worker.move(self.adjust_build_to_move(position))
 
         return False
 
@@ -255,117 +255,21 @@ class GridBuilding(ActBuilding):
 
     async def build_protoss(self, worker: Unit, count, position: Point2):
         if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
+            # TODO: is this correct?
+            worker.build(self.unit_type, position, queue=True)
 
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
-        # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        is_pylon = self.unit_type == UnitTypeId.PYLON
-        buildings = self.ai.structures
-        matrix = self.ai.state.psionic_matrix
-        iterator = self.get_iterator(is_pylon, count)
-
-        if is_pylon:
-            for point in self.building_solver.buildings2x2[::iterator]:
-
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        else:
-            for point in self.building_solver.buildings3x3[::iterator]:
-                if not buildings.closer_than(1, point) and matrix.covers(point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     async def build_zerg(self, worker: Unit, count, position: Point2):
-        if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
-
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
         # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        buildings = self.ai.structures
-        creep = self.ai.state.creep
-
-        for point in self.building_solver.buildings3x3:
-            if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
-                err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                if not err:
-                    return  # success
-                else:
-                    pass
-                    # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     async def build_terran(self, worker: Unit, count, position: Point2):
-        if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
-
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
         # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
-        buildings = self.ai.structures
-
-        if is_depot:
-            for point in self.building_solver.buildings2x2[::1]:
-
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        else:
-            for point in self.building_solver.buildings3x3[::1]:
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     def is_on_creep(self, creep: PixelMap, point: Point2) -> bool:
         x_original = floor(point.x) - 1

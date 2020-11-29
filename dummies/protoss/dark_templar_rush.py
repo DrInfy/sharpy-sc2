@@ -17,11 +17,11 @@ class DtPush(ActBase):
         if dts.amount >= 2 and not self.dt_push_started:
             self.dt_push_started = True
             dts = dts.random_group_of(2)
-            zone = self.knowledge.enemy_main_zone
+            zone = self.zone_manager.enemy_main_zone
             harash_dt = dts[0]
             attack_dt = dts[1]
-            self.do(harash_dt.move(zone.center_location))
-            self.do(attack_dt.attack(zone.center_location))
+            harash_dt.move(zone.center_location)
+            attack_dt.attack(zone.center_location)
             self.roles.set_task(UnitTask.Reserved, harash_dt)
             self.roles.set_task(UnitTask.Reserved, attack_dt)
             self.ninja_dt_tag = harash_dt.tag
@@ -34,7 +34,7 @@ class DtPush(ActBase):
                 )
                 if enemy_workers.exists:
                     target = enemy_workers.closest_to(harash_dt)
-                    self.do(harash_dt.attack(target))
+                    harash_dt.attack(target)
         return True
 
 

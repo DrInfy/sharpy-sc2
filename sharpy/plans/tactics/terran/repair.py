@@ -40,7 +40,7 @@ class Repair(ActBase):
                     if repairing_zone_count < desired_count:
                         for worker in zone.our_workers:  # type: Unit
                             if not worker.is_repairing and worker.tag not in current_repairers:
-                                self.do(worker.repair(unit))
+                                worker.repair(unit)
                                 current_repairers.append(worker.tag)
                                 roles.set_task(UnitTask.Building, worker)
                                 repairing_zone_count += 1
@@ -54,7 +54,7 @@ class Repair(ActBase):
                     for worker in zone.our_workers:  # type: Unit
                         if not worker.is_repairing and worker.tag not in current_repairers:
                             closest = to_repair.closest_to(enemies.center)
-                            self.do(worker.repair(closest))
+                            worker.repair(closest)
                             current_repairers.append(worker.tag)
                             roles.set_task(UnitTask.Building, worker)
                             repairing_zone_count += 1

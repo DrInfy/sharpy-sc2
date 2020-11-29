@@ -72,7 +72,7 @@ class HallucinatedPhoenixScout(ActBase):
 
                 # todo: should reserve a sentry for this purpose or at least reserve most of it's energy for this.
                 # self.knowledge.add_reserved_unit(sentry.tag)
-                self.do(sentry(AbilityId.HALLUCINATION_PHOENIX))
+                sentry(AbilityId.HALLUCINATION_PHOENIX)
 
                 self.last_created = self.knowledge.ai.time
                 return
@@ -88,7 +88,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     def move_phoenix(self, phoenix: Unit):
         target = self.select_target()
-        self.do(phoenix.move(target))
+        phoenix.move(target)
 
         if target != self.last_target:
             self.last_target = target

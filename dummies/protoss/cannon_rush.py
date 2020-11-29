@@ -77,7 +77,7 @@ class ProxyCannoneer(ActBase):
         target = self.pylons[target_index]
         distance = worker.distance_to(target)
         if distance > 20:
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif self.knowledge.can_afford(UnitTypeId.PHOTONCANNON):
             if distance < 5:
                 if not self.has_build_order(worker):
@@ -86,11 +86,11 @@ class ProxyCannoneer(ActBase):
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)
-                self.ai.do(worker.move(target))
+                worker.move(target)
         else:
             position = self.pather.find_weak_influence_ground(target, 15)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
 
     async def micro_pylon_worker(self, worker):
         self.roles.set_task(UnitTask.Reserved, worker)
@@ -104,7 +104,7 @@ class ProxyCannoneer(ActBase):
             # Pylons are done
             position = self.pather.find_weak_influence_ground(worker.position, 15)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
             return
 
         target = self.pylons[target_index]
@@ -112,22 +112,22 @@ class ProxyCannoneer(ActBase):
 
         mid_target = (worker.position + target) * 0.5
         if distance > 20:
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif cannon_index + 1 < target_index:
             position = self.pather.find_weak_influence_ground(mid_target, 10)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif self.knowledge.can_afford(UnitTypeId.PYLON):
             if distance < 5:
                 await self.ai.build(UnitTypeId.PYLON, target, max_distance=4, build_worker=worker, placement_step=1)
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)
-                self.ai.do(worker.move(target))
+                worker.move(target)
         else:
             position = self.pather.find_weak_influence_ground(mid_target, 10)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
 
     def get_index(self):
         pylons = self.cache.own(UnitTypeId.PYLON)

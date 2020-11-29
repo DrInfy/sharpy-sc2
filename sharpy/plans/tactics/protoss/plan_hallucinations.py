@@ -47,10 +47,10 @@ class PlanHallucination(ActBase):
             if self.ai.enemy_units.exists:
                 target = self.ai.enemy_units.center
             else:
-                target = self.knowledge.enemy_main_zone.center_location
+                target = self.zone_manager.enemy_main_zone.center_location
 
             for unit in self.roles.units(UnitTask.Hallucination):
-                self.do(unit.attack(target))
+                unit.attack(target)
 
         return True
 

@@ -157,9 +157,7 @@ class GroupCombatManager(ManagerBase, ICombatManager):
 
             for unit in type_units:
                 final_action = micro.unit_solve_combat(unit, group_action)
-                order = final_action.to_commmand(unit)
-                if order:
-                    self.ai.do(order)
+                final_action.to_commmand(unit)
 
                 if self.debug:
                     if final_action.debug_comment:

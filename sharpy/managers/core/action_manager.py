@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING, Dict
+from typing import Optional, TYPE_CHECKING, Dict, Union
 
 from sc2.dicts.unit_train_build_abilities import TRAIN_INFO
 from sc2.position import Point2
@@ -69,7 +69,7 @@ class ActionManager(ManagerBase):
             AbilityId.HALLUCINATION_ZEALOT,
         }
 
-        for train_dict in TRAIN_INFO.keys():
+        for train_dict in TRAIN_INFO.values():
             for key, value in train_dict.items():
                 if key == "ability" and isinstance(value, AbilityId):
                     self.blocks_target_self.add(value)
@@ -148,7 +148,7 @@ class ActionManager(ManagerBase):
     def action_made(self, action: UnitCommand):
         self.actions.append(ActionIssued(self.knowledge, action))
 
-    def allow_action(self, unit: Unit, ability_id: AbilityId, target: Optional[Unit, Point2]) -> bool:
+    def allow_action(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2]]) -> bool:
         """
         Should the action be allowed to pass duplicate action check?
 

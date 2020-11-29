@@ -31,9 +31,9 @@ class WorkerRallyPoint(ActBase):
 
             if zone.our_townhall:
                 if best_mineral_field:
-                    self.do(zone.our_townhall(self.ability, best_mineral_field))
+                    zone.our_townhall(self.ability, best_mineral_field)
                 else:
-                    self.do(zone.our_townhall(self.ability, zone.center_location))
+                    zone.our_townhall(self.ability, zone.center_location)
 
     async def execute(self) -> bool:
         self.func.execute()

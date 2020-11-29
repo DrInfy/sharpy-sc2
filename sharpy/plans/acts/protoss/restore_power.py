@@ -63,7 +63,7 @@ class RestorePower(ActBase):
             return True
 
         self.print(f"Placing pylon at {pylon_placement} to restore power to {building.type_id} at {building.position}")
-        self.do(worker.build(PYLON, pylon_placement))
+        worker.build(PYLON, pylon_placement)
 
         return True
 

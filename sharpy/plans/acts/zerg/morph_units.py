@@ -1,5 +1,5 @@
+from sc2.unit import Unit
 from sharpy.plans.acts import ActBase
-from sharpy.plans.acts.morph_building import MorphBuilding
 from sc2 import UnitTypeId, AbilityId
 from sc2.units import Units
 
@@ -43,7 +43,7 @@ class MorphUnit(ActBase):
                 if self.knowledge.can_afford(self.ability_type):
                     pos = target.position
                     self.print(f"Morphing {target.type_id.name} at ({pos.x:.1f}, {pos.y:.1f})")
-                    self.do(target(self.ability_type))
+                    target(self.ability_type)
 
                 self.knowledge.reserve_costs(self.ability_type)
                 target_count += 1

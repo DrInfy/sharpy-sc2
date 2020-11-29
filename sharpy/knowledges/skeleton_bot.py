@@ -31,8 +31,7 @@ class SkeletonBot(BotAI):
         self.last_game_loop = -1
 
         self.distance_calculation_method = 0
-        # TODO: Remove this
-        self.unit_command_uses_self_do = True
+        self.unit_command_uses_self_do = False
         # In general it is better to fail fast and early in order to fix things.
         self.crash_on_except = True
 
@@ -101,6 +100,12 @@ class SkeletonBot(BotAI):
         # This is only needed for real time, but we don't really know whether the game is real time or not.
         await self.start_first_worker()
         await self.split_workers()
+
+        # Commit and clear bot actions
+        if self.actions:
+            await self._do_actions(self.actions)
+            self.actions.clear()
+
         self._client.game_step = int(self.config["general"]["game_step_size"])
 
     async def split_workers(self):
@@ -112,23 +117,21 @@ class SkeletonBot(BotAI):
             for mf in mfs:  # type: Unit
                 if workers:
                     worker = workers.closest_to(mf)
-                    self.do(worker.gather(mf))
+                    worker.gather(mf)
                     workers.remove(worker)
 
             for w in workers:  # type: Unit
-                self.do(w.gather(mfs.closest_to(w)))
-            await self._do_actions(self.actions)
-            self.actions.clear()
+                w.gather(mfs.closest_to(w))
 
     async def start_first_worker(self):
         if self.townhalls and self.realtime_worker:
             townhall = self.townhalls.first
             if townhall.type_id == UnitTypeId.COMMANDCENTER:
-                await self.synchronous_do(townhall.train(UnitTypeId.SCV))
+                townhall.train(UnitTypeId.SCV)
             if townhall.type_id == UnitTypeId.NEXUS:
-                await self.synchronous_do(townhall.train(UnitTypeId.PROBE))
+                townhall.train(UnitTypeId.PROBE)
             if townhall.type_id == UnitTypeId.HATCHERY:
-                await self.synchronous_do(self.units(UnitTypeId.LARVA).first.train(UnitTypeId.DRONE))
+                self.units(UnitTypeId.LARVA).first.train(UnitTypeId.DRONE)
 
     def do(
         self,

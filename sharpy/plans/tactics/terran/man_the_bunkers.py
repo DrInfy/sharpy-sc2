@@ -17,6 +17,6 @@ class ManTheBunkers(ActBase):
                 continue
             if marines:
                 marine = marines.closest_to(bunker)  # .prefer_idle()
-                self.do(marine(AbilityId.SMART, bunker))
+                marine(AbilityId.SMART, bunker)
                 roles.set_task(UnitTask.Reserved, marine)
         return True

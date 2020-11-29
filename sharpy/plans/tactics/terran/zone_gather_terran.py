@@ -38,7 +38,7 @@ class PlanZoneGatherTerran(ActBase):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
             pos = pos.towards(self.knowledge.gather_point, 3)
-            self.do(unit(sc2.AbilityId.RALLY_BUILDING, pos))
+            unit(sc2.AbilityId.RALLY_BUILDING, pos)
             self.gather_set.append(unit.tag)
 
         units = []
@@ -48,9 +48,9 @@ class PlanZoneGatherTerran(ActBase):
             if self.knowledge.should_attack(unit):
                 d = unit.position.distance_to(self.gather_point)
                 if unit.type_id == UnitTypeId.SIEGETANK and d < random_variable:
-                    ramp = self.knowledge.base_ramp
+                    ramp = self.zone_manager.expansion_zones[0].ramp
                     if unit.distance_to(ramp.bottom_center) > 5 and unit.distance_to(ramp.top_center) > 4:
-                        self.ai.do(unit(AbilityId.SIEGEMODE_SIEGEMODE))
+                        unit(AbilityId.SIEGEMODE_SIEGEMODE)
                 elif (d > 6.5 and unit.type_id != UnitTypeId.SIEGETANKSIEGED) or d > 9:
                     self.combat.add_unit(unit)
 

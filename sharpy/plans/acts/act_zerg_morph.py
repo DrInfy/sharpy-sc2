@@ -37,7 +37,7 @@ class ActMorphBuilding(ActBase):
             for builder in fromUnits.ready:
                 if len(builder.orders) == 0:
                     self.knowledge.print(f"Tech started: {self.ability_type.name}")
-                    self.do(builder(self.ability_type))
+                    builder(self.ability_type)
                     return False
 
         self.knowledge.reserve(cost.minerals, cost.vespene)

@@ -28,9 +28,9 @@ class JumpIn(ActBase):
             self.done = True
             for bc in bcs:
                 self.knowledge.cooldown_manager.used_ability(bc.tag, AbilityId.EFFECT_TACTICALJUMP)
-                self.do(
-                    bc(AbilityId.EFFECT_TACTICALJUMP, self.knowledge.enemy_main_zone.behind_mineral_position_center)
-                )
+
+                bc(AbilityId.EFFECT_TACTICALJUMP, self.zone_manager.enemy_main_zone.behind_mineral_position_center)
+
         return True
 
 

@@ -86,7 +86,7 @@ class WarpUnit(ActBase):
                         # return ActionResult.CantFindPlacementLocation
                         self.knowledge.print("can't find place to warp in")
                         return False
-                    self.do(warpgate.warp_in(unit_type, placement))
+                    warpgate.warp_in(unit_type, placement)
 
         elif self.priority:
             unit = self.ai._game_data.units[unit_type.value]

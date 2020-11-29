@@ -71,7 +71,7 @@ class WorkerCounterAttack(ActBase):
 
         old_defenders = defenders.tags_not_in(self.tags)
         for unit in old_defenders:
-            self.do(unit.stop())
+            unit.stop()
         return army
 
     def handle_counter(self) -> bool:
@@ -90,7 +90,7 @@ class WorkerCounterAttack(ActBase):
 
         for attacker in attackers:  # type: Unit
             if attacker.weapon_cooldown > 10 and attacker.shield_health_percentage < 0.5:
-                self.do(attacker.gather(self.gather_mf))
+                attacker.gather(self.gather_mf)
             else:
                 own = self.cache.own_in_range(attacker.position, 3).amount
                 enemies = self.cache.enemy_in_range(attacker.position, 3)
@@ -104,7 +104,7 @@ class WorkerCounterAttack(ActBase):
                         # On other option but to fight
                         self.combat.add_units(attackers)
                     else:
-                        self.do(attacker.gather(self.gather_mf))
+                        attacker.gather(self.gather_mf)
 
-        self.combat.execute(self.knowledge.enemy_main_zone.center_location)
+        self.combat.execute(self.zone_manager.enemy_main_zone.center_location)
         return False

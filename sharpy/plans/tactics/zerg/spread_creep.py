@@ -54,7 +54,7 @@ class SpreadCreep(ActBase):
                 position = self.get_next_creep_tumor_position(tumor)
                 if position is not None:
                     self.knowledge.cooldown_manager.used_ability(tumor.tag, AbilityId.BUILD_CREEPTUMOR_TUMOR)
-                    self.do(tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position))
+                    tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position)
 
     async def spawn_creep_tumors(self):
         all_queens = self.cache.own(UnitTypeId.QUEEN)  # todo: include burrowed queens?
@@ -68,7 +68,7 @@ class SpreadCreep(ActBase):
                 queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4
             ):
                 position = self.get_next_plant_position(queen)
-                self.do(queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position))
+                queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position)
 
     def get_next_plant_position(self, queen: Unit) -> Optional[Point2]:
         pos = queen.position

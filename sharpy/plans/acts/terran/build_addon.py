@@ -51,7 +51,7 @@ class BuildAddon(ActBase):
                 if await self.ai.find_placement(UnitTypeId.SUPPLYDEPOT, center, 0, False):
                     self.tried_to_build_dict[builder.tag] = self.ai.time
                     self.print(f"{self.unit_type} to {center}")
-                    self.do(builder.build(self.unit_type))
+                    builder.build(self.unit_type)
                 else:
                     self.print("no space")
         return False

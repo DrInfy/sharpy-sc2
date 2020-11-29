@@ -1,4 +1,5 @@
 # Cancels a building when it's about to get destroyed
+from sharpy.managers.extensions import PreviousUnitsManager
 from sharpy.plans.acts import ActBase
 from sc2.unit import Unit
 from sc2.constants import *
@@ -9,6 +10,10 @@ class PlanCancelBuilding(ActBase):
     def __init__(self):
         super().__init__()
 
+    async def start(self, knowledge: "SkeletonKnowledge"):
+        await super().start(knowledge)
+        self.previous_units_manager = knowledge.get_required_manager(PreviousUnitsManager)
+
     async def execute(self) -> bool:
         for building in self.ai.structures:  # type: Unit
             if 1 > building.build_progress > 0:
@@ -16,13 +21,13 @@ class PlanCancelBuilding(ActBase):
                     self.print(
                         f"Cancelled {building.type_id.name} at {building.position} with {building.health} health"
                     )
-                    self.do(building(AbilityId.CANCEL_BUILDINPROGRESS))
+                    building(AbilityId.CANCEL_BUILDINPROGRESS)
         return True
 
     def building_going_down(self, building: Unit) -> bool:
         """Returns boolean indicating whether a building is low on health and under attack."""
-        if building.tag in self.knowledge.previous_units_manager.previous_units:
-            previous_building = self.knowledge.previous_units_manager.previous_units[building.tag]
+        if building.tag in self.previous_units_manager.previous_units:
+            previous_building = self.previous_units_manager.previous_units[building.tag]
             health = building.health
             compare_health = max(70, building.health_max * 0.09)
             if health < previous_building.health < compare_health:

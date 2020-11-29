@@ -91,14 +91,11 @@ class ActUnit(ActBase):
                         continue
 
                     if self.knowledge.cooldown_manager.is_ready(builder.tag, unit_data.creation_ability.id):
-                        pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
-                        self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
-
-                        self.knowledge.reserve(cost.minerals, cost.vespene)
-                        if self.allow_new_action(builder):
-                            # Only do this when it is actually good idea
-                            self.do(builder.train(self.unit_type))
-                        break  # Only one at a time
+                        if builder.train(self.unit_type):
+                            pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
+                            self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
+                            self.knowledge.reserve(cost.minerals, cost.vespene)
+                            break  # Only one at a time
                     elif self.priority:
                         self.knowledge.reserve(cost.minerals, cost.vespene)
 

@@ -135,7 +135,7 @@ class PlanWorkerOnlyDefense(ActBase):
             closest_to_this = combined_enemies.closest_to(unit)
 
             if closest_to_this.distance_to(unit) < self.unit_values.real_range(unit, closest_to_this):
-                self.do(unit.attack(closest_to_this))
+                unit.attack(closest_to_this)
             else:
                 await self.regroup(army, unit)
         else:
@@ -143,7 +143,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
     async def regroup(self, army, unit):
         if self.unit_values.is_worker(unit):
-            self.do(unit.gather(self.gather_mf))
+            unit.gather(self.gather_mf)
         else:
             self.knowledge.combat_manager.add_unit(unit)
 
@@ -229,7 +229,7 @@ class PlanWorkerOnlyDefense(ActBase):
         if fighters:
             for fighter in fighters:  # type: Unit
                 self.roles.set_task(UnitTask.Defending, fighter)
-                self.do(fighter.attack(target))
+                fighter.attack(target)
                 self.defender_tags.append(fighter.tag)
                 return
 
@@ -238,7 +238,7 @@ class PlanWorkerOnlyDefense(ActBase):
             for unit in already_defending:  # type: Unit
                 if self.ready_to_defend(unit):
                     count += 1
-                    self.do(unit.attack(target))
+                    unit.attack(target)
                     self.defender_tags.append(unit.tag)
                     self.roles.set_task(UnitTask.Defending, unit)
                     if count >= defender_count:
@@ -247,7 +247,7 @@ class PlanWorkerOnlyDefense(ActBase):
         for unit in workers.sorted_by_distance_to(target.position):  # type: Unit
             if self.ready_to_defend(unit):
                 count += 1
-                self.do(unit.attack(target))
+                unit.attack(target)
                 self.defender_tags.append(unit.tag)
                 self.roles.set_task(UnitTask.Defending, unit)
                 if count >= defender_count:
@@ -260,7 +260,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         for unit in to_clear:
             if unit.is_gathering or unit.is_attacking:
-                self.do(unit.stop())
+                unit.stop()
 
     async def debug_actions(self):
         if self.was_active:

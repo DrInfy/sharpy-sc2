@@ -67,7 +67,7 @@ class ProxyZealots(ActBase):
             if worker.tag not in self.ai.unit_tags_received_action:
                 target = self.pather.find_weak_influence_ground(self.proxy_location, 10)
                 self.pather.find_influence_ground_path(worker.position, target)
-                self.ai.do(worker.move(self.proxy_location))
+                worker.move(self.proxy_location)
 
         if (
             not selected
@@ -75,12 +75,12 @@ class ProxyZealots(ActBase):
             and self.ai.workers.amount < 17
             and len(nexus.orders) == 0
         ):
-            self.do(nexus.train(UnitTypeId.PROBE))
+            nexus.train(UnitTypeId.PROBE)
 
         if gateways.ready.amount > 0 and self.ai.can_afford(UnitTypeId.ZEALOT):
             for gate in gateways.ready:
                 if len(gate.orders) == 0:
-                    self.ai.do(gate.train(UnitTypeId.ZEALOT))
+                    gate.train(UnitTypeId.ZEALOT)
                     return
 
     async def execute(self) -> bool:

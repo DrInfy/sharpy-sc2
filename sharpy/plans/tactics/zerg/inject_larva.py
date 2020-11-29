@@ -61,7 +61,7 @@ class InjectLarva(ActBase):
 
                         cq = all_queens.closest_to(town_hall)
                         if cq is queen:
-                            self.do(queen(AbilityId.EFFECT_INJECTLARVA, town_hall))
+                            queen(AbilityId.EFFECT_INJECTLARVA, town_hall)
                             if force_inject:
                                 self.roles.set_task(UnitTask.Reserved, queen)
                             injected_halls.append(town_hall.tag)

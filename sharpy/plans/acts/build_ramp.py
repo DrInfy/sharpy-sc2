@@ -37,7 +37,7 @@ class ActBuildingRamp(ActBuilding):
         if self.knowledge.can_afford(self.unit_type):
             self.print(f"Building {self.unit_type.name} to {position}")
             # await ai.build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
-            self.do(worker.build(self.unit_type, position))
+            worker.build(self.unit_type, position)
         else:
             unit = self.ai._game_data.units[self.unit_type.value]
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
@@ -49,7 +49,7 @@ class ActBuildingRamp(ActBuilding):
             ) and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
 
                 if worker is not None:
-                    self.do(worker.move(position))
+                    worker.move(position)
 
             self.knowledge.reserve(cost.minerals, cost.vespene)
 

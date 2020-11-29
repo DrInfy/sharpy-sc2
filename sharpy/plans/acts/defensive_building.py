@@ -84,7 +84,7 @@ class DefensiveBuilding(ActBase):
 
                 if position is not None:
                     self.print(f"Building {self.unit_type.name} to {position}")
-                    self.do(worker.build(self.unit_type, position))
+                    worker.build(self.unit_type, position)
                     self.set_worker(worker)
                 else:
                     self.print(f"Could not build {self.unit_type.name} to {position}")

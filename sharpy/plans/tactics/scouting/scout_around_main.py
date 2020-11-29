@@ -46,7 +46,7 @@ class ScoutAroundMain(ScoutBaseAction):
             target = self.pather.find_influence_ground_path(center, self.current_target)
 
         for unit in self._units:
-            self.do(unit.move(target))
+            unit.move(target)
 
         if center.distance_to(self.current_target) < self.distance_to_reach:
             if self.scout_locations:

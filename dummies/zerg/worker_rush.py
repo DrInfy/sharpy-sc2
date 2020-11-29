@@ -189,10 +189,10 @@ class WorkerAttack(ActBase):
         for fighter in fighters:  # type: Unit
             self.tags.append(fighter.tag)
             if fighter.health > 5 and fighter.distance_to(attack_zone.center_location) > 20:
-                self.do(fighter.move(attack_zone.center_location))
+                fighter.move(attack_zone.center_location)
             elif fighter.health < 6 and enemy_natural.mineral_fields.exists:
                 mf = enemy_natural.mineral_fields.closest_to(fighter)
-                self.do(fighter.gather(mf))
+                fighter.gather(mf)
             else:
                 if attack_zone.known_enemy_units.not_structure.closer_than(4, fighter).exists:
                     target = attack_zone.known_enemy_units.not_structure.closest_to(fighter).position

@@ -74,7 +74,7 @@ class PlanZoneGather(ActBase):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
             pos = pos.towards(self.current_gather_point, 3)
-            self.do(unit(sc2.AbilityId.RALLY_BUILDING, pos))
+            unit(sc2.AbilityId.RALLY_BUILDING, pos)
             self.gather_set.append(unit.tag)
 
         await self.manage_blocker()
@@ -120,11 +120,11 @@ class PlanZoneGather(ActBase):
 
                     if self.should_hold_position(target_position):
                         if unit.distance_to(target_position) < 0.2:
-                            self.do(unit.hold_position())
+                            unit.hold_position()
                         elif self.ai.enemy_units.exists and self.ai.enemy_units.closest_distance_to(unit) < 2:
-                            self.do(unit.attack(target_position))
+                            unit.attack(target_position)
                         else:
-                            self.do(unit.move(target_position))
+                            unit.move(target_position)
                     else:
                         if self.natural_wall:
                             chill_position = target_position
@@ -133,9 +133,9 @@ class PlanZoneGather(ActBase):
                             chill_position = target_position.towards(top_center, -1)
 
                         if unit.distance_to(chill_position) > 4:
-                            self.do(unit.move(chill_position))
+                            unit.move(chill_position)
                         elif unit.orders and unit.orders[0].ability.id == AbilityId.HOLDPOSITION:
-                            self.do(unit.stop())
+                            unit.stop()
                 else:
                     await self.remove_gate_keeper()
 
@@ -146,7 +146,7 @@ class PlanZoneGather(ActBase):
                     # Register tag
                     self.blocker_tag = unit.tag
                     self.roles.set_task(UnitTask.Reserved, unit)
-                    self.do(unit.attack(target_position))
+                    unit.attack(target_position)
 
     @property
     def natural_wall(self) -> bool:
@@ -157,7 +157,7 @@ class PlanZoneGather(ActBase):
         if self.blocker_tag is not None:
             unit = self.cache.by_tag(self.blocker_tag)
             if unit is not None:
-                self.do(unit.attack(self.current_gather_point))
+                unit.attack(self.current_gather_point)
             self.roles.clear_task(self.blocker_tag)
             self.blocker_tag = None
 

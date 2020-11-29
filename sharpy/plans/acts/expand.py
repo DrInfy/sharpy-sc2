@@ -149,7 +149,7 @@ class Expand(ActBase):
             # Go wait
             self.set_worker(worker)
 
-            self.do(worker.move(position))
+            worker.move(position)
 
     def set_worker(self, worker: Optional[Unit]) -> bool:
         if worker:
@@ -170,7 +170,7 @@ class Expand(ActBase):
 
         if worker is not None:
             self.print(f"Expanding to {expand_here.center_location}!")
-            self.do(worker.build(self.townhall_type, expand_here.center_location))
+            worker.build(self.townhall_type, expand_here.center_location)
 
     async def debug_actions(self):
         if self.builder_tag is not None:

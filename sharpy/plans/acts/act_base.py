@@ -68,10 +68,6 @@ class ActBase(Component, ABC):
     async def debug_actions(self):
         pass
 
-    def do(self, action: UnitCommand):
-        self.knowledge.action_handler.action_made(action)
-        self.ai.do(action)
-
     def allow_new_action(self, unit: Unit) -> bool:
         """
         Only use this check for critical orders that must not duplicated

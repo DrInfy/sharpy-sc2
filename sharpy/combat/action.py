@@ -24,7 +24,7 @@ class Action:
         self.is_final = False
         self.debug_comment = debug_comment
 
-    def to_commmand(self, unit: Unit) -> UnitCommand:
+    def to_commmand(self, unit: Unit) -> bool:
         if self.ability is not None:
             action = unit(self.ability, self.target)
         elif self.is_attack:
@@ -38,5 +38,5 @@ class NoAction(Action):
     def __init__(self):
         super().__init__(None, False)
 
-    def to_commmand(self, unit: Unit) -> UnitCommand:
-        return None
+    def to_commmand(self, unit: Unit) -> bool:
+        return False

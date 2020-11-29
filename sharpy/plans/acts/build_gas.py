@@ -107,13 +107,12 @@ class BuildGas(ActBase):
 
             self.builder_tag = worker.tag
 
-            cmd = worker.build_gas(target, queue=self.has_build_order(worker))
-            self.do(cmd)
+            worker.build_gas(target, queue=self.has_build_order(worker))
 
             if self.ai.race == Race.Protoss:
                 # Protoss only do something else after starting gas
                 mf = self.ai.mineral_field.closest_to(worker)
-                self.ai.do(worker.gather(mf, queue=True))
+                worker.gather(mf, queue=True)
 
             self.print(f"Building {self.unit_type.name} to {target.position}")
         return False

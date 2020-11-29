@@ -207,6 +207,6 @@ class WorkerScout(ActBase):
             self.target_location_reached()
 
         if self.scout is not None and self.current_target is not None:
-            self.do(self.scout.move(self.current_target))
+            self.scout.move(self.current_target)
 
         return True  # Non blocking

@@ -409,12 +409,12 @@ class Zone:
         if len(self.mineral_fields) > 0:
             # Go to mine in this zone
             mf = self.mineral_fields[0]
-            self.ai.do(unit.gather(mf))
+            unit.gather(mf)
         elif self.ai.townhalls.exists and self.ai.mineral_field.exists:
             closest_base = self.ai.townhalls.closest_to(self.center_location)
             # Go to mine in some other base
             mf = self.ai.mineral_field.closest_to(closest_base)
-            self.ai.do(unit.gather(mf))
+            unit.gather(mf)
 
     def _find_ramp(self, ai) -> Optional[ExtendedRamp]:
         if not self.ai.game_info.map_ramps:

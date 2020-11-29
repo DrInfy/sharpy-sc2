@@ -312,7 +312,7 @@ class DistributeWorkers(ActBase):
 
         if worker.is_carrying_resource and townhalls:
             closest = townhalls.closest_to(worker)
-            self.do(worker(AbilityId.SMART, closest))
-            self.do(worker.gather(work, queue=True))
+            worker(AbilityId.SMART, closest)
+            worker.gather(work, queue=True)
         else:
-            self.do(worker.gather(work))
+            worker.gather(work)

@@ -56,7 +56,7 @@ class PlanHeatDefender(ActBase):
             closest = ground_enemies.closest_to(adept)
             if self.tag_shift_used_dict.get(adept.tag, 0) + self.cooldown < self.knowledge.ai.time:
                 self.tag_shift_used_dict[adept.tag] = self.knowledge.ai.time
-                self.do(adept(sc2.AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, closest.position))
+                adept(sc2.AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, closest.position)
             else:
                 self.combat.add_unit(adept)
                 shades = self.knowledge.ai.units(UnitTypeId.ADEPTPHASESHIFT)

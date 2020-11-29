@@ -379,7 +379,7 @@ class ExecuteAddonSwap(ActBase):
             self.knowledge.building_solver.structure_target_move_location.pop(unit.tag)
         # Structure is landed but not in right position: lift
         elif unit.position != land_location and not unit.is_flying and unit.is_idle:
-            self.do(unit(AbilityId.LIFT))
+            unit(AbilityId.LIFT)
         # Structure is flying but not close to land location, order move command
         elif (
             unit.is_flying
@@ -387,8 +387,8 @@ class ExecuteAddonSwap(ActBase):
             and (not unit.is_moving or isinstance(unit.order_target, Point2) and unit.order_target != land_location)
             and not unit.is_using_ability(AbilityId.LIFT)
         ):
-            self.do(unit.move(land_location))
+            unit.move(land_location)
         # Structure is close to land location but flying, order land command
         elif unit.is_flying and land_location.distance_to(unit) < 2 and not unit.is_using_ability(AbilityId.LAND):
             # TODO If land location is blocked, attempt to find another land location instead
-            self.do(unit(AbilityId.LAND, land_location))
+            unit(AbilityId.LAND, land_location)

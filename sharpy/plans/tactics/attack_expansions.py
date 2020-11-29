@@ -15,7 +15,7 @@ class PlanFinishEnemy(ActBase):
         target = await self.find_attack_position(self.ai)
         for unit in self.ai.units.idle:  # type: Unit
             if self.knowledge.should_attack(unit):
-                self.do(unit.attack(target))
+                unit.attack(target)
                 self.roles.set_task(UnitTask.Attacking, unit)
 
         # Refresh roles
