@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 
 from sharpy.interfaces import IZoneManager
+from sharpy.managers.extensions import BuildDetector
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -95,7 +96,7 @@ class BuildBio(BuildOrder):
                 Expand(2),
                 skip_until=Any(
                     [
-                        RequireCustom(lambda k: not k.possible_rush_detected),
+                        RequireCustom(lambda k: not self.rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
                     ]
                 ),
@@ -105,13 +106,13 @@ class BuildBio(BuildOrder):
                 CancelBuilding(UnitTypeId.COMMANDCENTER, 1),
                 skip=Any(
                     [
-                        RequireCustom(lambda k: not k.possible_rush_detected),
+                        RequireCustom(lambda k: not self.rush_detected),
                         UnitExists(UnitTypeId.SIEGETANK, 2, include_killed=True),
                     ]
                 ),
             ),
-            Step(None, self.rush_bunker, skip_until=lambda k: k.possible_rush_detected),
-            Step(None, GridBuilding(UnitTypeId.BARRACKS, 2), skip_until=lambda k: k.possible_rush_detected),
+            Step(None, self.rush_bunker, skip_until=lambda k: self.rush_detected),
+            Step(None, GridBuilding(UnitTypeId.BARRACKS, 2), skip_until=lambda k: self.rush_detected),
             GridBuilding(UnitTypeId.SUPPLYDEPOT, 2, priority=True),
             BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
             GridBuilding(UnitTypeId.FACTORY, 1),
@@ -183,7 +184,12 @@ class BuildBio(BuildOrder):
     async def start(self, knowledge: "SkeletonKnowledge"):
         await super().start(knowledge)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.build_detector = knowledge.get_required_manager(BuildDetector)
         self.rush_bunker.position = self.zone_manager.expansion_zones[0].ramp.ramp.barracks_in_middle
+
+    @property
+    def rush_detected(self) -> bool:
+        return self.build_detector.rush_detected
 
     async def execute(self) -> bool:
         if not self.worker_rushed and self.ai.time < 120:
@@ -198,6 +204,9 @@ class BioBot(KnowledgeBot):
     def __init__(self):
         super().__init__("Rusty Infantry")
         self.attack = PlanZoneAttack(26)
+
+    def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        return [BuildDetector()]
 
     async def create_plan(self) -> BuildOrder:
         self.knowledge.data_manager.set_build("bio")

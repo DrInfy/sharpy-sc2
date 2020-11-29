@@ -1,6 +1,8 @@
 import enum
 import sys
 from typing import Dict, List, TYPE_CHECKING
+
+from sharpy.interfaces import IEnemyUnitsManager
 from sharpy.managers.core.manager_base import ManagerBase
 
 if TYPE_CHECKING:
@@ -52,6 +54,8 @@ class EnemyMacroBuild(enum.IntEnum):
 class BuildDetector(ManagerBase):
     """Enemy build detector."""
 
+    enemy_units_manager: IEnemyUnitsManager
+
     def __init__(self):
         super().__init__()
         self.rush_build = EnemyRushBuild.Macro
@@ -64,7 +68,7 @@ class BuildDetector(ManagerBase):
         # Timings when the unit was first seen or our estimate when structure was started building
         self.timings: Dict[UnitTypeId, List[float]] = dict()
 
-    async def start(self, knowledge: "Knowledge"):
+    async def start(self, knowledge: "SkeletonKnowledge"):
         # Just put them all her in order to avoid any issues with random enemy types
         if knowledge.ai.enemy_race == Race.Terran:
             self.timings[UnitTypeId.COMMANDCENTER] = [0]
@@ -77,7 +81,9 @@ class BuildDetector(ManagerBase):
             self.timings[UnitTypeId.NEXUS] = [0]
             self.timings[UnitTypeId.HATCHERY] = [0]
 
-        return await super().start(knowledge)
+        await super().start(knowledge)
+
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
 
     @property
     def rush_detected(self):
@@ -126,8 +132,7 @@ class BuildDetector(ManagerBase):
         """Returns true if the structure is the first townhall for a player."""
         # note: this does not handle a case if Terran flies its first CC to another position
         return (
-            structure.position == self.knowledge.likely_enemy_start_location
-            and structure.type_id in townhall_start_types
+            structure.position == self.zone_manager.enemy_start_location and structure.type_id in townhall_start_types
         )
 
     async def post_update(self):
@@ -163,8 +168,8 @@ class BuildDetector(ManagerBase):
             # Worker rush can never change to anything else
             return
 
-        workers_close = self.knowledge.known_enemy_workers.filter(
-            lambda u: u.distance_to(self.ai.start_location) < u.distance_to(self.knowledge.likely_enemy_start_location)
+        workers_close = self.cache.enemy_workers.filter(
+            lambda u: u.distance_to(self.ai.start_location) < u.distance_to(self.zone_manager.enemy_start_location)
         )
 
         if workers_close.amount > 9:
@@ -186,7 +191,7 @@ class BuildDetector(ManagerBase):
         only_nexus_seen = False
 
         for enemy_nexus in self.cache.enemy(UnitTypeId.NEXUS):  # type: Unit
-            if enemy_nexus.position == self.knowledge.enemy_main_zone.center_location:
+            if enemy_nexus.position == self.zone_manager.enemy_main_zone.center_location:
                 only_nexus_seen = True
             else:
                 self._set_rush(EnemyRushBuild.Macro)
@@ -202,7 +207,7 @@ class BuildDetector(ManagerBase):
             # early game and we have seen enemy Nexus
             close_gateways = (
                 self.ai.enemy_structures(UnitTypeId.GATEWAY)
-                .closer_than(30, self.knowledge.enemy_main_zone.center_location)
+                .closer_than(30, self.zone_manager.enemy_main_zone.center_location)
                 .amount
             )
             core = self.ai.enemy_structures(UnitTypeId.CYBERNETICSCORE).exists
@@ -230,7 +235,7 @@ class BuildDetector(ManagerBase):
         for enemy_cc in self.cache.enemy(
             [UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS]
         ):  # type: Unit
-            if enemy_cc.position == self.knowledge.enemy_main_zone.center_location:
+            if enemy_cc.position == self.zone_manager.enemy_main_zone.center_location:
                 only_cc_seen = True
             else:
                 return self._set_rush(EnemyRushBuild.Macro)  # enemy has expanded, no rush detection
@@ -239,7 +244,7 @@ class BuildDetector(ManagerBase):
             # early game and we have seen enemy CC
             close_barracks = (
                 self.ai.enemy_structures(UnitTypeId.BARRACKS)
-                .closer_than(30, self.knowledge.enemy_main_zone.center_location)
+                .closer_than(30, self.zone_manager.enemy_main_zone.center_location)
                 .amount
             )
 
@@ -261,11 +266,11 @@ class BuildDetector(ManagerBase):
 
     def _zerg_rushes(self):
         hatcheries: Units = self.cache.enemy(UnitTypeId.HATCHERY)
-        if len(hatcheries) > 2 or self.knowledge.enemy_units_manager.enemy_worker_count > 20:
+        if len(hatcheries) > 2 or self.enemy_units_manager.enemy_worker_count > 20:
             # enemy has expanded TWICE or has large amount of workers, that's no rush
             return self._set_rush(EnemyRushBuild.Macro)
 
-        if self.knowledge.building_started_before(UnitTypeId.ROACHWARREN, 130) or (
+        if self.building_started_before(UnitTypeId.ROACHWARREN, 130) or (
             self.ai.time < 160 and self.cache.enemy(UnitTypeId.ROACH)
         ):
             return self._set_rush(EnemyRushBuild.RoachRush)
@@ -273,10 +278,10 @@ class BuildDetector(ManagerBase):
         # 12 pool starts at 20sec
         # 13 pool starts at 23sec
         # 14 pool starts at 27sec
-        if self.knowledge.building_started_before(UnitTypeId.SPAWNINGPOOL, 26):
+        if self.building_started_before(UnitTypeId.SPAWNINGPOOL, 26):
             return self._set_rush(EnemyRushBuild.Pool12)
 
-        if self.knowledge.building_started_before(UnitTypeId.SPAWNINGPOOL, 40):
+        if self.building_started_before(UnitTypeId.SPAWNINGPOOL, 40):
             # Very early pool detected
             return self._set_rush(EnemyRushBuild.PoolFirst)
 
@@ -284,7 +289,7 @@ class BuildDetector(ManagerBase):
             self.ai.time > 120
             and self.ai.time < 130
             and self.ai.enemy_structures(UnitTypeId.HATCHERY).amount == 1
-            and self.knowledge.building_started_before(UnitTypeId.SPAWNINGPOOL, 70)
+            and self.building_started_before(UnitTypeId.SPAWNINGPOOL, 70)
         ):
             return self._set_rush(EnemyRushBuild.OneHatcheryAllIn)
 
@@ -300,7 +305,7 @@ class BuildDetector(ManagerBase):
             self.started(UnitTypeId.HATCHERY, 1) < 50
             and self.started(UnitTypeId.EXTRACTOR) < 70
             and self.started(UnitTypeId.SPAWNINGPOOL) < 70
-            and self.knowledge.enemy_units_manager.enemy_worker_count < 17
+            and self.enemy_units_manager.enemy_worker_count < 17
             # and self.cache.enemy(UnitTypeId.LARVA).amount >= 3
         ):
             return self._set_rush(EnemyRushBuild.HatchPool15_14)
@@ -317,10 +322,10 @@ class BuildDetector(ManagerBase):
                 self.macro_build = EnemyMacroBuild.Banshees
             elif self.ai.time > 7 * 60 and self.ai.time < 8 * 60:
                 mmm_check = (
-                    self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MARINE)
-                    > self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MARAUDER)
+                    self.enemy_units_manager.unit_count(UnitTypeId.MARINE)
+                    > self.enemy_units_manager.unit_count(UnitTypeId.MARAUDER)
                     > 15
-                    > self.knowledge.enemy_units_manager.unit_count(UnitTypeId.MEDIVAC)
+                    > self.enemy_units_manager.unit_count(UnitTypeId.MEDIVAC)
                     > 0
                 )
                 if mmm_check:
@@ -342,3 +347,14 @@ class BuildDetector(ManagerBase):
 
         if self.macro_build != EnemyMacroBuild.StandardMacro:
             self.print(f"Enemy normal build recognized as {self.macro_build.name}")
+
+    def building_started_before(self, type_id: UnitTypeId, start_time_ceiling: int) -> bool:
+        """Returns true if a building of type type_id has been started before start_time_ceiling seconds."""
+        for unit in self.cache.enemy(type_id):  # type: Unit
+            # fixme: for completed buildings this will report a time later than the actual start_time.
+            # not fatal, but may be misleading.
+            start_time = self.unit_values.building_start_time(self.ai.time, unit.type_id, unit.build_progress)
+            if start_time is not None and start_time < start_time_ceiling:
+                return True
+
+        return False

@@ -20,7 +20,7 @@ class UnitRoleManager(ManagerBase):
         self.role_count = UnitRoleManager.MAX_VALUE
         self.had_task_set: Set[int] = set()
         # If this is True, then units will drop their role if it wasn't set in previous iteration
-        self.set_tag_each_iteration = False
+        self.set_tag_each_iteration = True
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)

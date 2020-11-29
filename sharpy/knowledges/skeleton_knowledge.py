@@ -167,6 +167,16 @@ class SkeletonKnowledge:
         self.reserved_minerals += minerals
         self.reserved_gas += gas
 
+    def reserve_costs(self, item_id: sc2.Union[UnitTypeId, UpgradeId, AbilityId]):
+        if isinstance(item_id, UnitTypeId):
+            unit = self.ai._game_data.units[item_id.value]
+            cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
+        elif isinstance(item_id, UpgradeId):
+            cost = self.ai._game_data.upgrades[item_id.value].cost
+        else:
+            cost = self.ai._game_data.calculate_ability_cost(item_id)
+        self.reserve(cost.minerals, cost.vespene)
+
     def can_afford(self, item_id: sc2.Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         """Tests if the player has enough resources to build a unit or cast an ability even after reservations."""
         enough_supply = True

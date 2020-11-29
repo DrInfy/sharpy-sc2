@@ -17,5 +17,5 @@ class TerranUnit(ActUnit):
         count = super().get_unit_count()
 
         if self.only_once:
-            count += self.knowledge.lost_units_manager.own_lost_type(self.unit_type)
+            count += self.lost_units_manager.own_lost_type(self.unit_type)
         return count
