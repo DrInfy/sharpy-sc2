@@ -1,8 +1,10 @@
 import pytest
 from unittest import mock
 
-from sharpy.knowledges import Knowledge
-from sharpy.managers.core import DataManager, ManagerBase
+
+from sharpy.knowledges import SkeletonKnowledge
+from sharpy.managers.core import ManagerBase
+from sharpy.managers.extensions import DataManager
 
 
 class TestDataManager(DataManager):
@@ -22,11 +24,11 @@ class CustomTestManager(ManagerBase):
         pass
 
 
-class TestKnowledge:
+class TestSkeletonKnowledge:
     @pytest.mark.asyncio
     async def test_get_DataManager(self):
-        knowledge = Knowledge()
-        knowledge._set_managers(None)
+        knowledge = SkeletonKnowledge()
+        knowledge._set_managers([DataManager()])
 
         data_manager = knowledge.get_manager(DataManager)
 
@@ -35,9 +37,8 @@ class TestKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_DataManager_from_override(self):
-        knowledge = Knowledge()
-        knowledge.data_manager = TestDataManager()
-        knowledge._set_managers(None)
+        knowledge = SkeletonKnowledge()
+        knowledge._set_managers([TestDataManager()])
 
         data_manager = knowledge.get_manager(DataManager)
 
@@ -47,9 +48,8 @@ class TestKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_TestDataManager_from_override(self):
-        knowledge = Knowledge()
-        knowledge.data_manager = TestDataManager()
-        knowledge._set_managers(None)
+        knowledge = SkeletonKnowledge()
+        knowledge._set_managers([TestDataManager()])
 
         data_manager = knowledge.get_manager(TestDataManager)
 
@@ -60,7 +60,7 @@ class TestKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_CustomManager_from_override(self):
-        knowledge = Knowledge()
+        knowledge = SkeletonKnowledge()
         knowledge._set_managers([CustomTestManager()])
 
         custom_manager = knowledge.get_manager(CustomTestManager)
@@ -72,7 +72,7 @@ class TestKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_None_CustomManager_not_set(self):
-        knowledge = Knowledge()
+        knowledge = SkeletonKnowledge()
         knowledge._set_managers(None)
 
         custom_manager = knowledge.get_manager(CustomTestManager)

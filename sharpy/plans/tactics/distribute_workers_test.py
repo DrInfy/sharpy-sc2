@@ -1,20 +1,28 @@
 import math
 import sys
 from random import randint
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import pytest
 from unittest import mock
 
 from sc2 import UnitTypeId, Race, BotAI, AbilityId
 from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE, IS_MINE
+from sc2.game_data import AbilityData
 from sc2.position import Point2
 from sc2.unit import Unit
 
 from .distribute_workers import DistributeWorkers
-from ...general.zone import Zone
-from ...knowledges import SkeletonKnowledge
-from ...managers import UnitCacheManager, UnitRoleManager, ZoneManager, PathingManager
+from sharpy.general.zone import Zone
+from sharpy.knowledges import SkeletonKnowledge, SkeletonBot
+from sharpy.managers.core import (
+    UnitCacheManager,
+    UnitRoleManager,
+    ZoneManager,
+    PathingManager,
+    LostUnitsManager,
+    PreviousUnitsManager,
+)
 from sharpy.managers.core.roles import UnitTask
 from sharpy.managers.core.unit_value import BUILDING_IDS, UnitValue
 
@@ -28,9 +36,17 @@ async def fake(self):
     return None
 
 
+class MockBot(SkeletonBot):
+    def __init__(self):
+        self.distance_calculation_method = 0
+        self.unit_command_uses_self_do = False
+
+    def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        return []
+
+
 def mock_ai() -> BotAI:
-    ai = BotAI()
-    ai.unit_command_uses_self_do = True
+    ai = MockBot()
     ai._initialize_variables()
     # ai = mock.Mock(bot_object)
     ai._distances_override_functions(0)
@@ -48,7 +64,6 @@ def mock_ai() -> BotAI:
     ai.state.visibility.__getitem__ = lambda s, x: 2
 
     ai._client = mock.Mock()
-
     ai._game_info = mock.Mock()
     ai._game_info.player_start_location = MAIN_POINT
     ai._game_info.start_locations = [ENEMY_MAIN_POINT]
@@ -62,6 +77,13 @@ def mock_ai() -> BotAI:
 
     ai._game_data = mock.Mock()
     ai._game_data.unit_types = {}
+    ai._game_data.abilities = dict()
+    ability_proto_mock = mock.Mock()
+    ability_proto_mock.target = 4
+    ability_proto_mock.ability_id = AbilityId.HARVEST_GATHER.value
+    ability_proto_mock.remaps_to_ability_id = False
+    ability_mock = AbilityData(ai._game_data, ability_proto_mock)
+    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value] = ability_mock
     ai._game_data.units = {
         UnitTypeId.MINERALFIELD.value: mock.Mock(),
         UnitTypeId.PROBE.value: mock.Mock(),
@@ -70,8 +92,6 @@ def mock_ai() -> BotAI:
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].has_minerals = True
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].attributes = {}
     ai._game_data.units[UnitTypeId.PROBE.value].attributes = {}
-    ai._game_data.abilities = {AbilityId.HARVEST_GATHER.value: mock.Mock()}
-    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value].id = AbilityId.HARVEST_GATHER
 
     for typedata in BUILDING_IDS:
         ai._game_data.units[typedata.value] = mock.Mock()
@@ -95,6 +115,7 @@ async def mock_knowledge(ai) -> SkeletonKnowledge:
     knowledge.version_manager = mock.Mock()
     # pf = mock.Mock()
     knowledge.pathing_manager = PathingManager()
+
     knowledge.action_handler.start = fake
     knowledge.version_manager.start = fake
     knowledge.pathing_manager.start = fake
@@ -107,6 +128,8 @@ async def mock_knowledge(ai) -> SkeletonKnowledge:
         UnitCacheManager(),
         UnitValue(),
         UnitRoleManager(),
+        PreviousUnitsManager(),
+        LostUnitsManager(),
         knowledge.pathing_manager,
         ZoneManager(),
     ]
