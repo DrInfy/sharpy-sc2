@@ -159,7 +159,6 @@ class ProxyZealotRushBot(KnowledgeBot):
 
     async def create_plan(self) -> BuildOrder:
         building_solver = self.knowledge.get_required_manager(IBuildingSolver)
-        lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)
         building_solver.wall_type = WallType.ProtossMainProtoss
         attack = PlanZoneAttack(7)
         attack.retreat_multiplier = 0.3
