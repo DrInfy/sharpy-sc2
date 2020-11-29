@@ -7,16 +7,22 @@ from sharpy.interfaces import IGatherPointSolver
 
 
 class GatherPointSolver(ManagerBase, IGatherPointSolver):
+
     base_ramp: ExtendedRamp
 
     def __init__(self):
         super().__init__()
         self._expanding_to: Optional[Point2] = None
         self._gather_point = Point2((0, 0))
+        self._gather_point_set = False
 
     @property
     def gather_point(self) -> Point2:
         return self._gather_point
+
+    def set_gather_point(self, point: Point2):
+        self._gather_point = point
+        self._gather_point_set = True
 
     @property
     def expanding_to(self) -> Optional[Point2]:
@@ -31,7 +37,9 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
         self.base_ramp = self.zone_manager.expansion_zones[0].ramp
 
     async def update(self):
-        self._find_gather_point()
+        if not self._gather_point_set:
+            self._find_gather_point()
+        self._gather_point_set = False
 
     async def post_update(self):
         pass

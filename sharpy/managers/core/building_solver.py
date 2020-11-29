@@ -94,6 +94,8 @@ class WallFinder:
 
 
 class BuildingSolver(ManagerBase, IBuildingSolver):
+    base_ramp: "ExtendedRamp"
+
     def __init__(self):
         super().__init__()
         self.grid: BuildGrid = None
@@ -197,7 +199,7 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.grid = BuildGrid(self.knowledge)
-
+        self.base_ramp = self.zone_manager.expansion_zones[0].ramp
         self.color_zone(self.zone_manager.expansion_zones[0], ZoneArea.OwnMainZone)
         self.color_zone(self.zone_manager.expansion_zones[1], ZoneArea.OwnNaturalZone)
         self.color_zone(self.zone_manager.expansion_zones[2], ZoneArea.OwnThirdZone)
@@ -497,7 +499,7 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
             self.grid.fill_area(gate_pos, BlockerType.Building5x5, fill_padding)
 
     def protoss_wall(self):
-        ramp: "ExtendedRamp" = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
             zealot = ramp.positions.get(RampPosition.GateZealot)  # TODO: Incorrect!
@@ -506,7 +508,7 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
             self.wall_save(pylon, zealot, [gate, core])
 
     def zerg_wall(self):
-        ramp: "ExtendedRamp" = self.knowledge.base_ramp
+        ramp: "ExtendedRamp" = self.base_ramp
         if ramp and ramp.positions:
             pylon = ramp.positions.get(RampPosition.Away)
             zealot = ramp.positions.get(RampPosition.GateZealot)

@@ -10,6 +10,14 @@ class IGatherPointSolver(ABC):
     def gather_point(self) -> Point2:
         pass
 
+    @abstractmethod
+    def set_gather_point(self, point: Point2):
+        """
+        Setting gather point manually should remember it for the current frame.
+        @param point: new gather point
+        """
+        pass
+
     @property
     @abstractmethod
     def expanding_to(self) -> Optional[Point2]:
