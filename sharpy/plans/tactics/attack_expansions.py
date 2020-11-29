@@ -14,7 +14,7 @@ class PlanFinishEnemy(ActBase):
     async def execute(self):
         target = await self.find_attack_position(self.ai)
         for unit in self.ai.units.idle:  # type: Unit
-            if self.knowledge.should_attack(unit):
+            if self.unit_values.should_attack(unit):
                 unit.attack(target)
                 self.roles.set_task(UnitTask.Attacking, unit)
 

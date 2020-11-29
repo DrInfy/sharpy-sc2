@@ -13,7 +13,7 @@ from sc2.units import Units
 
 class PlanZoneAttack2(PlanZoneAttack):
     def _start_attack(self, power: ExtendedPower, attackers: Units):
-        drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.knowledge.enemy_start_location, 10)
+        drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.zone_manager.enemy_start_location, 10)
         self.retreat_multiplier = 0  # never retreat, never surrender
 
         for unit in drones:
