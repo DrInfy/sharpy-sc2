@@ -21,26 +21,46 @@ if TYPE_CHECKING:
 class KnowledgeBot(SkeletonBot, ABC):
     """Base class for bots that are built around Knowledge class."""
 
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.memory_manager = MemoryManager()
+        self.lost_units_manager = LostUnitsManager()
+        self.enemy_units_manager = EnemyUnitsManager()
+        self.unit_cache = UnitCacheManager()
+        self.unit_value = UnitValue()
+        self.roles = UnitRoleManager()
+        self.pathing_manager = PathingManager()
+        self.zone_manager = ZoneManager()
+        self.building_solver = BuildingSolver()
+        self.income_calculator = IncomeCalculator()
+        self.cooldown_manager = CooldownManager()
+        self.combat = GroupCombatManager()
+        self.heatmap_manager = HeatMapManager()
+        self.gather_point_solver = GatherPointSolver()
+        self.previous_units_manager = PreviousUnitsManager()
+        self.game_analyzer = GameAnalyzer()
+        self.data_manager = DataManager()
+
     async def on_start(self):
         """Allows initializing the bot when the game data is available."""
         managers = [
-            MemoryManager(),
-            LostUnitsManager(),
-            EnemyUnitsManager(),
-            UnitCacheManager(),
-            UnitValue(),
-            UnitRoleManager(),
-            PathingManager(),
-            ZoneManager(),
-            BuildingSolver(),
-            IncomeCalculator(),
-            CooldownManager(),
-            GroupCombatManager(),
-            HeatMapManager(),
-            GatherPointSolver(),
-            PreviousUnitsManager(),
-            GameAnalyzer(),
-            DataManager(),
+            self.memory_manager,
+            self.lost_units_manager,
+            self.enemy_units_manager,
+            self.unit_cache,
+            self.unit_value,
+            self.roles,
+            self.pathing_manager,
+            self.zone_manager,
+            self.building_solver,
+            self.income_calculator,
+            self.cooldown_manager,
+            self.combat,
+            self.heatmap_manager,
+            self.gather_point_solver,
+            self.previous_units_manager,
+            self.game_analyzer,
+            self.data_manager,
         ]
 
         user_managers = self.configure_managers()

@@ -45,7 +45,6 @@ class BattleCruisers(KnowledgeBot):
         pass
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
-        self.roles.set_tag_each_iteration = True
         return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:

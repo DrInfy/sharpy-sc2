@@ -3,6 +3,7 @@ from typing import Union, Callable, List
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
+from sharpy.interfaces import IZoneManager, IGameAnalyzer
 from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.plans.zerg import *
 
@@ -47,6 +48,9 @@ class RoachesAndHydrasAndLurkers(BuildOrder):
 
 
 class LurkerBuild(BuildOrder):
+    zone_manager: IZoneManager
+    game_analyzer: IGameAnalyzer
+
     def __init__(self):
         gas = SequentialList(
             [
@@ -130,12 +134,17 @@ class LurkerBuild(BuildOrder):
             ),
         )
 
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.game_analyzer = knowledge.get_required_manager(IGameAnalyzer)
+
     def build_workers(self, knowledge: Knowledge) -> bool:
-        for zone in knowledge.zone_manager.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             if zone.is_ours and zone.is_under_attack:
                 return False
 
-        return knowledge.game_analyzer.army_can_survive
+        return self.game_analyzer.army_can_survive
 
     def max_workers_reached(self, knowledge: Knowledge) -> bool:
         count = 1

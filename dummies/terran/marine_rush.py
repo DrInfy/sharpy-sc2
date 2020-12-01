@@ -2,6 +2,7 @@
 import random
 
 from sharpy.combat import MoveType
+from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -17,10 +18,11 @@ from sharpy.utils import select_build_index
 
 class DodgeRampAttack(PlanZoneAttack):
     async def execute(self) -> bool:
+        base_ramp = self.zone_manager.expansion_zones[-1].ramp
         for effect in self.ai.state.effects:
             if effect.id != "FORCEFIELD":
                 continue
-            pos: Point2 = self.knowledge.enemy_base_ramp.bottom_center
+            pos: Point2 = base_ramp.bottom_center
             for epos in effect.positions:
                 if pos.distance_to_point2(epos) < 5:
                     return await self.small_retreat()
@@ -40,10 +42,15 @@ class DodgeRampAttack(PlanZoneAttack):
 
 class MarineRushBot(KnowledgeBot):
     tactic_index: int
+    zone_manager: IZoneManager
 
     def __init__(self, build_name: str = "default"):
         super().__init__("Marine Rush")
         self.build_name = build_name
+
+    async def on_start(self):
+        await super().on_start()
+        self.zone_manager = self.knowledge.get_required_manager(IZoneManager)
 
     async def pre_step_execute(self):
         if self.tactic_index != 1 and self.time < 5 * 60:
