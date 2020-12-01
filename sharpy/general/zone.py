@@ -15,7 +15,7 @@ from sharpy.general.extended_power import ExtendedPower
 import enum
 
 if TYPE_CHECKING:
-    from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
     from sharpy.managers.core import ZoneManager
 
 
@@ -35,7 +35,7 @@ class Zone:
     ZONE_RADIUS_SQUARED = ZONE_RADIUS ** 2
     VESPENE_GEYSER_DISTANCE = 10
 
-    def __init__(self, center_location, is_start_location, knowledge: "SkeletonKnowledge", zone_manager: "ZoneManager"):
+    def __init__(self, center_location, is_start_location, knowledge: "Knowledge", zone_manager: "ZoneManager"):
         self.center_location: Point2 = center_location
         self.is_start_location: bool = is_start_location
 

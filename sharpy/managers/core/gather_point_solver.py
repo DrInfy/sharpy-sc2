@@ -32,7 +32,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
         self._expanding_to = target
         self._find_gather_point()  # Re check the gather point
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.base_ramp = self.zone_manager.expansion_zones[0].ramp
 

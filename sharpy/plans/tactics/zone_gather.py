@@ -10,7 +10,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.managers.core.roles import UnitTask
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sharpy.managers.core import UnitValue
 
 
@@ -31,7 +31,7 @@ class PlanZoneGather(ActBase):
     def gather_point(self) -> Point2:
         return self.current_gather_point_solver.gather_point
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.building_solver = knowledge.get_required_manager(IBuildingSolver)
         self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)

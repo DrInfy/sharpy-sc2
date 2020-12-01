@@ -2,7 +2,7 @@ import pytest
 from unittest import mock
 
 
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sharpy.managers.core import ManagerBase
 from sharpy.managers.extensions import DataManager
 
@@ -27,7 +27,7 @@ class CustomTestManager(ManagerBase):
 class TestSkeletonKnowledge:
     @pytest.mark.asyncio
     async def test_get_DataManager(self):
-        knowledge = SkeletonKnowledge()
+        knowledge = Knowledge()
         knowledge._set_managers([DataManager()])
 
         data_manager = knowledge.get_manager(DataManager)
@@ -37,7 +37,7 @@ class TestSkeletonKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_DataManager_from_override(self):
-        knowledge = SkeletonKnowledge()
+        knowledge = Knowledge()
         knowledge._set_managers([TestDataManager()])
 
         data_manager = knowledge.get_manager(DataManager)
@@ -48,7 +48,7 @@ class TestSkeletonKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_TestDataManager_from_override(self):
-        knowledge = SkeletonKnowledge()
+        knowledge = Knowledge()
         knowledge._set_managers([TestDataManager()])
 
         data_manager = knowledge.get_manager(TestDataManager)
@@ -60,7 +60,7 @@ class TestSkeletonKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_CustomManager_from_override(self):
-        knowledge = SkeletonKnowledge()
+        knowledge = Knowledge()
         knowledge._set_managers([CustomTestManager()])
 
         custom_manager = knowledge.get_manager(CustomTestManager)
@@ -72,7 +72,7 @@ class TestSkeletonKnowledge:
 
     @pytest.mark.asyncio
     async def test_get_None_CustomManager_not_set(self):
-        knowledge = SkeletonKnowledge()
+        knowledge = Knowledge()
         knowledge._set_managers(None)
 
         custom_manager = knowledge.get_manager(CustomTestManager)

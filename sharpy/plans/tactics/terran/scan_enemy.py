@@ -2,7 +2,7 @@ from typing import Optional
 
 from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions import HeatMapManager
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -18,7 +18,7 @@ class ScanEnemy(ActBase):
         self.last_stealth_scan = 0
         self.stealth_interval_seconds = 15
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.heat_map: HeatMapManager = knowledge.get_required_manager(HeatMapManager)
 

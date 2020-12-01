@@ -19,15 +19,15 @@ from sharpy.plans.sequential_list import SequentialList
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
 
 
 class BuildOrder(ActBase):
     def __init__(
         self,
         obj: Union[
-            Union[ActBase, list, Callable[["SkeletonKnowledge"], bool]],
-            List[Union[ActBase, list, Callable[["SkeletonKnowledge"], bool]]],
+            Union[ActBase, list, Callable[["Knowledge"], bool]],
+            List[Union[ActBase, list, Callable[["Knowledge"], bool]]],
         ],
         *argv,
     ):
@@ -280,7 +280,7 @@ class BuildOrder(ActBase):
             ),
         ]
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         for order in self.orders:
             await self.start_component(order, knowledge)

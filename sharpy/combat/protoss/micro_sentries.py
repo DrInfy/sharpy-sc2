@@ -34,7 +34,7 @@ class MicroSentries(GenericMicro):
         self.upcoming_fields: List[Point2] = []
         self.building_solver: Optional[BuildingSolver] = None
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         ramp_ff_movement = 2

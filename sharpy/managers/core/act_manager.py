@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Coroutine, Union, Callable
 from sharpy.interfaces import IPostStart
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
     from sharpy.plans.acts import ActBase
 
 
@@ -17,7 +17,7 @@ class ActManager(ManagerBase, IPostStart):
         super().__init__()
         self._act_or_func: Union[Callable[[], Coroutine], "ActBase"] = act_or_func
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def post_start(self):

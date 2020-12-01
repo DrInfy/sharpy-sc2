@@ -28,7 +28,7 @@ class PathingManager(ManagerBase):
         self.found_points = []
         self.found_points_air = []
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         game_info: GameInfo = self.ai.game_info
         path_grid = game_info.pathing_grid

@@ -31,7 +31,7 @@ class DataManager(ManagerBase, IDataManager):
         self.data: Optional[OpponentData] = None
         super().__init__()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.game_analyzer = knowledge.get_required_manager(IGameAnalyzer)
         self.build_detector = knowledge.get_manager(BuildDetector)

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class BuildGrid(Grid):
-    def __init__(self, knowledge: "SkeletonKnowledge"):
+    def __init__(self, knowledge: "Knowledge"):
         """
 
         :type knowledge: Knowledge

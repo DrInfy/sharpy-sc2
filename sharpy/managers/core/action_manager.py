@@ -8,7 +8,7 @@ from sc2 import BotAI, List, Set, AbilityId
 from sc2.unit import Unit
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
 
 
 class ActionIssued:
@@ -16,7 +16,7 @@ class ActionIssued:
     Individual action that is assigned to a unit. Used for preventing duplicate build orders.
     """
 
-    def __init__(self, knowledge: "SkeletonKnowledge", action: UnitCommand) -> None:
+    def __init__(self, knowledge: "Knowledge", action: UnitCommand) -> None:
         self.knowledge = knowledge
 
         if knowledge.ai.realtime:

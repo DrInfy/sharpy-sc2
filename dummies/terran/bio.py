@@ -12,7 +12,7 @@ from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
-from sharpy.knowledges import SkeletonKnowledge, KnowledgeBot
+from sharpy.knowledges import Knowledge, KnowledgeBot
 from sc2.position import Point2
 
 
@@ -181,7 +181,7 @@ class BuildBio(BuildOrder):
 
         super().__init__([warn, scv, opener, buildings, dt_counter, dt_counter2, tech, mech, air, marines, use_money])
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
         self.build_detector = knowledge.get_required_manager(BuildDetector)

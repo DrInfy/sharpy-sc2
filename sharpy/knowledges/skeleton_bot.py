@@ -10,7 +10,7 @@ from sc2.units import Units
 from config import get_config, get_version
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING, Optional, List
-from sharpy.knowledges.skeleton_knowledge import SkeletonKnowledge
+from sharpy.knowledges.knowledge import Knowledge
 
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 class SkeletonBot(BotAI, ABC):
     def __init__(self, name: str):
-        self.knowledge = SkeletonKnowledge()
+        self.knowledge = Knowledge()
         self.name = name
         self.config = get_config()
         # This is needed to know whether this is a custom run or game created by ladder manager

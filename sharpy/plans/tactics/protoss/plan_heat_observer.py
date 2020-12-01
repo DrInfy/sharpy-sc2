@@ -4,7 +4,7 @@ from sc2.unit import Unit
 from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions import HeatMapManager
 from sharpy.managers.core.roles import UnitTask
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId
 from sc2.position import Point2
 
@@ -17,7 +17,7 @@ class PlanHeatObserver(ActBase):
 
         self.last_seen = 0
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.heat_map: HeatMapManager = knowledge.get_required_manager(HeatMapManager)
         self.roles = self.roles

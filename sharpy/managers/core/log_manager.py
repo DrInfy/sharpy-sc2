@@ -14,7 +14,7 @@ class LogManager(ManagerBase, ILogManager):
     config: ConfigParser
     logger: Any  # TODO: type?
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.logger = sc2.main.logger
         self.config = knowledge.config

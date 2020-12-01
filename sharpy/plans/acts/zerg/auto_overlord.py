@@ -11,7 +11,7 @@ class AutoOverLord(ZergUnit):
     def __init__(self):
         super().__init__(UnitTypeId.OVERLORD, 0)
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
 

@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sharpy.interfaces import ICombatManager, IZoneManager
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId
 from sc2.unit import Unit
@@ -20,7 +20,7 @@ class DarkTemplarAttack(ActBase):
         self.attack_dt_tag: Optional[int] = None
         super().__init__()
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.combat = knowledge.get_required_manager(ICombatManager)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)

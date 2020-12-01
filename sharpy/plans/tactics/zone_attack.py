@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from sharpy.managers.core import *
-    from sharpy.knowledges import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
 
 
 ENEMY_TOTAL_POWER_MULTIPLIER = 1.2
@@ -63,7 +63,7 @@ class PlanZoneAttack(ActBase):
         self.attack_on_advantage = True
         self.status = AttackStatus.NotActive
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
         self.pather: PathingManager = self.knowledge.pathing_manager

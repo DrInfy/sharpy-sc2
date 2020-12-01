@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sharpy.constants import Constants
 from sharpy.interfaces import IZoneManager
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.sc2math import points_on_circumference_sorted
@@ -37,7 +37,7 @@ class WorkerScout(ActBase):
         # least important location is last.
         self.scout_locations: List[Point2] = []
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
         self.position_updater = IntervalFunc(knowledge.ai, self.update_position, 1)

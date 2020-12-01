@@ -20,7 +20,7 @@ class EnemyUnitExistsAfter(RequireBase):
         self.unit_type = unit_type
         self.count = count
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.enemy_units_manager = self.knowledge.get_required_manager(IEnemyUnitsManager)
         self.lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)

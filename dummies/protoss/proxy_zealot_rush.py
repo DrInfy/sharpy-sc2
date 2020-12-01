@@ -66,7 +66,7 @@ class ProxyZealots(ActBase):
         self.proxy_location: Point2
         self.solver = ProxySolver()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.proxy_location = self.ai.game_info.map_center.towards(self.ai.enemy_start_locations[0], 25)

@@ -5,7 +5,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 
-from sharpy.knowledges import SkeletonKnowledge
+from sharpy.knowledges import Knowledge
 
 
 class PlanZoneGatherTerran(ActBase):
@@ -17,7 +17,7 @@ class PlanZoneGatherTerran(ActBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.unit_values = knowledge.get_required_manager(IUnitValues)

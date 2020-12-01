@@ -14,7 +14,7 @@ from sc2.unit import Unit
 
 from .distribute_workers import DistributeWorkers
 from sharpy.general.zone import Zone
-from sharpy.knowledges import SkeletonKnowledge, SkeletonBot
+from sharpy.knowledges import Knowledge, SkeletonBot
 from sharpy.managers.core import (
     UnitCacheManager,
     UnitRoleManager,
@@ -109,8 +109,8 @@ def mock_ai() -> BotAI:
     return ai
 
 
-async def mock_knowledge(ai) -> SkeletonKnowledge:
-    knowledge = SkeletonKnowledge()
+async def mock_knowledge(ai) -> Knowledge:
+    knowledge = Knowledge()
     knowledge.action_handler = mock.Mock()
     knowledge.version_manager = mock.Mock()
     # pf = mock.Mock()

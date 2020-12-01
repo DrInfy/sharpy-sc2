@@ -15,7 +15,7 @@ SLOT_SIZE = 5
 
 
 class HeatArea:
-    def __init__(self, knowledge: "SkeletonKnowledge", x: int, y: int, x2: int, y2: int):
+    def __init__(self, knowledge: "Knowledge", x: int, y: int, x2: int, y2: int):
         self.ai = knowledge.ai
         self.knowledge = knowledge
         self.bottom_left_x = x
@@ -64,13 +64,13 @@ class HeatMapManager(ManagerBase):
     def __init__(self) -> None:
         super().__init__()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.updater = IntervalFunc(knowledge.ai, self.__real_update, 0.5)
         self.cache = knowledge.get_required_manager(IUnitCache)
         self.init_heat_map(knowledge)
 
-    def init_heat_map(self, knowledge: "SkeletonKnowledge"):
+    def init_heat_map(self, knowledge: "Knowledge"):
         grid: PixelMap = knowledge.ai._game_info.placement_grid
         height = grid.height
         width = grid.width

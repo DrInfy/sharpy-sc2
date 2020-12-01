@@ -465,7 +465,7 @@ class UnitValue(ManagerBase, IUnitValues):
         self._ground_range_dict[UnitTypeId.CYCLONE] = cyclone_range
         self._air_range_dict[UnitTypeId.CYCLONE] = cyclone_range
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self._my_worker_type = self.get_worker_type(knowledge.ai.race)
 

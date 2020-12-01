@@ -9,7 +9,7 @@ class PlanCancelBuilding(ActBase):
     def __init__(self):
         super().__init__()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.previous_units_manager = knowledge.get_required_manager(IPreviousUnitsManager)
 

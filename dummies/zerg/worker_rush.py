@@ -12,13 +12,13 @@ from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
 
-from sharpy.knowledges import SkeletonKnowledge, KnowledgeBot
+from sharpy.knowledges import Knowledge, KnowledgeBot
 
 
 class DummyZergAttack(ActBase):
     combat: ICombatManager
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.all_out_started = False
         self.unit_values = knowledge.unit_values
@@ -155,7 +155,7 @@ class WorkerAttack(ActBase):
     zone_manager: IZoneManager
     lost_units_manager: ILostUnitsManager
 
-    async def start(self, knowledge: SkeletonKnowledge):
+    async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.all_out_started = False
         self.unit_values = knowledge.unit_values

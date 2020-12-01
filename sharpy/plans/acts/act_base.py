@@ -68,7 +68,7 @@ class ActBase(Component, ABC):
         if self.debug:
             await self.debug_actions()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)
 

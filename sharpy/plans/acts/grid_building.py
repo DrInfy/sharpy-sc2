@@ -39,7 +39,7 @@ class GridBuilding(ActBuilding):
         self.building_solver: IBuildingSolver = None
         self.make_pylon = None
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.building_solver = self.knowledge.get_required_manager(IBuildingSolver)
         self.income_calculator = self.knowledge.get_required_manager(IIncomeCalculator)

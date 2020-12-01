@@ -5,7 +5,7 @@ from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import SkeletonKnowledge
+    from sharpy.knowledges import Knowledge
 
 
 class CallMule(ActBase):
@@ -13,7 +13,7 @@ class CallMule(ActBase):
         super().__init__()
         self.on_energy = on_energy
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def execute(self) -> bool:

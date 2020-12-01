@@ -24,7 +24,7 @@ class WarpUnit(ActBase):
 
         super().__init__()
 
-    async def start(self, knowledge: "SkeletonKnowledge"):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
