@@ -108,6 +108,8 @@ class PlanZoneDefense(ActBase):
                     if defenders.is_enough_for(defense_required):
                         # Workers should return to mining.
                         for unit in zone_worker_defenders:
+                            self.roles.clear_task(unit)
+
                             zone.go_mine(unit)
                             if unit.tag in zone_tags:  # Just in case, should be in zone tags always.
                                 zone_tags.remove(unit.tag)
@@ -161,6 +163,7 @@ class PlanZoneDefense(ActBase):
         # Loop currently defending workers
         for unit in zone_worker_defenders:
             if unit.shield + unit.health < threshold and not killing_probes:
+                self.roles.clear_task(unit)
                 zone.go_mine(unit)
                 if unit.tag in zone_tags:  # Just in case, should be in zone tags always.
                     zone_tags.remove(unit.tag)
