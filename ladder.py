@@ -6,6 +6,7 @@ import asyncio
 import logging
 import os
 from datetime import datetime
+from random import random
 
 import aiohttp
 
@@ -105,7 +106,17 @@ def stand_alone_game(bot):
     print("Starting local game...")
     print("Play as human? (y / n)")
     input_human = input(">> ")
-    map_name = "AcropolisLE"
+    maps = [
+        # AiArena season 2
+        "DeathAuraLE",
+        "EternalEmpireLE",
+        "EverDreamLE",
+        "GoldenWallLE",
+        "IceandChromeLE",
+        "PillarsofgoldLE",
+        "SubmarineLE",
+    ]
+    map_name = random.choice(maps)
 
     folder = os.path.join("data", "games")
     if not os.path.isdir(folder):
