@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import zipfile
+from pathlib import Path
 from typing import Tuple, List, Optional
 from version import update_version_txt
 
@@ -120,6 +121,13 @@ class LadderZip:
 
         # Reset bin path as pyinstaller likes to make a new run folder
         run_path = os.path.join(bin_path, self.name)
+        path = Path(output_dir)
+
+        # TODO: Detect Windows and do this only on Windows
+        icuuc52zip_path = os.path.join(str(path.parent), "libs", "ic52.zip")
+        with zipfile.ZipFile(icuuc52zip_path, "r") as zip_ref:
+            # Unzip the icudt52.dll, icuin52.dll and icuuc52.dll files
+            zip_ref.extractall(run_path)
 
         # remove PIL and cv2
         print("removing PIL and cv2")
