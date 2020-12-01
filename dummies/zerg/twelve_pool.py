@@ -66,6 +66,7 @@ class TwelvePool(KnowledgeBot):
 
         return BuildOrder(
             build_step_buildings,
+            Step(SupplyLeft(0), AutoOverLord()),
             finish,
             build_step_units,
             AutoOverLord(),
