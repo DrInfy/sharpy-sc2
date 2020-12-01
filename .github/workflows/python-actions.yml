@@ -59,7 +59,7 @@ jobs:
       fail-fast: true  # one failure is enough
       matrix:
         python-version: [3.7]
-        player1: [zealot, 12pool, bio]
+        player1: [zealot, 12pool, bio, bc, 4gate, lurker, mutalisk, saferaven, disruptor]
         player2: [ai.random.hard]
 
     steps:
