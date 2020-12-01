@@ -27,6 +27,7 @@ class TwelvePool(KnowledgeBot):
 
     def __init__(self):
         super().__init__("12pool")
+        self.realtime_worker = False
 
     async def create_plan(self) -> BuildOrder:
         build_step_buildings = [
