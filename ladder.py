@@ -117,6 +117,9 @@ def stand_alone_game(bot):
         "SubmarineLE",
     ]
     map_name = random.choice(maps)
+    folder = os.path.join("data")
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
 
     folder = os.path.join("data", "games")
     if not os.path.isdir(folder):
