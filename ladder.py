@@ -33,6 +33,8 @@ def run_ladder_game(bot):
     parser.add_argument("--RealTime", action="store_true", help="real time flag")
     args, unknown = parser.parse_known_args()
 
+    bot.raw_affects_selection = True  # This is here to improve performance just slightly
+
     if args.GamePort is None or args.StartPort is None:
         return stand_alone_game(bot), None
 
@@ -150,7 +152,7 @@ def stand_alone_game(bot):
         path = f"{folder}/{file_name}.log"
         LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
 
-        return sc2.run_game(sc2.maps.get(map_name), [Human(race), bot], realtime=True)
+        return sc2.run_game(sc2.maps.get(map_name), [Human(race, fullscreen=True), bot], realtime=True)
 
     file_name = f"IngameAI_{map_name}_{time}"
     path = f"{folder}/{file_name}.log"
