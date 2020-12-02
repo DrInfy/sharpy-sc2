@@ -78,7 +78,7 @@ class SpreadCreep(ActBase):
             # There's already enough
             return None
 
-        towards = self.knowledge.enemy_main_zone.center_location
+        towards = self.zone_manager.enemy_main_zone.center_location
 
         for i in range(3):
             distance_interval = (1, CREEP_TUMOR_MAX_RANGE)
@@ -93,7 +93,7 @@ class SpreadCreep(ActBase):
                     return next_pos
 
     def get_next_creep_tumor_position(self, tumor: Unit) -> Optional[Point2]:
-        towards = self.knowledge.enemy_main_zone.center_location
+        towards = self.zone_manager.enemy_main_zone.center_location
 
         # iterate a few times so we find a suitable position
         for i in range(10):
