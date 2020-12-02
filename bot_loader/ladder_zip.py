@@ -145,6 +145,10 @@ class LadderZip:
         f.write(self.create_bin_json())
         f.close()
 
+        # Move data folder if that exists
+        if os.path.exists(os.path.join(source_path, "data")):
+            shutil.copytree(os.path.join(source_path, "data"), os.path.join(run_path, "data"))
+
         print("Zip executable version")
         zipf = zipfile.ZipFile(os.path.join(output_dir, zip_name), "w", zipfile.ZIP_DEFLATED)
         LadderZip.zipdir(run_path, zipf, run_path)
