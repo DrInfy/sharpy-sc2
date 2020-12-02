@@ -3,6 +3,7 @@ from typing import Optional, Set, Dict, List, Callable
 
 from sc2.position import Point2, Point3
 from sc2.units import Units
+from sharpy.interfaces import IBuildingSolver
 from sharpy.managers.core import BuildingSolver
 from sharpy.plans.acts import ActBase
 from sharpy.knowledges import Knowledge
@@ -51,6 +52,8 @@ class PlanAddonSwap(ActBase):
     """
     Plans the addon swap, reserves landing locations and addons to not be built by the GridBuilding() act.
     """
+
+    building_solver: IBuildingSolver
 
     def __init__(
         self,
@@ -103,6 +106,7 @@ class PlanAddonSwap(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
 
     async def execute(self) -> bool:
         if self.only_once and self.completed:
@@ -179,19 +183,19 @@ class PlanAddonSwap(ActBase):
         await self.plan_attach_to_addons()
 
     async def mark_unused_addon_locations(self):
-        self.knowledge.building_solver.free_addon_locations.clear()
+        self.building_solver.free_addon_locations.clear()
 
         positions_with_target_of_addon_swaps: Set[Point2] = set(
-            self.knowledge.building_solver.structure_target_move_location.values()
+            self.building_solver.structure_target_move_location.values()
         )
         for pos in self.locations_with_addon[UnitTypeId.TECHLAB]:
             if pos not in self.structures_at_positions and pos not in positions_with_target_of_addon_swaps:
                 self.free_techlab_locations.add(pos)
-                self.knowledge.building_solver.free_addon_locations.add(pos)
+                self.building_solver.free_addon_locations.add(pos)
         for pos in self.locations_with_addon[UnitTypeId.REACTOR]:
             if pos not in self.structures_at_positions and pos not in positions_with_target_of_addon_swaps:
                 self.free_reactor_locations.add(pos)
-                self.knowledge.building_solver.free_addon_locations.add(pos)
+                self.building_solver.free_addon_locations.add(pos)
 
     async def mark_structures_for_possible_dettach(self):
         """ Marks all structures, that should no longer use their addons, as dettachable. """
@@ -204,7 +208,7 @@ class PlanAddonSwap(ActBase):
                     self.free_addon_locations[addon_type].add(production.position)
                     if (
                         self.force_move_to_naked
-                        and production.tag not in self.knowledge.building_solver.structure_target_move_location
+                        and production.tag not in self.building_solver.structure_target_move_location
                     ):
                         await self.lift_away_from_addon(production)
 
@@ -254,16 +258,14 @@ class PlanAddonSwap(ActBase):
         current_location: Optional[Point2] = None
         current_distance = math.inf
 
-        reserved_landing_locations: Set[Point2] = set(
-            self.knowledge.building_solver.structure_target_move_location.values()
-        )
+        reserved_landing_locations: Set[Point2] = set(self.building_solver.structure_target_move_location.values())
 
-        for point in self.knowledge.building_solver.buildings3x3:
+        for point in self.building_solver.buildings3x3:
             # If a structure is landing here from AddonSwap() then dont use this location
             if point in reserved_landing_locations:
                 continue
                 # If this location has a techlab or reactor next to it, then don't create a new structure here
-            if point in self.knowledge.building_solver.free_addon_locations:
+            if point in self.building_solver.free_addon_locations:
                 continue
             if buildings.closer_than(1, point):
                 continue
@@ -280,7 +282,7 @@ class PlanAddonSwap(ActBase):
 
     async def lift_to_target_location(self, unit: Unit, location: Point2):
         """ Plan to move structure to target location. Reserve the location to not be used by any other structure or a GridBuilding() command. """
-        self.knowledge.building_solver.structure_target_move_location[unit.tag] = location
+        self.building_solver.structure_target_move_location[unit.tag] = location
 
     async def find_land_location_with_addon(self, unit: Unit, addon_type: UnitTypeId = None) -> Optional[Point2]:
         """
@@ -321,9 +323,9 @@ class PlanAddonSwap(ActBase):
     def has_addon(self, unit: Unit, addon_type: UnitTypeId):
         """ Checks if a unit (specifically: its tag) has the specific addon type or is planned to have the specific addon type. """
         assert addon_type in {UnitTypeId.TECHLAB, UnitTypeId.REACTOR}
-        if unit.tag in self.knowledge.building_solver.structure_target_move_location:
+        if unit.tag in self.building_solver.structure_target_move_location:
             # If structure is ordered to move to a location which has a techlab, return true
-            land_location = self.knowledge.building_solver.structure_target_move_location[unit.tag]
+            land_location = self.building_solver.structure_target_move_location[unit.tag]
             return land_location in self.locations_with_addon[addon_type]
         elif not unit.is_flying and unit.position in self.locations_with_addon[addon_type]:
             # If structure is not ordered to move anywhere but is landed at a location with techlab, return true
@@ -337,30 +339,31 @@ class ExecuteAddonSwap(ActBase):
     Should permanently be called to finish swapping addons, if you have at least one 'PlanAddonSwap' in your build order plan.
     """
 
+    building_solver: IBuildingSolver
+
     def __init__(self):
         super().__init__()
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
 
     async def execute(self) -> bool:
-        if self.knowledge.building_solver.structure_target_move_location:
-            alive_structures: Units = self.cache.by_tags(self.knowledge.building_solver.structure_target_move_location)
+        if self.building_solver.structure_target_move_location:
+            alive_structures: Units = self.cache.by_tags(self.building_solver.structure_target_move_location)
             for structure in alive_structures:
                 await self.execute_order(structure)
             # Clear dead structures - TODO Perhaps move this to unit died event?
             alive_structures_tags = alive_structures.tags
-            dead_structures_tags = (
-                set(self.knowledge.building_solver.structure_target_move_location) - alive_structures_tags
-            )
+            dead_structures_tags = set(self.building_solver.structure_target_move_location) - alive_structures_tags
             for dead_structure_tag in dead_structures_tags:
-                self.knowledge.building_solver.structure_target_move_location.pop(dead_structure_tag)
+                self.building_solver.structure_target_move_location.pop(dead_structure_tag)
         return True
 
     async def execute_order(self, unit: Unit):
         assert (
-            unit.tag in self.knowledge.building_solver.structure_target_move_location
-        ), f"{unit.tag}\n{self.knowledge.building_solver.structure_target_move_location}"
+            unit.tag in self.building_solver.structure_target_move_location
+        ), f"{unit.tag}\n{self.building_solver.structure_target_move_location}"
         assert isinstance(unit, Unit), f"{unit}"
 
         unit_is_busy: bool = not (
@@ -372,11 +375,11 @@ class ExecuteAddonSwap(ActBase):
         if unit_is_busy:
             return
 
-        land_location: Point2 = self.knowledge.building_solver.structure_target_move_location[unit.tag]
+        land_location: Point2 = self.building_solver.structure_target_move_location[unit.tag]
 
         # Structure has arrived and landed, done!
         if unit.position == land_location and not unit.is_flying and not unit.is_using_ability(AbilityId.LIFT):
-            self.knowledge.building_solver.structure_target_move_location.pop(unit.tag)
+            self.building_solver.structure_target_move_location.pop(unit.tag)
         # Structure is landed but not in right position: lift
         elif unit.position != land_location and not unit.is_flying and unit.is_idle:
             unit(AbilityId.LIFT)
