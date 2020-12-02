@@ -3,7 +3,7 @@ from typing import Union, Callable, List
 from sc2 import UnitTypeId, Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
-from sharpy.interfaces import IZoneManager, IGameAnalyzer
+from sharpy.interfaces import IZoneManager, IGameAnalyzer, IEnemyUnitsManager
 from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.plans.zerg import *
 
@@ -50,6 +50,7 @@ class RoachesAndHydrasAndLurkers(BuildOrder):
 class LurkerBuild(BuildOrder):
     zone_manager: IZoneManager
     game_analyzer: IGameAnalyzer
+    enemy_units_manager: IEnemyUnitsManager
 
     def __init__(self):
         gas = SequentialList(
@@ -109,7 +110,7 @@ class LurkerBuild(BuildOrder):
                 ]
             ),
             SequentialList(
-                Step(RequireCustom(lambda k: k.enemy_units_manager.enemy_cloak_trigger), MorphLair()),
+                Step(RequireCustom(lambda k: self.enemy_units_manager.enemy_cloak_trigger), MorphLair()),
                 Step(UnitReady(UnitTypeId.LAIR), MorphOverseer(2)),
             ),
             SequentialList(
@@ -138,6 +139,7 @@ class LurkerBuild(BuildOrder):
         await super().start(knowledge)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
         self.game_analyzer = knowledge.get_required_manager(IGameAnalyzer)
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
 
     def build_workers(self, knowledge: Knowledge) -> bool:
         for zone in self.zone_manager.expansion_zones:

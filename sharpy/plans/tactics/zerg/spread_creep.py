@@ -1,6 +1,7 @@
 import random
 from typing import Optional
 
+from sharpy.interfaces import IBuildingSolver
 from sharpy.managers.core import BuildingSolver
 from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
@@ -30,8 +31,8 @@ class SpreadCreep(ActBase):
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):
-        self.building_solver = knowledge.building_solver
-        return await super().start(knowledge)
+        await super().start(knowledge)
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
 
     async def execute(self) -> bool:
         tumors = self.cache.own(UnitTypeId.CREEPTUMORBURROWED)
