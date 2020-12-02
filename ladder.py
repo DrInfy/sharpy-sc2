@@ -5,8 +5,8 @@ import argparse
 import asyncio
 import logging
 import os
+import random
 from datetime import datetime
-from random import random
 
 import aiohttp
 
@@ -116,7 +116,9 @@ def stand_alone_game(bot):
         "PillarsofgoldLE",
         "SubmarineLE",
     ]
+
     map_name = random.choice(maps)
+
     folder = os.path.join("data")
     if not os.path.isdir(folder):
         os.mkdir(folder)
