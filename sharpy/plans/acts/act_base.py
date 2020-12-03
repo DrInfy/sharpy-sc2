@@ -237,8 +237,24 @@ class ActBase(Component, ABC):
                 worker = None
         return worker
 
-    async def build(self, type_id: UnitTypeId, near: Point2):
-        worker = self.get_worker_builder(near, 0)
-        pos = await self.ai.find_placement(type_id, near)
+    async def build(
+        self,
+        type_id: UnitTypeId,
+        near: Point2,
+        max_distance: int = 20,
+        build_worker: Optional[Unit] = None,
+        random_alternative: bool = True,
+        placement_step: int = 2,
+    ):
+        if build_worker is None:
+            build_worker = self.get_worker_builder(near, 0)
+
+        pos = await self.ai.find_placement(
+            type_id,
+            near,
+            max_distance=max_distance,
+            random_alternative=random_alternative,
+            placement_step=placement_step,
+        )
         if pos:
-            worker.build(type_id, pos)
+            build_worker.build(type_id, pos)

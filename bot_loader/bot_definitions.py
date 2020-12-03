@@ -87,11 +87,12 @@ class DummyBuilder:
                 ),
                 zip_builder,
             )
+        raise Exception("Param count of up to 3 is currently supported.")
 
 
 class BotDefinitions:
     def __init__(self, path: Optional[str] = None) -> None:
-        self.bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
+        self.bots: Dict[str, Tuple[Optional[Callable[[List[str]], AbstractPlayer]], Optional[LadderZip]]] = {}
         self.humans: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = self._human()
         self.ingame_ai: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = self._ai()
         self.debug_bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = {}
@@ -107,7 +108,7 @@ class BotDefinitions:
         zip_dict: Dict[str, LadderZip] = {}
 
         for key, value in self.bots.items():
-            if value[1]:
+            if value[1] is not None:
                 zip_dict[key] = value[1]
 
         return zip_dict
@@ -117,7 +118,7 @@ class BotDefinitions:
         play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
         for key, value in {**self.bots, **self.humans, **self.ladder_bots, **self.debug_bots, **self.ingame_ai}.items():
-            if value[0]:
+            if value[0] is not None:
                 play_dict[key] = value[0]
 
         return play_dict
@@ -127,7 +128,7 @@ class BotDefinitions:
         play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
         for key, value in self.bots.items():
-            if value[0]:
+            if value[0] is not None:
                 play_dict[key] = value[0]
 
         return play_dict
@@ -137,7 +138,7 @@ class BotDefinitions:
         play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
         for key, value in {**self.bots, **self.humans, **self.ingame_ai, **self.debug_bots}.items():
-            if value[0]:
+            if value[0] is not None:
                 play_dict[key] = value[0]
 
         return play_dict
@@ -147,7 +148,7 @@ class BotDefinitions:
         play_dict: Dict[str, Callable[[List[str]], AbstractPlayer]] = {}
 
         for key, value in {**self.bots, **self.ladder_bots, **self.debug_bots, **self.ingame_ai}.items():
-            if value[0]:
+            if value[0] is not None:
                 play_dict[key] = value[0]
 
         return play_dict
@@ -172,7 +173,7 @@ class BotDefinitions:
         }
 
     def _get_ladder_bots(
-        self, path: str = None
+        self, path: str
     ) -> Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]:
         """
         Searches bot_directory_location path to find all the folders containing "ladderbots.json"
@@ -180,7 +181,7 @@ class BotDefinitions:
         :param request:
         :return:
         """
-        bots = dict()
+        bots: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]] = dict()
 
         if not os.path.isdir(path):
             return bots
@@ -193,7 +194,11 @@ class BotDefinitions:
             json_path = os.path.join(full_path, "ladderbots.json")
             if os.path.isfile(json_path):
                 key = os.path.basename(os.path.normpath(full_path))
-                bots[key] = (lambda params, tmp_path=full_path, path2=json_path: BotLadder(tmp_path, path2), None)
+
+                def func(params: List[str], tmp_path=full_path, path2=json_path):
+                    return BotLadder(tmp_path, path2)
+
+                bots[key] = (func, None)
         return bots
 
     def add_debug_bots(self, bot_dict: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]):
@@ -218,12 +223,12 @@ class BotDefinitions:
         Add your own custom bots here
         """
         assert isinstance(key, str)
-        assert isinstance(func, Callable)
+        assert callable(func)
         assert ladder_zip is None or isinstance(ladder_zip, LadderZip)
         self.bots[key] = (func, ladder_zip)
 
     @staticmethod
-    def index_check(items: List[str], index: int, default: Optional[str]) -> str:
+    def index_check(items: List[str], index: int, default: str) -> str:
         """
         Simple method for parsing arguments with a default value if argument index not foung
         @param items: arguments
@@ -236,7 +241,9 @@ class BotDefinitions:
         except IndexError:
             return default
 
-    def add_dummies(self, bot_dict: Dict[str, Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]):
+    def add_dummies(
+        self, bot_dict: Dict[str, Tuple[Optional[Callable[[List[str]], AbstractPlayer]], Optional[LadderZip]]]
+    ):
         bots: List[DummyBuilder] = [
             # Protoss
             DummyBuilder("4gate", "SharpRush", Race.Protoss, "gate4.py", Stalkers4Gate),
@@ -314,6 +321,7 @@ class BotDefinitions:
             ),
         }
 
+        # Tuple[Callable[[List[str]], AbstractPlayer], Optional[LadderZip]]]
         for key, dummy_zip in buildable_only.items():
             # TODO: Solve this in a generic way!
             bot_dict[key] = (None, dummy_zip)

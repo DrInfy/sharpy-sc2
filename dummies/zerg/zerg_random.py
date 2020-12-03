@@ -1,7 +1,12 @@
 import random
 
-val = random.randint(0, 5)
+from typing import TYPE_CHECKING, Type
 
+if TYPE_CHECKING:
+    from sharpy.knowledges import SkeletonBot
+
+val = random.randint(0, 5)
+LadderBot: Type["SkeletonBot"]
 if val == 0:
     from .lings import LadderBot
 elif val == 1:
@@ -16,5 +21,5 @@ elif val == 5:
     from .twelve_pool import LadderBot
 
 
-class RandomZergBot(LadderBot):
+class RandomZergBot(LadderBot):  # type: ignore
     pass

@@ -158,7 +158,7 @@ class ProxyCannoneer(ActBase):
         return min(index, len(self.pylons) - 1)
 
     def get_worker(self) -> Optional[Unit]:
-        if self.ai.time < 0:
+        if self.ai.time < 0 and self.proxy_worker_tag:
             return None  # wait a while
         worker = self.cache.by_tag(self.proxy_worker_tag)
         if worker:
@@ -168,12 +168,12 @@ class ProxyCannoneer(ActBase):
         if not available_workers:
             return None
 
-        worker = available_workers.closest_to(self.knowledge.enemy_start_location)
+        worker = available_workers.closest_to(self.zone_manager.enemy_start_location)
         self.proxy_worker_tag = worker.tag
         return worker
 
     def get_cannon_worker(self) -> Optional[Unit]:
-        if self.ai.time < 25:
+        if self.ai.time < 25 and self.proxy_worker_tag2:
             return None  # wait a while
         worker = self.cache.by_tag(self.proxy_worker_tag2)
         if worker:
@@ -183,7 +183,7 @@ class ProxyCannoneer(ActBase):
         if not available_workers:
             return None
 
-        worker = available_workers.closest_to(self.knowledge.enemy_start_location)
+        worker = available_workers.closest_to(self.zone_manager.enemy_start_location)
         self.proxy_worker_tag2 = worker.tag
         return worker
 

@@ -158,8 +158,7 @@ class ProxyZealotRushBot(KnowledgeBot):
         super().__init__("Sharp Knives")
 
     async def create_plan(self) -> BuildOrder:
-        building_solver = self.knowledge.get_required_manager(IBuildingSolver)
-        building_solver.wall_type = WallType.ProtossMainProtoss
+        self.building_solver.wall_type = WallType.ProtossMainProtoss
         attack = PlanZoneAttack(7)
         attack.retreat_multiplier = 0.3
         # attack.attack_started = True

@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional
 
 from sharpy.combat import MoveType
+from sharpy.managers.core import UnitValue
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
@@ -174,9 +175,9 @@ class PlanWorkerOnlyDefense(ActBase):
         for unit in self.ai.units:  # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
-            if unit.type_id in self.unit_values.worker_types:
+            if unit.type_id in UnitValue.worker_types:
                 workers.append(unit)
-            elif self.knowledge.should_attack(unit):
+            elif self.unit_values.should_attack(unit):
                 fighters.append(unit)
 
         if fighters:
@@ -221,9 +222,9 @@ class PlanWorkerOnlyDefense(ActBase):
         for unit in self.ai.units:  # type: Unit
             if unit.is_structure or unit.tag in self.defender_tags:
                 continue
-            if unit.type_id in self.unit_values.worker_types:
+            if unit.type_id in UnitValue.worker_types:
                 workers.append(unit)
-            elif self.knowledge.should_attack(unit):
+            elif self.unit_values.should_attack(unit):
                 fighters.append(unit)
 
         if fighters:

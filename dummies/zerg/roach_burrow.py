@@ -3,6 +3,7 @@ from typing import Optional, List
 from sc2 import Race, UnitTypeId, AbilityId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.unit import Unit
+from sharpy.interfaces import IEnemyUnitsManager
 
 from sharpy.knowledges import KnowledgeBot
 from sharpy.managers.core import ManagerBase
@@ -39,16 +40,22 @@ class MicroBurrowRoaches(GenericMicro):
 
 
 class AutoRavager(ZergUnit):
+    enemy_units_manager: IEnemyUnitsManager
+
     def __init__(self):
         """
         @summary Make ravagers according to the enemy siege tanks and photon cannons
         """
         super().__init__(UnitTypeId.RAVAGER, 0, True, False)
 
+    async def start(self, knowledge: "Knowledge"):
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
+        await super().start(knowledge)
+
     async def execute(self) -> bool:
         self.to_count = 0
-        self.to_count += self.knowledge.enemy_units_manager.unit_count(UnitTypeId.SIEGETANK)
-        self.to_count += self.knowledge.enemy_units_manager.unit_count(UnitTypeId.PHOTONCANNON)
+        self.to_count += self.enemy_units_manager.unit_count(UnitTypeId.SIEGETANK)
+        self.to_count += self.enemy_units_manager.unit_count(UnitTypeId.PHOTONCANNON)
         return await super().execute()
 
 
@@ -90,8 +97,8 @@ class RoachBurrowBot(KnowledgeBot):
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
         # Set the burrow roach micro
-        self.knowledge.combat.default_rules.unit_micros[UnitTypeId.ROACH] = MicroBurrowRoaches()
-        return None
+        self.combat.default_rules.unit_micros[UnitTypeId.ROACH] = MicroBurrowRoaches()
+        return []
 
     async def create_plan(self) -> BuildOrder:
         attack = PlanZoneAttack(8)

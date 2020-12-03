@@ -3,7 +3,6 @@ from typing import Optional, Set, Dict, List, Callable
 
 from sc2.position import Point2, Point3
 from sc2.units import Units
-from sharpy.interfaces import IBuildingSolver
 from sharpy.managers.core import BuildingSolver
 from sharpy.plans.acts import ActBase
 from sharpy.knowledges import Knowledge
@@ -53,7 +52,7 @@ class PlanAddonSwap(ActBase):
     Plans the addon swap, reserves landing locations and addons to not be built by the GridBuilding() act.
     """
 
-    building_solver: IBuildingSolver
+    building_solver: BuildingSolver
 
     def __init__(
         self,
@@ -86,7 +85,7 @@ class PlanAddonSwap(ActBase):
         # Set to true if you want structures to always get rid of their addon (e.g. when building addons for other structures), otherwise they stay with their addon if other structure types are not in need of it
         self.force_move_to_naked = force_move_to_naked
 
-        self.production_with_addon: Dict[UnitTypeId, Dict[Optional[UnitTypeId], Units]] = {
+        self.production_with_addon: Dict[UnitTypeId, Dict[Optional[UnitTypeId], Optional[Units]]] = {
             UnitTypeId.BARRACKS: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
             UnitTypeId.FACTORY: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
             UnitTypeId.STARPORT: {UnitTypeId.REACTOR: None, UnitTypeId.TECHLAB: None, None: None},
@@ -106,7 +105,7 @@ class PlanAddonSwap(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
+        self.building_solver = knowledge.get_required_manager(BuildingSolver)
 
     async def execute(self) -> bool:
         if self.only_once and self.completed:
@@ -241,7 +240,7 @@ class PlanAddonSwap(ActBase):
                     land_location = await self.find_land_location_with_addon(production, addon_type)
                     if not land_location:
                         break
-                    free_addon_locations: List[Point2] = self.free_addon_locations[addon_type]
+                    free_addon_locations: Set[Point2] = self.free_addon_locations[addon_type]
                     free_addon_locations.remove(land_location)
                     await self.lift_to_target_location(production, land_location)
                     blocking_structure: Unit = self.structures_at_positions.get(land_location, None)
@@ -339,14 +338,14 @@ class ExecuteAddonSwap(ActBase):
     Should permanently be called to finish swapping addons, if you have at least one 'PlanAddonSwap' in your build order plan.
     """
 
-    building_solver: IBuildingSolver
+    building_solver: BuildingSolver
 
     def __init__(self):
         super().__init__()
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
+        self.building_solver = knowledge.get_required_manager(BuildingSolver)
 
     async def execute(self) -> bool:
         if self.building_solver.structure_target_move_location:
