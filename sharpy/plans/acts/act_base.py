@@ -236,3 +236,9 @@ class ActBase(Component, ABC):
                 # Worker is probably dead or it is already building something else.
                 worker = None
         return worker
+
+    async def build(self, type_id: UnitTypeId, near: Point2):
+        worker = self.get_worker_builder(near, 0)
+        pos = await self.ai.find_placement(type_id, near)
+        if pos:
+            worker.build(type_id, pos)

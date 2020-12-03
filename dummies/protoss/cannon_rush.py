@@ -82,7 +82,7 @@ class ProxyCannoneer(ActBase):
             if distance < 5:
                 if not self.has_build_order(worker):
 
-                    await self.ai.build(UnitTypeId.PHOTONCANNON, target, max_distance=5, build_worker=worker)
+                    await self.build(UnitTypeId.PHOTONCANNON, target, max_distance=5, build_worker=worker)
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)
@@ -119,7 +119,7 @@ class ProxyCannoneer(ActBase):
             worker.move(target)
         elif self.knowledge.can_afford(UnitTypeId.PYLON):
             if distance < 5:
-                await self.ai.build(UnitTypeId.PYLON, target, max_distance=4, build_worker=worker, placement_step=1)
+                await self.build(UnitTypeId.PYLON, target, max_distance=4, build_worker=worker, placement_step=1)
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)

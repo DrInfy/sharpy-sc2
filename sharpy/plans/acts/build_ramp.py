@@ -36,7 +36,7 @@ class ActBuildingRamp(ActBuilding):
 
         if self.knowledge.can_afford(self.unit_type):
             self.print(f"Building {self.unit_type.name} to {position}")
-            # await ai.build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
+            # await build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
             worker.build(self.unit_type, position)
         else:
             unit = self.ai._game_data.units[self.unit_type.value]
