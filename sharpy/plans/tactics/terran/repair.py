@@ -1,10 +1,13 @@
 from math import ceil
-
+from typing import TYPE_CHECKING
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
 from sc2.constants import UnitTypeId
 from sc2.unit import Unit
+
+if TYPE_CHECKING:
+    from sharpy.managers.core import UnitRoleManager
 
 
 class Repair(ActBase):

@@ -102,7 +102,7 @@ class PlanAddonSwap(ActBase):
             UnitTypeId.REACTOR: set(),
         }
 
-        self.structures_at_positions: Dict[Point2:Unit] = {}
+        self.structures_at_positions: Dict[Point2, Unit] = {}
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)

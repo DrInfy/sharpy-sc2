@@ -1,11 +1,14 @@
 import warnings
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 
 from sc2 import UnitTypeId
 from sc2.position import Point2
 
 from sharpy.plans.acts.act_base import ActBase
 from sc2.unit import Unit
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
 
 class BuildAddon(ActBase):
@@ -28,7 +31,7 @@ class BuildAddon(ActBase):
         await super().start(knowledge)
 
     async def execute(self) -> bool:
-        count = self.get_count(self.unit_type)
+        count = self.get_quick_count(self.unit_type)
         if count >= self.to_count:
             return True  # Step is done
 
@@ -56,10 +59,6 @@ class BuildAddon(ActBase):
                     self.print("no space")
         return False
 
-    def get_count(self, unit_type: UnitTypeId) -> int:
+    def get_quick_count(self, unit_type: UnitTypeId) -> int:
         """Calculates how many buildings there are already, including pending structures."""
-        count = 0
-
-        count += self.cache.own(unit_type).amount
-
-        return count
+        return self.cache.own(unit_type).amount
