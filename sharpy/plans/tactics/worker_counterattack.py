@@ -1,14 +1,11 @@
-from typing import List, Tuple
+from typing import List
 
 from sc2.position import Point2
-from sharpy.managers import UnitValue
-from sharpy.managers.build_detector import EnemyRushBuild
-from sharpy.managers.combat2 import MoveType
+from sharpy.managers.extensions.build_detector import EnemyRushBuild
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
 
-from sc2 import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 
@@ -25,7 +22,7 @@ class WorkerCounterAttack(ActBase):
         self.gather_mf = self.solve_optimal_mineral_field()
 
     def solve_optimal_mineral_field(self) -> Unit:
-        main: Zone = self.knowledge.own_main_zone
+        main: Zone = self.zone_manager.own_main_zone
         for mf in main.mineral_fields:  # type: Unit
             if len(main.mineral_fields.closer_than(2, mf.position)) > 2:
                 return mf
@@ -38,7 +35,7 @@ class WorkerCounterAttack(ActBase):
             return self.handle_counter()
         if self.knowledge.build_detector.rush_build == EnemyRushBuild.WorkerRush:
             # Wait until enemy is close enough
-            if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.knowledge.all_own.filter(
+            if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.ai.all_own_units.filter(
                 lambda u: u.shield_health_percentage < 0.75
             ):
                 self.was_active = True
@@ -74,7 +71,7 @@ class WorkerCounterAttack(ActBase):
 
         old_defenders = defenders.tags_not_in(self.tags)
         for unit in old_defenders:
-            self.do(unit.stop())
+            unit.stop()
         return army
 
     def handle_counter(self) -> bool:
@@ -93,7 +90,7 @@ class WorkerCounterAttack(ActBase):
 
         for attacker in attackers:  # type: Unit
             if attacker.weapon_cooldown > 10 and attacker.shield_health_percentage < 0.5:
-                self.do(attacker.gather(self.gather_mf))
+                attacker.gather(self.gather_mf)
             else:
                 own = self.cache.own_in_range(attacker.position, 3).amount
                 enemies = self.cache.enemy_in_range(attacker.position, 3)
@@ -107,7 +104,7 @@ class WorkerCounterAttack(ActBase):
                         # On other option but to fight
                         self.combat.add_units(attackers)
                     else:
-                        self.do(attacker.gather(self.gather_mf))
+                        attacker.gather(self.gather_mf)
 
-        self.combat.execute(self.knowledge.enemy_main_zone.center_location)
+        self.combat.execute(self.zone_manager.enemy_main_zone.center_location)
         return False

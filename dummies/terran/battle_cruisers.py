@@ -1,7 +1,7 @@
 from typing import Optional, List
 
 from sharpy.knowledges import KnowledgeBot
-from sharpy.managers import ManagerBase
+from sharpy.managers.core import ManagerBase
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -28,9 +28,9 @@ class JumpIn(ActBase):
             self.done = True
             for bc in bcs:
                 self.knowledge.cooldown_manager.used_ability(bc.tag, AbilityId.EFFECT_TACTICALJUMP)
-                self.do(
-                    bc(AbilityId.EFFECT_TACTICALJUMP, self.knowledge.enemy_main_zone.behind_mineral_position_center)
-                )
+
+                bc(AbilityId.EFFECT_TACTICALJUMP, self.zone_manager.enemy_main_zone.behind_mineral_position_center)
+
         return True
 
 
@@ -45,7 +45,6 @@ class BattleCruisers(KnowledgeBot):
         pass
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
-        self.knowledge.roles.set_tag_each_iteration = True
         return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:

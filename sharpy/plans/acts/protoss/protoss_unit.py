@@ -1,3 +1,4 @@
+from sharpy.interfaces import ILostUnitsManager
 from sharpy.plans.acts import ActUnit
 from sc2 import UnitTypeId
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
@@ -6,6 +7,8 @@ from .warp_unit import WarpUnit
 
 
 class ProtossUnit(ActUnit):
+    lost_units_manager: ILostUnitsManager
+
     def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False, only_once: bool = False):
         production_units: set = UNIT_TRAINED_FROM.get(unit_type, {UnitTypeId.GATEWAY})
 
@@ -25,13 +28,14 @@ class ProtossUnit(ActUnit):
         count = super().get_unit_count()
 
         if self.only_once:
-            count += self.knowledge.lost_units_manager.own_lost_type(self.unit_type)
+            count += self.lost_units_manager.own_lost_type(self.unit_type)
         return count
 
     async def start(self, knowledge: "Knowledge"):
         if self.warp:
             await self.warp.start(knowledge)
         await super().start(knowledge)
+        self.lost_units_manager = knowledge.get_required_manager(ILostUnitsManager)
 
     async def execute(self) -> bool:
         if self.ai.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) >= 1:

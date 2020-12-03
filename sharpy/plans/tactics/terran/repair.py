@@ -1,10 +1,13 @@
 from math import ceil
-
+from typing import TYPE_CHECKING
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
 from sc2.constants import UnitTypeId
 from sc2.unit import Unit
+
+if TYPE_CHECKING:
+    from sharpy.managers.core import UnitRoleManager
 
 
 class Repair(ActBase):
@@ -12,9 +15,9 @@ class Repair(ActBase):
         super().__init__()
 
     async def execute(self) -> bool:
-        roles: "UnitRoleManager" = self.knowledge.roles
+        roles: "UnitRoleManager" = self.roles
         current_repairers = []
-        for zone in self.knowledge.our_zones:
+        for zone in self.zone_manager.our_zones:
             pre_repairer = 0
             balance = zone.our_power.power - zone.assaulting_enemy_power.power
             if balance < -5:
@@ -40,7 +43,7 @@ class Repair(ActBase):
                     if repairing_zone_count < desired_count:
                         for worker in zone.our_workers:  # type: Unit
                             if not worker.is_repairing and worker.tag not in current_repairers:
-                                self.do(worker.repair(unit))
+                                worker.repair(unit)
                                 current_repairers.append(worker.tag)
                                 roles.set_task(UnitTask.Building, worker)
                                 repairing_zone_count += 1
@@ -54,7 +57,7 @@ class Repair(ActBase):
                     for worker in zone.our_workers:  # type: Unit
                         if not worker.is_repairing and worker.tag not in current_repairers:
                             closest = to_repair.closest_to(enemies.center)
-                            self.do(worker.repair(closest))
+                            worker.repair(closest)
                             current_repairers.append(worker.tag)
                             roles.set_task(UnitTask.Building, worker)
                             repairing_zone_count += 1

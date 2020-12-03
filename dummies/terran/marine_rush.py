@@ -1,15 +1,15 @@
 # import sc2
 import random
-from typing import Optional
 
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
+from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList
-from sc2 import BotAI, UnitTypeId, AbilityId, Race
+from sc2 import UnitTypeId, Race
 from sc2.position import Point2
 
 from sharpy.knowledges import KnowledgeBot
@@ -18,10 +18,11 @@ from sharpy.utils import select_build_index
 
 class DodgeRampAttack(PlanZoneAttack):
     async def execute(self) -> bool:
+        base_ramp = self.zone_manager.expansion_zones[-1].ramp
         for effect in self.ai.state.effects:
             if effect.id != "FORCEFIELD":
                 continue
-            pos: Point2 = self.knowledge.enemy_base_ramp.bottom_center
+            pos: Point2 = base_ramp.bottom_center
             for epos in effect.positions:
                 if pos.distance_to_point2(epos) < 5:
                     return await self.small_retreat()
@@ -29,8 +30,8 @@ class DodgeRampAttack(PlanZoneAttack):
         return await super().execute()
 
     async def small_retreat(self):
-        attacking_units = self.knowledge.roles.attacking_units
-        natural = self.knowledge.expansion_zones[-2]
+        attacking_units = self.roles.attacking_units
+        natural = self.zone_manager.expansion_zones[-2]
 
         for unit in attacking_units:
             self.combat.add_unit(unit)
@@ -41,14 +42,19 @@ class DodgeRampAttack(PlanZoneAttack):
 
 class MarineRushBot(KnowledgeBot):
     tactic_index: int
+    zone_manager: IZoneManager
 
     def __init__(self, build_name: str = "default"):
         super().__init__("Marine Rush")
         self.build_name = build_name
 
+    async def on_start(self):
+        await super().on_start()
+        self.zone_manager = self.knowledge.get_required_manager(IZoneManager)
+
     async def pre_step_execute(self):
         if self.tactic_index != 1 and self.time < 5 * 60:
-            self.knowledge.gather_point = self.knowledge.expansion_zones[-2].gather_point
+            self.knowledge.gather_point = self.zone_manager.expansion_zones[-2].gather_point
 
     async def create_plan(self) -> BuildOrder:
         if self.build_name == "default":
@@ -59,8 +65,8 @@ class MarineRushBot(KnowledgeBot):
         if self.tactic_index == 0:
             self.knowledge.print("Proxy 2 rax bunker rush", "Build")
             self.attack = DodgeRampAttack(3)
-            zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
-            natural = self.knowledge.expansion_zones[-2]
+            zone = self.zone_manager.expansion_zones[-random.randint(3, 5)]
+            natural = self.zone_manager.expansion_zones[-2]
             chunk = [
                 Step(Supply(12), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
@@ -100,7 +106,7 @@ class MarineRushBot(KnowledgeBot):
         else:
             self.knowledge.print("10 marine proxy rax", "Build")
             self.attack = DodgeRampAttack(10)
-            zone = self.knowledge.expansion_zones[-random.randint(3, 5)]
+            zone = self.zone_manager.expansion_zones[-random.randint(3, 5)]
             chunk = [
                 Step(Supply(14), GridBuilding(UnitTypeId.SUPPLYDEPOT, 1)),
                 Step(UnitReady(UnitTypeId.SUPPLYDEPOT, 1), GridBuilding(UnitTypeId.BARRACKS, 1)),

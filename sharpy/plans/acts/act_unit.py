@@ -1,15 +1,18 @@
 from sc2 import UnitTypeId, Race
 from sc2.unit import Unit
-from sc2.unit_command import UnitCommand
 from sc2.units import Units
 
 from .act_base import ActBase
+from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator
 
 REACTORS = {UnitTypeId.BARRACKSREACTOR, UnitTypeId.FACTORYREACTOR, UnitTypeId.STARPORTREACTOR, UnitTypeId.REACTOR}
 
 
 class ActUnit(ActBase):
     """Builds units."""
+
+    lost_units_manager: ILostUnitsManager
+    income_calculator: IIncomeCalculator
 
     def __init__(self, unit_type: UnitTypeId, from_building: UnitTypeId, to_count: int = 9999, priority: bool = False):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
@@ -23,6 +26,10 @@ class ActUnit(ActBase):
         self.priority = priority
 
         super().__init__()
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.income_calculator = self.knowledge.get_required_manager(IIncomeCalculator)
 
     @property
     def builders(self) -> Units:
@@ -91,14 +98,11 @@ class ActUnit(ActBase):
                         continue
 
                     if self.knowledge.cooldown_manager.is_ready(builder.tag, unit_data.creation_ability.id):
-                        pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
-                        self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
-
-                        self.knowledge.reserve(cost.minerals, cost.vespene)
-                        if self.allow_new_action(builder):
-                            # Only do this when it is actually good idea
-                            self.do(builder.train(self.unit_type))
-                        break  # Only one at a time
+                        if builder.train(self.unit_type):
+                            pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
+                            self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
+                            self.knowledge.reserve(cost.minerals, cost.vespene)
+                            break  # Only one at a time
                     elif self.priority:
                         self.knowledge.reserve(cost.minerals, cost.vespene)
 
@@ -107,8 +111,8 @@ class ActUnit(ActBase):
 
             if self.builders.not_ready.exists:
                 cost = self.ai._game_data.calculate_ability_cost(unit_data.creation_ability)
-                mineral_income = self.knowledge.income_calculator.mineral_income
-                gas_income = self.knowledge.income_calculator.gas_income
+                mineral_income = self.income_calculator.mineral_income
+                gas_income = self.income_calculator.gas_income
 
                 if mineral_income > 0:
                     m_time = cost.minerals / mineral_income

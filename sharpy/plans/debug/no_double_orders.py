@@ -13,13 +13,11 @@ class NoDoubleOrders(ActBase):
         for unit in self.ai.structures:
             if len(unit.orders) > 1:
                 msg = f"{unit.type_id} has multiple orders!"
-                if self.knowledge.is_chat_allowed:
-                    await self.ai.chat_send(msg)
 
                 self.knowledge.print("[DUPLICATE] " + msg)
 
                 if self.last_cancel + 0.2 < self.ai.time:
                     self.knowledge.print("[DUPLICATE] " + "Cancelling!")
-                    self.do(unit(AbilityId.CANCEL_LAST))
+                    unit(AbilityId.CANCEL_LAST)
                     self.last_cancel = self.ai.time
         return True

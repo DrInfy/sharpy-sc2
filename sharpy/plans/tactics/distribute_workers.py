@@ -1,15 +1,14 @@
-import warnings
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict
 
 from sc2.constants import IS_COLLECTING, ALL_GAS
-from sharpy.managers import UnitRoleManager
-from sharpy.managers.unit_value import buildings_5x5
+from sharpy.managers.core import UnitRoleManager
+from sharpy.managers.core.unit_value import buildings_5x5
 from sharpy.plans.acts import ActBase
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
-from sc2 import UnitTypeId, Race, AbilityId
+from sharpy.managers.core.roles import UnitTask
+from sc2 import AbilityId
 from sc2.unit import Unit, UnitOrder
 
 from sharpy.knowledges import Knowledge
@@ -112,7 +111,7 @@ class DistributeWorkers(ActBase):
         """All gas buildings that are on a safe zone and could use more workers."""
         result = Units([], self.ai)
 
-        for zone in self.knowledge.our_zones:  # type: Zone
+        for zone in self.zone_manager.our_zones:  # type: Zone
             if zone.is_under_attack:
                 continue
 
@@ -126,7 +125,7 @@ class DistributeWorkers(ActBase):
         """All gas buildings that are on a safe zone and could use more workers."""
         result = Units([], self.ai)
 
-        for zone in self.knowledge.our_zones:  # type: Zone
+        for zone in self.zone_manager.our_zones:  # type: Zone
             if zone.is_under_attack:
                 continue
 
@@ -137,7 +136,7 @@ class DistributeWorkers(ActBase):
 
     def calc_gas_workers_target(self) -> int:
         """Target count for workers harvesting gas."""
-        worker_count = self.knowledge.roles.free_workers.amount
+        worker_count = self.roles.free_workers.amount
         max_workers_at_gas = self.active_gas_buildings.amount * MAX_WORKERS_PER_GAS
 
         estimate = round((worker_count - 8) / 2)
@@ -313,7 +312,7 @@ class DistributeWorkers(ActBase):
 
         if worker.is_carrying_resource and townhalls:
             closest = townhalls.closest_to(worker)
-            self.do(worker(AbilityId.SMART, closest))
-            self.do(worker.gather(work, queue=True))
+            worker(AbilityId.SMART, closest)
+            worker.gather(work, queue=True)
         else:
-            self.do(worker.gather(work))
+            worker.gather(work)

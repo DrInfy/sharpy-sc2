@@ -1,12 +1,15 @@
-import warnings
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from sharpy.general.zone import Zone
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
+from sharpy.managers.core import ZoneManager, UnitRoleManager
+from sharpy.interfaces import IIncomeCalculator, IGatherPointSolver
 from sc2 import UnitTypeId, Race, AbilityId, common_pb
-from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import *
 
 
 def get_new_townhall_type(race: Race):
@@ -22,6 +25,11 @@ train_worker_abilitites = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTR
 
 
 class Expand(ActBase):
+    gather_manager: IGatherPointSolver
+    zone_manager: ZoneManager
+    income_calculator: IIncomeCalculator
+    roles: UnitRoleManager
+
     def __init__(
         self,
         to_count: int,
@@ -46,15 +54,22 @@ class Expand(ActBase):
     def current_active_base_count(self) -> int:
         count = 0
 
-        count += len(self.knowledge.our_zones_with_minerals)
+        count += len(self.zone_manager.our_zones_with_minerals)
 
         return count
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.gather_manager = knowledge.get_required_manager(IGatherPointSolver)
+        self.zone_manager = knowledge.get_required_manager(ZoneManager)
+        self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
+        self.roles = knowledge.get_required_manager(UnitRoleManager)
 
     async def execute(self) -> bool:
         expand_here: "Zone" = None
         expand_now = False
         active_bases = self.current_active_base_count
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
 
         if self.priority_base_index is not None:
             zones = sorted(zones, key=lambda z: z.zone_index == self.priority_base_index, reverse=True)
@@ -79,7 +94,7 @@ class Expand(ActBase):
         pending_count = self.pending_build(self.townhall_type)
 
         # Inform our logic that we're looking to expand
-        self.knowledge.expanding_to = expand_here
+        self.gather_manager.set_expanding_to(expand_here.center_location)
 
         if pending_count:
             if self.has_build_order(worker):
@@ -116,11 +131,11 @@ class Expand(ActBase):
         unit = self.ai._game_data.units[self.townhall_type.value]
         cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
 
-        if self.knowledge.income_calculator.mineral_income > 0 and self.consider_worker_production:
+        if self.income_calculator.mineral_income > 0 and self.consider_worker_production:
             for town_hall in self.ai.townhalls:  # type: Unit
                 # TODO: Zerg(?)
                 if town_hall.orders:
-                    starting_next_worker_in = -50 / self.knowledge.income_calculator.mineral_income
+                    starting_next_worker_in = -50 / self.income_calculator.mineral_income
                     for order in town_hall.orders:  # type: UnitOrder
                         if order.ability.id in train_worker_abilitites:
                             starting_next_worker_in += 12 * (1 - order.progress)
@@ -130,15 +145,15 @@ class Expand(ActBase):
                 else:
                     available_minerals -= 50  # should start producing workers soon now
 
-        if available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals:
+        if available_minerals + time * self.income_calculator.mineral_income >= cost.minerals:
             # Go wait
             self.set_worker(worker)
 
-            self.do(worker.move(position))
+            worker.move(position)
 
     def set_worker(self, worker: Optional[Unit]) -> bool:
         if worker:
-            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.roles.set_task(UnitTask.Building, worker)
             self.builder_tag = worker.tag
             return True
 
@@ -147,7 +162,7 @@ class Expand(ActBase):
 
     def clear_worker(self):
         if self.builder_tag is not None:
-            self.knowledge.roles.clear_task(self.builder_tag)
+            self.roles.clear_task(self.builder_tag)
             self.builder_tag = None
 
     async def build_expansion(self, expand_here: "Zone"):
@@ -155,7 +170,7 @@ class Expand(ActBase):
 
         if worker is not None:
             self.print(f"Expanding to {expand_here.center_location}!")
-            self.do(worker.build(self.townhall_type, expand_here.center_location))
+            worker.build(self.townhall_type, expand_here.center_location)
 
     async def debug_actions(self):
         if self.builder_tag is not None:

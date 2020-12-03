@@ -3,7 +3,7 @@ from math import floor
 from typing import Optional
 
 from sc2.unit import Unit
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.general.zone import Zone
 from sc2 import UnitTypeId, Race
@@ -43,7 +43,7 @@ class DefensiveBuilding(ActBase):
         if pending_defense_count > 0:
             return True
         # Go through zones so that furthest expansions are fortified first
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
         for i in range(0, len(zones)):
             zone = zones[i]
             if not zone.is_ours or zone.is_under_attack:
@@ -84,7 +84,7 @@ class DefensiveBuilding(ActBase):
 
                 if position is not None:
                     self.print(f"Building {self.unit_type.name} to {position}")
-                    self.do(worker.build(self.unit_type, position))
+                    worker.build(self.unit_type, position)
                     self.set_worker(worker)
                 else:
                     self.print(f"Could not build {self.unit_type.name} to {position}")
@@ -110,5 +110,5 @@ class DefensiveBuilding(ActBase):
         assert False  # Exception?
 
     def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
+        self.roles.set_task(UnitTask.Building, worker)
         self.builder_tag = worker.tag

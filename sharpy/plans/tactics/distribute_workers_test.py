@@ -1,26 +1,30 @@
 import math
 import sys
 from random import randint
-from typing import Dict, Optional, Union
+from typing import Optional, Union, List
 
-import numpy
 import pytest
 from unittest import mock
 
 from sc2 import UnitTypeId, Race, BotAI, AbilityId
 from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE, IS_MINE
-from sc2.distances import DistanceCalculation
-from sc2.ids.upgrade_id import UpgradeId
-from sc2.pixel_map import PixelMap
+from sc2.game_data import AbilityData
 from sc2.position import Point2
 from sc2.unit import Unit
-from sc2.units import Units
 
 from .distribute_workers import DistributeWorkers
-from ...general.zone import Zone
-from ...knowledges import Knowledge, KnowledgeBot
-from ...managers.roles import UnitTask
-from ...managers.unit_value import BUILDING_IDS
+from sharpy.general.zone import Zone
+from sharpy.knowledges import Knowledge, SkeletonBot
+from sharpy.managers.core import (
+    UnitCacheManager,
+    UnitRoleManager,
+    ZoneManager,
+    PathingManager,
+    LostUnitsManager,
+    PreviousUnitsManager,
+)
+from sharpy.managers.core.roles import UnitTask
+from sharpy.managers.core.unit_value import BUILDING_IDS, UnitValue
 
 MAIN_POINT = Point2((10, 10))
 NATURAL_POINT = Point2((10, 60))
@@ -28,9 +32,21 @@ ENEMY_MAIN_POINT = Point2((90, 90))
 ENEMY_NATURAL_POINT = Point2((90, 40))
 
 
+async def fake(self):
+    return None
+
+
+class MockBot(SkeletonBot):
+    def __init__(self):
+        self.distance_calculation_method = 0
+        self.unit_command_uses_self_do = False
+
+    def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        return []
+
+
 def mock_ai() -> BotAI:
-    ai = BotAI()
-    ai.unit_command_uses_self_do = True
+    ai = MockBot()
     ai._initialize_variables()
     # ai = mock.Mock(bot_object)
     ai._distances_override_functions(0)
@@ -40,13 +56,14 @@ def mock_ai() -> BotAI:
     ai.config["debug_log"].getboolean = lambda x, fallback: False
     ai.my_race = Race.Protoss
     ai.enemy_race = Race.Protoss
-
+    # run custom and player_id disables mocking
+    ai.run_custom = True
+    ai.player_id = 2
     ai.state = mock.Mock()
     ai.state.effects = []
     ai.state.visibility.__getitem__ = lambda s, x: 2
 
     ai._client = mock.Mock()
-
     ai._game_info = mock.Mock()
     ai._game_info.player_start_location = MAIN_POINT
     ai._game_info.start_locations = [ENEMY_MAIN_POINT]
@@ -60,6 +77,13 @@ def mock_ai() -> BotAI:
 
     ai._game_data = mock.Mock()
     ai._game_data.unit_types = {}
+    ai._game_data.abilities = dict()
+    ability_proto_mock = mock.Mock()
+    ability_proto_mock.target = 4
+    ability_proto_mock.ability_id = AbilityId.HARVEST_GATHER.value
+    ability_proto_mock.remaps_to_ability_id = False
+    ability_mock = AbilityData(ai._game_data, ability_proto_mock)
+    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value] = ability_mock
     ai._game_data.units = {
         UnitTypeId.MINERALFIELD.value: mock.Mock(),
         UnitTypeId.PROBE.value: mock.Mock(),
@@ -68,8 +92,6 @@ def mock_ai() -> BotAI:
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].has_minerals = True
     ai._game_data.units[UnitTypeId.MINERALFIELD.value].attributes = {}
     ai._game_data.units[UnitTypeId.PROBE.value].attributes = {}
-    ai._game_data.abilities = {AbilityId.HARVEST_GATHER.value: mock.Mock()}
-    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value].id = AbilityId.HARVEST_GATHER
 
     for typedata in BUILDING_IDS:
         ai._game_data.units[typedata.value] = mock.Mock()
@@ -89,24 +111,46 @@ def mock_ai() -> BotAI:
 
 async def mock_knowledge(ai) -> Knowledge:
     knowledge = Knowledge()
-    knowledge.pre_start(ai, None)
-    knowledge.get_boolean_setting = lambda x: False
-    knowledge.ai.state.game_loop = 1
-    knowledge.ai.orders = []
     knowledge.action_handler = mock.Mock()
-    knowledge.zone_manager.expansion_zones = [Zone(MAIN_POINT, True, knowledge), Zone(NATURAL_POINT, False, knowledge)]
-    knowledge.iteration = 1
+    knowledge.version_manager = mock.Mock()
+    # pf = mock.Mock()
+    knowledge.pathing_manager = PathingManager()
 
-    knowledge.pathing_manager = mock.Mock()
+    knowledge.action_handler.start = fake
+    knowledge.version_manager.start = fake
+    knowledge.pathing_manager.start = fake
+    knowledge.pathing_manager.path_finder_terrain = mock.Mock()
     knowledge.pathing_manager.path_finder_terrain.find_path = lambda p1, p2: (
         [p1, p2],
         math.hypot(p1[0] - p2[0], p1[1] - p2[1]),
     )
+    managers = [
+        UnitCacheManager(),
+        UnitValue(),
+        UnitRoleManager(),
+        PreviousUnitsManager(),
+        LostUnitsManager(),
+        knowledge.pathing_manager,
+        ZoneManager(),
+    ]
+
+    knowledge.pre_start(ai, managers)
+
+    knowledge.get_boolean_setting = lambda x: False
+    knowledge.ai.state.game_loop = 1
+    knowledge.ai.orders = []
+
+    await knowledge.start()
+    knowledge.zone_manager._expansion_zones = [
+        Zone(MAIN_POINT, True, knowledge, knowledge.zone_manager),
+        Zone(NATURAL_POINT, False, knowledge, knowledge.zone_manager),
+    ]
+    knowledge.iteration = 1
 
     knowledge._all_own = ai.all_own_units
 
-    await knowledge.roles.start(knowledge)
-    await knowledge.unit_cache.start(knowledge)
+    # await knowledge.roles.start(knowledge)
+    # await knowledge.unit_cache.start(knowledge)
     await knowledge.unit_cache.update()
 
     await knowledge.zone_manager.start(knowledge)
@@ -327,7 +371,7 @@ class TestDistributeWorkers:
         for worker in ai.workers:
             knowledge.roles.set_task(UnitTask.Gathering, worker)
 
-        knowledge.expansion_zones[0].needs_evacuation = True
+        knowledge.zone_manager.expansion_zones[0].needs_evacuation = True
         await distribute_workers.start(knowledge)
         await distribute_workers.execute()
         assert len(ai.actions) == 1
@@ -348,7 +392,7 @@ class TestDistributeWorkers:
         set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
         knowledge = await mock_knowledge(ai)
         knowledge.roles.set_task(UnitTask.Gathering, worker1)
-        knowledge.expansion_zones[0].needs_evacuation = True
+        knowledge.zone_manager.expansion_zones[0].needs_evacuation = True
         await distribute_workers.start(knowledge)
         await distribute_workers.execute()
         assert len(ai.actions) > 0

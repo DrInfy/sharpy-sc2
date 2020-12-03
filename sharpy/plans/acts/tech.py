@@ -7,7 +7,7 @@ from sc2.units import Units
 from .act_base import ActBase
 
 from sc2.dicts.upgrade_researched_from import UPGRADE_RESEARCHED_FROM
-from sharpy.managers import VersionManager
+from sharpy.managers.core import VersionManager
 
 
 class Tech(ActBase):
@@ -82,7 +82,7 @@ class Tech(ActBase):
                 if len(builder.orders) == 0:
                     # todo: remove this call?
                     self.print(f"Started {self.upgrade_type.name}")
-                    self.do(builder(creationAbilityID))
+                    builder(creationAbilityID)
                     return False
 
         self.knowledge.reserve(cost.minerals, cost.vespene)

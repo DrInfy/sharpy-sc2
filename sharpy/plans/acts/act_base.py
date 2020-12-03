@@ -1,21 +1,17 @@
-import string
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
 import sc2
 from sc2.ids.buff_id import BuffId
 from sharpy.general.component import Component
-from sharpy.managers import UnitValue
-from sharpy.managers import UnitCacheManager, PathingManager, GroupCombatManager, UnitRoleManager
 
 from sc2 import AbilityId, Race, UnitTypeId
-from sc2.client import Client
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand
-from sc2.units import Units
 from sc2.constants import EQUIVALENTS_FOR_TECH_PROGRESS
-from sharpy.managers.roles import UnitTask
+from sharpy.interfaces import ILostUnitsManager
+from sharpy.managers.core.roles import UnitTask
 
 build_commands = {
     # Protoss
@@ -66,24 +62,18 @@ build_commands = {
 
 
 class ActBase(Component, ABC):
+    lost_units_manager: ILostUnitsManager
+
     async def debug_draw(self):
         if self.debug:
             await self.debug_actions()
 
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)
+
     async def debug_actions(self):
         pass
-
-    def do(self, action: UnitCommand):
-        self.knowledge.action_handler.action_made(action)
-        self.ai.do(action)
-
-    def allow_new_action(self, unit: Unit) -> bool:
-        """
-        Only use this check for critical orders that must not duplicated
-        :param unit: unit that wants to make a new action
-        :return: True if it allowed
-        """
-        return self.knowledge.action_handler.allow_action(unit)
 
     @abstractmethod
     async def execute(self) -> bool:
@@ -172,11 +162,11 @@ class ActBase(Component, ABC):
         count = self.related_count(count, unit_type)
 
         if include_killed:
-            count += self.knowledge.lost_units_manager.own_lost_type(unit_type, real_type=False)
+            count += self.lost_units_manager.own_lost_type(unit_type, real_type=False)
             related = EQUIVALENTS_FOR_TECH_PROGRESS.get(unit_type, None)
             if related:
                 for related_type in related:
-                    count += self.knowledge.lost_units_manager.own_lost_type(related_type, real_type=False)
+                    count += self.lost_units_manager.own_lost_type(related_type, real_type=False)
 
         return count
 
@@ -246,3 +236,9 @@ class ActBase(Component, ABC):
                 # Worker is probably dead or it is already building something else.
                 worker = None
         return worker
+
+    async def build(self, type_id: UnitTypeId, near: Point2):
+        worker = self.get_worker_builder(near, 0)
+        pos = await self.ai.find_placement(type_id, near)
+        if pos:
+            worker.build(type_id, pos)

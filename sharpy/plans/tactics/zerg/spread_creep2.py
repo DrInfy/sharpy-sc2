@@ -1,10 +1,10 @@
 import random
-from typing import List, Optional, Dict, Set
+from typing import Optional, Dict, Set
 import numpy as np
 
 from sc2.units import Units
-from sharpy.managers import BuildingSolver
-from sharpy.managers.grids import BlockerType, BuildArea
+from sharpy.managers.core import BuildingSolver
+from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
@@ -127,7 +127,7 @@ class SpreadCreepV2(ActBase):
                 position = self.get_next_creep_tumor_position(tumor)
                 if position:
                     self.knowledge.cooldown_manager.used_ability(tumor.tag, AbilityId.BUILD_CREEPTUMOR_TUMOR)
-                    self.do(tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position))
+                    tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position)
 
     async def spawn_creep_tumors(self):
         """ Order queens to plant tumors. """
@@ -147,13 +147,13 @@ class SpreadCreepV2(ActBase):
                 if position:
                     # TODO Do not move or plant tumor if enemies are nearby
                     if queen.distance_to(position) < QUEEN_TO_TARGET_TUMOR_MAX_DISTANCE:
-                        self.do(queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position))
+                        queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position)
                         self.queen_plant_location_cache.pop(queen.tag, None)
                     else:
-                        self.do(queen.move(position + Point2((0.5, 0.5))))
+                        queen.move(position + Point2((0.5, 0.5)))
                 elif self.ai.townhalls and not self.ai.has_creep(queen.position):
                     # No tumor location could be found from current queen location, move queen to closest townhall (back on creep)
-                    self.do(queen.move(self.ai.townhalls.closest_to(queen).position))
+                    queen.move(self.ai.townhalls.closest_to(queen).position)
 
     def get_next_plant_position(self, queen: Unit) -> Optional[Point2]:
         """ Tries to find a suitable position for queens to plant tumors at. """

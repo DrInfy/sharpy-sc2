@@ -7,9 +7,9 @@ from sc2.position import Point2
 from sc2.unit import Unit
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.managers import ManagerBase
-from sharpy.managers.building_solver import WallType
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core import ManagerBase
+from sharpy.managers.core.building_solver import WallType
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
@@ -28,8 +28,8 @@ class ProxyCannoneer(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.enemy_main: Point2 = self.knowledge.expansion_zones[-1].center_location
-        self.natural: Point2 = self.knowledge.expansion_zones[-2].center_location
+        self.enemy_main: Point2 = self.zone_manager.expansion_zones[-1].center_location
+        self.natural: Point2 = self.zone_manager.expansion_zones[-2].center_location
 
         self.enemy_ramp = self.knowledge.enemy_base_ramp
         d = self.enemy_main.distance_to(self.natural)
@@ -67,7 +67,7 @@ class ProxyCannoneer(ActBase):
         return False
 
     async def micro_cannon_worker(self, worker):
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
+        self.roles.set_task(UnitTask.Reserved, worker)
 
         if self.has_build_order(worker):
             return
@@ -77,23 +77,23 @@ class ProxyCannoneer(ActBase):
         target = self.pylons[target_index]
         distance = worker.distance_to(target)
         if distance > 20:
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif self.knowledge.can_afford(UnitTypeId.PHOTONCANNON):
             if distance < 5:
                 if not self.has_build_order(worker):
 
-                    await self.ai.build(UnitTypeId.PHOTONCANNON, target, max_distance=5, build_worker=worker)
+                    await self.build(UnitTypeId.PHOTONCANNON, target, max_distance=5, build_worker=worker)
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)
-                self.ai.do(worker.move(target))
+                worker.move(target)
         else:
             position = self.pather.find_weak_influence_ground(target, 15)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
 
     async def micro_pylon_worker(self, worker):
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
+        self.roles.set_task(UnitTask.Reserved, worker)
         if self.has_build_order(worker):
             return
 
@@ -104,7 +104,7 @@ class ProxyCannoneer(ActBase):
             # Pylons are done
             position = self.pather.find_weak_influence_ground(worker.position, 15)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
             return
 
         target = self.pylons[target_index]
@@ -112,22 +112,22 @@ class ProxyCannoneer(ActBase):
 
         mid_target = (worker.position + target) * 0.5
         if distance > 20:
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif cannon_index + 1 < target_index:
             position = self.pather.find_weak_influence_ground(mid_target, 10)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
         elif self.knowledge.can_afford(UnitTypeId.PYLON):
             if distance < 5:
-                await self.ai.build(UnitTypeId.PYLON, target, max_distance=4, build_worker=worker, placement_step=1)
+                await self.build(UnitTypeId.PYLON, target, max_distance=4, build_worker=worker, placement_step=1)
             else:
                 position = self.pather.find_weak_influence_ground(target, 4)
                 target = self.pather.find_influence_ground_path(worker.position, position)
-                self.ai.do(worker.move(target))
+                worker.move(target)
         else:
             position = self.pather.find_weak_influence_ground(mid_target, 10)
             target = self.pather.find_influence_ground_path(worker.position, position)
-            self.ai.do(worker.move(target))
+            worker.move(target)
 
     def get_index(self):
         pylons = self.cache.own(UnitTypeId.PYLON)
@@ -164,7 +164,7 @@ class ProxyCannoneer(ActBase):
         if worker:
             return worker
 
-        available_workers = self.knowledge.roles.free_workers
+        available_workers = self.roles.free_workers
         if not available_workers:
             return None
 
@@ -179,7 +179,7 @@ class ProxyCannoneer(ActBase):
         if worker:
             return worker
 
-        available_workers = self.knowledge.roles.free_workers
+        available_workers = self.roles.free_workers
         if not available_workers:
             return None
 
@@ -194,7 +194,7 @@ class CannonRush(KnowledgeBot):
         self.build_name = build_name
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
-        self.knowledge.roles.set_tag_each_iteration = True
+        self.roles.set_tag_each_iteration = True
         return super().configure_managers()
 
     async def create_plan(self) -> BuildOrder:
@@ -267,8 +267,8 @@ class CannonRush(KnowledgeBot):
 
     def cannon_contain(self) -> ActBase:
         self.knowledge.print(f"Cannon contain", "Build")
-        enemy_main = self.knowledge.expansion_zones[-1]
-        natural = self.knowledge.expansion_zones[-2]
+        enemy_main = self.zone_manager.expansion_zones[-1]
+        natural = self.zone_manager.expansion_zones[-2]
         enemy_ramp = self.knowledge.enemy_base_ramp
 
         return Step(
@@ -373,7 +373,7 @@ class CannonRush(KnowledgeBot):
 
     def cannon_expand(self) -> ActBase:
         self.knowledge.print(f"Cannon expand", "Build")
-        natural = self.knowledge.expansion_zones[-2]
+        natural = self.zone_manager.expansion_zones[-2]
         pylon_pos: Point2 = natural.behind_mineral_position_center
 
         return BuildOrder(

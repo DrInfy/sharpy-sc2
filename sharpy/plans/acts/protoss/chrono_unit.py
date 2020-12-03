@@ -39,11 +39,9 @@ class ChronoUnit(ActBase):
                 # boost here!
                 if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                     for nexus in self.cache.own(UnitTypeId.NEXUS):
-                        if self.cd_manager.is_ready(
-                            nexus.tag, AbilityId.EFFECT_CHRONOBOOSTENERGYCOST
-                        ) and self.allow_new_action(nexus):
-                            self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
-                            self.print(f"Chrono {self.creation_ability.name}")
-                            self.casted += 1
-                            return True  # TODO: better solution for real time, to prevent multiple duplicate chronos
+                        if self.cd_manager.is_ready(nexus.tag, AbilityId.EFFECT_CHRONOBOOSTENERGYCOST):
+                            if nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target):
+                                self.print(f"Chrono {self.creation_ability.name}")
+                                self.casted += 1
+                                return True
         return True  # Never block

@@ -1,19 +1,26 @@
 from math import ceil
 
+from sharpy.interfaces import IIncomeCalculator
 from .zerg_unit import ZergUnit
 from sc2 import UnitTypeId
 
 
 class AutoOverLord(ZergUnit):
+    income_calculator: IIncomeCalculator
+
     def __init__(self):
         super().__init__(UnitTypeId.OVERLORD, 0)
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
 
     async def execute(self):
         self.to_count = await self.overlord_count_calc()
         return await super().execute()
 
     async def overlord_count_calc(self) -> int:
-        growth_speed = self.knowledge.income_calculator.mineral_income / 50
+        growth_speed = self.income_calculator.mineral_income / 50
 
         build_time = 18  # overlord build time
         predicted_supply = min(200, self.ai.supply_used + build_time * growth_speed)

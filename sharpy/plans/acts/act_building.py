@@ -41,11 +41,14 @@ class ActBuilding(ActBase):
         self.knowledge.print(
             f"[ActBuilding] {count+1}. {self.unit_type.name} near ({location.x:.1f}, {location.y:.1f})"
         )
-        await ai.build(self.unit_type, near=location)
+        worker = self.get_worker_builder(location, 0)
+        pos = await self.ai.find_placement(self.unit_type, location)
+        if pos:
+            worker.build(self.unit_type, pos)
 
     def get_random_build_location(self) -> Point2:
         """Calculates building position."""
-        start_point = self.knowledge.own_main_zone.center_location
+        start_point = self.zone_manager.own_main_zone.center_location
         if self.ai.townhalls.exists and self.ai.structures.amount > 8:
             start_point = self.ai.townhalls.random.position
 

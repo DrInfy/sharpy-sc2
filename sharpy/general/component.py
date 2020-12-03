@@ -5,8 +5,9 @@ from sc2.position import Point3
 from sc2.unit import Unit
 
 if TYPE_CHECKING:
-    from sharpy.knowledges import Knowledge, KnowledgeBot
-    from sharpy.managers import *
+    from sharpy.interfaces import *
+    from sharpy.knowledges import *
+    from sharpy.managers.core import *
 
 
 class Component:
@@ -18,12 +19,12 @@ class Component:
 
     # Shortcuts to various managers
     knowledge: "Knowledge"
-    ai: "KnowledgeBot"
+    ai: "SkeletonBot"
     client: Client
-    cache: "UnitCacheManager"
-    unit_values: "UnitValue"
+    cache: "IUnitCache"
+    unit_values: "IUnitValues"
     pather: "PathingManager"
-    combat: "GroupCombatManager"
+    combat: "ICombatManager"
     roles: "UnitRoleManager"
     zone_manager: "ZoneManager"
     cd_manager: "CooldownManager"

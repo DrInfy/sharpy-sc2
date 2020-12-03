@@ -1,9 +1,6 @@
-from typing import Optional, List
 from sharpy.plans.acts import ActBase
 
-from sharpy.managers.roles import UnitTask
-from sc2 import UnitTypeId, Race, AbilityId
-from sc2.unit import Unit
+from sc2 import Race, AbilityId
 from sharpy.tools import IntervalFunc
 
 
@@ -29,14 +26,14 @@ class WorkerRallyPoint(ActBase):
             self.ability = AbilityId.RALLY_HATCHERY_WORKERS
 
     def set_rally_point(self):
-        for zone in self.knowledge.our_zones:
+        for zone in self.zone_manager.our_zones:
             best_mineral_field = zone.check_best_mineral_field()
 
             if zone.our_townhall:
                 if best_mineral_field:
-                    self.do(zone.our_townhall(self.ability, best_mineral_field))
+                    zone.our_townhall(self.ability, best_mineral_field)
                 else:
-                    self.do(zone.our_townhall(self.ability, zone.center_location))
+                    zone.our_townhall(self.ability, zone.center_location)
 
     async def execute(self) -> bool:
         self.func.execute()

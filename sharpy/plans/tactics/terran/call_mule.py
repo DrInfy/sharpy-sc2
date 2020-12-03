@@ -1,9 +1,11 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from sharpy.plans.acts import ActBase
-from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
 
 
 class CallMule(ActBase):
@@ -11,7 +13,7 @@ class CallMule(ActBase):
         super().__init__()
         self.on_energy = on_energy
 
-    async def start(self, knowledge: Knowledge):
+    async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
     async def execute(self) -> bool:
@@ -22,12 +24,12 @@ class CallMule(ActBase):
             if building.energy > self.on_energy:
                 mule_target = self.solve_target()
                 if mule_target is not None:
-                    self.do(building(AbilityId.CALLDOWNMULE_CALLDOWNMULE, mule_target))
+                    building(AbilityId.CALLDOWNMULE_CALLDOWNMULE, mule_target)
 
         return True
 
     def solve_target(self) -> Optional[Unit]:
-        for zone in self.knowledge.enemy_expansion_zones:  # type: Zone
+        for zone in self.zone_manager.enemy_expansion_zones:  # type: Zone
             if (
                 zone.is_ours
                 and not zone.is_under_attack

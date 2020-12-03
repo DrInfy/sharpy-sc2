@@ -23,7 +23,7 @@ class RestorePowerDummy(KnowledgeBot):
         await super().on_step(iteration)
 
     async def create_debug_buildings(self):
-        grid_positions = self.knowledge.building_solver.building_position
+        grid_positions = self.knowledge.building_solver.buildings3x3
 
         await self._client.debug_create_unit([[UnitTypeId.GATEWAY, 1, grid_positions[0], 1]])
         await self._client.debug_create_unit([[UnitTypeId.GATEWAY, 1, grid_positions[1], 1]])

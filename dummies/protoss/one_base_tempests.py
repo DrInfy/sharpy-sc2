@@ -2,9 +2,9 @@ from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
-from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.managers.building_solver import WallType
+from sharpy.plans import BuildOrder, Step, SequentialList
+from sharpy.knowledges import KnowledgeBot
+from sharpy.managers.core.building_solver import WallType
 from sc2 import UnitTypeId, Race
 
 

@@ -1,23 +1,23 @@
 from sharpy.general.extended_power import ExtendedPower
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.zerg import *
-from sharpy.plans import BuildOrder, Step, StepBuildGas
+from sharpy.plans import BuildOrder, Step
 from sharpy.knowledges import KnowledgeBot
-from sc2 import BotAI, UnitTypeId, AbilityId, Race
+from sc2 import UnitTypeId, Race
 from sc2.units import Units
 
 
 class PlanZoneAttack2(PlanZoneAttack):
     def _start_attack(self, power: ExtendedPower, attackers: Units):
-        drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.knowledge.enemy_start_location, 10)
+        drones = self.cache.own(UnitTypeId.DRONE).closest_n_units(self.zone_manager.enemy_start_location, 10)
         self.retreat_multiplier = 0  # never retreat, never surrender
 
         for unit in drones:
-            self.knowledge.roles.set_task(UnitTask.Attacking, unit)
+            self.roles.set_task(UnitTask.Attacking, unit)
 
         return super()._start_attack(power, attackers)
 
@@ -27,6 +27,7 @@ class TwelvePool(KnowledgeBot):
 
     def __init__(self):
         super().__init__("12pool")
+        self.realtime_worker = False
 
     async def create_plan(self) -> BuildOrder:
         build_step_buildings = [
@@ -66,6 +67,7 @@ class TwelvePool(KnowledgeBot):
 
         return BuildOrder(
             build_step_buildings,
+            Step(SupplyLeft(0), AutoOverLord()),
             finish,
             build_step_units,
             AutoOverLord(),

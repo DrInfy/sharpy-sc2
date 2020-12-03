@@ -5,7 +5,7 @@ from sharpy.events import UnitDestroyedEvent
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts.act_base import ActBase
 
 
@@ -25,7 +25,7 @@ class Archon(ActBase):
         templars = self.cache.own(self.allowed_types).ready
         for ht in templars:  # type: Unit
             if ht.is_idle and ht.tag in self.already_merging_tags:
-                self.knowledge.roles.clear_task(ht)
+                self.roles.clear_task(ht)
                 self.already_merging_tags.remove(ht.tag)
 
         templars = templars.tags_not_in(self.already_merging_tags)
@@ -37,8 +37,8 @@ class Archon(ActBase):
             target: Unit = templars.tags_not_in(self.already_merging_tags).closest_to(unit)
 
             # Reserve upcoming archon so that they aren't stolen by other states.
-            self.knowledge.roles.set_task(UnitTask.Reserved, unit)
-            self.knowledge.roles.set_task(UnitTask.Reserved, target)
+            self.roles.set_task(UnitTask.Reserved, unit)
+            self.roles.set_task(UnitTask.Reserved, target)
             self.knowledge.print(f"[ARCHON] merging {str(unit.type_id)} and {str(unit.type_id)}")
 
             from s2clientprotocol import raw_pb2 as raw_pb

@@ -1,4 +1,4 @@
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans.protoss import *
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
@@ -17,24 +17,24 @@ class DtPush(ActBase):
         if dts.amount >= 2 and not self.dt_push_started:
             self.dt_push_started = True
             dts = dts.random_group_of(2)
-            zone = self.knowledge.enemy_main_zone
+            zone = self.zone_manager.enemy_main_zone
             harash_dt = dts[0]
             attack_dt = dts[1]
-            self.do(harash_dt.move(zone.center_location))
-            self.do(attack_dt.attack(zone.center_location))
-            self.knowledge.roles.set_task(UnitTask.Reserved, harash_dt)
-            self.knowledge.roles.set_task(UnitTask.Reserved, attack_dt)
+            harash_dt.move(zone.center_location)
+            attack_dt.attack(zone.center_location)
+            self.roles.set_task(UnitTask.Reserved, harash_dt)
+            self.roles.set_task(UnitTask.Reserved, attack_dt)
             self.ninja_dt_tag = harash_dt.tag
 
         elif self.dt_push_started:
             harash_dt = self.ai.units.find_by_tag(self.ninja_dt_tag)
             if harash_dt is not None:
-                enemy_workers = self.knowledge.known_enemy_units.of_type(
+                enemy_workers = self.ai.all_enemy_units.of_type(
                     [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
                 )
                 if enemy_workers.exists:
                     target = enemy_workers.closest_to(harash_dt)
-                    self.do(harash_dt.attack(target))
+                    harash_dt.attack(target)
         return True
 
 
@@ -59,7 +59,7 @@ class DarkTemplarRush(KnowledgeBot):
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 14)),
             Step(None, None, UnitExists(UnitTypeId.PYLON, 1)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 16 + 3 + 3)),
-            Step(RequireCustom(lambda k: self.knowledge.own_main_zone.minerals_running_low), Expand(2)),
+            Step(RequireCustom(lambda k: self.zone_manager.own_main_zone.minerals_running_low), Expand(2)),
             Step(None, ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS), UnitExists(UnitTypeId.PROBE, 30)),
             GridBuilding(UnitTypeId.GATEWAY, 5),
             BuildGas(3),

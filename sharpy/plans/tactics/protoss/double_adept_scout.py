@@ -1,16 +1,15 @@
 from typing import List, Dict, Optional
 
-from sharpy.managers.combat2.protoss import MicroAdepts
+from sharpy.combat.protoss import MicroAdepts
 from sharpy.plans.acts import ActBase
-from sharpy.managers import CooldownManager, GroupCombatManager
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
 from sharpy.general.zone import Zone
-from sharpy.managers.combat2 import MoveType, MicroRules
-from sharpy.managers.roles import UnitTask
+from sharpy.combat import MoveType, MicroRules
+from sharpy.managers.core.roles import UnitTask
 
 
 class DoubleAdeptScout(ActBase):
@@ -42,7 +41,7 @@ class DoubleAdeptScout(ActBase):
 
     async def execute(self) -> bool:
         if self.knowledge.possible_rush_detected:
-            self.knowledge.roles.clear_tasks(self.scout_tags)
+            self.roles.clear_tasks(self.scout_tags)
             self.scout_tags.clear()
             return True  # Never block
 
@@ -101,13 +100,13 @@ class DoubleAdeptScout(ActBase):
                         adept, adept.position
                     ) < self.knowledge.enemy_units_manager.danger_value(adept, shade.position):
                         # It's safer to not phase shift
-                        self.do(adept(AbilityId.CANCEL_ADEPTPHASESHIFT))
+                        adept(AbilityId.CANCEL_ADEPTPHASESHIFT)
                         continue
 
             if self.cd_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT) and (
                 shade_distance < 11 or shade_distance > 30
             ):
-                self.do(adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target))
+                adept(AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, self.adept_target)
                 self.cd_manager.used_ability(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT)
                 self.target_changed = False
                 self.print(f"Using phase shift to: {self.adept_target}")
@@ -208,17 +207,17 @@ class DoubleAdeptScout(ActBase):
     async def end_scout(self):
         self.started = False
         self.ended = True
-        self.knowledge.roles.clear_tasks(self.scout_tags)
+        self.roles.clear_tasks(self.scout_tags)
         self.scout_tags.clear()
         self.is_behind_minerals = False
 
     async def check_start(self):
-        adepts: Units = self.knowledge.roles.free_units()(UnitTypeId.ADEPT)
+        adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
         if adepts.amount >= self.adepts_to_start:
             self.started = True
 
             for adept in adepts:
                 self.scout_tags.append(adept.tag)
-                self.knowledge.roles.set_tasks(UnitTask.Scouting, adepts)
+                self.roles.set_tasks(UnitTask.Scouting, adepts)
                 if len(self.scout_tags) >= self.adepts_to_start:
                     return

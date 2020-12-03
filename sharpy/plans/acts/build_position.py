@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sc2 import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -39,7 +39,7 @@ class BuildPosition(ActBase):
 
             if position is not None:
                 self.print(f"Building {self.unit_type.name} to {position}")
-                self.do(worker.build(self.unit_type, position))
+                worker.build(self.unit_type, position)
                 self.set_worker(worker)
             else:
                 self.print(f"Could not build {self.unit_type.name} to {position}")
@@ -55,12 +55,12 @@ class BuildPosition(ActBase):
 
                 if worker is not None:
                     self.set_worker(worker)
-                    self.do(worker.move(position))
+                    worker.move(position)
 
             self.knowledge.reserve(cost.minerals, cost.vespene)
 
         return False
 
     def set_worker(self, worker: Unit):
-        self.knowledge.roles.set_task(UnitTask.Building, worker)
+        self.roles.set_task(UnitTask.Building, worker)
         self.builder_tag = worker.tag

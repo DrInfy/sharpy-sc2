@@ -1,6 +1,6 @@
 import random
 
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
@@ -135,7 +135,7 @@ class DummyZergAttack(ActBase):
 
         defend = False
 
-        for zone in self.knowledge.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             if zone.is_ours and zone.is_under_attack and zone.known_enemy_units:
                 ground_units = zone.known_enemy_units.not_flying
                 target = zone.known_enemy_units.closest_to(zone.center_location).position
@@ -181,8 +181,8 @@ class DummyZergAttack(ActBase):
         return True
 
     async def select_attack_target(self):
-        if self.knowledge.known_enemy_structures.exists:
-            target = self.knowledge.known_enemy_structures.closest_to(self.ai.start_location).position
+        if self.ai.enemy_structures.exists:
+            target = self.ai.enemy_structures.closest_to(self.ai.start_location).position
         else:
             target = self.ai.enemy_start_locations[0]
             last_scout = 0

@@ -6,7 +6,7 @@ from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 HALLUCINATION_ENERGY_COST = 75
 
@@ -29,7 +29,7 @@ class HallucinatedPhoenixScout(ActBase):
     async def execute(self) -> bool:
         phoenix = await self.get_hallucinated_phoenix()
         if phoenix:
-            self.knowledge.roles.set_task(UnitTask.Scouting, phoenix)
+            self.roles.set_task(UnitTask.Scouting, phoenix)
             self.move_phoenix(phoenix)
         if not phoenix and self.should_send_scout:
             # We should have a Phoenix on the next iteration
@@ -39,7 +39,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     async def get_hallucinated_phoenix(self) -> Optional[Unit]:
         if self.current_phoenix_tag is not None:
-            phoenix = self.knowledge.roles.units(UnitTask.Scouting).find_by_tag(self.current_phoenix_tag)
+            phoenix = self.roles.units(UnitTask.Scouting).find_by_tag(self.current_phoenix_tag)
             if phoenix is not None:
                 return phoenix
             # Phoenix does not exist anymore
@@ -66,13 +66,13 @@ class HallucinatedPhoenixScout(ActBase):
             if sentry.energy > HALLUCINATION_ENERGY_COST + 50 or (
                 another_sentry_with_energy_exists and sentry.energy > HALLUCINATION_ENERGY_COST
             ):
-                if self.knowledge.known_enemy_units_mobile.closer_than(15, sentry):
+                if self.ai.enemy_units.closer_than(15, sentry):
                     # Don't make combat hallucinated phoenixes1
                     continue
 
                 # todo: should reserve a sentry for this purpose or at least reserve most of it's energy for this.
                 # self.knowledge.add_reserved_unit(sentry.tag)
-                self.do(sentry(AbilityId.HALLUCINATION_PHOENIX))
+                sentry(AbilityId.HALLUCINATION_PHOENIX)
 
                 self.last_created = self.knowledge.ai.time
                 return
@@ -88,7 +88,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     def move_phoenix(self, phoenix: Unit):
         target = self.select_target()
-        self.do(phoenix.move(target))
+        phoenix.move(target)
 
         if target != self.last_target:
             self.last_target = target

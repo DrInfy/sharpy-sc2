@@ -1,10 +1,10 @@
 from typing import List
 
 from sc2.units import Units
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
 
 from sharpy.plans.acts import ActBase
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 import sc2
 from sc2 import UnitTypeId
@@ -21,19 +21,19 @@ class PlanHeatDefender(ActBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.roles = self.knowledge.roles
+        self.roles = self.roles
         self.combat.use_unit_micro = False
         self.check_zones = [
-            self.knowledge.expansion_zones[0],
-            self.knowledge.expansion_zones[1],
-            self.knowledge.expansion_zones[2],
+            self.zone_manager.expansion_zones[0],
+            self.zone_manager.expansion_zones[1],
+            self.zone_manager.expansion_zones[2],
         ]
         self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
 
     async def execute(self) -> bool:
 
         if self.adept_tag is None:
-            adepts: Units = self.knowledge.roles.free_units()(UnitTypeId.ADEPT)
+            adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
             if adepts.exists:
                 adept = adepts.first
                 self.adept_tag = adept.tag
@@ -51,12 +51,12 @@ class PlanHeatDefender(ActBase):
         return True  # never block
 
     async def assault_hot_spot(self, adept):
-        ground_enemies = self.knowledge.known_enemy_units_mobile.not_flying
+        ground_enemies = self.ai.enemy_units.not_flying
         if ground_enemies.exists:
             closest = ground_enemies.closest_to(adept)
             if self.tag_shift_used_dict.get(adept.tag, 0) + self.cooldown < self.knowledge.ai.time:
                 self.tag_shift_used_dict[adept.tag] = self.knowledge.ai.time
-                self.do(adept(sc2.AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, closest.position))
+                adept(sc2.AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, closest.position)
             else:
                 self.combat.add_unit(adept)
                 shades = self.knowledge.ai.units(UnitTypeId.ADEPTPHASESHIFT)

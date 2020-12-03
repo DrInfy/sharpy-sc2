@@ -44,24 +44,24 @@ class DebugUnitsDummy(KnowledgeBot):
             )
 
         # Enemy 3rd
-        pos = self.knowledge.expansion_zones[-3].center_location
+        pos = self.zone_manager.expansion_zones[-3].center_location
 
         await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
         # Enemy 4th
-        pos = self.knowledge.expansion_zones[-4].center_location
+        pos = self.zone_manager.expansion_zones[-4].center_location
 
         await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
         await self._client.debug_create_unit([[UnitTypeId.OVERSEER, amount, pos, pid]])
 
         # Own natural
-        pos = self.knowledge.expansion_zones[1].center_location
+        pos = self.zone_manager.expansion_zones[1].center_location
 
         await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
 
         # Own main
-        pos = self.knowledge.expansion_zones[0].center_location
+        pos = self.zone_manager.expansion_zones[0].center_location
 
         await self._client.debug_create_unit([[unit_type, amount, pos, pid]])
         await self._client.debug_create_unit([[UnitTypeId.WIDOWMINEBURROWED, amount, pos, pid]])

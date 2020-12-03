@@ -1,19 +1,46 @@
+from typing import Optional, List
+
+from sharpy.combat.group_combat_manager import GroupCombatManager
+from sharpy.managers.core import *
+from sharpy.managers.core import ActManager, GatherPointSolver
+from sharpy.managers.core import EnemyUnitsManager
+from sharpy.managers.extensions import MemoryManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.knowledges import KnowledgeBot
+from sharpy.knowledges import SkeletonBot
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
 
-class Stalkers4Gate(KnowledgeBot):
+class Stalkers4Gate(SkeletonBot):
     def __init__(self):
         super().__init__("The Sharp Four")
 
-    async def create_plan(self) -> BuildOrder:
+    def configure_managers(self) -> Optional[List[ManagerBase]]:
+        return [
+            MemoryManager(),
+            PreviousUnitsManager(),
+            LostUnitsManager(),
+            EnemyUnitsManager(),
+            UnitCacheManager(),
+            UnitValue(),
+            UnitRoleManager(),
+            PathingManager(),
+            ZoneManager(),
+            BuildingSolver(),
+            IncomeCalculator(),
+            CooldownManager(),
+            GroupCombatManager(),
+            GatherPointSolver(),
+            ActManager(self.create_plan()),
+        ]
+
+    def create_plan(self) -> BuildOrder:
         attack = PlanZoneAttack(6)
+        attack.attack_on_advantage = False  # Disables requirement for game analyzer
         return BuildOrder(
             Step(
                 None,

@@ -36,7 +36,7 @@ class ChronoAnyTech(ActBase):
                 if not target.has_buff(BuffId.CHRONOBOOSTENERGYCOST):
                     for nexus in self.cache.own(UnitTypeId.NEXUS):
                         if nexus.energy > self.save_to_energy + ChronoAnyTech.ENERGY_COST:
-                            self.do(nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target))
+                            nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, target)
                             self.print(f"Chrono {ability_id.name}")
                             return True  # Never block and only boost one building per iteration
         return True  # Never block

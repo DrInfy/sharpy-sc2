@@ -1,6 +1,9 @@
-from typing import Callable
+from typing import Callable, Optional, List
 
 from sc2.position import Point2
+from sharpy.general.zone import Zone
+from sharpy.interfaces import IZoneManager
+from sharpy.managers.core import PathingManager
 from sharpy.plans.tactics.scouting.scout_base_action import ScoutBaseAction
 
 from typing import TYPE_CHECKING
@@ -10,19 +13,31 @@ if TYPE_CHECKING:
 
 
 class ScoutLocation(ScoutBaseAction):
+    zone_manager: IZoneManager
+    pathing_manager: Optional[PathingManager]
+
     def __init__(
-        self, func_target: Callable[["Knowledge"], Point2], distance_to_reach: float = 5, only_once: bool = False
+        self, func_target: Callable[["ScoutLocation"], Point2], distance_to_reach: float = 5, only_once: bool = False
     ) -> None:
         super().__init__(only_once)
         self.func_target = func_target
         self.distance_to_reach = distance_to_reach
+
+    @property
+    def expansion_zones(self) -> List[Zone]:
+        return self.zone_manager.expansion_zones
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.pathing_manager = knowledge.get_manager(PathingManager)  # some scout actions might actually require this
 
     async def execute(self) -> bool:
         if self.ended:
             return True
         if not self._units:
             return False
-        self.current_target = self.func_target(self.knowledge)
+        self.current_target = self.func_target(self)
 
         center = self._units.center
         if self._units[0].is_flying:
@@ -31,7 +46,7 @@ class ScoutLocation(ScoutBaseAction):
             target = self.pather.find_influence_ground_path(center, self.current_target)
 
         for unit in self._units:
-            self.do(unit.move(target))
+            unit.move(target)
 
         if center.distance_to(self.current_target) < self.distance_to_reach:
             if self.only_once:
@@ -109,10 +124,10 @@ class ScoutLocation(ScoutBaseAction):
 
     @staticmethod
     def scout_center_ol_spot() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.ai.game_info.map_center))
+        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k.knowledge, k.ai.game_info.map_center))
 
     @staticmethod
-    def closest_overlord_spot_to(k: "Knowledge", target: Point2) -> Point2:
+    def closest_overlord_spot_to(k: "ScoutLocation", target: Point2) -> Point2:
         if k.pathing_manager.overlord_spots:
             return target.closest(k.pathing_manager.overlord_spots)
         return target

@@ -2,8 +2,9 @@ import sys
 from typing import List, Optional
 
 from sharpy.constants import Constants
+from sharpy.interfaces import IZoneManager
 from sharpy.knowledges import Knowledge
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sharpy.sc2math import points_on_circumference_sorted
 from sharpy.tools import IntervalFunc
@@ -17,6 +18,8 @@ class WorkerScout(ActBase):
     Selects a scout worker and performs basic scout sweep across
     start and expansion locations.
     """
+
+    zone_manager: IZoneManager
 
     def __init__(self):
         super().__init__()
@@ -36,7 +39,7 @@ class WorkerScout(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.zone_manager = knowledge.zone_manager
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
         self.position_updater = IntervalFunc(knowledge.ai, self.update_position, 1)
 
     def update_position(self):
@@ -48,14 +51,14 @@ class WorkerScout(ActBase):
             self.scout = self.roles.get_unit_by_tag_from_task(self.scout_tag, UnitTask.Scouting)
             return
 
-        workers = self.knowledge.roles.free_workers
+        workers = self.roles.free_workers
         if not workers.exists:
             return
 
         if self.scout_tag is None:
             closest_worker = workers.closest_to(self.current_target)
             self.scout_tag = closest_worker.tag
-            self.knowledge.roles.set_task(UnitTask.Scouting, closest_worker)
+            self.roles.set_task(UnitTask.Scouting, closest_worker)
             self.scout = closest_worker
 
     def distance_to_scout(self, location):
@@ -72,18 +75,18 @@ class WorkerScout(ActBase):
         if len(self.scout_locations) > 0:
             return
 
-        enemy_base_found = self.knowledge.enemy_start_location_found
+        enemy_base_found = self.zone_manager.enemy_start_location_found
 
         enemy_base_scouted = (
             enemy_base_found
-            and self.knowledge.enemy_main_zone.is_scouted_at_least_once
-            and self.knowledge.enemy_main_zone.scout_last_circled
+            and self.zone_manager.enemy_main_zone.is_scouted_at_least_once
+            and self.zone_manager.enemy_main_zone.scout_last_circled
         )
 
         enemy_base_blocked = (
             enemy_base_found
             and self.enemy_ramp_top_scouted
-            and await self.target_unreachable(self.knowledge.enemy_main_zone.behind_mineral_position_center)
+            and await self.target_unreachable(self.zone_manager.enemy_main_zone.behind_mineral_position_center)
         )
 
         if enemy_base_scouted or enemy_base_blocked:
@@ -92,7 +95,7 @@ class WorkerScout(ActBase):
         elif (
             enemy_base_found
             and self.enemy_ramp_top_scouted
-            and self.scout.distance_to(self.knowledge.enemy_main_zone.center_location) < 40
+            and self.scout.distance_to(self.zone_manager.enemy_main_zone.center_location) < 40
         ):
 
             self.circle_location(self.zone_manager.enemy_main_zone.center_location)
@@ -149,7 +152,7 @@ class WorkerScout(ActBase):
 
     @property
     def current_target_is_enemy_ramp(self) -> bool:
-        for zone in self.knowledge.expansion_zones:  # type: Zone
+        for zone in self.zone_manager.expansion_zones:  # type: Zone
             if zone.ramp and self.current_target == zone.ramp.top_center:
                 return True
         return False
@@ -207,6 +210,6 @@ class WorkerScout(ActBase):
             self.target_location_reached()
 
         if self.scout is not None and self.current_target is not None:
-            self.do(self.scout.move(self.current_target))
+            self.scout.move(self.current_target)
 
         return True  # Non blocking

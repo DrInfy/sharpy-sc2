@@ -3,24 +3,23 @@ from typing import Optional, Set
 
 from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
-from sc2.ids.buff_id import BuffId
-from sc2.units import Units
 
-import sc2
-from sharpy.managers import BuildingSolver
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.utils import map_to_point2s_center
 from sc2 import UnitTypeId, AbilityId, Race
 from sc2.position import Point2
-from sc2.unit import Unit, UnitOrder
+from sc2.unit import Unit
 
 from .act_building import ActBuilding
-
+from sharpy.interfaces import IBuildingSolver, IIncomeCalculator
 
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
 class GridBuilding(ActBuilding):
+    building_solver: IBuildingSolver
+    income_calculator: IIncomeCalculator
+
     def __init__(
         self,
         unit_type: UnitTypeId,
@@ -37,13 +36,13 @@ class GridBuilding(ActBuilding):
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
         self.consider_worker_production = consider_worker_production
-        self.building_solver: BuildingSolver = None
+        self.building_solver: IBuildingSolver = None
         self.make_pylon = None
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.building_solver = self.knowledge.building_solver
-
+        self.building_solver = self.knowledge.get_required_manager(IBuildingSolver)
+        self.income_calculator = self.knowledge.get_required_manager(IIncomeCalculator)
         if self.unit_type != UnitTypeId.PYLON:
             self.make_pylon: Optional[GridBuilding] = GridBuilding(UnitTypeId.PYLON, 0, 2)
             await self.make_pylon.start(knowledge)
@@ -116,17 +115,17 @@ class GridBuilding(ActBuilding):
                 self.set_worker(worker)
                 self.knowledge.reserve(cost.minerals, cost.vespene)
                 if not self.has_build_order(worker):
-                    self.do(worker.move(self.adjust_build_to_move(position)))
+                    worker.move(self.adjust_build_to_move(position))
 
         elif self.priority and wait_time < time:
             available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
             available_gas = self.ai.vespene - self.knowledge.reserved_gas
 
-            if self.consider_worker_production and self.knowledge.income_calculator.mineral_income > 0:
+            if self.consider_worker_production and self.income_calculator.mineral_income > 0:
                 for town_hall in self.ai.townhalls:  # type: Unit
                     # TODO: Zerg(?)
                     if town_hall.orders:
-                        starting_next_probe_in = -50 / self.knowledge.income_calculator.mineral_income
+                        starting_next_probe_in = -50 / self.income_calculator.mineral_income
                         order = town_hall.orders[0]  # Only consider first order
                         if order.ability.id in worker_trainers:
                             starting_next_probe_in += 12 * (1 - order.progress)
@@ -137,20 +136,20 @@ class GridBuilding(ActBuilding):
                         available_minerals -= 50  # should start producing workers soon now
 
             if (
-                available_minerals + time * self.knowledge.income_calculator.mineral_income >= cost.minerals
-                and available_gas + time * self.knowledge.income_calculator.gas_income >= cost.vespene
+                available_minerals + time * self.income_calculator.mineral_income >= cost.minerals
+                and available_gas + time * self.income_calculator.gas_income >= cost.vespene
             ):
                 # Go wait
                 self.set_worker(worker)
                 self.knowledge.reserve(cost.minerals, cost.vespene)
 
                 if not self.has_build_order(worker):
-                    self.do(worker.move(self.adjust_build_to_move(position)))
+                    worker.move(self.adjust_build_to_move(position))
 
         return False
 
     def adjust_build_to_move(self, position: Point2) -> Point2:
-        closest_zone = position.closest(map_to_point2s_center(self.knowledge.expansion_zones))
+        closest_zone = position.closest(map_to_point2s_center(self.zone_manager.expansion_zones))
         return position.towards(closest_zone, 1)
 
     async def debug_actions(self):
@@ -167,7 +166,7 @@ class GridBuilding(ActBuilding):
 
     def set_worker(self, worker: Optional[Unit]) -> bool:
         if worker:
-            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.roles.set_task(UnitTask.Building, worker)
             self.builder_tag = worker.tag
             return True
 
@@ -176,7 +175,7 @@ class GridBuilding(ActBuilding):
 
     def clear_worker(self):
         if self.builder_tag is not None:
-            self.knowledge.roles.clear_task(self.builder_tag)
+            self.roles.clear_task(self.builder_tag)
             self.builder_tag = None
 
     def position_protoss(self, count) -> Optional[Point2]:
@@ -188,12 +187,12 @@ class GridBuilding(ActBuilding):
         iterator = self.get_iterator(is_pylon, count)
 
         if is_pylon:
-            for point in self.building_solver.pylon_position[::iterator]:
+            for point in self.building_solver.buildings2x2[::iterator]:
                 if not buildings.closer_than(1, point):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
-            for point in self.building_solver.building_position[::iterator]:
+            for point in self.building_solver.buildings3x3[::iterator]:
                 if not self.allow_wall:
                     if point in self.building_solver.wall_buildings:
                         continue
@@ -210,7 +209,7 @@ class GridBuilding(ActBuilding):
         creep = self.ai.state.creep
         future_position = None
 
-        for point in self.building_solver.building_position:
+        for point in self.building_solver.buildings3x3:
             if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
                 return point
 
@@ -222,23 +221,21 @@ class GridBuilding(ActBuilding):
         future_position = None
 
         if is_depot:
-            for point in self.building_solver.pylon_position:
+            for point in self.building_solver.buildings2x2:
                 if not buildings.closer_than(1, point):
                     return point
         else:
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
-            reserved_landing_locations: Set[Point2] = set(
-                self.knowledge.building_solver.structure_target_move_location.values()
-            )
-            for point in self.building_solver.building_position:
+            reserved_landing_locations: Set[Point2] = set(self.building_solver.structure_target_move_location.values())
+            for point in self.building_solver.buildings3x3:
                 if not self.allow_wall:
-                    if point in self.building_solver.wall_buildings:
+                    if point in self.building_solver.wall3x3:
                         continue
                 # If a structure is landing here from AddonSwap() then dont use this location
                 if point in reserved_landing_locations:
                     continue
                 # If this location has a techlab or reactor next to it, then don't create a new structure here
-                if point in self.knowledge.building_solver.free_addon_locations:
+                if point in self.building_solver.free_addon_locations:
                     continue
                 if not buildings.closer_than(1, point):
                     return point
@@ -258,117 +255,21 @@ class GridBuilding(ActBuilding):
 
     async def build_protoss(self, worker: Unit, count, position: Point2):
         if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
+            # TODO: is this correct?
+            worker.build(self.unit_type, position, queue=True)
 
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
-        # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        is_pylon = self.unit_type == UnitTypeId.PYLON
-        buildings = self.ai.structures
-        matrix = self.ai.state.psionic_matrix
-        iterator = self.get_iterator(is_pylon, count)
-
-        if is_pylon:
-            for point in self.building_solver.pylon_position[::iterator]:
-
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        else:
-            for point in self.building_solver.building_position[::iterator]:
-                if not buildings.closer_than(1, point) and matrix.covers(point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     async def build_zerg(self, worker: Unit, count, position: Point2):
-        if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
-
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
         # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        buildings = self.ai.structures
-        creep = self.ai.state.creep
-
-        for point in self.building_solver.building_position:
-            if not buildings.closer_than(1, point) and self.is_on_creep(creep, point):
-                err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                if not err:
-                    return  # success
-                else:
-                    pass
-                    # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     async def build_terran(self, worker: Unit, count, position: Point2):
-        if self.has_build_order(worker):
-            action = worker.build(self.unit_type, position, queue=True)
-
-            for order in worker.orders:
-                if order.ability.id == action.ability:
-                    # Don't add the same order twice
-                    return
-
-            self.do(action)
-
         # try the selected position first
-        err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, position))
-        if not err:
-            self.print(f"Building {self.unit_type.name} to {position}")
-            return  # success
-
-        is_depot = self.unit_type == UnitTypeId.SUPPLYDEPOT
-        buildings = self.ai.structures
-
-        if is_depot:
-            for point in self.building_solver.pylon_position[::1]:
-
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        else:
-            for point in self.building_solver.building_position[::1]:
-                if not buildings.closer_than(1, point):
-                    err: sc2.ActionResult = await self.ai.synchronous_do(worker.build(self.unit_type, point))
-                    if not err:
-                        return  # success
-                    else:
-                        pass
-                        # self.knowledge.print("err !!!!" + str(err.value) + " " + str(err))
-        self.print("GRID POSITION NOT FOUND !!!!")
+        # TODO: Remake the error handling with frame delay
+        worker.build(self.unit_type, position)
 
     def is_on_creep(self, creep: PixelMap, point: Point2) -> bool:
         x_original = floor(point.x) - 1

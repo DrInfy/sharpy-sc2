@@ -11,6 +11,6 @@ class MorphWarpGates(ActBase):
     async def execute(self) -> bool:
         target: Unit
         for target in self.cache.own(UnitTypeId.GATEWAY).ready:
-            self.do(target(AbilityId.MORPH_WARPGATE))
+            target(AbilityId.MORPH_WARPGATE)
 
         return True

@@ -1,8 +1,9 @@
 import random
-from typing import List, Optional
+from typing import Optional
 
-from sharpy.managers import BuildingSolver
-from sharpy.managers.grids import BlockerType, BuildArea
+from sharpy.interfaces import IBuildingSolver
+from sharpy.managers.core import BuildingSolver
+from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
@@ -30,8 +31,8 @@ class SpreadCreep(ActBase):
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):
-        self.building_solver = knowledge.building_solver
-        return await super().start(knowledge)
+        await super().start(knowledge)
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
 
     async def execute(self) -> bool:
         tumors = self.cache.own(UnitTypeId.CREEPTUMORBURROWED)
@@ -54,7 +55,7 @@ class SpreadCreep(ActBase):
                 position = self.get_next_creep_tumor_position(tumor)
                 if position is not None:
                     self.knowledge.cooldown_manager.used_ability(tumor.tag, AbilityId.BUILD_CREEPTUMOR_TUMOR)
-                    self.do(tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position))
+                    tumor(AbilityId.BUILD_CREEPTUMOR_TUMOR, position)
 
     async def spawn_creep_tumors(self):
         all_queens = self.cache.own(UnitTypeId.QUEEN)  # todo: include burrowed queens?
@@ -68,7 +69,7 @@ class SpreadCreep(ActBase):
                 queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4
             ):
                 position = self.get_next_plant_position(queen)
-                self.do(queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position))
+                queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position)
 
     def get_next_plant_position(self, queen: Unit) -> Optional[Point2]:
         pos = queen.position
@@ -77,7 +78,7 @@ class SpreadCreep(ActBase):
             # There's already enough
             return None
 
-        towards = self.knowledge.enemy_main_zone.center_location
+        towards = self.zone_manager.enemy_main_zone.center_location
 
         for i in range(3):
             distance_interval = (1, CREEP_TUMOR_MAX_RANGE)
@@ -92,7 +93,7 @@ class SpreadCreep(ActBase):
                     return next_pos
 
     def get_next_creep_tumor_position(self, tumor: Unit) -> Optional[Point2]:
-        towards = self.knowledge.enemy_main_zone.center_location
+        towards = self.zone_manager.enemy_main_zone.center_location
 
         # iterate a few times so we find a suitable position
         for i in range(10):

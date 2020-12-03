@@ -106,7 +106,7 @@ class TwoBaseTanks(KnowledgeBot):
 
     def should_expand(self, knowledge):
         count = 0
-        for zone in self.knowledge.our_zones:
+        for zone in knowledge.zone_manager.our_zones:
             if zone.our_townhall is not None:
                 count += zone.our_townhall.surplus_harvesters
 

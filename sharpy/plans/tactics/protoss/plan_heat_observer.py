@@ -1,10 +1,9 @@
 from typing import Optional, Tuple
 
 from sc2.unit import Unit
-from sharpy.managers.combat2 import MoveType
 from sharpy.plans.acts import ActBase
-from sharpy.mapping.heat_map import HeatMap
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.extensions import HeatMapManager
+from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 from sc2 import UnitTypeId
 from sc2.position import Point2
@@ -20,9 +19,9 @@ class PlanHeatObserver(ActBase):
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
-        self.heat_map: HeatMap = knowledge.heat_map
-        self.roles = self.knowledge.roles
-        self.gather_point = self.knowledge.expansion_zones[0].center_location
+        self.heat_map: HeatMapManager = knowledge.get_required_manager(HeatMapManager)
+        self.roles = self.roles
+        self.gather_point = self.zone_manager.expansion_zones[0].center_location
 
     async def execute(self) -> bool:
         stealth_hotspot: Optional[Tuple[Point2, float]] = self.heat_map.get_stealth_hotspot()

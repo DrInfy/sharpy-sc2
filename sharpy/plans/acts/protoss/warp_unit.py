@@ -1,15 +1,17 @@
-import warnings
-
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
+from sharpy.interfaces import IGatherPointSolver, IZoneManager
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sc2.units import Units
 from sharpy.plans.acts.act_base import ActBase
 
 
 class WarpUnit(ActBase):
     """Use Warp Gates (Protoss) to build units."""
+
+    gather_point_solver: IGatherPointSolver
+    zone_manager: IZoneManager
 
     def __init__(self, unit_type: UnitTypeId, to_count: int = 9999, priority: bool = False):
         assert unit_type is not None and isinstance(unit_type, UnitTypeId)
@@ -21,6 +23,11 @@ class WarpUnit(ActBase):
         self.priority = priority
 
         super().__init__()
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
 
     @property
     def is_done(self) -> bool:
@@ -36,7 +43,7 @@ class WarpUnit(ActBase):
             return True
 
         warpgates = self.cache.own(UnitTypeId.WARPGATE)
-        attackers: Units = self.knowledge.roles.units(UnitTask.Attacking)
+        attackers: Units = self.roles.units(UnitTask.Attacking)
 
         unit_type = self.unit_type
         if unit_type == UnitTypeId.ARCHON:
@@ -46,11 +53,11 @@ class WarpUnit(ActBase):
             if not self.cache.own(UnitTypeId.PYLON).ready.exists:
                 return True  # Can't proceed
 
-            target_point = self.knowledge.gather_point
+            target_point = self.gather_point_solver.gather_point
             if len(attackers) > 0:
-                target_point = self.knowledge.enemy_main_zone.center_location
+                target_point = self.zone_manager.enemy_main_zone.center_location
 
-            for zone in self.knowledge.expansion_zones:
+            for zone in self.zone_manager.expansion_zones:
                 if zone.is_ours and zone.known_enemy_power.power > 0:
                     target_point = zone.center_location
                     break
@@ -79,7 +86,7 @@ class WarpUnit(ActBase):
                         # return ActionResult.CantFindPlacementLocation
                         self.knowledge.print("can't find place to warp in")
                         return False
-                    self.do(warpgate.warp_in(unit_type, placement))
+                    warpgate.warp_in(unit_type, placement)
 
         elif self.priority:
             unit = self.ai._game_data.units[unit_type.value]

@@ -6,7 +6,7 @@ from sc2.unit import Unit
 from sharpy.general.extended_ramp import ExtendedRamp, RampPosition
 
 # Build a building on a ramp
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 
 
 class ActBuildingRamp(ActBuilding):
@@ -22,7 +22,7 @@ class ActBuildingRamp(ActBuilding):
 
         if count >= self.to_count:
             if self.builder_tag is not None:
-                self.knowledge.roles.clear_task(self.builder_tag)
+                self.roles.clear_task(self.builder_tag)
                 self.builder_tag = None
 
             return True  # Step is done
@@ -36,8 +36,8 @@ class ActBuildingRamp(ActBuilding):
 
         if self.knowledge.can_afford(self.unit_type):
             self.print(f"Building {self.unit_type.name} to {position}")
-            # await ai.build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
-            self.do(worker.build(self.unit_type, position))
+            # await build(self.name, position, max_distance=0) # For debugging only, too risky to use in live matches!
+            worker.build(self.unit_type, position)
         else:
             unit = self.ai._game_data.units[self.unit_type.value]
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
@@ -49,7 +49,7 @@ class ActBuildingRamp(ActBuilding):
             ) and self.ai.vespene - self.knowledge.reserved_gas > (cost.vespene - time):
 
                 if worker is not None:
-                    self.do(worker.move(position))
+                    worker.move(position)
 
             self.knowledge.reserve(cost.minerals, cost.vespene)
 
@@ -58,10 +58,10 @@ class ActBuildingRamp(ActBuilding):
     def get_worker(self, position: Point2):
         worker: Unit = None
         if self.builder_tag is None:
-            free_workers = self.knowledge.roles.free_workers
+            free_workers = self.roles.free_workers
             if free_workers.exists:
                 worker = free_workers.closest_to(position)
-                self.knowledge.roles.set_task(UnitTask.Building, worker)
+                self.roles.set_task(UnitTask.Building, worker)
                 self.builder_tag = worker.tag
         else:
             worker: Unit = self.ai.workers.find_by_tag(self.builder_tag)

@@ -63,7 +63,7 @@ class RestorePower(ActBase):
             return True
 
         self.print(f"Placing pylon at {pylon_placement} to restore power to {building.type_id} at {building.position}")
-        self.do(worker.build(PYLON, pylon_placement))
+        worker.build(PYLON, pylon_placement)
 
         return True
 
@@ -91,7 +91,7 @@ class RestorePower(ActBase):
         return not any(enemies_near)
 
     def get_pylon_placement(self, building: Unit) -> Optional[Point2]:
-        pylon_positions: List[Point2] = self.knowledge.building_solver.pylon_position
+        pylon_positions: List[Point2] = self.knowledge.building_solver.buildings2x2
 
         closest_pylon_pos: Point2 = building.position.closest(pylon_positions)
 

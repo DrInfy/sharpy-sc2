@@ -5,11 +5,13 @@ from sharpy.general.zone import Zone
 from sc2 import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
+from sharpy.interfaces import IZoneManager
 
 from sharpy.plans.acts.act_base import ActBase
 
 
 class DefensiveCannons(ActBase):
+    zone_manager: IZoneManager
     """Act of starting to build new buildings up to specified count"""
 
     def __init__(self, to_count_pre_base: int, additional_batteries: int = 0, to_base_index: Optional[int] = None):
@@ -24,6 +26,10 @@ class DefensiveCannons(ActBase):
 
         super().__init__()
 
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+
     async def execute(self) -> bool:
         map_center = self.ai.game_info.map_center
         pending_cannon_count = self.pending_build(UnitTypeId.PHOTONCANNON)
@@ -32,7 +38,7 @@ class DefensiveCannons(ActBase):
         all_ready = True
 
         # Go through zones so that furthest expansions are fortified first
-        zones = self.knowledge.expansion_zones
+        zones = self.zone_manager.expansion_zones
         for i in range(0, len(zones)):
             zone = zones[i]
             # Filter out zones that aren't ours and own zones that we are about to lose.
@@ -55,7 +61,7 @@ class DefensiveCannons(ActBase):
             if closest_pylon is None or closest_pylon.distance_to(zone.center_location) > 10:
                 # We need a pylon, but only if one isn't already on the way
                 if not self.pending_build(UnitTypeId.PYLON) and can_afford_battery:
-                    await self.ai.build(UnitTypeId.PYLON, near=zone.center_location.towards(map_center, 4))
+                    await self.build(UnitTypeId.PYLON, near=zone.center_location.towards(map_center, 4))
 
                 all_ready = False
                 continue
@@ -64,19 +70,19 @@ class DefensiveCannons(ActBase):
                 all_ready = False
                 if closest_pylon.is_ready and can_afford_cannon:
                     pos = self.defense_position(zone, closest_pylon)
-                    await self.ai.build(UnitTypeId.PHOTONCANNON, near=pos)
+                    await self.build(UnitTypeId.PHOTONCANNON, near=pos)
 
             if zone.our_batteries.amount + pending_battery_count < self.additional_batteries:
                 all_ready = False
                 if closest_pylon.is_ready and can_afford_battery:
                     pos = self.defense_position(zone, closest_pylon)
-                    await self.ai.build(UnitTypeId.SHIELDBATTERY, near=pos)
+                    await self.build(UnitTypeId.SHIELDBATTERY, near=pos)
 
         return all_ready
 
     def defense_position(self, zone: Zone, pylon: Unit):
         position: Point2 = pylon.position
-        path = zone.paths.get(self.knowledge.enemy_main_zone.zone_index, None)
+        path = zone.paths.get(self.zone_manager.enemy_main_zone.zone_index, None)
         if path and path.distance > 50:
             target_pos = path.get_index(10)
             return position.towards(target_pos, 3)

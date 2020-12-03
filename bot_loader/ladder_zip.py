@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import zipfile
+from pathlib import Path
 from typing import Tuple, List, Optional
 from version import update_version_txt
 
@@ -121,6 +122,20 @@ class LadderZip:
         # Reset bin path as pyinstaller likes to make a new run folder
         run_path = os.path.join(bin_path, self.name)
 
+        # TODO: Detect Windows and do this only on Windows
+        icuuc52zip_path = None
+        if os.path.exists("libs"):
+            icuuc52zip_path = os.path.join("libs", "ic52.zip")
+        elif os.path.exists("sharpy-sc2"):
+            icuuc52zip_path = os.path.join("sharpy-sc2", "libs", "ic52.zip")
+
+        if icuuc52zip_path:
+            with zipfile.ZipFile(icuuc52zip_path, "r") as zip_ref:
+                # Unzip the icudt52.dll, icuin52.dll and icuuc52.dll files
+                zip_ref.extractall(run_path)
+        else:
+            print("WARNING: ic52.zip not found. Standalone mode might not work.")
+
         # remove PIL and cv2
         print("removing PIL and cv2")
         shutil.rmtree(os.path.join(run_path, "cv2"))
@@ -129,6 +144,10 @@ class LadderZip:
         f = open(os.path.join(run_path, "ladderbots.json"), "w+")
         f.write(self.create_bin_json())
         f.close()
+
+        # Move data folder if that exists
+        if os.path.exists(os.path.join(source_path, "data")):
+            shutil.copytree(os.path.join(source_path, "data"), os.path.join(run_path, "data"))
 
         print("Zip executable version")
         zipf = zipfile.ZipFile(os.path.join(output_dir, zip_name), "w", zipfile.ZIP_DEFLATED)

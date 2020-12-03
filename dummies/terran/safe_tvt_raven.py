@@ -1,7 +1,6 @@
 from sc2 import UnitTypeId, Race, Result
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.ids.ability_id import AbilityId
-from sc2.bot_ai import BotAI
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas

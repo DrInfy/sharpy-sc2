@@ -1,5 +1,12 @@
-from sharpy.managers.building_solver import WallType
-from sharpy.managers.roles import UnitTask
+from math import floor
+
+from sharpy.interfaces import IBuildingSolver, ILostUnitsManager, IGatherPointSolver
+from sharpy.managers.core.building_solver import WallType
+from sharpy.managers.core.roles import UnitTask
+
+from sharpy.managers.core import BuildingSolver
+from sharpy.managers.core.building_solver import is_empty, is_free, fill_padding
+from sharpy.managers.core.grids import BuildGrid, GridArea, Rectangle, BlockerType, BuildArea
 
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
@@ -11,11 +18,43 @@ from sharpy.knowledges import KnowledgeBot, Knowledge
 
 from sc2.ids.upgrade_id import UpgradeId
 
-from sc2 import BotAI, run_game, maps, Race, Difficulty, UnitTypeId
+from sc2 import Race, UnitTypeId
 from sc2.position import Point2
 
 
+class ProxySolver(BuildingSolver):
+    def massive_grid(self, pos):
+        rect = Rectangle(pos.x, pos.y, 6, 9)
+        unit_exit_rect = Rectangle(pos.x - 2, pos.y + 4, 2, 2)
+        unit_exit_rect2 = Rectangle(pos.x + 6, pos.y + 4, 2, 2)
+        padding = Rectangle(pos.x - 2, pos.y - 2, 10, 12)
+
+        if (
+            self.grid.query_rect(rect, is_empty)
+            and self.grid.query_rect(unit_exit_rect, is_free)
+            and self.grid.query_rect(unit_exit_rect2, is_free)
+        ):
+            pylons = [
+                pos + Point2((1 + 2, 1)),
+            ]
+            gates = [
+                pos + Point2((1.5, 3.5)),
+                pos + Point2((4.5, 3.5)),
+                pos + Point2((1.5, 6.5)),
+                pos + Point2((4.5, 6.5)),
+            ]
+            for pylon_pos in pylons:
+                self.fill_and_save(pylon_pos, BlockerType.Building2x2, BuildArea.Pylon)
+
+            for gate_pos in gates:
+                self.fill_and_save(gate_pos, BlockerType.Building3x3, BuildArea.Building)
+
+            self.grid.fill_rect(padding, fill_padding)
+
+
 class ProxyZealots(ActBase):
+    gather_point_solver: IGatherPointSolver
+
     def __init__(self):
         super().__init__()
         self.started_worker_defense = False
@@ -25,71 +64,79 @@ class ProxyZealots(ActBase):
         self.completed = False
         self.gather_point: Point2
         self.proxy_location: Point2
+        self.solver = ProxySolver()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.proxy_location = self.ai.game_info.map_center.towards(self.ai.enemy_start_locations[0], 25)
-        self.gather_point = self.pather.find_path(self.proxy_location, self.knowledge.enemy_start_location, 8)
+        self.solver.grid = BuildGrid(self.knowledge)
+
+        center = Point2((floor(self.proxy_location.x), floor(self.proxy_location.y)))
+        x_range = range(-18, 18)
+        y_range = range(-18, 18)
+
+        for x in x_range:
+            for y in y_range:
+                pos = Point2((x + center.x, y + center.y))
+                area: GridArea = self.solver.grid[pos]
+
+                if area is None:
+                    continue
+
+                self.solver.massive_grid(pos)
+        if self.knowledge.debug:
+            self.solver.grid.save("proxy.bmp")
+        self.gather_point = self.pather.find_path(self.proxy_location, self.zone_manager.enemy_start_location, 8)
+        self.solver.buildings2x2.sort(key=lambda x: self.proxy_location.distance_to(x))
+        self.solver.buildings3x3.sort(key=lambda x: self.proxy_location.distance_to(x))
 
     async def build_order(self):
+        count = self.cache.own(UnitTypeId.GATEWAY).amount
+        if count == 4:
+            if self.proxy_worker_tag:
+                worker = self.get_worker()
+                self.roles.clear_task(worker)
+                self.proxy_worker_tag = None
+            return
+
         if not self.ai.structures(UnitTypeId.NEXUS).ready.exists:
             # Nexus down, no build order to use.
             return
 
-        nexus = self.ai.structures(UnitTypeId.NEXUS).ready.first
+        if count < 4:
+            await self.worker_micro()
 
-        proxy_pylon = self.proxy_location
-        gateways = self.ai.structures(UnitTypeId.GATEWAY)
-
-        selected = False
-
+    async def worker_micro(self):
         worker = self.get_worker()
         if not worker:
             return
-
-        self.knowledge.roles.set_task(UnitTask.Reserved, worker)
-
+        self.roles.set_task(UnitTask.Reserved, worker)
         if not self.has_build_order(worker):
-            if (
-                self.ai.can_afford(UnitTypeId.PYLON)
-                and self.ai.supply_used + 7 > self.ai.supply_cap
-                and self.ai.supply_cap < 200
-            ):
-                if self.ai.structures(UnitTypeId.PYLON).amount < 1:
-                    await self.ai.build(UnitTypeId.PYLON, proxy_pylon, build_worker=worker)
-                if gateways.ready.amount > 1 and not self.ai.already_pending(UnitTypeId.PYLON):
-                    await self.ai.build(UnitTypeId.PYLON, gateways.ready.first, build_worker=worker)
+            if self.ai.can_afford(UnitTypeId.PYLON):
+                count = self.get_count(UnitTypeId.PYLON, include_pending=True)
+                if count < 2:
+                    for point in self.solver.buildings2x2:
+                        if not self.ai.structures.closer_than(1, point):
+                            if worker.build(UnitTypeId.PYLON, point):
+                                break  # success
 
-            if self.ai.supply_cap > 20:
-                if gateways.amount < 4 and self.ai.can_afford(UnitTypeId.GATEWAY) and proxy_pylon is not None:
-                    await self.ai.build(UnitTypeId.GATEWAY, near=proxy_pylon, build_worker=worker)
+            if self.cache.own(UnitTypeId.PYLON).ready:
+                count = self.get_count(UnitTypeId.GATEWAY, include_pending=True)
+                if count < 4 and self.ai.can_afford(UnitTypeId.GATEWAY):
+                    matrix = self.ai.state.psionic_matrix
+                    for point in self.solver.buildings3x3:
+                        if not self.ai.structures.closer_than(1, point) and matrix.covers(point):
+                            if worker.build(UnitTypeId.GATEWAY, point):
+                                break  # success
 
-            if worker.tag not in self.ai.unit_tags_received_action:
+            if worker.tag not in self.ai.unit_tags_received_action and not self.has_build_order(worker):
                 target = self.pather.find_weak_influence_ground(self.proxy_location, 10)
                 self.pather.find_influence_ground_path(worker.position, target)
-                self.ai.do(worker.move(self.proxy_location))
-
-        if (
-            not selected
-            and self.ai.can_afford(UnitTypeId.PROBE)
-            and self.ai.workers.amount < 17
-            and len(nexus.orders) == 0
-        ):
-            self.do(nexus.train(UnitTypeId.PROBE))
-
-        if gateways.ready.amount > 0 and self.ai.can_afford(UnitTypeId.ZEALOT):
-            for gate in gateways.ready:
-                if len(gate.orders) == 0:
-                    self.ai.do(gate.train(UnitTypeId.ZEALOT))
-                    return
+                worker.move(self.proxy_location)
 
     async def execute(self) -> bool:
-        self.knowledge.gather_point = self.gather_point
-
-        if self.ai.supply_used > 50 or self.completed:
-            self.completed = True
-            return True
-
+        self.gather_point_solver.set_gather_point(self.gather_point)
         await self.build_order()
         return False
 
@@ -111,7 +158,8 @@ class ProxyZealotRushBot(KnowledgeBot):
         super().__init__("Sharp Knives")
 
     async def create_plan(self) -> BuildOrder:
-        self.knowledge.building_solver.wall_type = WallType.ProtossMainProtoss
+        building_solver = self.knowledge.get_required_manager(IBuildingSolver)
+        building_solver.wall_type = WallType.ProtossMainProtoss
         attack = PlanZoneAttack(7)
         attack.retreat_multiplier = 0.3
         # attack.attack_started = True
@@ -164,26 +212,18 @@ class ProxyZealotRushBot(KnowledgeBot):
                 ),
             ),
         )
-        proxy_zealots = ProxyZealots()
-
-        return BuildOrder(
+        proxy = BuildOrder(
             [
-                SequentialList(
-                    [
-                        Step(
-                            None,
-                            proxy_zealots,
-                            skip=RequireCustom(
-                                lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.GATEWAY)
-                            ),
-                        ),
-                        backup,
-                    ]
-                ),
-                [DistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
+                ProtossUnit(UnitTypeId.PROBE, 17),
+                ProtossUnit(UnitTypeId.ZEALOT),
+                GridBuilding(UnitTypeId.PYLON, 1, priority=True),
+                Step(UnitReady(UnitTypeId.PYLON, 1), AutoPylon()),
+                ProxyZealots(),
                 ChronoUnit(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
+                [DistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
             ]
         )
+        return BuildOrder(SequentialList(Step(None, proxy, skip=Once(Supply(50))), backup))
 
 
 class LadderBot(ProxyZealotRushBot):

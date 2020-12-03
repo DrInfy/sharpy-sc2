@@ -1,7 +1,7 @@
 # Starts all out attack with workers on specified unit supply that is not workers
 import random
 
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
 from sc2.unit import Unit
 
@@ -14,8 +14,8 @@ class PlanFinishEnemy(ActBase):
     async def execute(self):
         target = await self.find_attack_position(self.ai)
         for unit in self.ai.units.idle:  # type: Unit
-            if self.knowledge.should_attack(unit):
-                self.do(unit.attack(target))
+            if self.unit_values.should_attack(unit):
+                unit.attack(target)
                 self.roles.set_task(UnitTask.Attacking, unit)
 
         # Refresh roles
@@ -25,7 +25,7 @@ class PlanFinishEnemy(ActBase):
         return True
 
     async def find_attack_position(self, ai):
-        main_pos = self.knowledge.own_main_zone.center_location
+        main_pos = self.zone_manager.own_main_zone.center_location
 
         target = random.choice(list(ai.expansion_locations_list))
         last_distance2 = target.distance_to(main_pos)

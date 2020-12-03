@@ -1,4 +1,4 @@
-from typing import Optional, List, Dict
+from typing import TYPE_CHECKING, Optional, List, Dict
 
 import sc2
 from sharpy.general.extended_ramp import ExtendedRamp
@@ -13,6 +13,10 @@ from sc2.units import Units
 from sharpy.general.extended_power import ExtendedPower
 
 import enum
+
+if TYPE_CHECKING:
+    from sharpy.knowledges import Knowledge
+    from sharpy.managers.core import ZoneManager
 
 
 class ZoneResources(enum.Enum):
@@ -31,7 +35,7 @@ class Zone:
     ZONE_RADIUS_SQUARED = ZONE_RADIUS ** 2
     VESPENE_GEYSER_DISTANCE = 10
 
-    def __init__(self, center_location, is_start_location, knowledge):
+    def __init__(self, center_location, is_start_location, knowledge: "Knowledge", zone_manager: "ZoneManager"):
         self.center_location: Point2 = center_location
         self.is_start_location: bool = is_start_location
 
@@ -39,6 +43,7 @@ class Zone:
         self.ai: sc2.BotAI = knowledge.ai
         self.cache: "UnitCacheManager" = knowledge.unit_cache
         self.unit_values: "UnitValue" = knowledge.unit_values
+        self.zone_manager = zone_manager
         self.needs_evacuation = False
         self._is_enemys = False
 
@@ -284,7 +289,7 @@ class Zone:
 
         # We are going to presume that the enemy has a town hall even if we don't see one
         self._is_enemys = self.enemy_townhall is not None or (
-            self == self.knowledge.enemy_main_zone and self in self.knowledge.unscouted_zones
+            self == self.zone_manager.enemy_main_zone and self in self.zone_manager.unscouted_zones
         )
 
     @property
@@ -309,10 +314,6 @@ class Zone:
     @property
     def is_neutral(self) -> bool:
         return not self.is_ours and not self.is_enemys
-
-    @property
-    def expanding_to(self) -> bool:
-        return self.knowledge.expanding_to == self
 
     @property
     def is_ours(self) -> bool:
@@ -403,17 +404,15 @@ class Zone:
         return power
 
     def go_mine(self, unit: Unit):
-        self.knowledge.roles.clear_task(unit)
-
         if len(self.mineral_fields) > 0:
             # Go to mine in this zone
             mf = self.mineral_fields[0]
-            self.ai.do(unit.gather(mf))
+            unit.gather(mf)
         elif self.ai.townhalls.exists and self.ai.mineral_field.exists:
             closest_base = self.ai.townhalls.closest_to(self.center_location)
             # Go to mine in some other base
             mf = self.ai.mineral_field.closest_to(closest_base)
-            self.ai.do(unit.gather(mf))
+            unit.gather(mf)
 
     def _find_ramp(self, ai) -> Optional[ExtendedRamp]:
         if not self.ai.game_info.map_ramps:
@@ -458,17 +457,18 @@ class Zone:
 
         return found_ramp
 
-    def our_wall(self):
-        if self != self.knowledge.expansion_zones[0] and self != self.knowledge.expansion_zones[1]:
-            return False  # Not main base and not natural wall
+    def our_wall(self) -> bool:
+        """
+        Does the natural wall hold in this zone? We should count it as our zone if it has a wall,
+        even without a town hall.
+        @return: True when natural wall should be defended
+        """
+        if self != self.zone_manager.expansion_zones[1]:
+            return False  # Not a natural wall
 
-        gate_position: Point2 = self.knowledge.gate_keeper_position
-        if gate_position is not None and self.knowledge.base_ramp.top_center.distance_to(gate_position) < 6:
-            # Main base ramp
-            return False
+        # TODO: Terran & Zerg versions?
 
-        if gate_position is not None and gate_position.distance_to(self.center_location) < 20:
-            if self.our_units.of_type({UnitTypeId.GATEWAY, UnitTypeId.WARPGATE, UnitTypeId.CYBERNETICSCORE}):
-                # Natural wall should be up
-                return True
+        if len(self.our_units.of_type({UnitTypeId.GATEWAY, UnitTypeId.WARPGATE, UnitTypeId.CYBERNETICSCORE})) > 1:
+            # Natural wall should be up
+            return True
         return False

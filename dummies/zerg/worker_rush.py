@@ -1,7 +1,7 @@
 from typing import List
 
-from sharpy.managers import GroupCombatManager
-from sharpy.managers.combat2 import MoveType
+from sharpy.combat import MoveType
+from sharpy.interfaces import ICombatManager, IZoneManager, ILostUnitsManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
@@ -16,16 +16,19 @@ from sharpy.knowledges import Knowledge, KnowledgeBot
 
 
 class DummyZergAttack(ActBase):
+    combat: ICombatManager
+
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.all_out_started = False
         self.unit_values = knowledge.unit_values
-        self.combat_manager: GroupCombatManager = self.knowledge.combat_manager
+        self.combat: ICombatManager = self.knowledge.get_required_manager(ICombatManager)
+        self.zone_manager: IZoneManager = self.knowledge.get_required_manager(IZoneManager)
 
     async def execute(self) -> bool:
-        target = self.knowledge.enemy_start_location
+        target = self.zone_manager.enemy_start_location
         defend = False
-        for zone in self.knowledge.expansion_zones:
+        for zone in self.zone_manager.expansion_zones:
             if zone.is_ours and zone.is_under_attack:
                 ground_units = zone.known_enemy_units.not_flying
                 if zone.known_enemy_power.ground_presence > 0 and ground_units:
@@ -34,11 +37,11 @@ class DummyZergAttack(ActBase):
                         [UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.QUEEN, UnitTypeId.MUTALISK]
                     ):
                         target = ground_units.closest_to(zone.center_location).position
-                        self.combat_manager.add_unit(zl)
+                        self.combat.add_unit(zl)
                 elif zone.known_enemy_units:
                     for zl in self.cache.own(UnitTypeId.QUEEN):
                         target = zone.known_enemy_units.closest_to(zone.center_location).position
-                        self.combat_manager.add_unit(zl)
+                        self.combat.add_unit(zl)
                 break  # defend the most important zone first
 
         if not defend:
@@ -63,19 +66,19 @@ class DummyZergAttack(ActBase):
 
             if self.all_out_started:
                 for zl in self.ai.units.of_type([UnitTypeId.ZERGLING, UnitTypeId.ROACH, UnitTypeId.MUTALISK]):
-                    self.combat_manager.add_unit(zl)
+                    self.combat.add_unit(zl)
 
-        self.combat_manager.execute(target, MoveType.Assault)
+        self.combat.execute(target, MoveType.Assault)
         return True
 
     async def select_attack_target(self):
-        if self.knowledge.known_enemy_structures.exists:
-            target = self.knowledge.known_enemy_structures.closest_to(self.ai.start_location).position
+        if self.ai.enemy_structures.exists:
+            target = self.ai.enemy_structures.closest_to(self.ai.start_location).position
         else:
             target = self.ai.enemy_start_locations[0]
 
             last_scout = 0
-            for zone in self.knowledge.enemy_expansion_zones:
+            for zone in self.zone_manager.enemy_expansion_zones:
                 if zone.is_enemys:
                     target = zone.center_location
                     break
@@ -148,12 +151,17 @@ class LingFloodBuild(BuildOrder):
 
 
 class WorkerAttack(ActBase):
+    combat: ICombatManager
+    zone_manager: IZoneManager
+    lost_units_manager: ILostUnitsManager
+
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.all_out_started = False
         self.unit_values = knowledge.unit_values
-        self.combat_manager: GroupCombatManager = self.knowledge.combat_manager
-        self.combat_manager.prioritise_workers = True
+        self.combat = self.knowledge.get_required_manager(ICombatManager)
+        self.zone_manager = self.knowledge.get_required_manager(IZoneManager)
+        self.lost_units_manager = self.knowledge.get_required_manager(ILostUnitsManager)
         self.tags: List[int] = []
 
     async def execute(self) -> bool:
@@ -164,14 +172,14 @@ class WorkerAttack(ActBase):
         if len(self.tags) == 0:
             return True
 
-        attack_zone = self.knowledge.enemy_main_zone
-        enemy_natural = self.knowledge.expansion_zones[-2]
+        attack_zone = self.zone_manager.enemy_main_zone
+        enemy_natural = self.zone_manager.expansion_zones[-2]
 
-        target = self.knowledge.enemy_start_location
+        target = self.zone_manager.enemy_start_location
         fighters = self.ai.workers.tags_in(self.tags)
         self.tags.clear()
         move_type = MoveType.Assault
-        if self.knowledge.lost_units_manager.calculate_enemy_lost_resources()[0] < 50:
+        if self.lost_units_manager.calculate_enemy_lost_resources()[0] < 50:
             target = attack_zone.behind_mineral_position_center
             move_type = MoveType.PanicRetreat
         else:
@@ -181,27 +189,27 @@ class WorkerAttack(ActBase):
         for fighter in fighters:  # type: Unit
             self.tags.append(fighter.tag)
             if fighter.health > 5 and fighter.distance_to(attack_zone.center_location) > 20:
-                self.do(fighter.move(attack_zone.center_location))
+                fighter.move(attack_zone.center_location)
             elif fighter.health < 6 and enemy_natural.mineral_fields.exists:
                 mf = enemy_natural.mineral_fields.closest_to(fighter)
-                self.do(fighter.gather(mf))
+                fighter.gather(mf)
             else:
                 if attack_zone.known_enemy_units.not_structure.closer_than(4, fighter).exists:
                     target = attack_zone.known_enemy_units.not_structure.closest_to(fighter).position
                     move_type = MoveType.Assault
-                self.combat_manager.add_unit(fighter)
+                self.combat.add_unit(fighter)
 
-        self.combat_manager.execute(target, move_type)
+        self.combat.execute(target, move_type)
         return True
 
     async def select_attack_target(self):
-        if self.knowledge.known_enemy_structures.exists:
-            target = self.knowledge.known_enemy_structures.closest_to(self.ai.start_location).position
+        if self.ai.enemy_structures.exists:
+            target = self.ai.enemy_structures.closest_to(self.ai.start_location).position
         else:
             target = self.ai.enemy_start_locations[0]
 
             last_scout = 0
-            for zone in self.knowledge.enemy_expansion_zones:
+            for zone in self.zone_manager.enemy_expansion_zones:
                 if zone.is_enemys:
                     target = zone.center_location
                     break

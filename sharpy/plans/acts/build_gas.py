@@ -1,9 +1,8 @@
 from typing import Optional
 
 import sc2
-from sharpy.managers.roles import UnitTask
+from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
-from sharpy.plans.require import RequireBase
 from sc2 import UnitTypeId, BotAI, Race
 from sc2.constants import ALL_GAS
 from sc2.unit import Unit
@@ -62,8 +61,9 @@ class BuildGas(ActBase):
                         exists = True
                         break
                 if not exists:
-                    score = geyser.vespene_contents - 0.01 * self.knowledge.own_main_zone.center_location.distance_to(
-                        geyser
+                    score = (
+                        geyser.vespene_contents
+                        - 0.01 * self.zone_manager.own_main_zone.center_location.distance_to(geyser)
                     )
                     if score > best_score:
                         self.best_gas = geyser
@@ -95,7 +95,7 @@ class BuildGas(ActBase):
 
     def clear_worker(self):
         if self.builder_tag is not None:
-            self.knowledge.roles.clear_task(self.builder_tag)
+            self.roles.clear_task(self.builder_tag)
             self.builder_tag = None
 
     async def build_gas(self, worker: Unit):
@@ -107,20 +107,19 @@ class BuildGas(ActBase):
 
             self.builder_tag = worker.tag
 
-            cmd = worker.build_gas(target, queue=self.has_build_order(worker))
-            self.do(cmd)
+            worker.build_gas(target, queue=self.has_build_order(worker))
 
             if self.ai.race == Race.Protoss:
                 # Protoss only do something else after starting gas
                 mf = self.ai.mineral_field.closest_to(worker)
-                self.ai.do(worker.gather(mf, queue=True))
+                worker.gather(mf, queue=True)
 
             self.print(f"Building {self.unit_type.name} to {target.position}")
         return False
 
     def set_worker(self, worker: Optional[Unit]) -> bool:
         if worker:
-            self.knowledge.roles.set_task(UnitTask.Building, worker)
+            self.roles.set_task(UnitTask.Building, worker)
             self.builder_tag = worker.tag
             return True
 

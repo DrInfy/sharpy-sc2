@@ -14,7 +14,7 @@ class MorphBuilding(ActBase):
     async def execute(self) -> bool:
         target_count = self.cache.own(self.result_type).amount
         start_buildings = self.cache.own(self.building_type).ready.sorted_by_distance_to(
-            self.knowledge.own_main_zone.center_location
+            self.zone_manager.own_main_zone.center_location
         )
 
         ignore_tags: Set[int] = set()
@@ -29,7 +29,7 @@ class MorphBuilding(ActBase):
         for target in start_buildings:
             if target.is_ready and target.tag not in ignore_tags:
                 if self.knowledge.can_afford(self.ability_type):
-                    self.do(target(self.ability_type))
+                    target(self.ability_type)
 
                 self.knowledge.reserve_costs(self.ability_type)
                 target_count += 1

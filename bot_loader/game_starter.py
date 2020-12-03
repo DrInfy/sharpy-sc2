@@ -13,7 +13,7 @@ from config import get_config
 import sc2
 from bot_loader.loader import BotLoader
 from bot_loader.runner import MatchRunner
-from sc2 import maps
+from sc2 import maps, Result
 from sc2.paths import Paths
 from sc2.player import AbstractPlayer, Bot, Human
 from sharpy.knowledges import KnowledgeBot
@@ -129,6 +129,10 @@ Builds:
             "--port", help="starting port to use, i.e. 10 would result in ports 10-17 being used to play."
         )
 
+        parser.add_argument(
+            "--requirewin", help="Requires victory for the specified player number (1 or 2) or raise exception."
+        )
+
         args = parser.parse_args()
 
         player1: str = args.player1
@@ -191,7 +195,7 @@ Builds:
         print(f"{player1} vs {player2}")
 
         runner = MatchRunner()
-        runner.run_game(
+        result = runner.run_game(
             maps.get(map_name),
             [player1_bot, player2_bot],
             player1_id=player1,
@@ -201,6 +205,11 @@ Builds:
             start_port=args.port,
         )
 
+        if args.requirewin:
+            if args.requirewin == "1" and result != Result.Victory:
+                raise Exception("Player 1 needed to win the game!")
+            if args.requirewin == "2" and result != Result.Defeat:
+                raise Exception("Player 2 needed to win the game!")
         # release file handle
         sc2.main.logger.remove()
 
