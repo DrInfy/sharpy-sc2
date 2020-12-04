@@ -61,7 +61,7 @@ class PlanWorkerOnlyDefense(ActBase):
         #         self.roles.clear_task(unit)
         #         unit.gather(self.gather_mf)
 
-        worker_only = combined_enemies.amount == combined_enemies.of_type(self.unit_values.worker_types).amount
+        worker_only = combined_enemies.amount == combined_enemies.of_type(UnitValue.worker_types).amount
 
         if combined_enemies.amount == 1 and worker_only:
             # Single scout worker

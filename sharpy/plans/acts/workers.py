@@ -1,5 +1,6 @@
 import math
 
+from sharpy.interfaces import IIncomeCalculator
 from sharpy.knowledges import Knowledge
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId, Race
@@ -15,6 +16,8 @@ class Workers(ActBase):
     Does not consider chrono boost.
     """
 
+    income_calculator: IIncomeCalculator
+
     def __init__(self, to_count: int = 80):
         super().__init__()
         self.unit_type: UnitTypeId = None
@@ -27,6 +30,7 @@ class Workers(ActBase):
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         assert knowledge.my_worker_type in {UnitTypeId.PROBE, UnitTypeId.SCV}
+        self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
         self.unit_type = knowledge.my_worker_type
         unit_data = self.ai._game_data.units[self.unit_type.value]
         ability_data: AbilityData = unit_data.creation_ability
@@ -58,7 +62,7 @@ class Workers(ActBase):
 
         supply_for = self.ai.supply_left
 
-        income = self.knowledge.income_calculator.mineral_income
+        income = self.income_calculator.mineral_income
         if income == 0:
             income = 0.01  # to prevent division by zero exceptions
 

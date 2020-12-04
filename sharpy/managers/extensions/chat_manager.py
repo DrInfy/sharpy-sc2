@@ -12,14 +12,14 @@ class ChatManager(ManagerBase):
 
     async def chat_taunt_once(self, key: str, message: Callable[[], str]):
         # self.taunted.add(taunt_type)
-        if not self.knowledge.is_chat_allowed or key in self.taunted:
+        if key in self.taunted:
             return True
 
         self.taunted.add(key)
         await self.ai.chat_send(message())
 
     async def chat_debug(self, message: str):
-        if not self.knowledge.is_chat_allowed or self.ai.realtime:
+        if self.ai.realtime:
             return True
         await self.ai.chat_send(message)
 

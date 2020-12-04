@@ -8,4 +8,4 @@ class RequireCustom(RequireBase):
         self.func = func
 
     def check(self) -> bool:
-        return self.func(self.knowledge)
+        return self.func(self.ai)

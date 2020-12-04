@@ -1,6 +1,8 @@
 from typing import List, Dict, Optional
 
 from sharpy.combat.protoss import MicroAdepts
+from sharpy.interfaces import IZoneManager, IEnemyUnitsManager
+from sharpy.managers.extensions import BuildDetector
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
@@ -15,6 +17,9 @@ from sharpy.managers.core.roles import UnitTask
 class DoubleAdeptScout(ActBase):
     ZONE_DISTANCE_THRESHOLD_SQUARED = 9 * 9
     micro: MicroRules
+    build_detector: BuildDetector
+    zone_manager: IZoneManager
+    enemy_units_manager: IEnemyUnitsManager
 
     def __init__(self, adepts_to_start: int = 2):
         super().__init__()
@@ -37,15 +42,18 @@ class DoubleAdeptScout(ActBase):
         self.micro = MicroRules()
         self.micro.load_default_methods()
         self.micro.generic_micro = MicroAdepts(False)
+        self.build_detector = knowledge.get_manager(BuildDetector)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
         await self.micro.start(knowledge)
 
     async def execute(self) -> bool:
-        if self.knowledge.possible_rush_detected:
+        if self.build_detector and self.build_detector.rush_detected:
             self.roles.clear_tasks(self.scout_tags)
             self.scout_tags.clear()
             return True  # Never block
 
-        if not self.knowledge.enemy_start_location_found:
+        if not self.zone_manager.enemy_start_location_found:
             # We don't know where to go just yet
             return True  # Never block
 
@@ -96,9 +104,9 @@ class DoubleAdeptScout(ActBase):
                 shade = self.cache.by_tag(shade_tag)
                 if self.cd_manager.is_ready(adept.tag, AbilityId.ADEPTPHASESHIFT_ADEPTPHASESHIFT, 6.9):
                     # Determine whether to cancel the shade or not
-                    if self.knowledge.enemy_units_manager.danger_value(
+                    if self.enemy_units_manager.danger_value(
                         adept, adept.position
-                    ) < self.knowledge.enemy_units_manager.danger_value(adept, shade.position):
+                    ) < self.enemy_units_manager.danger_value(adept, shade.position):
                         # It's safer to not phase shift
                         adept(AbilityId.CANCEL_ADEPTPHASESHIFT)
                         continue
@@ -120,7 +128,7 @@ class DoubleAdeptScout(ActBase):
         closest_viable_zone: Zone = None
         second_viable_zone: Zone = None
         current_zone_index: Optional[int] = None
-        enemy_zones: List[Zone] = self.knowledge.enemy_expansion_zones
+        enemy_zones: List[Zone] = self.zone_manager.enemy_expansion_zones
 
         for i in range(0, len(enemy_zones)):
             zone = enemy_zones[i]

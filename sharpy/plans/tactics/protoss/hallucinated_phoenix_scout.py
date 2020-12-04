@@ -1,5 +1,7 @@
 from typing import Optional
 
+from sharpy.interfaces import IZoneManager
+from sharpy.managers.extensions import BuildDetector
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, AbilityId
 from sc2.position import Point2
@@ -18,6 +20,9 @@ class HallucinatedPhoenixScout(ActBase):
     time_interval is seconds.
     """
 
+    build_detector: BuildDetector
+    zone_manager: IZoneManager
+
     def __init__(self, time_interval: int = 60):
         super().__init__()
         self.time_interval: int = time_interval
@@ -25,6 +30,11 @@ class HallucinatedPhoenixScout(ActBase):
         self.last_created: int = -1
         self.last_target: Optional[Point2] = None
         self.current_phoenix_tag: Optional[int] = None
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.build_detector = knowledge.get_manager(BuildDetector)
+        self.zone_manager = knowledge.get_required_manager(IZoneManager)
 
     async def execute(self) -> bool:
         phoenix = await self.get_hallucinated_phoenix()
@@ -82,7 +92,7 @@ class HallucinatedPhoenixScout(ActBase):
 
     @property
     def should_send_scout(self) -> bool:
-        if self.knowledge.possible_rush_detected and self.ai.time < 5 * 60:
+        if self.build_detector and self.build_detector.rush_detected and self.ai.time < 5 * 60:
             return False  # no scout in first 5 min if rush incoming
         return self.last_created + self.time_interval < self.knowledge.ai.time
 
@@ -97,18 +107,18 @@ class HallucinatedPhoenixScout(ActBase):
     def select_target(self) -> Point2:
         # todo: there just might be a linear function here...
         if self.ai.time < 6 * 60:
-            targets = self.knowledge.enemy_expansion_zones[0:3]
+            targets = self.zone_manager.enemy_expansion_zones[0:3]
         elif self.ai.time < 8 * 60:
-            targets = self.knowledge.enemy_expansion_zones[0:4]
+            targets = self.zone_manager.enemy_expansion_zones[0:4]
         elif self.ai.time < 10 * 60:
-            targets = self.knowledge.enemy_expansion_zones[0:5]
+            targets = self.zone_manager.enemy_expansion_zones[0:5]
         else:
             # This includes our bases as well (sorted to the end), but the hallucination
             # won't live long enough to scout all bases.
-            targets = self.knowledge.enemy_expansion_zones
+            targets = self.zone_manager.enemy_expansion_zones
 
         targets.sort(key=lambda z: z.last_scouted_mineral_line)
         if len(targets) > 0:
             return targets[0].mineral_line_center
 
-        return self.knowledge.enemy_main_zone.mineral_line_center
+        return self.zone_manager.enemy_main_zone.mineral_line_center
