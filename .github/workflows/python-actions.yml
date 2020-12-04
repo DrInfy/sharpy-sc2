@@ -60,7 +60,7 @@ jobs:
       matrix:
         python-version: [3.7]
         player1: [zealot, 12pool, bio, bc, 4gate, lurker, mutalisk, saferaven, disruptor]
-        player2: [ai.random.hard.macro]
+        player2: [ai.zerg.hard.macro]
 
     steps:
     - uses: actions/checkout@v2
