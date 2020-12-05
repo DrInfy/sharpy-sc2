@@ -43,6 +43,8 @@ class KnowledgeBot(SkeletonBot, ABC):
 
     async def on_start(self):
         """Allows initializing the bot when the game data is available."""
+        user_managers = self.configure_managers()
+
         managers = [
             self.memory_manager,
             self.lost_units_manager,
@@ -62,8 +64,6 @@ class KnowledgeBot(SkeletonBot, ABC):
             self.game_analyzer,
             self.data_manager,
         ]
-
-        user_managers = self.configure_managers()
         if user_managers:
             managers.extend(user_managers)
         managers.append(CustomFuncManager(self.pre_step_execute))
