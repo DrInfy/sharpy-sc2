@@ -22,7 +22,7 @@ class ScoutAroundMain(ScoutBaseAction):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.main_target = self.knowledge.enemy_expansion_zones[0].center_location
+        self.main_target = self.zone_manager.enemy_expansion_zones[0].center_location
 
     async def execute(self) -> bool:
         if self.ended:
