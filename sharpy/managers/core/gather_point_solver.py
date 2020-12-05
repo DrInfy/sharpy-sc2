@@ -15,6 +15,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
         self._expanding_to: Optional[Point2] = None
         self._gather_point = Point2((0, 0))
         self._gather_point_set = False
+        self._set_expand_gather = False
 
     @property
     def gather_point(self) -> Point2:
@@ -30,6 +31,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
 
     def set_expanding_to(self, target: Point2) -> None:
         self._expanding_to = target
+        self._set_expand_gather = True
         self._find_gather_point()  # Re check the gather point
 
     async def start(self, knowledge: "Knowledge"):
@@ -40,6 +42,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
         if not self._gather_point_set:
             self._find_gather_point()
         self._gather_point_set = False
+        self._set_expand_gather = False
 
     async def post_update(self):
         pass
@@ -50,7 +53,7 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
 
         for i in range(start, len(self.zone_manager.expansion_zones)):
             zone = self.zone_manager.expansion_zones[i]
-            if self._expanding_to == zone.center_location:
+            if self._set_expand_gather and self._expanding_to == zone.center_location:
                 self._gather_point = zone.gather_point
             elif zone.is_ours:
                 if len(self.zone_manager.gather_points) > i:
