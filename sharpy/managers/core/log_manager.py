@@ -1,7 +1,7 @@
 import logging
 import string
 from configparser import ConfigParser
-from typing import Any
+from typing import Any, Optional
 
 import sc2
 from sharpy.interfaces import ILogManager
@@ -13,6 +13,11 @@ root_logger = logging.getLogger()
 class LogManager(ManagerBase, ILogManager):
     config: ConfigParser
     logger: Any  # TODO: type?
+    start_with: Optional[str]
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.start_with = None
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -57,4 +62,6 @@ class LogManager(ManagerBase, ILogManager):
                 f"{str(self.ai.supply_used).rjust(3)}/{str(self.ai.supply_cap).rjust(3)}U {message}"
             )
 
+        if self.start_with:
+            message = self.start_with + message
         self.logger.log(log_level, message)
