@@ -110,7 +110,7 @@ class MicroPhoenixes(MicroStep):
                 if enemy.is_flying or enemy.is_structure or enemy.has_buff(BuffId.GRAVITONBEAM):
                     continue
 
-                if self.move_type != MoveType.Harass and enemy.type_id in self.unit_values.worker_types:
+                if self.move_type != MoveType.Harass and enemy.type_id in UnitValue.worker_types:
                     # If we are not doing any harass, don't lift low priority workers up.
                     # We need to prioritize energy to actual combat units
                     continue

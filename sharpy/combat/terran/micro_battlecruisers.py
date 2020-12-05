@@ -18,7 +18,7 @@ class MicroBattleCruisers(GenericMicro):
             health_to_jump = 100
 
         if bc.health < health_to_jump and self.cd_manager.is_ready(bc.tag, AbilityId.EFFECT_TACTICALJUMP):
-            zones = self.knowledge.our_zones_with_minerals
+            zones = self.zone_manager.our_zones_with_minerals
             if zones:
                 position = zones[0].behind_mineral_position_center
                 self.cd_manager.used_ability(bc.tag, AbilityId.EFFECT_TACTICALJUMP)

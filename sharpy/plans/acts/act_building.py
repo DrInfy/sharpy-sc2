@@ -43,7 +43,7 @@ class ActBuilding(ActBase):
         )
         worker = self.get_worker_builder(location, 0)
         pos = await self.ai.find_placement(self.unit_type, location)
-        if pos:
+        if worker and pos:
             worker.build(self.unit_type, pos)
 
     def get_random_build_location(self) -> Point2:

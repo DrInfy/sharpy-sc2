@@ -32,7 +32,7 @@ class PlanZoneDefense(ActBase):
             self.zone_seen_enemy[i] = -10
 
     def defense_required(self, enemies: Units):
-        if enemies.exists:  # and (len(enemies) > 1 or enemies[0].type_id not in self.unit_values.worker_types):
+        if enemies.exists:  # and (len(enemies) > 1 or enemies[0].type_id not in UnitValue.worker_types):
             return True
         return False
 
@@ -103,7 +103,7 @@ class PlanZoneDefense(ActBase):
                         self.combat.add_unit(unit)
                         zone_tags.append(unit.tag)
 
-                if len(enemies) > 1 or (len(enemies) == 1 and enemies[0].type_id not in self.unit_values.worker_types):
+                if len(enemies) > 1 or (len(enemies) == 1 and enemies[0].type_id not in UnitValue.worker_types):
                     # Pull workers to defend only and only if the enemy isn't one worker scout
                     if defenders.is_enough_for(defense_required):
                         # Workers should return to mining.

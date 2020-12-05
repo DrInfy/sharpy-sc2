@@ -57,7 +57,7 @@ class PlanWorkerOnlyDefense(ActBase):
 
         # for unit in already_defending:
         #     # return workers back to base that have wandered too far away
-        #     if unit.type_id in self.unit_values.worker_types and unit.distance_to(self.ai.start_location) > 30:
+        #     if unit.type_id in UnitValue.worker_types and unit.distance_to(self.ai.start_location) > 30:
         #         self.roles.clear_task(unit)
         #         unit.gather(self.gather_mf)
 

@@ -14,6 +14,8 @@ from sharpy.general.extended_power import ExtendedPower
 
 import enum
 
+worker_types = {UnitTypeId.SCV, UnitTypeId.MULE, UnitTypeId.DRONE, UnitTypeId.PROBE}
+
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
     from sharpy.managers.core import ZoneManager
@@ -147,7 +149,7 @@ class Zone:
         enemies: Units = self.cache.enemy_in_range(self.mineral_line_center, 10)
         power = ExtendedPower(self.unit_values)
         power.add_units(enemies)
-        if power.ground_power > 3 and enemies.exclude_type(self.unit_values.worker_types):
+        if power.ground_power > 3 and enemies.exclude_type(worker_types):
             self.needs_evacuation = True
         else:
             self.needs_evacuation = False
@@ -202,8 +204,8 @@ class Zone:
 
         # Only add units that we can fight against
         self.known_enemy_units = self.known_enemy_units.filter(lambda x: x.cloak != 2)
-        self.enemy_workers = self.known_enemy_units.of_type(self.unit_values.worker_types)
-        self.our_workers: Units = self.our_units.of_type(self.unit_values.worker_types)
+        self.enemy_workers = self.known_enemy_units.of_type(worker_types)
+        self.our_workers: Units = self.our_units.of_type(worker_types)
 
         self._minerals_counter.execute()
         self._update_gas_buildings()

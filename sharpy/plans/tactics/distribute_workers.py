@@ -2,7 +2,7 @@ from typing import Optional, List, Dict
 
 from sc2.constants import IS_COLLECTING, ALL_GAS
 from sharpy.managers.core import UnitRoleManager
-from sharpy.managers.core.unit_value import buildings_5x5
+from sharpy.managers.core.unit_value import buildings_5x5, UnitValue
 from sharpy.plans.acts import ActBase
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
@@ -66,7 +66,7 @@ class DistributeWorkers(ActBase):
         self.generate_worker_queue()
 
         for worker in (
-            self.roles.all_from_task(UnitTask.Idle).of_type(self.unit_values.worker_types)
+            self.roles.all_from_task(UnitTask.Idle).of_type(UnitValue.worker_types)
             + self.roles.all_from_task(UnitTask.Gathering).idle
         ):  # type: Unit
             # Re-assign idle workers

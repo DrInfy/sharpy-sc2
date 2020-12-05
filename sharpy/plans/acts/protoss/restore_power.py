@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from sharpy.constants import Constants
+from sharpy.interfaces import IBuildingSolver
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId, Race
 from sc2.position import Point2
@@ -30,8 +31,14 @@ PYLON = UnitTypeId.PYLON
 class RestorePower(ActBase):
     """Builds a pylon next to unpowered Protoss structures."""
 
+    building_solver: IBuildingSolver
+
     def __init__(self):
         super().__init__()
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.building_solver = self.knowledge.get_required_manager(IBuildingSolver)
 
     async def execute(self) -> bool:
         if not self.knowledge.my_race == Race.Protoss:
@@ -91,7 +98,7 @@ class RestorePower(ActBase):
         return not any(enemies_near)
 
     def get_pylon_placement(self, building: Unit) -> Optional[Point2]:
-        pylon_positions: List[Point2] = self.knowledge.building_solver.buildings2x2
+        pylon_positions: List[Point2] = self.building_solver.buildings2x2
 
         closest_pylon_pos: Point2 = building.position.closest(pylon_positions)
 
