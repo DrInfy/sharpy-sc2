@@ -48,6 +48,7 @@ class Knowledge:
         self.reserved_minerals: int = 0
         self.reserved_gas: int = 0
         self.log_manager: ILogManager = LogManager()
+        # TODO: Remove references to these managers
         self.lag_handler: Optional[ILagHandler] = None
         self.unit_values: Optional[IUnitValues] = None
         self.pathing_manager: Optional[PathingManager] = None
@@ -128,6 +129,7 @@ class Knowledge:
         return manager
 
     async def start(self):
+        # TODO: Remove these
         self.unit_values = self.get_manager(IUnitValues)
         self.lag_handler = self.get_manager(ILagHandler)
         self.pathing_manager = self.get_manager(PathingManager)
@@ -162,6 +164,14 @@ class Knowledge:
         if self.lag_handler:
             ms_step = ns_step / 1000 / 1000
             self.lag_handler.step_took(ms_step)
+
+    @property
+    def available_mineral(self) -> int:
+        return self.ai.minerals - self.reserved_minerals
+
+    @property
+    def available_gas(self) -> int:
+        return self.ai.vespene - self.reserved_gas
 
     def reserve(self, minerals: int, gas: int):
         self.reserved_minerals += minerals
