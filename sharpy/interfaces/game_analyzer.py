@@ -2,11 +2,23 @@ from abc import ABC, abstractmethod
 
 from typing import TYPE_CHECKING
 
+from sharpy.general.extended_power import ExtendedPower
+
 if TYPE_CHECKING:
     from sharpy.managers.extensions.game_states import Advantage, AirArmy
 
 
 class IGameAnalyzer(ABC):
+    @property
+    @abstractmethod
+    def our_power(self) -> ExtendedPower:
+        pass
+
+    @property
+    @abstractmethod
+    def enemy_power(self) -> ExtendedPower:
+        pass
+
     @property
     @abstractmethod
     def our_income_advantage(self) -> "Advantage":

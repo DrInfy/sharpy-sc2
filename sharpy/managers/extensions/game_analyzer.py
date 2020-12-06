@@ -38,8 +38,8 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         self.enemy_mineral_income = 0
         self.our_zones = 0
         self.enemy_zones = 0
-        self.our_power: ExtendedPower = None
-        self.enemy_power: ExtendedPower = None
+        self._our_power: ExtendedPower = None
+        self._enemy_power: ExtendedPower = None
         self.enemy_predict_power: ExtendedPower = None
         self.predicted_defeat_time = 0.0
         self.minerals_left: List[int] = []
@@ -50,6 +50,14 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         self._last_army: Advantage = Advantage.Even
         self._last_predict: Advantage = Advantage.Even
 
+    @property
+    def our_power(self) -> ExtendedPower:
+        return self._our_power
+
+    @property
+    def enemy_power(self) -> ExtendedPower:
+        return self._enemy_power
+
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         await self.enemy_predicter.start(knowledge)
@@ -58,8 +66,8 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         self.income_calculator = knowledge.get_required_manager(IIncomeCalculator)
         self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
 
-        self.our_power = ExtendedPower(self.unit_values)
-        self.enemy_power: ExtendedPower = ExtendedPower(self.unit_values)
+        self._our_power = ExtendedPower(self.unit_values)
+        self._enemy_power: ExtendedPower = ExtendedPower(self.unit_values)
         self.enemy_predict_power: ExtendedPower = ExtendedPower(self.unit_values)
         self.resource_updater = IntervalFunc(self.ai, self.save_resources_status, 1)
         self.resource_updater.execute()
@@ -71,7 +79,7 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
     async def update(self):
         self.resource_updater.execute()
 
-        self.our_power.clear()
+        self._our_power.clear()
         self.our_zones = 0
         self.enemy_zones = 0
         our_income = self.income_calculator.mineral_income + self.income_calculator.gas_income
@@ -100,12 +108,12 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
 
         enemy_income = self.enemy_mineral_income + self._enemy_gas_income
         self._our_income_advantage = our_income - enemy_income
-        self.our_power.add_units(
+        self._our_power.add_units(
             self.ai.units.filter(lambda u: u.is_ready and u.type_id != self.knowledge.my_worker_type)
         )
 
         self.enemy_predict_power = self.enemy_predicter.predicted_enemy_power
-        self.enemy_power = self.enemy_predicter.enemy_power
+        self._enemy_power = self.enemy_predicter.enemy_power
 
         self._enemy_air_percentage = 0
         if self.enemy_predict_power.air_presence > 0:
@@ -143,11 +151,11 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
                 f" ({self.our_income_advantage.name})"
             )
             msg += (
-                f"\nArmy: {round(self.our_power.power)} vs"
-                f" {round(self.enemy_power.power)} ({self.our_army_advantage.name})"
+                f"\nArmy: {round(self._our_power.power)} vs"
+                f" {round(self._enemy_power.power)} ({self.our_army_advantage.name})"
             )
             msg += (
-                f"\nArmy predict: {round(self.our_power.power)} vs"
+                f"\nArmy predict: {round(self._our_power.power)} vs"
                 f" {round(self.enemy_predict_power.power)} ({self.our_army_predict.name})"
             )
             msg += f"\nEnemy air: {self.enemy_air.name}"
@@ -230,32 +238,32 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         return self._last_predict
 
     def _calc_our_army_predict(self) -> Advantage:
-        if self.our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 1.1):
-            if self.our_power.power > 20 and self.our_power.is_enough_for(
+        if self._our_power.is_enough_for(self.enemy_predict_power, our_percentage=1 / 1.1):
+            if self._our_power.power > 20 and self._our_power.is_enough_for(
                 self.enemy_predict_power, our_percentage=1 / 3
             ):
                 return Advantage.OverwhelmingAdvantage
-            if self.our_power.power > 10 and self.our_power.is_enough_for(
+            if self._our_power.power > 10 and self._our_power.is_enough_for(
                 self.enemy_predict_power, our_percentage=1 / 2
             ):
                 return Advantage.ClearAdvantage
-            if self.our_power.power > 5 and self.our_power.is_enough_for(
+            if self._our_power.power > 5 and self._our_power.is_enough_for(
                 self.enemy_predict_power, our_percentage=1 / 1.4
             ):
                 return Advantage.SmallAdvantage
             return Advantage.SlightAdvantage
 
-        if self.enemy_predict_power.is_enough_for(self.our_power, our_percentage=1 / 1.1):
+        if self.enemy_predict_power.is_enough_for(self._our_power, our_percentage=1 / 1.1):
             if self.enemy_predict_power.power > 20 and self.enemy_predict_power.is_enough_for(
-                self.our_power, our_percentage=1 / 3
+                self._our_power, our_percentage=1 / 3
             ):
                 return Advantage.OverwhelmingDisadvantage
             if self.enemy_predict_power.power > 10 and self.enemy_predict_power.is_enough_for(
-                self.our_power, our_percentage=1 / 2
+                self._our_power, our_percentage=1 / 2
             ):
                 return Advantage.ClearDisadvantage
             if self.enemy_predict_power.power > 5 and self.enemy_predict_power.is_enough_for(
-                self.our_power, our_percentage=1 / 1.4
+                self._our_power, our_percentage=1 / 1.4
             ):
                 return Advantage.SmallDisadvantage
             return Advantage.SlightDisadvantage
@@ -266,21 +274,21 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         return self._last_army
 
     def _calc_our_army_advantage(self) -> Advantage:
-        if self.our_power.is_enough_for(self.enemy_power, our_percentage=1 / 1.1):
-            if self.our_power.power > 20 and self.our_power.is_enough_for(self.enemy_power, our_percentage=1 / 3):
+        if self._our_power.is_enough_for(self._enemy_power, our_percentage=1 / 1.1):
+            if self._our_power.power > 20 and self._our_power.is_enough_for(self._enemy_power, our_percentage=1 / 3):
                 return Advantage.OverwhelmingAdvantage
-            if self.our_power.power > 10 and self.our_power.is_enough_for(self.enemy_power, our_percentage=1 / 2):
+            if self._our_power.power > 10 and self._our_power.is_enough_for(self._enemy_power, our_percentage=1 / 2):
                 return Advantage.ClearAdvantage
-            if self.our_power.power > 5 and self.our_power.is_enough_for(self.enemy_power, our_percentage=1 / 1.4):
+            if self._our_power.power > 5 and self._our_power.is_enough_for(self._enemy_power, our_percentage=1 / 1.4):
                 return Advantage.SmallAdvantage
             return Advantage.SlightAdvantage
 
-        if self.enemy_power.is_enough_for(self.our_power, our_percentage=1 / 1.1):
-            if self.enemy_power.power > 20 and self.enemy_power.is_enough_for(self.our_power, our_percentage=1 / 3):
+        if self._enemy_power.is_enough_for(self._our_power, our_percentage=1 / 1.1):
+            if self._enemy_power.power > 20 and self._enemy_power.is_enough_for(self._our_power, our_percentage=1 / 3):
                 return Advantage.OverwhelmingDisadvantage
-            if self.enemy_power.power > 10 and self.enemy_power.is_enough_for(self.our_power, our_percentage=1 / 2):
+            if self._enemy_power.power > 10 and self._enemy_power.is_enough_for(self._our_power, our_percentage=1 / 2):
                 return Advantage.ClearDisadvantage
-            if self.enemy_power.power > 5 and self.enemy_power.is_enough_for(self.our_power, our_percentage=1 / 1.4):
+            if self._enemy_power.power > 5 and self._enemy_power.is_enough_for(self._our_power, our_percentage=1 / 1.4):
                 return Advantage.SmallDisadvantage
             return Advantage.SlightDisadvantage
         return Advantage.Even
