@@ -4,8 +4,6 @@ from sharpy.general.zone import Zone
 from sharpy.plans import BuildOrder, SequentialList, StepBuildGas, Step
 from sharpy.plans.acts import ActBase, ActBuilding, DefensiveBuilding, DefensePosition
 from sc2 import UnitTypeId, AbilityId, Race
-from sc2.ids.buff_id import BuffId
-from sc2.unit import Unit
 from sharpy.plans.acts.zerg import MorphLair, ZergUnit, AutoOverLord
 from sharpy.plans.require import Supply
 from sharpy.plans.tactics import DistributeWorkers
@@ -60,7 +58,7 @@ class CounterTerranTie(BuildOrder):
         if self.ai.supply_used < 70:
             return False
 
-        main_zone: Zone = self.knowledge.enemy_main_zone
+        main_zone: Zone = self.zone_manager.enemy_main_zone
         if not main_zone.is_scouted_at_least_once:
             return False
 
