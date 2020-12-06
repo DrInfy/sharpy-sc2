@@ -194,7 +194,7 @@ class GridBuilding(ActBuilding):
             pylons = self.cache.own(UnitTypeId.PYLON).not_ready
             for point in self.building_solver.buildings3x3[::iterator]:
                 if not self.allow_wall:
-                    if point in self.building_solver.wall_buildings:
+                    if point in self.building_solver.wall3x3:
                         continue
                 if not buildings.closer_than(1, point) and matrix.covers(point):
                     return point

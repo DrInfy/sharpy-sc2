@@ -1,7 +1,7 @@
 from typing import List
 
 from sc2.position import Point2
-from sharpy.managers.extensions.build_detector import EnemyRushBuild
+from sharpy.managers.extensions.build_detector import EnemyRushBuild, BuildDetector
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.general.zone import Zone
@@ -11,6 +11,8 @@ from sc2.units import Units
 
 
 class WorkerCounterAttack(ActBase):
+    build_detector: BuildDetector
+
     def __init__(self):
         self.has_failed = False
         self.was_active = False
@@ -20,6 +22,7 @@ class WorkerCounterAttack(ActBase):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.gather_mf = self.solve_optimal_mineral_field()
+        self.build_detector = knowledge.get_required_manager(BuildDetector)
 
     def solve_optimal_mineral_field(self) -> Unit:
         main: Zone = self.zone_manager.own_main_zone
@@ -33,7 +36,7 @@ class WorkerCounterAttack(ActBase):
             return True  # only do counter attack once
         if self.was_active:
             return self.handle_counter()
-        if self.knowledge.build_detector.rush_build == EnemyRushBuild.WorkerRush:
+        if self.build_detector.rush_build == EnemyRushBuild.WorkerRush:
             # Wait until enemy is close enough
             if self.zone_manager.expansion_zones[0].known_enemy_power.power > 2 or self.ai.all_own_units.filter(
                 lambda u: u.shield_health_percentage < 0.75
@@ -47,10 +50,10 @@ class WorkerCounterAttack(ActBase):
 
     def start_counter(self) -> bool:
         worker_count = self.ai.supply_workers - 2
-        target = self.knowledge.enemy_main_zone.center_location
+        target = self.zone_manager.enemy_main_zone.center_location
         army = self.get_army(target, worker_count)
         self.combat.add_units(army)
-        self.combat.execute(self.knowledge.enemy_main_zone.center_location)
+        self.combat.execute(self.zone_manager.enemy_main_zone.center_location)
         self.roles.set_tasks(UnitTask.Attacking, army)
         return False
 

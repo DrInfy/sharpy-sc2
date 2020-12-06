@@ -248,7 +248,7 @@ class ZoneManager(ManagerBase, IZoneManager):
         for zone in self.zones.values():  # type: Zone
             zone.update()
 
-        if not self._zones_truly_sorted and self.knowledge.enemy_start_location_found:
+        if not self._zones_truly_sorted and self.enemy_start_location_found:
             self._zones_truly_sorted = True
             self._sort_expansion_zones()
         elif self.enemy_start_location != self.zone_sorted_by:
@@ -259,15 +259,15 @@ class ZoneManager(ManagerBase, IZoneManager):
         # Figure out all the zones the units are set in
         tags_in_zones: Dict[int, List[int]] = {}
 
-        for tag in self.cache.all_own.tags:
-            # Create empty arrays for easy code later
-            tags_in_zones[tag] = []
-
         for zone in self._expansion_zones:
             zone.our_units = self.cache.own_in_range(zone.center_location, zone.radius)
             for tag in zone.our_units.tags:
                 # Registering zone here
-                tags_in_zones[tag].append(zone.zone_index)
+                zone_list = tags_in_zones.get(tag, None)
+                if zone_list is None:
+                    zone_list = []
+                    tags_in_zones[tag] = zone_list
+                zone_list.append(zone.zone_index)
 
         for tag, zone_indices in tags_in_zones.items():
             if len(zone_indices) > 1:

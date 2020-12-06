@@ -35,8 +35,8 @@ class DataManager(ManagerBase, IDataManager):
         await super().start(knowledge)
         self.game_analyzer = knowledge.get_required_manager(IGameAnalyzer)
         self.build_detector = knowledge.get_manager(BuildDetector)
-        if self.build_detector:
-            self.print(f"No BuildDecector found, enemy build data cannot be saved", False, logging.WARNING)
+        if self.build_detector is None:
+            self.print(f"No BuildDetector found, enemy build data cannot be saved", False, logging.WARNING)
 
         self.enabled = self.ai.opponent_id is not None
         self.enable_write = self.knowledge.config["general"].getboolean("write_data")
