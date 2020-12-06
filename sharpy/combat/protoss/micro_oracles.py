@@ -22,7 +22,7 @@ class MicroOracles(MicroStep):
             return Action(target, False)
 
         if self.move_type == MoveType.Harass:
-            targets = self.cache.enemy(self.knowledge.enemy_worker_type)
+            targets = self.cache.enemy(self.unit_values.enemy_worker_type)
             if targets:
                 close_to_me = targets.closer_than(8, unit.position)
                 close_to_target = targets.closer_than(10, target_pos)
