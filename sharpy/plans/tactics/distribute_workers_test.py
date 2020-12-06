@@ -111,6 +111,7 @@ def mock_ai() -> BotAI:
 
 async def mock_knowledge(ai) -> Knowledge:
     knowledge = Knowledge()
+    ai.knowledge = knowledge
     knowledge.action_handler = mock.Mock()
     knowledge.version_manager = mock.Mock()
     # pf = mock.Mock()
