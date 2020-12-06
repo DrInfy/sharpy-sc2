@@ -256,5 +256,5 @@ class ActBase(Component, ABC):
             random_alternative=random_alternative,
             placement_step=placement_step,
         )
-        if pos:
+        if pos and build_worker:
             build_worker.build(type_id, pos)
