@@ -27,6 +27,7 @@ class ActionIssued:
             # 2nd frame or 2nd iteration after casting is ok to remove the reference to prevent duplicates
             self.frame_delay = 1
             self.iteration_delay = 1
+
         self.frame: int = knowledge.ai.state.game_loop
         self.iteration: int = knowledge.iteration
         self.tag: int = action.unit.tag
@@ -67,12 +68,14 @@ class ActionManager(ManagerBase):
             AbilityId.HALLUCINATION_VOIDRAY,
             AbilityId.HALLUCINATION_WARPPRISM,
             AbilityId.HALLUCINATION_ZEALOT,
+            AbilityId.SPAWNCHANGELING_SPAWNCHANGELING,
         }
 
         for train_dict in TRAIN_INFO.values():
-            for key, value in train_dict.items():
-                if key == "ability" and isinstance(value, AbilityId):
-                    self.blocks_target_self.add(value)
+            for unittype_dict in train_dict.values():
+                for key, value in unittype_dict.items():
+                    if key == "ability" and isinstance(value, AbilityId):
+                        self.blocks_target_self.add(value)
 
         self.blocks_targets = {
             # Nexus
@@ -87,6 +90,8 @@ class ActionManager(ManagerBase):
             AbilityId.BUILD_CREEPTUMOR_QUEEN,
             AbilityId.EFFECT_INJECTLARVA,
             AbilityId.TRANSFUSION_TRANSFUSION,
+            # OVERSEER
+            AbilityId.CONTAMINATE_CONTAMINATE,
             # Raven
             AbilityId.BUILDAUTOTURRET_AUTOTURRET,
             AbilityId.EFFECT_ANTIARMORMISSILE,
@@ -106,6 +111,13 @@ class ActionManager(ManagerBase):
             AbilityId.INFESTEDTERRANS_INFESTEDTERRANS,
             AbilityId.FUNGALGROWTH_FUNGALGROWTH,
             AbilityId.NEURALPARASITE_NEURALPARASITE,
+            # Mothership
+            AbilityId.EFFECT_MASSRECALL_STRATEGICRECALL,
+            AbilityId.EFFECT_TIMEWARP,
+            # Oracle
+            AbilityId.ORACLEREVELATION_ORACLEREVELATION,
+            AbilityId.BEHAVIOR_PULSARBEAMON,
+            AbilityId.BUILD_STASISTRAP,
             # Sentry
             AbilityId.FORCEFIELD_FORCEFIELD,
             # Rest of sentry abilities have not target
@@ -120,20 +132,23 @@ class ActionManager(ManagerBase):
             AbilityId.FORCEFIELD_FORCEFIELD: 1.5,
             AbilityId.FUNGALGROWTH_FUNGALGROWTH: 3,
             AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD: 3,
+            AbilityId.EFFECT_TIMEWARP: 2,
         }
         super().__init__()
 
     async def update(self):
         self.block_list.clear()
 
-        for i in range(0, len(self.actions) - 1)[::-1]:
+        # Loop in reverse order in order to remove old actions properly
+        for i in range(0, len(self.actions))[::-1]:
             action = self.actions[i]
             # TODO: check if the unit in question has received the specified action.
             if action.is_old:
                 self.actions.pop(i)
             else:
-                action_list = self.block_list.get(action.tag, [])
-                if len(action_list) == 0:
+                action_list = self.block_list.get(action.tag, None)
+                if action_list is None:
+                    action_list = []
                     self.block_list[action.tag] = action_list
                 action_list.append(action)
 
@@ -146,7 +161,13 @@ class ActionManager(ManagerBase):
         return False
 
     def action_made(self, action: UnitCommand):
-        self.actions.append(ActionIssued(self.knowledge, action))
+        issued_action = ActionIssued(self.knowledge, action)
+        self.actions.append(issued_action)
+        action_list = self.block_list.get(action.unit.tag, None)
+        if action_list is None:
+            action_list = []
+            self.block_list[action.unit.tag] = action_list
+        action_list.append(issued_action)
 
     def allow_action(self, unit: Unit, ability_id: AbilityId, target: Optional[Union[Unit, Point2]]) -> bool:
         """
@@ -154,9 +175,9 @@ class ActionManager(ManagerBase):
 
         @return: True if the action is allowed
         """
-        if not self.ai.realtime and self.ai.client.game_step > 1:
-            # Save some cycles, duplicate action protection is not required in step mode with step size 2 or more
-            return True
+        # if not self.ai.realtime and self.ai.client.game_step > 1:
+        #     # Save some cycles, duplicate action protection is not required in step mode with step size 2 or more
+        #     return True
 
         if target is None:
             # Ability targets nothing, or the unit itself

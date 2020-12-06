@@ -199,6 +199,7 @@ class SkeletonBot(BotAI, ABC):
                 self.supply_used += required_supply
                 self.supply_left -= required_supply
 
-        self.actions.append(action)
-        self.unit_tags_received_action.add(action.unit.tag)
+        if not self.knowledge.started or self.knowledge.action_handler.attempt_action(action):
+            self.actions.append(action)
+            self.unit_tags_received_action.add(action.unit.tag)
         return True

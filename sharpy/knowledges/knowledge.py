@@ -39,7 +39,7 @@ class Knowledge:
         self.ai: "SkeletonBot" = None
         self.config: ConfigParser = None
         self._debug: bool = False
-
+        self.started = False
         self.action_handler: ActionManager = ActionManager()
         self.version_manager: VersionManager = VersionManager()
         self.managers: List[ManagerBase] = []
@@ -146,6 +146,8 @@ class Knowledge:
         for manager in self.managers:
             if isinstance(manager, IPostStart):
                 await manager.post_start()
+
+        self.started = True
 
     async def update(self, iteration: int):
         self.iteration = iteration
