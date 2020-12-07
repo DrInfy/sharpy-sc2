@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from sharpy.interfaces import IGatherPointSolver, IZoneManager, IEnemyUnitsManager
+from sharpy.interfaces import IGatherPointSolver, IZoneManager, IEnemyUnitsManager, IGameAnalyzer
 from sharpy.managers.extensions import GameAnalyzer
 from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions.game_states.advantage import (
@@ -47,7 +47,8 @@ class PlanZoneAttack(ActBase):
     gather_point_solver: IGatherPointSolver
     zone_manager: IZoneManager
     enemy_units_manager: IEnemyUnitsManager
-    game_analyzer: Optional[GameAnalyzer]
+    game_analyzer: Optional[IGameAnalyzer]
+    pather: "PathingManager"
 
     DISTANCE_TO_INCLUDE = 18
     DISTANCE2_TO_INCLUDE = 18 * 18
@@ -66,8 +67,11 @@ class PlanZoneAttack(ActBase):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
-        self.pather: PathingManager = self.knowledge.pathing_manager
-        self.game_analyzer: GameAnalyzer = self.knowledge.get_manager(GameAnalyzer)
+        self.pather = self.knowledge.pathing_manager
+        self.game_analyzer= self.knowledge.get_manager(IGameAnalyzer)
+        if self.game_analyzer is None:
+            self.print(f"IGameAnalyzer not found, turning attack_on_advantage off.")
+            self.attack_on_advantage = False
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
         self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)

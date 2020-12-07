@@ -115,7 +115,7 @@ class ActBase(Component, ABC):
         percentage = 0
 
         if pre_type == UnitTypeId.SUPPLYDEPOT:
-            types = [UnitTypeId.SUPPLYDEPOTDROP, UnitTypeId.SUPPLYDEPOTDROP, UnitTypeId.SUPPLYDEPOTLOWERED]
+            types = [UnitTypeId.SUPPLYDEPOT, UnitTypeId.SUPPLYDEPOTDROP, UnitTypeId.SUPPLYDEPOTLOWERED]
         else:
             types = pre_type
 
