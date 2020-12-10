@@ -295,7 +295,7 @@ class GridBuilding(ActBuilding):
         if self.unit_type == UnitTypeId.TEMPLARARCHIVE:
             return self.building_progress(UnitTypeId.TWILIGHTCOUNCIL)
 
-        if self.unit_type == UnitTypeId.TEMPLARARCHIVE:
+        if self.unit_type == UnitTypeId.DARKSHRINE:
             return self.building_progress(UnitTypeId.TWILIGHTCOUNCIL)
 
         if self.unit_type == UnitTypeId.STARGATE:
