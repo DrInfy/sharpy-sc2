@@ -69,7 +69,8 @@ class SpreadCreep(ActBase):
                 queen.energy >= SPREAD_CREEP_ENERGY * 2 or self.cache.own(UnitTypeId.LARVA).amount > 4
             ):
                 position = self.get_next_plant_position(queen)
-                queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position)
+                if position:
+                    queen(AbilityId.BUILD_CREEPTUMOR_QUEEN, position)
 
     def get_next_plant_position(self, queen: Unit) -> Optional[Point2]:
         pos = queen.position
