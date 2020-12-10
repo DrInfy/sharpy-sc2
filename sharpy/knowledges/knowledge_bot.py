@@ -70,6 +70,7 @@ class KnowledgeBot(SkeletonBot, ABC):
         managers.append(ActManager(self.create_plan))
         self.knowledge.pre_start(self, managers)
         await self.knowledge.start()
+        self._log_start()
 
     def configure_managers(self) -> Optional[List["ManagerBase"]]:
         return []
@@ -80,3 +81,11 @@ class KnowledgeBot(SkeletonBot, ABC):
 
     async def pre_step_execute(self):
         pass
+
+    def _log_start(self):
+        def log(message):
+            self.knowledge.print(message, tag="Start", stats=False)
+
+        log(f"My race: {self.knowledge.my_race.name}")
+        log(f"Opponent race: {self.knowledge.enemy_race.name}")
+        log(f"OpponentId: {self.opponent_id}")

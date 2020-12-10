@@ -39,6 +39,8 @@ class Knowledge:
         self.ai: "SkeletonBot" = None
         self.config: ConfigParser = None
         self._debug: bool = False
+        self.is_chat_allowed: bool = False
+
         self.started = False
         self.action_handler: ActionManager = ActionManager()
         self.version_manager: VersionManager = VersionManager()
@@ -83,6 +85,8 @@ class Knowledge:
         self.ai: "SkeletonBot" = ai
         self._set_managers(additional_managers)
         self.config: ConfigParser = self.ai.config
+        self.is_chat_allowed = self.config["general"].getboolean("chat")
+        self._debug = self.config["general"].getboolean("debug")
         self.my_worker_type = UnitValue.get_worker_type(self.my_race)
 
     def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
