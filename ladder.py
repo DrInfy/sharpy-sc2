@@ -61,9 +61,8 @@ def run_ladder_game(bot):
     if not opponent:
         opponent = "unknown"
 
+    ensure_directories()
     folder = os.path.join("data", "games")
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
 
     time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
     file_name = f"{opponent}_{time}"
@@ -101,6 +100,16 @@ async def join_ladder_game(
     return result
 
 
+def ensure_directories():
+    folder = os.path.join("data")
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+
+    folder = os.path.join("data", "games")
+    if not os.path.isdir(folder):
+        os.mkdir(folder)
+
+
 def stand_alone_game(bot):
     """
     Play a game against the ladder build or test the bot against ingame ai
@@ -121,13 +130,8 @@ def stand_alone_game(bot):
 
     map_name = random.choice(maps)
 
-    folder = os.path.join("data")
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
-
     folder = os.path.join("data", "games")
-    if not os.path.isdir(folder):
-        os.mkdir(folder)
+
     time = datetime.now().strftime("%Y-%m-%d %H_%M_%S")
 
     if input_human and input_human.lower() == "y":
