@@ -6,6 +6,10 @@ class ZoneArea(enum.Enum):
     OwnMainZone = 1
     OwnNaturalZone = 2
     OwnThirdZone = 3
-    EnemyMainZone = 4
-    EnemyNaturalZone = 5
-    EnemyThirdZone = 6
+    OwnFourthZone = 4
+    OwnFifthZone = 5
+    EnemyMainZone = 6
+    EnemyNaturalZone = 7
+    EnemyThirdZone = 8
+    EnemyFourthZone = 9
+    EnemyFifthZone = 10
