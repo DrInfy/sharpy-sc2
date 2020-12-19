@@ -35,6 +35,7 @@ class DistributeWorkers(ActBase):
         max_gas: Optional[int] = None,
         aggressive_gas_fill: bool = True,
         evacuate_zones: bool = True,
+        leave_builders_alone: bool = True,
     ):
         super().__init__()
         assert min_gas is None or isinstance(min_gas, int)
@@ -43,6 +44,7 @@ class DistributeWorkers(ActBase):
         self.min_gas = min_gas
         self.max_gas = max_gas
         self.aggressive_gas_fill = aggressive_gas_fill
+        self.leave_builders_alone = leave_builders_alone
         # evacuate
         self.evacuate_zones = evacuate_zones
         self.active_gas_workers = 0
@@ -70,7 +72,8 @@ class DistributeWorkers(ActBase):
             + self.roles.all_from_task(UnitTask.Gathering).idle
         ):  # type: Unit
             # Re-assign idle workers
-            await self.set_work(worker)
+            if not self.leave_builders_alone or not worker.is_using_ability(UnitValue.build_abilities):
+                await self.set_work(worker)
 
         # Balance workers in bases that have to many
         work_status: Optional[WorkStatus] = None
