@@ -1,11 +1,14 @@
 from math import floor
 from typing import Tuple, List
 
+from sharpy.managers.extensions import ChatManager
 from sharpy.plans.acts import ActBase
 from sc2 import UnitTypeId
 
 
 class WarnBuildMacro(ActBase):
+    chat_manager: ChatManager
+
     def __init__(
         self, building_timings: List[Tuple[UnitTypeId, int, float]], unit_timings: List[Tuple[UnitTypeId, int, float]]
     ):
@@ -13,6 +16,10 @@ class WarnBuildMacro(ActBase):
 
         self.building_timings = building_timings
         self.unit_timings = unit_timings
+
+    async def start(self, knowledge: "Knowledge"):
+        await super().start(knowledge)
+        self.chat_manager = knowledge.get_required_manager(ChatManager)
 
     async def execute(self) -> bool:
         if not self.debug:
@@ -35,7 +42,7 @@ class WarnBuildMacro(ActBase):
                 text = (
                     f"#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}"
                 )
-                await self.knowledge.chat_manager.chat_taunt_once(str(item), lambda: text)
+                await self.chat_manager.chat_taunt_once(str(item), lambda: text)
 
         for item in self.unit_timings:
             type_id = item[0]
@@ -46,7 +53,7 @@ class WarnBuildMacro(ActBase):
                 text = (
                     f"#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}"
                 )
-                await self.knowledge.chat_manager.chat_taunt_once(str(item), lambda: text)
+                await self.chat_manager.chat_taunt_once(str(item), lambda: text)
         return True
 
     def time_formatted(self, t: float) -> str:
