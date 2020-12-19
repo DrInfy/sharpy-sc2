@@ -1,6 +1,7 @@
 from sc2 import UnitTypeId, AbilityId
 from sc2.unit import Unit
 from sharpy.interfaces import IGatherPointSolver, IZoneManager
+from sharpy.managers.core import PathingManager
 
 from sharpy.managers.core.roles import UnitTask
 from sc2.units import Units
@@ -28,6 +29,7 @@ class WarpUnit(ActBase):
         await super().start(knowledge)
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.zone_manager = knowledge.get_required_manager(IZoneManager)
+        self.pather = knowledge.get_manager(PathingManager)
 
     @property
     def is_done(self) -> bool:
@@ -86,7 +88,8 @@ class WarpUnit(ActBase):
                         # return ActionResult.CantFindPlacementLocation
                         self.knowledge.print("can't find place to warp in")
                         return False
-                    warpgate.warp_in(unit_type, placement)
+                    if not self.pather or self.pather.map.is_connected(placement):
+                        warpgate.warp_in(unit_type, placement)
 
         elif self.priority:
             unit = self.ai._game_data.units[unit_type.value]
