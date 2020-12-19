@@ -31,6 +31,13 @@ class Sc2Map:
         )
 
     @property
+    def map(self) -> Map:
+        """
+        In case you need to call the rust object directly.
+        """
+        return self._map
+
+    @property
     def overlord_spots(self) -> List[Tuple[float, float]]:
         if self._overlord_spots is not None:
             return self._overlord_spots
@@ -46,6 +53,35 @@ class Sc2Map:
 
     def reset(self):
         self._map.reset()
+
+    def calculate_zones(self, sorted_base_locations: List[Tuple[float, float]]):
+        """
+        Use this on initialization to calculate zones.
+        Zones start from 1 onwards.
+        Zone 0 is empty zone.
+        """
+        self._map.calculate_zones(sorted_base_locations)
+
+    def get_zone(self, position: Tuple[float, float]) -> int:
+        """
+        Zones start from 1 onwards.
+        Zone 0 is empty zone.
+        """
+        return self._map.get_zone(position)
+
+    def calculate_connections(self, start: Tuple[float, float]):
+        """
+        Calculates ground connections to a single point in the map.
+        Use `is_connected` the check if a location is connected.
+        """
+        self._map.calculate_connections(start)
+
+    def is_connected(self, start: Tuple[float, float]) -> bool:
+        """
+        Check if a point is connected to earlier start position used in `calculate_connections`
+        If `calculate_connections` was not run, returns False.
+        """
+        return self._map.is_connected(start)
 
     def normalize_influence(self, value: int):
         self._map.normalize_influence(value)
@@ -102,8 +138,23 @@ class Sc2Map:
     def add_both_influence(self, points: List["sc.Point2"], influence: float, full_range: float, fade_max_range: float):
         self._map.add_influence_fading(MapsType.Both, points, influence, full_range, fade_max_range)
 
+    def current_influence(self, map_type: MapType, position: Tuple[float, float]):
+        """
+        Finds the current influence in the position
+        """
+        return self._map.current_influence(map_type, position)
+
+    def add_influence_without_zones(self, zones: List[int], value: float):
+        """
+        Add specified amount of influence to areas that not within specified zones.
+        This can be useful in making sure units do not follow enemies outside main.
+        Zones start from 1 onwards.
+        Zone 0 is empty zone.
+        """
+        self._map.add_influence_without_zones(zones, int(value))
+
     def find_path(
-        self, map_type: MapType, start: (float, float), end: (float, float), large: bool = False
+        self, map_type: MapType, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
     ) -> Tuple[List[Tuple[int, int]], float]:
         """
         Finds a path ignoring influence.
@@ -119,8 +170,8 @@ class Sc2Map:
         return self._map.find_path(map_type, start, end, self.heuristic_accuracy)
 
     def find_path_influence(
-        self, map_type: MapType, start: (float, float), end: (float, float), large: bool = False
-    ) -> (List[Tuple[int, int]], float):
+        self, map_type: MapType, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
+    ) -> Tuple[List[Tuple[int, int]], float]:
         """
         Finds a path that takes influence into account
 
@@ -135,18 +186,18 @@ class Sc2Map:
         return self._map.find_path_influence(map_type, start, end, self.heuristic_accuracy)
 
     def safest_spot(
-        self, map_type: MapType, destination_center: (float, float), walk_distance: float
-    ) -> (Tuple[int, int], float):
+        self, map_type: MapType, destination_center: Tuple[float, float], walk_distance: float
+    ) -> Tuple[Tuple[int, int], float]:
         return self._map.lowest_influence_walk(map_type, destination_center, walk_distance)
 
     def lowest_influence_in_grid(
-        self, map_type: MapType, destination_center: (float, float), radius: int
-    ) -> (Tuple[int, int], float):
+        self, map_type: MapType, destination_center: Tuple[float, float], radius: int
+    ) -> Tuple[Tuple[int, int], float]:
         return self._map.lowest_influence(map_type, destination_center, radius)
 
     def find_low_inside_walk(
-        self, map_type: MapType, start: (float, float), target: (float, float), distance: Union[int, float]
-    ) -> (Tuple[float, float], float):
+        self, map_type: MapType, start: Tuple[float, float], target: Tuple[float, float], distance: Union[int, float]
+    ) -> Tuple[Tuple[int, int], float]:
         """
         Finds a compromise where low influence matches with close position to the start position.
 
@@ -189,7 +240,7 @@ class Sc2Map:
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
-    
+
     def plot_reaper_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
         image = np.array(self._map.reaper_pathing, dtype=np.uint8)
 
@@ -220,8 +271,14 @@ class Sc2Map:
         # image = np.multiply(image, 42)
         self.plot_image(image, image_name, resize)
 
+    def plot_zones(self, image_name: str = "map", resize: int = 4):
+        image = np.array(self._map.draw_zones(), dtype=np.uint8)
+        # image = np.multiply(image, 42)
+        self.plot_image(image, image_name, resize)
+
     def plot_image(self, image, image_name: str = "map", resize: int = 4):
         import cv2
+
         image = np.rot90(image, 1)
 
         resized = cv2.resize(image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)

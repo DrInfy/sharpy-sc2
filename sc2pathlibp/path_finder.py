@@ -68,7 +68,7 @@ class PathFinder:
             self._path_find.remove_block(center, size)
 
     def find_path(
-        self, start: (float, float), end: (float, float), large: bool = False
+        self, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
     ) -> Tuple[List[Tuple[int, int]], float]:
         """
         Finds a path ignoring influence.
@@ -85,7 +85,7 @@ class PathFinder:
         return self._path_find.find_path(start_int, end_int, self.heuristic_accuracy)
 
     def find_path_influence(
-        self, start: (float, float), end: (float, float), large: bool = False
+        self, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
     ) -> (List[Tuple[int, int]], float):
         """
         Finds a path that takes influence into account
@@ -101,11 +101,11 @@ class PathFinder:
             return self._path_find.find_path_influence_large(start_int, end_int, self.heuristic_accuracy)
         return self._path_find.find_path_influence(start_int, end_int, self.heuristic_accuracy)
 
-    def safest_spot(self, destination_center: (float, float), walk_distance: float) -> (Tuple[int, int], float):
+    def safest_spot(self, destination_center: Tuple[float, float], walk_distance: float) -> Tuple[Tuple[int, int], float]:
         destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence_walk(destination_int, walk_distance)
 
-    def lowest_influence_in_grid(self, destination_center: (float, float), radius: int) -> (Tuple[int, int], float):
+    def lowest_influence_in_grid(self, destination_center: Tuple[float, float], radius: int) -> Tuple[Tuple[int, int], float]:
         destination_int = (round(destination_center[0]), round(destination_center[1]))
         return self._path_find.lowest_influence(destination_int, radius)
 
@@ -130,7 +130,7 @@ class PathFinder:
             self._path_find.add_walk_influence(list, value, distance)
 
     def find_low_inside_walk(
-        self, start: (float, float), target: (float, float), distance: Union[int, float]
+        self, start: Tuple[float, float], target: Tuple[float, float], distance: Union[int, float]
     ) -> (Tuple[float, float], float):
         """
         Finds a compromise where low influence matches with close position to the start position.

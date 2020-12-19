@@ -9,6 +9,7 @@ from sharpy.general.path import Path
 from sharpy.interfaces import IZoneManager
 from sc2.game_info import Ramp
 from sc2.units import Units
+from sharpy.managers.core.pathing_manager import PathingManager
 
 from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.general.zone import Zone
@@ -41,6 +42,16 @@ class ZoneManager(ManagerBase, IZoneManager):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.init_zones()
+        self.set_pathing_zones()
+
+    def set_pathing_zones(self):
+        pather = self.knowledge.get_manager(PathingManager)
+
+        if pather:
+            expansion_locations_list = []
+            for zone in self.zone_manager.expansion_zones:
+                expansion_locations_list.append(zone.center_location)
+            pather.map.calculate_zones(expansion_locations_list)
 
     def init_zones(self):
         """Add expansion locations as zones."""
