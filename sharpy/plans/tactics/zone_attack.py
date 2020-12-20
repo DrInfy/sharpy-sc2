@@ -68,7 +68,7 @@ class PlanZoneAttack(ActBase):
         await super().start(knowledge)
         self.unit_values = knowledge.unit_values
         self.pather = self.knowledge.pathing_manager
-        self.game_analyzer= self.knowledge.get_manager(IGameAnalyzer)
+        self.game_analyzer = self.knowledge.get_manager(IGameAnalyzer)
         if self.game_analyzer is None:
             self.print(f"IGameAnalyzer not found, turning attack_on_advantage off.")
             self.attack_on_advantage = False
