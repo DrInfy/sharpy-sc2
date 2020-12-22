@@ -116,7 +116,7 @@ async def mock_knowledge(ai) -> Knowledge:
     knowledge.version_manager = mock.Mock()
     # pf = mock.Mock()
     knowledge.pathing_manager = PathingManager()
-
+    knowledge.pathing_manager.map = mock.Mock()
     knowledge.action_handler.start = fake
     knowledge.version_manager.start = fake
     knowledge.pathing_manager.start = fake
