@@ -1,13 +1,19 @@
 from math import floor
 from typing import List
 
+from sharpy.interfaces import IEnemyUnitsManager, ILostUnitsManager
 from sharpy.unit_count import UnitCount
 from sc2 import Race, UnitTypeId
 
 
 class CompositionGuesser:
-    def __init__(self, knowledge: "Knowledge"):
+    def __init__(
+        self, knowledge: "Knowledge", enemy_units_manager: IEnemyUnitsManager, lost_units_manager: ILostUnitsManager
+    ):
         self.knowledge = knowledge
+        self.enemy_units_manager = enemy_units_manager
+        self.lost_units_manager = lost_units_manager
+        self.ai = knowledge.ai
         self.unit_values: "UnitValue" = knowledge.unit_values
         self.left_minerals = 0
         self.left_gas = 0
@@ -39,7 +45,7 @@ class CompositionGuesser:
                 self.add_units(UnitTypeId.ROACH, 10, additional_guess)
             if self.ai.enemy_structures(UnitTypeId.SPAWNINGPOOL).exists:
                 self.add_units(UnitTypeId.ZERGLING, 4, additional_guess)
-                if self.knowledge.lost_units_manager.enemy_lost_type(UnitTypeId.ZERGLING) > 10:
+                if self.lost_units_manager.enemy_lost_type(UnitTypeId.ZERGLING) > 10:
                     self.add_units(UnitTypeId.ZERGLING, 20, additional_guess)
 
         elif self.knowledge.enemy_race == Race.Protoss:
@@ -75,7 +81,7 @@ class CompositionGuesser:
             if len(additional_guess):
                 self.add_units(UnitTypeId.STALKER, 1, additional_guess)
 
-        elif self.knowledge.enemy_race == Race.Terran:
+        elif self.ai.enemy_race == Race.Terran:
             self.add_units(UnitTypeId.MARAUDER, 1, additional_guess)
             if self.ai.enemy_structures(UnitTypeId.FUSIONCORE).exists:
                 self.add_units(UnitTypeId.BATTLECRUISER, 3, additional_guess)
@@ -98,9 +104,7 @@ class CompositionGuesser:
         return additional_guess
 
     def history(self, type_id: UnitTypeId) -> int:
-        return self.knowledge.enemy_units_manager.unit_count(
-            type_id
-        ) + self.knowledge.lost_units_manager.enemy_lost_type(type_id)
+        return self.enemy_units_manager.unit_count(type_id) + self.lost_units_manager.enemy_lost_type(type_id)
 
     def add_units(self, type_id, count, additional_guess):
         mineral_price = self.unit_values.minerals(type_id)

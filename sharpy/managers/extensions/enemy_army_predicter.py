@@ -215,7 +215,7 @@ class EnemyArmyPredicter(ManagerBase):
         if self.knowledge.enemy_race == Race.Random:
             return  # let's wait until we know the actual race.
 
-        guesser = CompositionGuesser(self.knowledge)
+        guesser = CompositionGuesser(self.knowledge, self.enemy_units_manager, self.lost_units_manager)
         guesser.left_minerals = self.predicted_enemy_free_minerals
         guesser.left_gas = self.predicted_enemy_free_gas
 

@@ -77,6 +77,7 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
         self.vespene_left.append(self.ai.vespene)
 
     async def update(self):
+        await self.enemy_predicter.update()
         self.resource_updater.execute()
 
         self._our_power.clear()
