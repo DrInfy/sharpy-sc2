@@ -23,7 +23,9 @@ class AutoOverLord(ZergUnit):
         growth_speed = self.income_calculator.mineral_income / 50
 
         build_time = 18  # overlord build time
-        predicted_supply = min(200, self.ai.supply_used + build_time * growth_speed)
+        larva = self.cache.own(UnitTypeId.LARVA).amount
+        bonus = min(larva * 2, int((self.ai.minerals - 300) / 50))
+        predicted_supply = min(200, self.ai.supply_used + build_time * growth_speed + bonus)
         current_overlords = self.cache.own(UnitTypeId.OVERLORD).ready.amount
 
         if self.ai.supply_cap == 200:
