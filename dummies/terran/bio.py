@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sharpy.interfaces import IZoneManager
-from sharpy.managers.extensions import BuildDetector
+from sharpy.managers.extensions import BuildDetector, ChatManager
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
 from sharpy.plans.require import *
@@ -206,7 +206,7 @@ class BioBot(KnowledgeBot):
         self.attack = PlanZoneAttack(26)
 
     def configure_managers(self) -> Optional[List["ManagerBase"]]:
-        return [BuildDetector()]
+        return [BuildDetector(), ChatManager()]
 
     async def create_plan(self) -> BuildOrder:
         self.knowledge.data_manager.set_build("bio")
