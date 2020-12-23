@@ -1,7 +1,7 @@
 import enum
 
 
-class AirArmy(enum.Enum):
+class AirArmy(enum.IntEnum):
     NoAir = 0
     SomeAir = 1
     Mixed = 2

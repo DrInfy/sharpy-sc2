@@ -1,7 +1,7 @@
 import enum
 
 
-class Advantage(enum.Enum):
+class Advantage(enum.IntEnum):
     Even = 0
     SlightAdvantage = 1
     SmallAdvantage = 2
