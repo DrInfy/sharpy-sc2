@@ -35,6 +35,8 @@ class WarnBuildMacro(ActBase):
                 units = self.cache.own(types)
             elif type_id == UnitTypeId.COMMANDCENTER:
                 units = self.ai.townhalls
+            elif type_id == UnitTypeId.GATEWAY:
+                units = self.cache.own([type_id, UnitTypeId.WARPGATE])
             else:
                 units = self.cache.own(type_id)
 
@@ -42,7 +44,7 @@ class WarnBuildMacro(ActBase):
                 text = (
                     f"#{count} {type_id.name} started:{self.ai.time_formatted} target was {self.time_formatted(timing)}"
                 )
-                await self.chat_manager.chat_taunt_once(str(item), lambda: text)
+                await self.chat_manager.chat_taunt_once(str(item[0]) + str(item[1]), lambda: text)
 
         for item in self.unit_timings:
             type_id = item[0]
