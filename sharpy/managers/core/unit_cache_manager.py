@@ -1,6 +1,7 @@
 import numpy as np
-from typing import Dict, Union, Optional, List, Iterable
+from typing import Dict, Union, Optional, List, Iterable, Tuple
 
+from sc2.ids.effect_id import EffectId
 from scipy.spatial.ckdtree import cKDTree
 
 from sharpy.interfaces import IUnitCache
@@ -35,6 +36,8 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.own_tree: Optional[cKDTree] = None
         self.enemy_tree: Optional[cKDTree] = None
         self.force_fields: List[EffectData] = []
+
+        self._effects_cache: Dict[Union[str, EffectId], List[Tuple[Point2, EffectData]]] = {}
 
         self.own_numpy_vectors: List[np.ndarray] = []
         self.enemy_numpy_vectors: List[np.ndarray] = []
@@ -78,6 +81,11 @@ class UnitCacheManager(ManagerBase, IUnitCache):
             if unit:
                 units.append(unit)
         return units
+
+    def effects(self, id: Union[UnitTypeId, EffectId]) -> List[Tuple[Point2, EffectData]]:
+        if isinstance(id, UnitTypeId):
+            return self._effects_cache[FakeEffectID.get(id.value)]
+        return self._effects_cache.get(id, [])
 
     def own(self, type_id: Union[UnitTypeId, Iterable[UnitTypeId]]) -> Units:
         """Returns all own units of the specified type(s)."""
@@ -140,6 +148,7 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self._own_unit_cache.clear()
         self._enemy_unit_cache.clear()
         self.force_fields.clear()
+        self._effects_cache.clear()
 
         self.own_numpy_vectors = []
         self.enemy_numpy_vectors = []
@@ -177,6 +186,11 @@ class UnitCacheManager(ManagerBase, IUnitCache):
             self.enemy_tree = None
 
         for effect in self.ai.state.effects:
+            effects = self._effects_cache.get(effect.id, [])
+            if len(effects) == 0:
+                self._effects_cache[effect.id] = effects
+            effects.append((Point2.center(effect.positions), effect))
+
             if effect.id == FakeEffectID.get(UnitTypeId.FORCEFIELD.value):
                 self.force_fields.append(effect)
 

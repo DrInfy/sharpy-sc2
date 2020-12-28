@@ -1,5 +1,9 @@
 from abc import abstractmethod, ABC
-from typing import Optional, List, Union, Iterable, Dict
+from typing import Optional, List, Union, Iterable, Dict, Tuple
+
+from sc2.ids.effect_id import EffectId
+
+from sc2.game_state import EffectData
 
 from sc2 import UnitTypeId
 from sc2.position import Point2
@@ -52,6 +56,10 @@ class IUnitCache(ABC):
 
     @abstractmethod
     def by_tags(self, tags: List[int]) -> Units:
+        pass
+
+    @abstractmethod
+    def effects(self, id: Union[UnitTypeId, EffectId]) -> List[Tuple[Point2, EffectData]]:
         pass
 
     @abstractmethod
