@@ -10,7 +10,7 @@ class ChatManager(ManagerBase):
         self.debug_builds: Optional[str] = None
         self.debug_build_selection: Optional[str] = None
 
-    async def chat_taunt_once(self, key: str, message: Callable[[], str], log = True):
+    async def chat_taunt_once(self, key: str, message: Callable[[], str], log=True):
         # self.taunted.add(taunt_type)
         if key in self.taunted:
             return True
