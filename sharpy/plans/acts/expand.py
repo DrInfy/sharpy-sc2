@@ -93,6 +93,9 @@ class Expand(ActBase):
         worker = self.get_worker_builder(expand_here.center_location, self.builder_tag)
         pending_count = self.pending_build(self.townhall_type)
 
+        if worker is None:
+            return False
+
         # Inform our logic that we're looking to expand
         self.gather_manager.set_expanding_to(expand_here.center_location)
 
