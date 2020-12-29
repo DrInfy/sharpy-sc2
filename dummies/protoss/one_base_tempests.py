@@ -13,7 +13,7 @@ class OneBaseTempests(KnowledgeBot):
         super().__init__("One Base Tempest")
 
     async def create_plan(self) -> BuildOrder:
-        self.knowledge.building_solver.wall_type = WallType.ProtossMainZerg
+        self.building_solver.wall_type = WallType.ProtossMainZerg
         attack = PlanZoneAttack(4)
         return BuildOrder(
             [

@@ -186,7 +186,7 @@ class DummyZergAttack(ActBase):
         else:
             target = self.ai.enemy_start_locations[0]
             last_scout = 0
-            for zone in self.knowledge.enemy_expansion_zones:
+            for zone in self.zone_manager.enemy_expansion_zones:
                 if zone.is_enemys:
                     target = zone.center_location
                     break

@@ -68,7 +68,7 @@ class MacroZergV2(KnowledgeBot):
         super().__init__("Macro zerg")
 
     def configure_managers(self) -> Optional[List[ManagerBase]]:
-        self.knowledge.combat.default_rules.regroup = False
+        self.combat.default_rules.regroup = False
         return None
 
     async def create_plan(self) -> BuildOrder:
