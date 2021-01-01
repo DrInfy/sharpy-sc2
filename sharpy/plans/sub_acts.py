@@ -1,5 +1,6 @@
 from typing import List, Union, Callable
 
+from sc2 import BotAI
 from sharpy.plans.build_step import Step
 from sharpy.plans.acts import ActBase
 
@@ -14,10 +15,8 @@ if TYPE_CHECKING:
 class SubActs(ActBase):
     def __init__(
         self,
-        orders: Union[
-            Union[ActBase, Callable[["Knowledge"], bool]], List[Union[ActBase, Callable[["Knowledge"], bool]]]
-        ],
-        *argv: Union[ActBase, Callable[["Knowledge"], bool]],
+        orders: Union[Union[ActBase, Callable[["BotAI"], bool]], List[Union[ActBase, Callable[["BotAI"], bool]]]],
+        *argv: Union[ActBase, Callable[["BotAI"], bool]],
     ):
 
         is_act = isinstance(orders, ActBase) or isinstance(orders, Callable)

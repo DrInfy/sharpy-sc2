@@ -1,6 +1,7 @@
 from typing import Optional, Callable, Union, List
 
 # Singular step of action
+from sc2 import BotAI
 from sc2.unit import Unit
 from sharpy.plans.acts import merge_to_act
 from sharpy.plans.require import merge_to_require
@@ -15,10 +16,10 @@ if TYPE_CHECKING:
 class Step(ActBase):
     def __init__(
         self,
-        requirement: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]],
-        action: Optional[Union[ActBase, Callable[["Knowledge"], bool]]],
-        skip: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]] = None,
-        skip_until: Optional[Union[RequireBase, Callable[["Knowledge"], bool]]] = None,
+        requirement: Optional[Union[RequireBase, Callable[["BotAI"], bool]]],
+        action: Optional[Union[ActBase, Callable[["BotAI"], bool]]],
+        skip: Optional[Union[RequireBase, Callable[["BotAI"], bool]]] = None,
+        skip_until: Optional[Union[RequireBase, Callable[["BotAI"], bool]]] = None,
     ):
         assert requirement is None or isinstance(requirement, RequireBase) or isinstance(requirement, Callable)
         assert action is None or isinstance(action, ActBase)
