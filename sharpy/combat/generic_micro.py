@@ -32,6 +32,7 @@ class GenericMicro(MicroStep):
     def __init__(self):
         self.prio_dict: Optional[Dict[UnitTypeId, int]] = None
         self.model = CombatModel.StalkerToRoach
+        self.cyclone_dodge = True
         super().__init__()
 
     def should_retreat(self, unit: Unit) -> bool:
@@ -109,11 +110,13 @@ class GenericMicro(MicroStep):
         elif self.move_type == MoveType.PanicRetreat:
             return current_command
 
-        if self.is_locked_on(unit) and self.enemies_near_by and not self.ready_to_shoot(unit):
+        if (
+            self.cyclone_dodge and self.is_locked_on(unit) and self.enemies_near_by and len(self.group.units) > 2
+        ):  # not self.ready_to_shoot(unit):
             cyclones = self.enemies_near_by(UnitTypeId.CYCLONE)
             if cyclones:
                 closest_cyclone = cyclones.closest_to(unit)
-                backstep: Point2 = closest_cyclone.position.towards(unit.position, 15)
+                backstep: Point2 = closest_cyclone.position.towards(unit.position, 16)
                 if unit.is_flying:
                     backstep = self.pather.find_weak_influence_air(backstep, 4)
                 else:
