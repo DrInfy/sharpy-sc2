@@ -165,7 +165,7 @@ class PathingManager(ManagerBase):
                 positions = [unit.position for unit in enemies]  # need to be specified in both places
                 s_range = self.unit_values.ground_range(example_enemy)
                 if example_enemy.type_id == UnitTypeId.CYCLONE:
-                    s_range = 7
+                    s_range = 15  # lock on break range
                 if example_enemy.type_id == UnitTypeId.SIEGETANKSIEGED:
                     self.map.add_tank_influence(positions, power.ground_power)
                 elif s_range < 2:
