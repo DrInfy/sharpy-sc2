@@ -33,6 +33,15 @@ class Action:
             action = unit.move(self.target)
         return action
 
+    @property
+    def position(self) -> Optional[Point2]:
+        if self.target is None:
+            return None
+        if isinstance(self.target, Point2):
+            return self.target
+
+        return self.target.position
+
 
 class NoAction(Action):
     def __init__(self):
