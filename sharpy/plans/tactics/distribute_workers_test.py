@@ -96,8 +96,10 @@ def mock_ai() -> BotAI:
     for typedata in BUILDING_IDS:
         ai._game_data.units[typedata.value] = mock.Mock()
         ai._game_data.units[typedata.value].attributes = {IS_STRUCTURE}
+        ai._game_data.units[typedata.value].has_minerals = False
 
     ai._game_data.units[UnitTypeId.ASSIMILATOR.value].has_vespene = True
+    ai._game_data.units[UnitTypeId.ASSIMILATOR.value].has_minerals = False
     ai._game_data.units[UnitTypeId.ASSIMILATORRICH.value].has_vespene = True
 
     mineral = create_mineral(ai, Point2((16, 10)))
@@ -195,6 +197,7 @@ def mock_unit(ai, type_id: UnitTypeId, position: Point2) -> Unit:
 
     if type_id in ALL_GAS:
         ai.gas_buildings.append(unit)
+        unit._type_data.has_minerals
 
     if unit.is_structure:
         proto_mock.health = 400  # Whatever
@@ -478,6 +481,38 @@ class TestDistributeWorkers:
 
         assert len(ai.actions) == 1
         assert ai.actions[0].target.tag == gas.tag
+
+    @pytest.mark.asyncio
+    async def test_force_remove_from_gas(self):
+        distribute_workers = DistributeWorkers(aggressive_gas_fill=True)
+        distribute_workers.max_gas = 0
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 14
+
+        gas = mock_unit(ai, UnitTypeId.ASSIMILATOR, Point2(MAIN_POINT))
+        gas._proto.assigned_harvesters = 1
+
+        for i in range(0, 14):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        for i in range(0, 1):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, gas.tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+
+        assert len(ai.actions) == 1
+        assert ai.actions[0].unit.tag == worker1.tag
+        assert ai.actions[0].target.tag == ai.mineral_field[0].tag
 
     @pytest.mark.asyncio
     async def test_no_force_assign_to_gas(self):

@@ -93,6 +93,18 @@ class DistributeWorkers(ActBase):
                     work_status = status
                     break
 
+        if (
+            not work_status
+            and self.gas_workers_target is not None
+            and self.active_gas_workers > self.gas_workers_target
+        ):
+            # We have too many workers in gas
+            for status in self.work_queue:
+                if status.unit.has_vespene and status.unit.assigned_harvesters > 0:
+                    work_status = status
+                    work_status.force_exit = True
+                    break
+
         if work_status:
             tags = self.worker_dict.get(work_status.unit.tag, [])
             if tags:
@@ -170,7 +182,8 @@ class DistributeWorkers(ActBase):
                 if order.ability.id in IS_COLLECTING and isinstance(order.target, int):
                     obj = self.cache.by_tag(order.target)
                     if obj:
-                        if obj.is_mineral_field:
+                        # if obj.mineral_contents > 0:
+                        if obj.is_mineral_field > 0:
                             townhall = self.ai.townhalls.closest_to(obj)
                             self.add_worker(worker, townhall)
                         elif obj.type_id in ALL_GAS:
