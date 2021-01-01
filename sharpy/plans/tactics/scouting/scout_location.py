@@ -115,16 +115,22 @@ class ScoutLocation(ScoutBaseAction):
         return ScoutLocation(lambda k: k.expansion_zones[6].center_location, **kwargs)
 
     @staticmethod
-    def scout_enemy_natural_ol_spot() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[-2].center_location))
+    def scout_enemy_natural_ol_spot(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(
+            lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[-2].center_location), **kwargs
+        )
 
     @staticmethod
-    def scout_own_natural_ol_spot() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[1].center_location))
+    def scout_own_natural_ol_spot(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(
+            lambda k: ScoutLocation.closest_overlord_spot_to(k, k.expansion_zones[1].center_location), **kwargs
+        )
 
     @staticmethod
-    def scout_center_ol_spot() -> ScoutBaseAction:
-        return ScoutLocation(lambda k: ScoutLocation.closest_overlord_spot_to(k.knowledge, k.ai.game_info.map_center))
+    def scout_center_ol_spot(**kwargs) -> ScoutBaseAction:
+        return ScoutLocation(
+            lambda k: ScoutLocation.closest_overlord_spot_to(k.knowledge, k.ai.game_info.map_center), **kwargs
+        )
 
     @staticmethod
     def closest_overlord_spot_to(k: "ScoutLocation", target: Point2) -> Point2:

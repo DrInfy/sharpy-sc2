@@ -139,6 +139,7 @@ class GroupCombatManager(ManagerBase, ICombatManager):
         self.action_to(group, target, move_type, True)
 
     def action_to(self, group: CombatUnits, target, move_type: MoveType, is_attack: bool):
+        original_target = target
         if isinstance(target, Point2) and group.ground_units:
             if move_type in {MoveType.DefensiveRetreat, MoveType.PanicRetreat}:
                 target = self.pather.find_influence_ground_path(group.center, target, 14)
@@ -157,7 +158,7 @@ class GroupCombatManager(ManagerBase, ICombatManager):
 
         for type_id, type_units in own_unit_cache.items():
             micro: MicroStep = self.unit_micros.get(type_id, self.generic_micro)
-            micro.init_group(self.rules, group, type_units, self.enemy_groups, move_type)
+            micro.init_group(self.rules, group, type_units, self.enemy_groups, move_type, original_target)
             group_action = micro.group_solve_combat(type_units, Action(target, is_attack))
 
             for unit in type_units:

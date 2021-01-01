@@ -12,14 +12,20 @@ from sharpy.interfaces.combat_manager import MoveType
 
 
 class MicroHighTemplars(GenericMicro):
-
     def __init__(self):
         super().__init__()
         self.ordered_storms: List[Point2] = []
 
-    def init_group(self, rules: "MicroRules", group: CombatUnits, units: Units, enemy_groups: List[CombatUnits],
-                   move_type: MoveType):
-        super().init_group(rules, group, units, enemy_groups, move_type)
+    def init_group(
+        self,
+        rules: "MicroRules",
+        group: CombatUnits,
+        units: Units,
+        enemy_groups: List[CombatUnits],
+        move_type: MoveType,
+        original_target: Point2,
+    ):
+        super().init_group(rules, group, units, enemy_groups, move_type, original_target)
         self.ordered_storms.clear()
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:

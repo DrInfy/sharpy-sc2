@@ -27,21 +27,22 @@ changelings = {
 
 
 class MicroStep(ABC, Component):
+    rules: "MicroRules"
     engaged_power: ExtendedPower
     our_power: ExtendedPower
     delay_to_shoot: float
     enemies_near_by: Units
     closest_group: CombatUnits
     closest_group_distance: float
+    original_target: Point2
+    group: CombatUnits
 
     def __init__(self):
         self.enemy_groups: List[CombatUnits] = []
         self.ready_to_attack_ratio: float = 0.0
         self.center: Point2 = Point2((0, 0))
-        self.group: CombatUnits
         self.engage_ratio = 0
         self.can_engage_ratio = 0
-        self.closest_group: CombatUnits
         self.engaged: Dict[int, List[int]] = dict()
 
         self.closest_units: Dict[int, Optional[Unit]] = dict()
@@ -63,13 +64,14 @@ class MicroStep(ABC, Component):
         units: Units,
         enemy_groups: List[CombatUnits],
         move_type: MoveType,
+        original_target: Point2,
     ):
         self.rules = rules
 
         self.focus_fired.clear()
         self.group = group
         self.move_type = move_type
-
+        self.original_target = original_target
         self.our_power = group.power
         self.closest_units.clear()
         self.engaged_power.clear()

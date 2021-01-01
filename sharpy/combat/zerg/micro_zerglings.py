@@ -1,6 +1,8 @@
 from sharpy.combat import Action, MicroStep
 from sc2.unit import Unit
 from sc2.units import Units
+from sharpy.interfaces.combat_manager import MoveType
+from sharpy.managers.core import UnitValue
 
 
 class MicroZerglings(MicroStep):
@@ -24,4 +26,13 @@ class MicroZerglings(MicroStep):
         #             pylons = buildings(UnitTypeId.PYLON)
         #             if pylons:
         #                 return Action(buildings.first, True)
+
+        if self.move_type not in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
+            # u: Unit
+            enemies = self.cache.enemy_in_range(unit.position, unit.radius + unit.ground_range + 1).filter(
+                lambda u: not u.is_flying and u.type_id not in self.unit_values.combat_ignore
+            )
+            if enemies:
+                current_command = Action(enemies.center, True)
+                return self.melee_focus_fire(unit, current_command)
         return current_command

@@ -21,9 +21,19 @@ class MicroZealots(MicroStep):
             return NoAction()
 
         ground_units = self.enemies_near_by.not_flying
-        if not ground_units:
-            current_command.is_attack = False
-            return current_command
+
+        if self.move_type not in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
+            # u: Unit
+            enemies = self.cache.enemy_in_range(unit.position, unit.radius + unit.ground_range + 1).filter(
+                lambda u: not u.is_flying and u.type_id not in self.unit_values.combat_ignore
+            )
+            if enemies:
+                current_command = Action(enemies.center, True)
+                return self.melee_focus_fire(unit, current_command)
+
+        if not ground_units and self.enemies_near_by:
+            # Zealots can't attack anything here, go attack move to original destination instead
+            return Action(self.original_target, True)
         # if self.knowledge.enemy_race == Race.Protoss:
         #     if self.engage_percentage < 0.25:
         #         buildings = self.enemies_near_by.sorted_by_distance_to(unit)
