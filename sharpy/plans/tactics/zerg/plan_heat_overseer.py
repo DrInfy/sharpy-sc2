@@ -59,8 +59,9 @@ class PlanHeatOverseer(ActBase):
         self.roles.set_task(UnitTask.Reserved, overseer)
         self.overseer_tag = overseer.tag
         position = self.stealth_hotspot or self.gather_point
-        self.combat.add_unit(overseer)
-        self.combat.execute(position)
+        position = self.pather.find_weak_influence_air(position, 10)
+        position = self.pather.find_influence_air_path(overseer.position, position)
+        overseer.move(position)
 
     async def debug_actions(self):
         if self.overseer_tag:

@@ -1,6 +1,7 @@
 from typing import Optional, Tuple
 
 from sc2.unit import Unit
+from sharpy.managers.core import PathingManager
 from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions import HeatMapManager
 from sharpy.managers.core.roles import UnitTask
@@ -22,6 +23,7 @@ class PlanHeatObserver(ActBase):
         self.heat_map: HeatMapManager = knowledge.get_required_manager(HeatMapManager)
         self.roles = self.roles
         self.gather_point = self.zone_manager.expansion_zones[0].center_location
+        self.pather = knowledge.get_required_manager(PathingManager)
 
     async def execute(self) -> bool:
         stealth_hotspot: Optional[Tuple[Point2, float]] = self.heat_map.get_stealth_hotspot()
@@ -59,5 +61,8 @@ class PlanHeatObserver(ActBase):
     async def assault_hot_spot(self, observer: Unit):
         self.roles.set_task(UnitTask.Reserved, observer)
         position = self.stealth_hotspot or self.gather_point
-        self.combat.add_unit(observer)
-        self.combat.execute(position)
+        position = self.pather.find_weak_influence_air(position, 10)
+        position = self.pather.find_influence_air_path(observer.position, position)
+        observer.move(position)
+        # self.combat.add_unit(observer)
+        # self.combat.execute(position)
