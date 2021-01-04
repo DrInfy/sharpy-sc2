@@ -7,6 +7,7 @@ from sharpy.interfaces import IIncomeCalculator, IGatherPointSolver
 from sc2 import UnitTypeId, Race, AbilityId, common_pb
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
+from sharpy.sc2math import to_new_ticks
 
 if TYPE_CHECKING:
     from sharpy.knowledges import *
@@ -128,7 +129,7 @@ class Expand(ActBase):
             return
 
         d = worker.distance_to(position)
-        time = d / worker.movement_speed
+        time = d / to_new_ticks(worker.movement_speed)
         available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
 
         unit = self.ai._game_data.units[self.townhall_type.value]
