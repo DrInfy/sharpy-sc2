@@ -11,6 +11,7 @@ class IncomeCalculator(ManagerBase, IIncomeCalculator):
         super().__init__()
         self._mineral_income = 0
         self._gas_income = 0
+        self.use_ingame = False
 
     @property
     def mineral_income(self):
@@ -21,9 +22,12 @@ class IncomeCalculator(ManagerBase, IIncomeCalculator):
         return self._gas_income
 
     async def update(self):
-        self._mineral_income = self.mineral_rate_calc()
-        # self._mineral_income = self.ai.state.score.collection_rate_minerals / 60
-        self._gas_income = self.vespene_rate_calc()
+        if self.use_ingame:
+            self._mineral_income = self.ai.state.score.collection_rate_minerals / 60
+            self._gas_income = self.ai.state.score.collection_rate_vespene / 60
+        else:
+            self._mineral_income = self.mineral_rate_calc()
+            self._gas_income = self.vespene_rate_calc()
 
         # TODO: Calculate enemy income and minerals harvested here
 
