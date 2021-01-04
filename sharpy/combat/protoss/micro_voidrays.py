@@ -36,7 +36,7 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.LIBERATOR: 7,
     UnitTypeId.RAVEN: 10,
     UnitTypeId.BATTLECRUISER: 8,
-    UnitTypeId.MISSILETURRET: 1,
+    UnitTypeId.MISSILETURRET: 8,
     UnitTypeId.BUNKER: 2,
     # Zerg
     UnitTypeId.DRONE: 4,
@@ -62,6 +62,10 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.LARVA: -1,
     UnitTypeId.EGG: -1,
     UnitTypeId.LOCUSTMP: -1,
+    UnitTypeId.SPINECRAWLER: 2,
+    UnitTypeId.SPINECRAWLERUPROOTED: 2,
+    UnitTypeId.SPORECRAWLER: 7,
+    UnitTypeId.SPORECRAWLERUPROOTED: 7,
     # Protoss
     UnitTypeId.SENTRY: 5,
     UnitTypeId.PROBE: 4,
@@ -74,7 +78,7 @@ high_priority: Dict[UnitTypeId, int] = {
     UnitTypeId.COLOSSUS: 10,
     UnitTypeId.ARCHON: 6,
     UnitTypeId.SHIELDBATTERY: 1,
-    UnitTypeId.PHOTONCANNON: 1,
+    UnitTypeId.PHOTONCANNON: 7,
     UnitTypeId.PYLON: 2,
     UnitTypeId.FLEETBEACON: 3,
 }
