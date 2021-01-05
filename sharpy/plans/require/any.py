@@ -17,8 +17,6 @@ class Any(RequireBase):
         conditions: Union[RequireBase, Callable[["Knowledge"], bool], List[RequireBase]],
         *args: Union[RequireBase, Callable[["Knowledge"], bool]]
     ):
-        super().__init__()
-
         is_act = isinstance(conditions, RequireBase) or isinstance(conditions, Callable)
         assert conditions is not None and (isinstance(conditions, list) or is_act)
         super().__init__()
