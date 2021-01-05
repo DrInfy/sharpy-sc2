@@ -168,7 +168,7 @@ def create_mineral(ai: BotAI, position: Point2) -> Unit:
     return mineral
 
 
-def mock_unit(ai, type_id: UnitTypeId, position: Point2) -> Unit:
+def mock_unit(ai, type_id: UnitTypeId, position: Point2, progress: float = 1) -> Unit:
     proto_mock = mock.Mock()
     proto_mock.tag = randint(0, sys.maxsize)
     proto_mock.unit_type = type_id.value
@@ -205,7 +205,7 @@ def mock_unit(ai, type_id: UnitTypeId, position: Point2) -> Unit:
         proto_mock.shield = 400
         proto_mock.shield_max = 400
         ai.structures.append(unit)
-        proto_mock.build_progress = 1
+        proto_mock.build_progress = progress
         ai.all_own_units.append(unit)
         proto_mock.alliance = IS_MINE
 
@@ -446,6 +446,55 @@ class TestDistributeWorkers:
         for i in range(0, 14):
             worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 60)))
             set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[1].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+        assert len(ai.actions) > 0
+        assert ai.actions[0].target.tag == ai.mineral_field[1].tag
+
+    @pytest.mark.asyncio
+    async def test_not_assign_surplus_to_not_ready_nexus(self):
+        distribute_workers = DistributeWorkers()
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 17
+
+        nexus2 = mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT), 0.89)
+        nexus2._proto.assigned_harvesters = 0
+
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
+
+        knowledge = await mock_knowledge(ai)
+
+        for worker in ai.workers:
+            knowledge.roles.set_task(UnitTask.Gathering, worker)
+
+        await distribute_workers.start(knowledge)
+        await distribute_workers.execute()
+        assert len(ai.actions) == 0
+
+    @pytest.mark.asyncio
+    async def test_assign_surplus_to_not_ready_nexus(self):
+        distribute_workers = DistributeWorkers()
+        ai = mock_ai()
+
+        nexus1 = mock_unit(ai, UnitTypeId.NEXUS, Point2(MAIN_POINT))
+        nexus1._proto.assigned_harvesters = 17
+
+        nexus2 = mock_unit(ai, UnitTypeId.NEXUS, Point2(NATURAL_POINT), 0.91)
+        nexus2._proto.assigned_harvesters = 0
+
+        for i in range(0, 17):
+            worker1 = mock_unit(ai, UnitTypeId.PROBE, Point2((20, 10)))
+            set_fake_order(worker1, AbilityId.HARVEST_GATHER, ai.mineral_field[0].tag)
 
         knowledge = await mock_knowledge(ai)
 

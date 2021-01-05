@@ -206,8 +206,12 @@ class DistributeWorkers(ActBase):
         self.active_gas_workers = 0
 
         for building in self.ai.gas_buildings + self.ai.townhalls:
-            if building.ideal_harvesters == 0:
+            if building.is_ready and building.ideal_harvesters == 0:
                 # Ignore empty buildings
+                continue
+
+            if not building.is_ready and building.build_progress < 0.9:
+                # Ignore buildings that are building and won't finish anytime soon
                 continue
 
             current_workers = len(self.worker_dict.get(building.tag, []))
@@ -221,14 +225,20 @@ class DistributeWorkers(ActBase):
             elif not zone.is_ours:
                 # Exit workers from the zone (?), what about long distance mining?
                 self.work_queue.append(WorkStatus(building, -current_workers * 10, False))
-            elif building.has_vespene:
+            elif building.type_id in ALL_GAS:
                 # One worker should be inside the gas
                 harvesters = min(building.assigned_harvesters, current_workers + 1)
                 self.active_gas_workers += harvesters
-                self.work_queue.append(WorkStatus(building, building.ideal_harvesters - harvesters))
+                if building.is_ready:
+                    self.work_queue.append(WorkStatus(building, building.ideal_harvesters - harvesters))
+                else:
+                    self.work_queue.append(WorkStatus(building, 1 - current_workers))
             else:
                 self.zone_manager.zone_for_unit(building)
-                self.work_queue.append(WorkStatus(building, building.ideal_harvesters - current_workers))
+                if building.is_ready:
+                    self.work_queue.append(WorkStatus(building, building.ideal_harvesters - current_workers))
+                else:
+                    self.work_queue.append(WorkStatus(building, 8 - current_workers))
 
         if self.active_gas_workers < self.gas_workers_target:
 
