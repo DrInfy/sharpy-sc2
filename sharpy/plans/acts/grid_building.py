@@ -19,6 +19,7 @@ worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 class GridBuilding(ActBuilding):
     building_solver: IBuildingSolver
     income_calculator: IIncomeCalculator
+    last_iteration_moved: int
 
     def __init__(
         self,
@@ -38,6 +39,7 @@ class GridBuilding(ActBuilding):
         self.consider_worker_production = consider_worker_production
         self.building_solver: IBuildingSolver = None
         self.make_pylon = None
+        self.last_iteration_moved = 0
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -92,10 +94,17 @@ class GridBuilding(ActBuilding):
 
         d = worker.distance_to(position)
         time = d / to_new_ticks(worker.movement_speed)
+
+        if self.last_iteration_moved >= self.knowledge.iteration - 1:
+            # stop indecisiveness
+            time += 5
+
         unit = self.ai._game_data.units[self.unit_type.value]
         cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
 
         wait_time = self.prequisite_progress()
+
+        adjusted_income = self.income_calculator.mineral_income * 0.93  # 14 / 15 = 0.933333
 
         if self.knowledge.can_afford(self.unit_type):
             if wait_time <= 0:
@@ -116,16 +125,17 @@ class GridBuilding(ActBuilding):
                 self.knowledge.reserve(cost.minerals, cost.vespene)
                 if not self.has_build_order(worker):
                     worker.move(self.adjust_build_to_move(position))
+                    self.last_iteration_moved = self.knowledge.iteration
 
         elif self.priority and wait_time < time:
             available_minerals = self.ai.minerals - self.knowledge.reserved_minerals
             available_gas = self.ai.vespene - self.knowledge.reserved_gas
 
-            if self.consider_worker_production and self.income_calculator.mineral_income > 0:
+            if self.consider_worker_production and adjusted_income > 0:
                 for town_hall in self.ai.townhalls:  # type: Unit
                     # TODO: Zerg(?)
                     if town_hall.orders:
-                        starting_next_probe_in = -50 / self.income_calculator.mineral_income
+                        starting_next_probe_in = -50 / adjusted_income
                         order = town_hall.orders[0]  # Only consider first order
                         if order.ability.id in worker_trainers:
                             starting_next_probe_in += 12 * (1 - order.progress)
@@ -136,7 +146,7 @@ class GridBuilding(ActBuilding):
                         available_minerals -= 50  # should start producing workers soon now
 
             if (
-                available_minerals + time * self.income_calculator.mineral_income >= cost.minerals
+                available_minerals + time * adjusted_income >= cost.minerals
                 and available_gas + time * self.income_calculator.gas_income >= cost.vespene
             ):
                 # Go wait
@@ -145,6 +155,7 @@ class GridBuilding(ActBuilding):
 
                 if not self.has_build_order(worker):
                     worker.move(self.adjust_build_to_move(position))
+                    self.last_iteration_moved = self.knowledge.iteration
 
         return False
 
