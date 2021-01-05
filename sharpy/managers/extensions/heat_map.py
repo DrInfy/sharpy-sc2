@@ -97,7 +97,7 @@ class HeatMapManager(ManagerBase):
         time_change = self.ai.time - self.last_quick_update
 
         for unit in self.ai.all_enemy_units:  # type: Unit
-            if unit.is_cloaked:
+            if unit.is_cloaked or unit.is_burrowed:
                 own_close = self.cache.own_in_range(unit.position, 12).not_flying
                 area = self.get_zone(unit.position)
                 if own_close:

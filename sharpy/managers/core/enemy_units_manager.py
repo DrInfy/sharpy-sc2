@@ -123,12 +123,14 @@ class EnemyUnitsManager(ManagerBase, IEnemyUnitsManager):
         if self._enemy_cloak_trigger:
             return
 
+        # Protoss cloaked units (observer can't attack)
         if self.unit_count(UnitTypeId.DARKTEMPLAR) > 0 or self.ai.enemy_structures(UnitTypeId.DARKSHRINE).exists:
             self._enemy_cloak_trigger = True
 
         if self.unit_count(UnitTypeId.MOTHERSHIP) > 0:
             self._enemy_cloak_trigger = True
 
+        # Terran cloaked units
         if self.unit_count(UnitTypeId.BANSHEE) > 0:
             self._enemy_cloak_trigger = True
 
@@ -136,6 +138,19 @@ class EnemyUnitsManager(ManagerBase, IEnemyUnitsManager):
             self._enemy_cloak_trigger = True
 
         if self.unit_count(UnitTypeId.GHOST) > 0 or self.ai.enemy_structures(UnitTypeId.GHOSTACADEMY):
+            self._enemy_cloak_trigger = True
+
+        # Zerg burrow
+        if len(self.cache.enemy(UnitTypeId.ZERGLINGBURROWED)) > 0:
+            self._enemy_cloak_trigger = True
+
+        if len(self.cache.enemy(UnitTypeId.BANELINGBURROWED)) > 0:
+            self._enemy_cloak_trigger = True
+
+        if len(self.cache.enemy(UnitTypeId.ROACHBURROWED)) > 0:
+            self._enemy_cloak_trigger = True
+
+        if len(self.cache.enemy(UnitTypeId.RAVAGERBURROWED)) > 0:
             self._enemy_cloak_trigger = True
 
         if (

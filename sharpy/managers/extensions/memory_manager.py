@@ -1,15 +1,32 @@
 from collections import deque
-from typing import Dict, Set, Deque, List
+from typing import Dict, Set, Deque, List, Optional
 
 from sc2.position import Point2
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces import IMemoryManager
 from sharpy.managers.core import ManagerBase
-from sc2 import UnitTypeId
+from sc2 import UnitTypeId, Race
 from sc2.unit import Unit
 from sc2.units import Units
 
 MAX_SNAPSHOTS_PER_UNIT = 10
+
+BURROWED_ALIAS: Set[UnitTypeId] = {
+    UnitTypeId.BANELINGBURROWED,
+    UnitTypeId.CREEPTUMORBURROWED,
+    UnitTypeId.DRONEBURROWED,
+    UnitTypeId.HYDRALISKBURROWED,
+    UnitTypeId.INFESTORBURROWED,
+    UnitTypeId.INFESTORTERRANBURROWED,
+    UnitTypeId.LURKERMPBURROWED,
+    UnitTypeId.QUEENBURROWED,
+    UnitTypeId.RAVAGERBURROWED,
+    UnitTypeId.ROACHBURROWED,
+    UnitTypeId.SWARMHOSTBURROWEDMP,
+    UnitTypeId.ULTRALISKBURROWED,
+    UnitTypeId.WIDOWMINEBURROWED,
+    UnitTypeId.ZERGLINGBURROWED,
+}
 
 
 class MemoryManager(ManagerBase, IMemoryManager):
@@ -18,6 +35,8 @@ class MemoryManager(ManagerBase, IMemoryManager):
     Structures are ignored because they have two tags. One for the real building and another
     for the building's snapshot when under fog of war.
     """
+
+    detectors: Set[UnitTypeId]
 
     def __init__(self):
         super().__init__()
@@ -28,12 +47,25 @@ class MemoryManager(ManagerBase, IMemoryManager):
 
         # Dictionary of units that we know of, but which are longer present at the location last seen. Keyed by unit tag.
         self._archive_units_by_tag: Dict[int, Deque[Unit]] = dict()
+        self._tags_destroyed: Set[int] = set()
+        self.unit_dict: Dict[int, Deque[Unit]] = dict()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+
+        if knowledge.my_race == Race.Protoss:
+            self.detectors = {UnitTypeId.PHOTONCANNON, UnitTypeId.OBSERVER, UnitTypeId.OBSERVERSIEGEMODE}
+        elif knowledge.my_race == Race.Terran:
+            self.detectors = {UnitTypeId.MISSILETURRET, UnitTypeId.RAVEN}
+        else:
+            self.detectors = {UnitTypeId.OVERSEERSIEGEMODE, UnitTypeId.OVERSEER, UnitTypeId.SPORECRAWLER}
+
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
     async def update(self):
+        detectors = None
+        self.unit_dict.clear()
+
         # Iterate all currently visible enemy units.
         # self.ai.enemy_units is used here because it does not include memory lane units
         for unit in self.ai.enemy_units:
@@ -54,6 +86,8 @@ class MemoryManager(ManagerBase, IMemoryManager):
 
             if unit.tag not in self._memory_units_by_tag:
                 self._memory_units_by_tag[unit.tag] = snaps
+
+            self.unit_dict[unit.tag] = unit
 
         memory_tags_to_remove = list()
 
@@ -76,10 +110,19 @@ class MemoryManager(ManagerBase, IMemoryManager):
 
             if visible:
                 # We see that the unit is no longer there.
-                # todo: what about burrowed units, especially lurkers?
-                memory_tags_to_remove.append(unit_tag)
-                snaps = self._memory_units_by_tag.get(unit_tag)
-                self._archive_units_by_tag[unit_tag] = snaps
+                if (snap.type_id in BURROWED_ALIAS or snap.is_burrowed) and unit_tag not in self._tags_destroyed:
+                    if detectors is None:
+                        detectors = self.cache.own(self.detectors)
+
+                    if detectors.closer_than(11, snap.position):
+                        self.clear_unit_cache(memory_tags_to_remove, unit_tag)
+                    else:
+                        # For burrowed units, let's change the snapshot
+                        snap._proto.is_burrowed = True
+                        # snap._proto.unit_type = BURROWED_ALIAS.get(snap.type_id, snap.type_id).value  # int value
+                        snap.cache.clear()
+                else:
+                    self.clear_unit_cache(memory_tags_to_remove, unit_tag)
 
         for tag in memory_tags_to_remove:
             self._memory_units_by_tag.pop(tag)
@@ -89,6 +132,11 @@ class MemoryManager(ManagerBase, IMemoryManager):
         # Merge enemy data with memories
         self.ai.enemy_units = self.ai.enemy_units + memory_units
         self.ai.all_enemy_units = self.ai.all_enemy_units + memory_units
+
+    def clear_unit_cache(self, memory_tags_to_remove, unit_tag):
+        memory_tags_to_remove.append(unit_tag)
+        snaps = self._memory_units_by_tag.get(unit_tag)
+        self._archive_units_by_tag[unit_tag] = snaps
 
     async def post_update(self):
         if not self.debug:
@@ -119,7 +167,7 @@ class MemoryManager(ManagerBase, IMemoryManager):
 
     def is_unit_visible(self, unit_tag: int) -> bool:
         """Returns true if the unit is visible on this frame."""
-        unit: Unit = self.cache.by_tag(unit_tag)
+        unit: Optional[Unit] = self.unit_dict.get(unit_tag, None)
         return unit is not None and not unit.is_memory
 
     def on_unit_destroyed(self, event: UnitDestroyedEvent):
@@ -127,6 +175,7 @@ class MemoryManager(ManagerBase, IMemoryManager):
         # Remove the unit from frozenh dictionaries.
         self._memory_units_by_tag.pop(event.unit_tag, None)
         self._archive_units_by_tag.pop(event.unit_tag, None)
+        self._tags_destroyed.add(event.unit_tag)
 
 
 # Will this end up being the same set as in enemy_units_manager.py ?
