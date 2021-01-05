@@ -39,7 +39,7 @@ class GridBuilding(ActBuilding):
         self.consider_worker_production = consider_worker_production
         self.building_solver: IBuildingSolver = None
         self.make_pylon = None
-        self.last_iteration_moved = 0
+        self.last_iteration_moved = -10
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
