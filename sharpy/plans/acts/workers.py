@@ -18,7 +18,7 @@ class Workers(ActBase):
 
     income_calculator: IIncomeCalculator
 
-    def __init__(self, to_count: int = 80):
+    def __init__(self, to_count: int = 80, reserve: bool = True):
         super().__init__()
         self.unit_type: UnitTypeId = None
         self.to_count = to_count
@@ -26,6 +26,7 @@ class Workers(ActBase):
         self.cost: Cost = None
         self.supply_building: UnitTypeId = None
         self.supply_build_time: int = None
+        self.reserve = reserve  # Reserve minerals
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
@@ -86,6 +87,12 @@ class Workers(ActBase):
                     # There's still enough time to get enough minerals before next supply building is ready
                     simultaneous_count -= need_new_supply_for
 
+        if self.reserve:
+            self.reserve_minerals(available_builders, busy_builders, income, simultaneous_count)
+
+        return False
+
+    def reserve_minerals(self, available_builders, busy_builders, income, simultaneous_count):
         if simultaneous_count > len(available_builders):
             time_to_reserve = self.cost.minerals / income
             percentage_to_reserve = (12 - time_to_reserve) / 12
@@ -99,12 +106,9 @@ class Workers(ActBase):
                         simultaneous_count -= 1
                         if simultaneous_count <= len(available_builders):
                             break
-
         for builder in available_builders:
             if not builder.is_flying:
                 if self.knowledge.cooldown_manager.is_ready(builder.tag, self.ability):
                     if builder.train(self.unit_type):
                         self.print(f"{self.unit_type.name} from {builder.type_id.name} at {builder.position}")
                         self.knowledge.reserve(self.cost.minerals, self.cost.vespene)
-
-        return False
