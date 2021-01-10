@@ -41,7 +41,7 @@ class PlanZoneGather(ActBase):
         self.knowledge = knowledge
         self.unit_values: UnitValue = knowledge.unit_values
         self.base_ramp = self.zone_manager.expansion_zones[0].ramp
-        self.close_gates = self.ai.enemy_race == Race.Zerg and self.ai.enemy_race != Race.Zerg
+        self.close_gates = self.ai.enemy_race == Race.Zerg and self.ai.race != Race.Zerg
         self.current_gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
 
     def should_hold_position(self, target_position: Point2) -> bool:
