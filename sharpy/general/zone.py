@@ -31,6 +31,7 @@ class ZoneResources(enum.Enum):
 
 class Zone:
     ZONE_RADIUS = 15
+    MAIN_ZONE_RADIUS_INCREASE = 5
     ZONE_DANGER_RADIUS = 30
     MAIN_ZONE_RAMP_MAX_RADIUS = 26
     ZONE_RAMP_MAX_RADIUS = 15
@@ -98,6 +99,10 @@ class Zone:
         self.ramp = self._find_ramp(self.ai)
         self.radius = Zone.ZONE_RADIUS
         self.danger_radius = Zone.ZONE_DANGER_RADIUS
+
+        if is_start_location:
+            self.radius += Zone.MAIN_ZONE_RADIUS_INCREASE
+            self.danger_radius += Zone.MAIN_ZONE_RADIUS_INCREASE
 
         if self.ramp is not None:
             self.gather_point = self.ramp.top_center.towards(self.center_location, 4)

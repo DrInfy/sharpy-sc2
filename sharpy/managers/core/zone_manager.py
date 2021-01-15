@@ -1,3 +1,4 @@
+import enum
 import logging
 import sys
 from typing import Dict, List, Optional
@@ -14,6 +15,90 @@ from sharpy.managers.core.pathing_manager import PathingManager
 from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.general.zone import Zone
 from sc2.position import Point2, Point3
+import numpy as np
+
+
+class MapName(enum.Enum):
+    Example = -1
+    Unknown = 0
+    AcolyteLE = 1
+    RedshiftLE = 2
+    AbyssalReefLE = 3
+    DreamcatcherLE = 4
+    DarknessSanctuaryLE = 5
+    LostAndFoundLE = 6
+    AutomatonLE = 7
+    BlueshiftLE = 8
+    CeruleanFallLE = 9
+    KairosJunctionLE = 10
+    ParaSiteLE = 11
+    PortAleksanderLE = 12
+    StasisLE = 13
+    Reminiscence = 14
+    CrystalCavern = 15
+    IceandChromeLE = 16
+    GoldenWallLE = 17
+    SubmarineLE = 18
+    EverDreamLE = 19
+    PillarsofGoldLE = 20
+    DeathAuraLE = 21
+    EternalEmpireLE = 22
+
+
+MAIN_ZONE_SIZE_CHANGES: Dict[MapName, float] = {
+    MapName.IceandChromeLE: 3,
+    MapName.ParaSiteLE: -5,
+    MapName.SubmarineLE: 2,
+    MapName.EverDreamLE: 3,
+}
+
+
+def recognize_map(map_name: str, height_hash: int) -> MapName:
+    if height_hash == 4544808:
+        return MapName.AcolyteLE
+    if "Redshift" in map_name:
+        return MapName.RedshiftLE
+    if "Abyssal Reef" in map_name:
+        return MapName.AbyssalReefLE
+    if "Dreamcatcher" in map_name:
+        return MapName.DreamcatcherLE
+    if "Darkness Sanctuary" in map_name:
+        return MapName.DarknessSanctuaryLE
+    if "Lost and Found" in map_name:
+        return MapName.LostAndFoundLE
+    if "Automaton" in map_name:
+        return MapName.AutomatonLE
+    if "Blueshift" in map_name:
+        return MapName.BlueshiftLE
+    if "Cerulean Fall" in map_name:
+        return MapName.CeruleanFallLE
+    if "Kairos Junction" in map_name:
+        return MapName.KairosJunctionLE
+    if "Para Site" in map_name:
+        return MapName.ParaSiteLE
+    if "Port Aleksander" in map_name:
+        return MapName.PortAleksanderLE
+    if "Stasis" in map_name:
+        return MapName.StasisLE
+    if "Reminiscence" in map_name:
+        return MapName.Reminiscence
+    if "Crystal Cavern" in map_name:
+        return MapName.CrystalCavern
+    if height_hash == 3160539:
+        return MapName.IceandChromeLE
+    if height_hash == 4580412:
+        return MapName.GoldenWallLE
+    if height_hash == 3109760:
+        return MapName.SubmarineLE
+    if height_hash == 3660980:
+        return MapName.EverDreamLE
+    if height_hash == 3652649:
+        return MapName.PillarsofGoldLE
+    if height_hash == 3713716:
+        return MapName.DeathAuraLE
+    if height_hash == 4077698:
+        return MapName.EternalEmpireLE
+    return MapName.Unknown
 
 
 class ZoneManager(ManagerBase, IZoneManager):
@@ -25,6 +110,7 @@ class ZoneManager(ManagerBase, IZoneManager):
         # Dictionary for upkeeping zones such as start and expansion locations.
         # Key is position of the zone.
         self.zones: Dict[Point2, Zone] = {}
+        self.map: MapName = MapName.Unknown
         # The same zones in the order of expansions, first zone is our starting main base, second our natural
         # and last is enemy starting zone.
         self._expansion_zones: List[Zone] = []
@@ -41,6 +127,10 @@ class ZoneManager(ManagerBase, IZoneManager):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        # noinspection PyTypeChecker
+        height_hash: int = np.sum(knowledge.ai.game_info.terrain_height.data_numpy)
+        self.map = recognize_map(self.ai.game_info.map_name, height_hash)
+        self.print(f"Map set to: {self.map} from name: {self.ai.game_info.map_name} and hash: {height_hash}.")
         self.init_zones()
         self.set_pathing_zones()
 
@@ -57,10 +147,14 @@ class ZoneManager(ManagerBase, IZoneManager):
         """Add expansion locations as zones."""
         for exp_loc in self.ai.expansion_locations_list:  # type: Point2
             is_start_location = False
-            if exp_loc in self.ai.enemy_start_locations:
+            if exp_loc in self.ai.enemy_start_locations or exp_loc == self.ai.start_location:
                 is_start_location = True
 
             self.zones[exp_loc] = Zone(exp_loc, is_start_location, self.knowledge, self)
+
+            if is_start_location:
+                self.zones[exp_loc].radius += MAIN_ZONE_SIZE_CHANGES.get(self.map, 0)
+                self.zones[exp_loc].danger_radius += MAIN_ZONE_SIZE_CHANGES.get(self.map, 0)
 
         self._expansion_zones = list(self.zones.values())
 
@@ -271,14 +365,32 @@ class ZoneManager(ManagerBase, IZoneManager):
         tags_in_zones: Dict[int, List[int]] = {}
 
         for zone in self._expansion_zones:
-            zone.our_units = self.cache.own_in_range(zone.center_location, zone.radius)
-            for tag in zone.our_units.tags:
-                # Registering zone here
-                zone_list = tags_in_zones.get(tag, None)
-                if zone_list is None:
-                    zone_list = []
-                    tags_in_zones[tag] = zone_list
-                zone_list.append(zone.zone_index)
+            # Clear zones
+            zone.our_units.clear()
+
+        unknown_tags = set()
+
+        for unit in self.ai.all_own_units:
+            zone_index = self.pather.map.get_zone(unit.position) - 1
+            if zone_index < 0:
+                # No zone detected, what to do now?
+                unknown_tags.add(unit.tag)
+            else:
+                zone = self._expansion_zones[zone_index]
+                zone.our_units.append(unit)
+                tags_in_zones[unit.tag] = [zone_index]
+
+        for tag in unknown_tags:
+            # Create empty arrays for easy code later
+            tags_in_zones[tag] = []
+
+        for zone in self._expansion_zones:
+            units = self.cache.own_in_range(zone.center_location, zone.radius)
+            for unit in units:
+                if unit.tag in unknown_tags:
+                    # Registering zone here
+                    tags_in_zones[unit.tag].append(zone.zone_index)
+                    zone.our_units.append(unit)
 
         for tag, zone_indices in tags_in_zones.items():
             if len(zone_indices) > 1:
@@ -309,15 +421,33 @@ class ZoneManager(ManagerBase, IZoneManager):
         # Figure out all the zones the units are set in
         tags_in_zones: Dict[int, List[int]] = {}
 
-        for tag in self.ai.all_enemy_units.tags:
+        for zone in self._expansion_zones:
+            # Clear zones
+            zone.known_enemy_units.clear()
+
+        unknown_tags = set()
+
+        for unit in self.ai.all_enemy_units:
+            zone_index = self.pather.map.get_zone(unit.position) - 1
+            if zone_index < 0:
+                # No zone detected, what to do now?
+                unknown_tags.add(unit.tag)
+            else:
+                zone = self._expansion_zones[zone_index]
+                zone.known_enemy_units.append(unit)
+                tags_in_zones[unit.tag] = [zone_index]
+
+        for tag in unknown_tags:
             # Create empty arrays for easy code later
             tags_in_zones[tag] = []
 
         for zone in self._expansion_zones:
-            zone.known_enemy_units = self.cache.enemy_in_range(zone.center_location, zone.radius)
-            for tag in zone.known_enemy_units.tags:
-                # Registering zone here
-                tags_in_zones[tag].append(zone.zone_index)
+            units = self.cache.enemy_in_range(zone.center_location, zone.radius)
+            for unit in units:
+                if unit.tag in unknown_tags:
+                    # Registering zone here
+                    tags_in_zones[unit.tag].append(zone.zone_index)
+                    zone.known_enemy_units.append(unit)
 
         for tag, zone_indices in tags_in_zones.items():
             if len(zone_indices) > 1:
