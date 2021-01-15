@@ -49,6 +49,8 @@ class MemoryManager(ManagerBase, IMemoryManager):
         self._archive_units_by_tag: Dict[int, Deque[Unit]] = dict()
         self._tags_destroyed: Set[int] = set()
         self.unit_dict: Dict[int, Deque[Unit]] = dict()
+        self.expire_air = 60  # Time in seconds when snapshot expires
+        self.expire_ground = 360  # Time in seconds when snapshot expires
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -108,7 +110,11 @@ class MemoryManager(ManagerBase, IMemoryManager):
                 if not self.ai.is_visible(point):
                     visible = False
 
-            if visible:
+            expired = self.check_expiration(snap)
+
+            if expired:
+                self.clear_unit_cache(memory_tags_to_remove, unit_tag)
+            elif visible:
                 # We see that the unit is no longer there.
                 if (snap.type_id in BURROWED_ALIAS or snap.is_burrowed) and unit_tag not in self._tags_destroyed:
                     if detectors is None:
@@ -172,10 +178,15 @@ class MemoryManager(ManagerBase, IMemoryManager):
 
     def on_unit_destroyed(self, event: UnitDestroyedEvent):
         """Call this when a unit is destroyed, to make sure that the unit is erased from memory."""
-        # Remove the unit from frozenh dictionaries.
+        # Remove the unit from frozen dictionaries.
         self._memory_units_by_tag.pop(event.unit_tag, None)
         self._archive_units_by_tag.pop(event.unit_tag, None)
         self._tags_destroyed.add(event.unit_tag)
+
+    def check_expiration(self, snap: Unit) -> bool:
+        if snap.is_flying:
+            return snap.age > self.expire_air
+        return snap.age > self.expire_ground
 
 
 # Will this end up being the same set as in enemy_units_manager.py ?
