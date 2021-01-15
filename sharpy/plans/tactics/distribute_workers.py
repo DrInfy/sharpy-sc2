@@ -216,7 +216,7 @@ class DistributeWorkers(ActBase):
 
             current_workers = len(self.worker_dict.get(building.tag, []))
             zone = self.zone_manager.zone_for_unit(building)
-            if zone.is_enemys:
+            if zone.is_enemys or zone is None:
                 # Exit workers from the zone
                 self.work_queue.append(WorkStatus(building, -current_workers * 10000, True))
             elif self.evacuate_zones and zone and zone.needs_evacuation:
@@ -234,7 +234,6 @@ class DistributeWorkers(ActBase):
                 else:
                     self.work_queue.append(WorkStatus(building, 1 - current_workers))
             else:
-                self.zone_manager.zone_for_unit(building)
                 if building.is_ready:
                     self.work_queue.append(WorkStatus(building, building.ideal_harvesters - current_workers))
                 else:
