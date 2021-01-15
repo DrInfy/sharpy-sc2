@@ -51,6 +51,7 @@ class Sc2Map:
         self._chokes = self._map.chokes
         return self._chokes
 
+
     def reset(self):
         self._map.reset()
 
@@ -68,7 +69,7 @@ class Sc2Map:
         Zone 0 is empty zone.
         """
         return self._map.get_zone(position)
-
+    
     def calculate_connections(self, start: Tuple[float, float]):
         """
         Calculates ground connections to a single point in the map.
@@ -82,6 +83,13 @@ class Sc2Map:
         If `calculate_connections` was not run, returns False.
         """
         return self._map.is_connected(start)
+
+    def remove_connection(self, start: Tuple[float, float]) -> bool:
+        """
+        Remove a 'connection' from location. This can be used to disable warp-ins in certain areas.
+        """
+        return self._map.remove_connection(start)
+    
 
     def normalize_influence(self, value: int):
         self._map.normalize_influence(value)
@@ -152,6 +160,7 @@ class Sc2Map:
         Zone 0 is empty zone.
         """
         self._map.add_influence_without_zones(zones, int(value))
+    
 
     def find_path(
         self, map_type: MapType, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
@@ -227,6 +236,8 @@ class Sc2Map:
         image = np.multiply(image, 42)
         self.plot_image(image, image_name, resize)
 
+    
+
     def plot_ground_map(self, path: List[Tuple[int, int]], image_name: str = "ground_map", resize: int = 4):
         image = np.array(self._map.ground_pathing, dtype=np.uint8)
 
@@ -240,7 +251,7 @@ class Sc2Map:
         for point in path:
             image[point] = 255
         self.plot_image(image, image_name, resize)
-
+    
     def plot_reaper_map(self, path: List[Tuple[int, int]], image_name: str = "air_map", resize: int = 4):
         image = np.array(self._map.reaper_pathing, dtype=np.uint8)
 
@@ -278,7 +289,6 @@ class Sc2Map:
 
     def plot_image(self, image, image_name: str = "map", resize: int = 4):
         import cv2
-
         image = np.rot90(image, 1)
 
         resized = cv2.resize(image, dsize=None, fx=resize, fy=resize, interpolation=cv2.INTER_NEAREST)
