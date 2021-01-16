@@ -19,13 +19,14 @@ class PlanZoneGather(ActBase):
     building_solver: IBuildingSolver
     enemy_units_manager: IEnemyUnitsManager
 
-    def __init__(self):
+    def __init__(self, set_gather_points: bool = True):
         super().__init__()
 
         self.gather_set: sc2.List[int] = []
         self.blocker_tag: Optional[int] = None
         self.current_gather_point = Point2((0, 0))
         self.close_gates = True
+        self.set_gather_points = set_gather_points
 
     @property
     def gather_point(self) -> Point2:
@@ -35,6 +36,7 @@ class PlanZoneGather(ActBase):
         await super().start(knowledge)
         self.building_solver = knowledge.get_required_manager(IBuildingSolver)
         self.enemy_units_manager = knowledge.get_required_manager(IEnemyUnitsManager)
+        self.current_gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
 
         self.my_race = self.ai.race
         self.defender_types: list
@@ -42,7 +44,6 @@ class PlanZoneGather(ActBase):
         self.unit_values: UnitValue = knowledge.unit_values
         self.base_ramp = self.zone_manager.expansion_zones[0].ramp
         self.close_gates = self.ai.enemy_race == Race.Zerg and self.ai.race != Race.Zerg
-        self.current_gather_point_solver = self.knowledge.get_manager(IGatherPointSolver)
 
     def should_hold_position(self, target_position: Point2) -> bool:
         close_enemies = self.ai.all_enemy_units.filter(lambda u: not u.is_flying and not u.is_structure)
@@ -68,14 +69,15 @@ class PlanZoneGather(ActBase):
             self.current_gather_point = self.gather_point
 
         unit: Unit
-        for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
-            self.gather_set
-        ):
-            # Rally point is set to prevent units from spawning on the wrong side of wall in
-            pos: Point2 = unit.position
-            pos = pos.towards(self.current_gather_point, 3)
-            unit(sc2.AbilityId.RALLY_BUILDING, pos)
-            self.gather_set.append(unit.tag)
+        if self.set_gather_points:
+            for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
+                self.gather_set
+            ):
+                # Rally point is set to prevent units from spawning on the wrong side of wall in
+                pos: Point2 = unit.position
+                pos = pos.towards(self.current_gather_point, 3)
+                unit(sc2.AbilityId.RALLY_BUILDING, pos)
+                self.gather_set.append(unit.tag)
 
         await self.manage_blocker()
 
