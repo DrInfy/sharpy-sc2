@@ -11,6 +11,10 @@ from sharpy.managers.core.roles import UnitTask
 
 
 class DarkTemplarAttack(ActBase):
+    """
+    Very old code, you probably don't want to use this for anything
+    """
+
     combat: ICombatManager
     zone_manager: IZoneManager
 
