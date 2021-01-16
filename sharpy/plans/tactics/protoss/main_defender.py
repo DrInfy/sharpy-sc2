@@ -1,3 +1,4 @@
+from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
@@ -12,7 +13,9 @@ class PlanMainDefender(ActBase):
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
         self.roles = self.roles
-        self.gather_point = self.knowledge.base_ramp.top_center.towards(self.knowledge.base_ramp.bottom_center, -4)
+        zone_manager = knowledge.get_required_manager(IZoneManager)
+        base_ramp = zone_manager.expansion_zones[0].ramp
+        self.gather_point = base_ramp.top_center.towards(base_ramp.bottom_center, -4)
 
     async def execute(self):
         if self.knowledge.enemy_race != Race.Zerg:

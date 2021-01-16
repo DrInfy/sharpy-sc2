@@ -231,7 +231,6 @@ class ActBase(Component, ABC):
 
             worker = workers.first
         else:
-            worker: Unit = self.cache.by_tag(priority_tag)
             if worker is None or worker.is_constructing_scv:
                 # Worker is probably dead or it is already building something else.
                 worker = None
