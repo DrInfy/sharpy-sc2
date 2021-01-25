@@ -210,9 +210,9 @@ class PathingManager(ManagerBase):
 
         for effects in effect_dict.values():
             if effects[3]:
-                self.map.add_both_influence(effects[2], effects[0], effects[1], effects[1])
+                self.map.add_both_influence(effects[2], effects[0], effects[1], effects[1] + 0.5)
             else:
-                self.map.add_ground_influence(effects[2], effects[0], effects[1], effects[1])
+                self.map.add_ground_influence(effects[2], effects[0], effects[1], effects[1] + 0.5)
 
         # batteries: Units = self.cache.own(UnitTypeId.SHIELDBATTERY).filter(lambda u: u.energy > 5)
         # if batteries:
