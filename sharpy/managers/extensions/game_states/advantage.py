@@ -2,15 +2,15 @@ import enum
 
 
 class Advantage(enum.IntEnum):
+    OverwhelmingDisadvantage = -4
+    ClearDisadvantage = -3
+    SmallDisadvantage = -2
+    SlightDisadvantage = -1
     Even = 0
     SlightAdvantage = 1
     SmallAdvantage = 2
     ClearAdvantage = 3
     OverwhelmingAdvantage = 4
-    SlightDisadvantage = -1
-    SmallDisadvantage = -2
-    ClearDisadvantage = -3
-    OverwhelmingDisadvantage = -4
 
 
 almost_even = {Advantage.Even, Advantage.SlightAdvantage, Advantage.SlightDisadvantage}
