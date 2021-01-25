@@ -244,6 +244,9 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.HELLION: UnitData(100, 0, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.HELLIONTANK: UnitData(100, 0, 2, 2, features=[UnitFeature.HitsGround]),
             UnitTypeId.WIDOWMINE: UnitData(75, 25, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
+            UnitTypeId.WIDOWMINEBURROWED: UnitData(
+                75, 25, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]
+            ),
             UnitTypeId.SIEGETANK: UnitData(150, 125, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.SIEGETANKSIEGED: UnitData(150, 125, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.CYCLONE: UnitData(150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
@@ -261,6 +264,7 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.LIBERATOR: UnitData(
                 150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir, UnitFeature.Flying]
             ),
+            UnitTypeId.LIBERATORAG: UnitData(150, 150, 3, 3, features=[UnitFeature.Flying]),
             UnitTypeId.BANSHEE: UnitData(
                 150, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying, UnitFeature.Cloak]
             ),
@@ -314,8 +318,13 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.RAVAGER: UnitData(75 + 25, 75 + 25, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.RAVAGERCOCOON: UnitData(75 + 25, 75 + 25, 3, 3, features=[]),
             UnitTypeId.HYDRALISK: UnitData(100, 50, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
-            UnitTypeId.LURKERMP: UnitData(50, 100, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
-            UnitTypeId.LURKERMPEGG: UnitData(50, 100, 3, 3, features=[]),
+            UnitTypeId.LURKERMP: UnitData(
+                50 + 100, 100 + 50, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]
+            ),
+            UnitTypeId.LURKERMPBURROWED: UnitData(
+                50 + 100, 100 + 50, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Cloak]
+            ),
+            UnitTypeId.LURKERMPEGG: UnitData(50 + 100, 100 + 50, 3, 3, features=[]),
             UnitTypeId.INFESTOR: UnitData(100, 150, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.INFESTEDTERRAN: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.INFESTEDCOCOON: UnitData(0, 0, 0, 0.5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
@@ -400,7 +409,7 @@ class UnitValue(ManagerBase, IUnitValues):
                 features=[UnitFeature.Structure, UnitFeature.ShootsAir, UnitFeature.HitsGround, UnitFeature.Detector],
             ),
             UnitTypeId.SHIELDBATTERY: UnitData(100, 0, 0, 2, 29, features=[UnitFeature.Structure]),
-            UnitTypeId.WARPGATE: UnitData(0, 0, 0, 0, None, features=[UnitFeature.Structure]),
+            UnitTypeId.WARPGATE: UnitData(150, 0, 0, 0, None, features=[UnitFeature.Structure]),
             UnitTypeId.CYBERNETICSCORE: UnitData(150, 0, 0, 0, 36, features=[UnitFeature.Structure]),
             UnitTypeId.TWILIGHTCOUNCIL: UnitData(150, 100, 0, 0, 36, features=[UnitFeature.Structure]),
             UnitTypeId.ROBOTICSFACILITY: UnitData(200, 100, 0, 0, 46, features=[UnitFeature.Structure]),
@@ -409,6 +418,9 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.DARKSHRINE: UnitData(150, 150, 0, 0, 71, features=[UnitFeature.Structure]),
             UnitTypeId.ROBOTICSBAY: UnitData(150, 150, 0, 0, 46, features=[UnitFeature.Structure]),
             UnitTypeId.FLEETBEACON: UnitData(300, 200, 0, 0, 43, features=[UnitFeature.Structure]),
+            UnitTypeId.ORACLESTASISTRAP: UnitData(
+                0, 0, 0, 1, 4, features=[UnitFeature.Structure, UnitFeature.HitsGround]
+            ),
             # Zerg
             UnitTypeId.HATCHERY: UnitData(300 + 50, 0, 0, 0, 71, features=[UnitFeature.Structure]),
             UnitTypeId.EXTRACTOR: UnitData(25 + 50, 0, 0, 0, 21, features=[UnitFeature.Structure]),
@@ -466,6 +478,8 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.BANELING: lambda u: 0.1,
             UnitTypeId.SENTRY: lambda u: 5,
             UnitTypeId.VOIDRAY: lambda u: 6,
+            UnitTypeId.WIDOWMINEBURROWED: lambda u: 5,
+            UnitTypeId.ORACLESTASISTRAP: lambda u: 5,
         }
 
         self._air_range_dict: Dict[UnitTypeId, Callable[[Unit], float]] = {
@@ -474,6 +488,7 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.BATTLECRUISER: lambda u: 6,
             UnitTypeId.SENTRY: lambda u: 5,
             UnitTypeId.VOIDRAY: lambda u: 6,
+            UnitTypeId.WIDOWMINEBURROWED: lambda u: 5,
         }
 
         def lurker_range(unit: Unit):
