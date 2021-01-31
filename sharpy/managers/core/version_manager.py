@@ -30,8 +30,6 @@ class VersionManager(ManagerBase):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        if "5.0.5" in self.ai.game_info.map_name:
-            self.use_balance_505 = True
 
         response = await self.client.ping()
         self.full_version = response.ping.game_version
@@ -42,6 +40,13 @@ class VersionManager(ManagerBase):
             self.short_version = f"{splits[0]}.{splits[1]}.{splits[2]}"
 
         self.knowledge.print(self.full_version, "Version")
+
+        if "5.0.5" in self.ai.game_info.map_name:
+            self.use_balance_505 = True
+            if self.base_version != GameVersion.V_4_10_0:
+                msg = "5.0.5 detected on different build than 4.10.0. You should only use balance mod on 4.10.0!"
+                self.knowledge.print(msg, "Version")
+
         self.configure_enums()
 
         self.configure_upgrades()
