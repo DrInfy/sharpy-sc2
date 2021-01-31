@@ -43,6 +43,7 @@ class VersionManager(ManagerBase):
 
         if "5.0.5" in self.ai.game_info.map_name:
             self.use_balance_505 = True
+            self.knowledge.print("5.0.5 Balance mod recognized.", "Version")
             if self.base_version != GameVersion.V_4_10_0:
                 msg = "5.0.5 detected on different build than 4.10.0. You should only use balance mod on 4.10.0!"
                 self.knowledge.print(msg, "Version")
@@ -144,6 +145,10 @@ class VersionManager(ManagerBase):
             )
 
     def set_version_to_410_with_new_balance(self):
+        from sys import platform
+
+        is_linux = platform == "linux" or platform == "linux2"
+
         self._set_enum_mapping(
             UnitTypeId,
             {
@@ -170,15 +175,9 @@ class VersionManager(ManagerBase):
         self._set_enum_mapping(
             BuffId, {BuffId.INHIBITORZONETEMPORALFIELD: 292, BuffId.RESONATINGGLAIVESPHASESHIFT: 293,},
         )
-        self._set_enum_mapping(
-            UpgradeId,
-            {
-                UpgradeId.SUNDERINGIMPACT: 298,
-                UpgradeId.AMPLIFIEDSHIELDING: 299,
-                UpgradeId.PSIONICAMPLIFIERS: 300,
-                UpgradeId.SECRETEDCOATING: 301,
-            },
-        )
+
+        # UpgradeIds not changed
+
         self._set_enum_mapping(
             BuffId,
             {
@@ -187,6 +186,15 @@ class VersionManager(ManagerBase):
                 BuffId.RAVENSHREDDERMISSILEARMORREDUCTIONUISUBTRUCT: 295,
             },
         )
+
+        if is_linux:
+            self._set_enum_mapping(
+                AbilityId,
+                {
+                    AbilityId.BATTERYOVERCHARGE_BATTERYOVERCHARGE: 3815,
+                    AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD: 3817,
+                },
+            )
 
     def _set_enum_mapping(self, enum: Any, items: Dict[Any, int]):
         for enum_key, value in items.items():
