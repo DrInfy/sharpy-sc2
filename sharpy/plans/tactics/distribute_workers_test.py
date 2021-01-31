@@ -123,6 +123,8 @@ async def mock_knowledge(ai) -> Knowledge:
     knowledge.version_manager.start = fake
     knowledge.pathing_manager.start = fake
     knowledge.pathing_manager.path_finder_terrain = mock.Mock()
+    knowledge.pathing_manager.map.get_zone = lambda param: 1 if param.distance_to(ai.start_location) < 12 else 2
+
     knowledge.pathing_manager.path_finder_terrain.find_path = lambda p1, p2: (
         [p1, p2],
         math.hypot(p1[0] - p2[0], p1[1] - p2[1]),
