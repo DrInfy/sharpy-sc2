@@ -25,10 +25,14 @@ class VersionManager(ManagerBase):
         self.moved_upgrades: Dict[UpgradeId, UnitTypeId] = {}
         # You have to manually check this
         self.disabled_abilities: Set[AbilityId] = set()
+        self.use_balance_505 = False
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+        if "5.0.5" in self.ai.game_info.map_name:
+            self.use_balance_505 = True
+
         response = await self.client.ping()
         self.full_version = response.ping.game_version
         self.base_version = response.ping.base_build
@@ -39,6 +43,7 @@ class VersionManager(ManagerBase):
 
         self.knowledge.print(self.full_version, "Version")
         self.configure_enums()
+
         self.configure_upgrades()
         self.configure_abilities()
 
@@ -49,6 +54,10 @@ class VersionManager(ManagerBase):
         pass
 
     def configure_enums(self):
+        if self.use_balance_505:
+            self.set_version_to_410_with_new_balance()
+            return
+
         if self.base_version < GameVersion.V_5_0_3:
             self._set_enum_mapping(
                 UpgradeId,
@@ -124,10 +133,55 @@ class VersionManager(ManagerBase):
                     UnitTypeId.MINERALFIELD450: 1961,
                 },
             )
-        if self.base_version < GameVersion.V_4_12_0:
+        if GameVersion.V_4_10_0 < self.base_version < GameVersion.V_4_12_0:
             self._set_enum_mapping(
                 AbilityId, {AbilityId.AMORPHOUSARMORCLOUD_AMORPHOUSARMORCLOUD: 3801},
             )
+
+    def set_version_to_410_with_new_balance(self):
+        self._set_enum_mapping(
+            UnitTypeId,
+            {
+                UnitTypeId.ACCELERATIONZONESMALL: 1971,
+                UnitTypeId.ACCELERATIONZONEMEDIUM: 1972,
+                UnitTypeId.ACCELERATIONZONELARGE: 1973,
+                UnitTypeId.ACCELERATIONZONEFLYINGSMALL: 1974,
+                UnitTypeId.ACCELERATIONZONEFLYINGMEDIUM: 1975,
+                UnitTypeId.ACCELERATIONZONEFLYINGLARGE: 1976,
+                UnitTypeId.INHIBITORZONEFLYINGSMALL: 1977,
+                UnitTypeId.INHIBITORZONEFLYINGMEDIUM: 1978,
+                UnitTypeId.INHIBITORZONEFLYINGLARGE: 1979,
+                UnitTypeId.MINERALFIELDOPAQUE: 1983,
+                UnitTypeId.MINERALFIELDOPAQUE900: 1984,
+                UnitTypeId.ASSIMILATORRICH: 1955,
+                UnitTypeId.EXTRACTORRICH: 1956,
+                UnitTypeId.INHIBITORZONESMALL: 1957,
+                UnitTypeId.INHIBITORZONEMEDIUM: 1958,
+                UnitTypeId.INHIBITORZONELARGE: 1959,
+                UnitTypeId.REFINERYRICH: 1960,
+                UnitTypeId.MINERALFIELD450: 1961,
+            },
+        )
+        self._set_enum_mapping(
+            BuffId, {BuffId.INHIBITORZONETEMPORALFIELD: 292, BuffId.RESONATINGGLAIVESPHASESHIFT: 293,},
+        )
+        self._set_enum_mapping(
+            UpgradeId,
+            {
+                UpgradeId.SUNDERINGIMPACT: 298,
+                UpgradeId.AMPLIFIEDSHIELDING: 299,
+                UpgradeId.PSIONICAMPLIFIERS: 300,
+                UpgradeId.SECRETEDCOATING: 301,
+            },
+        )
+        self._set_enum_mapping(
+            BuffId,
+            {
+                BuffId.INHIBITORZONETEMPORALFIELD: 292,
+                BuffId.RESONATINGGLAIVESPHASESHIFT: 293,
+                BuffId.RAVENSHREDDERMISSILEARMORREDUCTIONUISUBTRUCT: 295,
+            },
+        )
 
     def _set_enum_mapping(self, enum: Any, items: Dict[Any, int]):
         for enum_key, value in items.items():
@@ -137,6 +191,9 @@ class VersionManager(ManagerBase):
             self.print(f"Setting {enum_key.name} to {enum_key.value}")
 
     def configure_upgrades(self):
+        if self.use_balance_505:
+            return
+
         if self.base_version < GameVersion.V_5_0_3:
             self.disabled_upgrades.add(UpgradeId.TEMPESTGROUNDATTACKUPGRADE)
 
@@ -147,7 +204,15 @@ class VersionManager(ManagerBase):
             self.moved_upgrades[UpgradeId.MEDIVACINCREASESPEEDBOOST] = UnitTypeId.STARPORTTECHLAB
             self.moved_upgrades[UpgradeId.LIBERATORAGRANGEUPGRADE] = UnitTypeId.STARPORTTECHLAB
 
+        if self.base_version > GameVersion.V_4_10_0:
+            # Added in 4.10.1
+            self.disabled_upgrades.add(UpgradeId.ENHANCEDSHOCKWAVES)
+
     def configure_abilities(self):
+        if self.use_balance_505:
+            self.disabled_abilities.add(AbilityId.INFESTEDTERRANS_INFESTEDTERRANS)
+            return
+
         if self.base_version < GameVersion.V_4_12_0:
             self.disabled_abilities.add(AbilityId.BATTERYOVERCHARGE_BATTERYOVERCHARGE)
         if self.base_version < GameVersion.V_4_11_0:
