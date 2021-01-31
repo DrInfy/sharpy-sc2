@@ -173,7 +173,7 @@ class VersionManager(ManagerBase):
             },
         )
         self._set_enum_mapping(
-            BuffId, {BuffId.INHIBITORZONETEMPORALFIELD: 292, BuffId.RESONATINGGLAIVESPHASESHIFT: 293,},
+            BuffId, {BuffId.INHIBITORZONETEMPORALFIELD: 292, BuffId.RESONATINGGLAIVESPHASESHIFT: 293},
         )
 
         # UpgradeIds not changed
