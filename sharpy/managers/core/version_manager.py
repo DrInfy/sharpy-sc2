@@ -8,6 +8,7 @@ from .manager_base import ManagerBase
 
 
 class GameVersion(IntEnum):
+    V_5_0_6 = 83830
     V_5_0_3 = 81433
     V_5_0_0 = 81009
     V_4_12_0 = 80188
@@ -40,8 +41,11 @@ class VersionManager(ManagerBase):
             self.short_version = f"{splits[0]}.{splits[1]}.{splits[2]}"
 
         self.knowledge.print(self.full_version, "Version")
+        if "5.0.6" in self.ai.game_info.map_name:
+            self.knowledge.print("5.0.6 Balance mod recognized.", "Version")
+            self.base_version = GameVersion.V_5_0_6
 
-        if "5.0.5" in self.ai.game_info.map_name:
+        elif "5.0.5" in self.ai.game_info.map_name:
             self.use_balance_505 = True
             self.knowledge.print("5.0.5 Balance mod recognized.", "Version")
             if self.base_version != GameVersion.V_4_10_0:
@@ -217,7 +221,7 @@ class VersionManager(ManagerBase):
             self.moved_upgrades[UpgradeId.MEDIVACINCREASESPEEDBOOST] = UnitTypeId.STARPORTTECHLAB
             self.moved_upgrades[UpgradeId.LIBERATORAGRANGEUPGRADE] = UnitTypeId.STARPORTTECHLAB
 
-        if self.base_version > GameVersion.V_4_10_0:
+        if self.base_version <= GameVersion.V_4_10_0:
             # Added in 4.10.1
             self.disabled_upgrades.add(UpgradeId.ENHANCEDSHOCKWAVES)
 
