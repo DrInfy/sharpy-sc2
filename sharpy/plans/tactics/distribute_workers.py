@@ -283,8 +283,10 @@ class DistributeWorkers(ActBase):
                     new_work = zone.check_best_mineral_field()
                     break
 
-        self.print(f"New work found, gathering {new_work.type_id} {new_work.tag}!")
-        self.assign_to_work(worker, new_work)
+        if new_work:
+            self.print(f"New work found, gathering {new_work.type_id} {new_work.tag}!")
+            self.assign_to_work(worker, new_work)
+
         return True  # Always non-blocking
 
     def get_new_work(self, worker: Unit, last_work_status: Optional[WorkStatus] = None) -> Optional[Unit]:

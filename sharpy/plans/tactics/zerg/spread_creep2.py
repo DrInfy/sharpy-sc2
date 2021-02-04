@@ -3,6 +3,7 @@ from typing import Optional, Dict, Set
 import numpy as np
 
 from sc2.units import Units
+from sharpy.interfaces import IBuildingSolver
 from sharpy.managers.core import BuildingSolver
 from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
@@ -34,9 +35,9 @@ areas = {BuildArea.Empty, BuildArea.Ramp, BuildArea.BuildingPadding}
 
 
 class SpreadCreepV2(ActBase):
-    def __init__(self):
-        self.building_solver: BuildingSolver = None
+    building_solver: IBuildingSolver
 
+    def __init__(self):
         # Contains all the tumor locations that the zerg bot should aim for
         self.target_tumor_locations = []
         # Filled later in 'update_available_tumor_locations' function
@@ -48,7 +49,7 @@ class SpreadCreepV2(ActBase):
         super().__init__()
 
     async def start(self, knowledge: "Knowledge"):
-        self.building_solver = knowledge.building_solver
+        self.building_solver = knowledge.get_required_manager(IBuildingSolver)
         self.ai = knowledge.ai
         self.create_target_tumor_locations()
         self.fill_reserved_expansion_positions()
@@ -214,7 +215,7 @@ class SpreadCreepV2(ActBase):
 
     def get_next_creep_tumor_position2(self, tumor: Unit) -> Optional[Point2]:
         """ The old version of the find creep tumor locations in case the one above find a suitable location. """
-        towards = self.knowledge.enemy_main_zone.center_location
+        towards = self.zone_manager.enemy_main_zone.center_location
 
         # iterate a few times so we find a suitable position
         for i in range(10):
