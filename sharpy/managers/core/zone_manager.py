@@ -43,6 +43,8 @@ class MapName(enum.Enum):
     PillarsofGoldLE = 20
     DeathAuraLE = 21
     EternalEmpireLE = 22
+    RomanticideLE = 23
+    AscensiontoAiurLE = 24
 
 
 MAIN_ZONE_SIZE_CHANGES: Dict[MapName, float] = {
@@ -98,6 +100,10 @@ def recognize_map(map_name: str, height_hash: int) -> MapName:
         return MapName.DeathAuraLE
     if height_hash == 4077698:
         return MapName.EternalEmpireLE
+    if height_hash == 4099000:
+        return MapName.AscensiontoAiurLE
+    if height_hash == 3756032:
+        return MapName.RomanticideLE
     return MapName.Unknown
 
 
