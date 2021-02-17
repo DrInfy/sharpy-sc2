@@ -171,12 +171,23 @@ class UnitRoleManager(ManagerBase):
         for unit in role_units.sorted_by_distance_to(position):
             enough_air_power = current_power.air_power >= power.air_presence * 1.1
             enough_ground_power = current_power.ground_power >= power.ground_presence * 1.1
+            utility_defender = self.unit_values.can_assist_defense(unit)
 
-            if not self.unit_values.can_shoot_air(unit) and not enough_air_power and enough_ground_power:
+            if (
+                not self.unit_values.can_shoot_air(unit)
+                and not utility_defender
+                and not enough_air_power
+                and enough_ground_power
+            ):
                 # Don't pull any more units that can't actually shoot the targets
                 continue
 
-            if not self.unit_values.can_shoot_ground(unit) and enough_air_power and not enough_ground_power:
+            if (
+                not self.unit_values.can_shoot_ground(unit)
+                and not utility_defender
+                and enough_air_power
+                and not enough_ground_power
+            ):
                 # Don't pull any more units that can't actually shoot the targets
                 continue
 

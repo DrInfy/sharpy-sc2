@@ -108,5 +108,6 @@ class MicroRules(Component):
         self.unit_micros[UnitTypeId.BATTLECRUISER] = MicroBattleCruisers()
         self.unit_micros[UnitTypeId.RAVEN] = MicroRavens()
         self.unit_micros[UnitTypeId.MEDIVAC] = MicroMedivacs()
+        self.unit_micros[UnitTypeId.LIBERATOR] = MicroLiberators()
 
         self.generic_micro = GenericMicro()

@@ -72,6 +72,11 @@ class IUnitValues(ABC):
         pass
 
     @abstractmethod
+    def can_assist_defense(self, unit: Unit) -> bool:
+        """ Returns true when unit is an utility unit that can help defend even if it cannot attack correct targets itself."""
+        pass
+
+    @abstractmethod
     def real_range(self, unit: Unit, other: Unit) -> float:
         """Returns real range for a unit and against another unit, taking both units radius into account."""
         pass

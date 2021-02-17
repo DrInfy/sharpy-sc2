@@ -225,6 +225,21 @@ class UnitValue(ManagerBase, IUnitValues):
         AbilityId.BURROWDOWN_DRONE,
     }
 
+    any_defender_types = {
+        UnitTypeId.LIBERATOR,
+        UnitTypeId.LIBERATORAG,
+        UnitTypeId.RAVEN,
+        UnitTypeId.MEDIVAC,
+        UnitTypeId.WARPPRISM,
+        UnitTypeId.WARPPRISMPHASING,
+        UnitTypeId.HIGHTEMPLAR,
+        UnitTypeId.VIPER,
+        UnitTypeId.INFESTOR,
+        UnitTypeId.INFESTORBURROWED,
+        UnitTypeId.VIKINGFIGHTER,
+        UnitTypeId.VIKINGASSAULT,
+    }
+
     def __init__(self):
         # By storing data in the instance, can skip import conflicts.
         super().__init__()
@@ -638,6 +653,9 @@ class UnitValue(ManagerBase, IUnitValues):
 
     def can_shoot_ground(self, unit: Unit) -> bool:
         return self.ground_range(unit) > 0
+
+    def can_assist_defense(self, unit: Unit) -> bool:
+        return unit.type_id in UnitValue.any_defender_types
 
     def real_range(self, unit: Unit, other: Unit) -> float:
         """Returns real range for a unit and against another unit, taking both units radius into account."""
