@@ -3,11 +3,7 @@ from sc2.ids.upgrade_id import UpgradeId
 from sc2.ids.ability_id import AbilityId
 
 from sharpy.knowledges import KnowledgeBot, Knowledge
-from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sharpy.plans.acts import *
-from sharpy.plans.acts.terran import *
-from sharpy.plans.require import *
-from sharpy.plans.tactics import *
+from sharpy.plans.terran import *
 
 from sharpy.plans.tactics.terran import CallMule, LowerDepots
 from sharpy.plans.tactics.terran.addon_swap import PlanAddonSwap, ExecuteAddonSwap
@@ -226,7 +222,10 @@ class TerranSafeTvT(KnowledgeBot):
             CallMule(50),
             LowerDepots(),
             [
+                Repair(),
+                ContinueBuilding(),
                 PlanZoneGather(),
+                PlanWorkerOnlyDefense(),
                 PlanZoneDefense(),
                 Step(TechReady(UpgradeId.STIMPACK), PlanZoneAttack(4)),
                 PlanFinishEnemy(),
