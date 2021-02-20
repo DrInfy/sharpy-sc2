@@ -301,7 +301,7 @@ class DefaultMicroMethods:
             return tick < 8
 
         if unit.type_id == UnitTypeId.CARRIER:
-            tick = step.ai.state.game_loop % 32
-            return tick < 8
+            tick = step.ai.state.game_loop % 48  # 47.936
+            return tick < 20
 
         return unit.weapon_cooldown <= delay_to_shoot
