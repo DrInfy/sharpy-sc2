@@ -43,6 +43,8 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.enemy_numpy_vectors: List[np.ndarray] = []
         self._mineral_fields: Dict[Point2, Unit] = {}
         self._mineral_wall: Units = {}
+        # Set this to false to provide cloaked units to zones and unit micro making use of enemy_in_range method.
+        self.only_targetable_enemies_default: bool = True
 
     @property
     def own_unit_cache(self) -> Dict[UnitTypeId, Units]:
@@ -129,7 +131,12 @@ class UnitCacheManager(ManagerBase, IUnitCache):
 
         return units
 
-    def enemy_in_range(self, position: Point2, range: Union[int, float], only_targetable=True) -> Units:
+    def enemy_in_range(
+        self, position: Point2, range: Union[int, float], only_targetable: Optional[bool] = None
+    ) -> Units:
+        if only_targetable is None:
+            only_targetable = self.only_targetable_enemies_default
+
         units = Units([], self.ai)
         if self.enemy_tree is None:
             return units
