@@ -67,7 +67,8 @@ class Expand(ActBase):
         self.roles = knowledge.get_required_manager(UnitRoleManager)
 
     async def execute(self) -> bool:
-        expand_here: "Zone" = None
+        expand_here: Optional["Zone"] = None
+        zone_currently_expanding: Optional["Zone"] = None
         expand_now = False
         active_bases = self.current_active_base_count
         zones = self.zone_manager.expansion_zones
@@ -76,10 +77,13 @@ class Expand(ActBase):
             zones = sorted(zones, key=lambda z: z.zone_index == self.priority_base_index, reverse=True)
 
         for zone in zones:  # type: "Zone"
+            expanding = self.expanding_in(zone)
             if expand_here is None and zone.should_expand_here:
-                if not self.expanding_in(zone):
+                if not expanding:
                     expand_here = zone
                     expand_now = zone.safe_expand_here
+            if expanding:
+                zone_currently_expanding = zone
 
         if active_bases >= self.to_count:
             # We have expanded enough
@@ -98,7 +102,10 @@ class Expand(ActBase):
             return False
 
         # Inform our logic that we're looking to expand
-        self.gather_manager.set_expanding_to(expand_here.center_location)
+        if zone_currently_expanding:
+            self.gather_manager.set_expanding_to(zone_currently_expanding.center_location)
+        else:
+            self.gather_manager.set_expanding_to(expand_here.center_location)
 
         if pending_count:
             if self.has_build_order(worker):
