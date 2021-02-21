@@ -182,7 +182,7 @@ class TerranSafeTvT(KnowledgeBot):
                 Step(
                     None,
                     BuildAddon(UnitTypeId.BARRACKSTECHLAB, UnitTypeId.BARRACKS, 1),
-                    skip=UnitReady(UnitTypeId.FACTORYTECHLAB),
+                    skip=Once(Any(UnitReady(UnitTypeId.TECHLAB), UnitReady(UnitTypeId.FACTORYTECHLAB))),
                 ),
                 # Third gas at natural should be started at 3:20 before the CC finishes
                 BuildGas(3),
@@ -191,15 +191,16 @@ class TerranSafeTvT(KnowledgeBot):
                 Step(Time(4 * 60 + 20), Expand(3),),
                 AutoDepot(),
                 Step(
-                    UnitExists(UnitTypeId.RAVEN, 2, include_pending=True),
+                    UnitExists(UnitTypeId.RAVEN, 2, include_pending=True, include_killed=True),
                     BuildAddon(UnitTypeId.BARRACKSREACTOR, UnitTypeId.BARRACKS, 1),
-                    skip=UnitExists(UnitTypeId.RAVEN, 2),
+                    skip=UnitExists(UnitTypeId.BARRACKSTECHLAB),
                 ),
                 Step(
-                    UnitExists(UnitTypeId.VIKINGFIGHTER, 2, include_pending=True), GridBuilding(UnitTypeId.BARRACKS, 3),
+                    UnitExists(UnitTypeId.VIKINGFIGHTER, 2, include_pending=True, include_killed=True),
+                    GridBuilding(UnitTypeId.BARRACKS, 3),
                 ),
                 Step(
-                    UnitExists(UnitTypeId.VIKINGFIGHTER, 4, include_pending=True),
+                    UnitExists(UnitTypeId.VIKINGFIGHTER, 4, include_pending=True, include_killed=True),
                     GridBuilding(UnitTypeId.ENGINEERINGBAY, 2),
                 ),
                 BuildOrder(
