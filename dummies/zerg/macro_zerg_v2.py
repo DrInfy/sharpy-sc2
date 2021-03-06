@@ -81,7 +81,7 @@ class MacroZergV2(KnowledgeBot):
             attack,
             PlanFinishEnemy(),
         ]
-        return BuildOrder(MacroBuild(), tactics,)
+        return CounterTerranTie([MacroBuild(), tactics])
 
 
 class LadderBot(MacroZergV2):
