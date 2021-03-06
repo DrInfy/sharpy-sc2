@@ -126,10 +126,20 @@ class ZoneManager(ManagerBase, IZoneManager):
         self.gather_points: List[int] = [0, 1]
         self.zone_sorted_by = None
         self.found_enemy_start: Optional[Point2] = None
+        self._enemy_zones: List[Zone] = []
+        self._our_zones: List[Zone] = []
 
     @property
     def expansion_zones(self) -> List[Zone]:
         return self._expansion_zones
+
+    @property
+    def our_zones(self) -> List[Zone]:
+        return self._our_zones
+
+    @property
+    def enemy_zones(self) -> List[Zone]:
+        return self._enemy_zones
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -349,7 +359,10 @@ class ZoneManager(ManagerBase, IZoneManager):
     # endregion
 
     # region Update
+
     async def update(self):
+        self._enemy_zones.clear()
+        self._our_zones.clear()
         if self.knowledge.iteration == 0:
             self.init_zone_pathing()
 
@@ -358,6 +371,10 @@ class ZoneManager(ManagerBase, IZoneManager):
 
         for zone in self.zones.values():  # type: Zone
             zone.update()
+            if zone.is_ours:
+                self._our_zones.append(zone)
+            if zone.is_enemys:
+                self._enemy_zones.append(zone)
 
         if not self._zones_truly_sorted and self.enemy_start_location_found:
             self._zones_truly_sorted = True

@@ -15,6 +15,16 @@ class IZoneManager(ABC):
 
     @property
     @abstractmethod
+    def our_zones(self) -> List[Zone]:
+        pass
+
+    @property
+    @abstractmethod
+    def enemy_zones(self) -> List[Zone]:
+        pass
+
+    @property
+    @abstractmethod
     def unscouted_zones(self) -> List[Zone]:
         """Returns a list of all zones that have not been scouted."""
         pass
