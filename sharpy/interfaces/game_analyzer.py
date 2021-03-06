@@ -21,6 +21,11 @@ class IGameAnalyzer(ABC):
 
     @property
     @abstractmethod
+    def enemy_predict_power(self) -> ExtendedPower:
+        pass
+
+    @property
+    @abstractmethod
     def our_income_advantage(self) -> "Advantage":
         pass
 
