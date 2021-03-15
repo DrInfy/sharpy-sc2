@@ -22,7 +22,7 @@ class Step(ActBase):
         skip_until: Optional[Union[RequireBase, Callable[["BotAI"], bool]]] = None,
     ):
         assert requirement is None or isinstance(requirement, RequireBase) or isinstance(requirement, Callable)
-        assert action is None or isinstance(action, ActBase)
+        assert action is None or isinstance(action, ActBase) or isinstance(action, Callable)
         assert skip is None or isinstance(skip, RequireBase) or isinstance(skip, Callable)
         assert skip_until is None or isinstance(skip_until, RequireBase) or isinstance(skip_until, Callable)
         super().__init__()

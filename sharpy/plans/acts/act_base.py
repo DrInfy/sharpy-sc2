@@ -175,7 +175,7 @@ class ActBase(Component, ABC):
             count += self.cache.own(EQUIVALENTS_FOR_TECH_PROGRESS[unit_type]).amount
         return count
 
-    def get_worker_builder(self, position: Point2, priority_tag: int) -> Optional[Unit]:
+    def get_worker_builder(self, position: Point2, priority_tag: Optional[int]) -> Optional[Unit]:
         """
         Gets best worker to build in the selected location.
         Priorities:
