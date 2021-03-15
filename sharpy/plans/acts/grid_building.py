@@ -16,6 +16,47 @@ from sharpy.interfaces import IBuildingSolver, IIncomeCalculator
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
 
+class WorkerStuckStatus:
+    def __init__(self):
+        self.tag_stuck: Optional[int] = None
+        self.last_move_detected_time: Optional[float] = None
+        self.current_tag: Optional[int] = None
+        self.last_moved_position: Optional[Point2] = None
+        self.last_iteration_asked = 0
+
+    def need_new_worker(self, current_worker: Unit, time: float, target: Point2, iteration: int) -> bool:
+        if self.last_iteration_asked < iteration - 1:
+            # reset
+            self.tag_stuck = None
+            self.current_tag = current_worker.tag
+            self.last_move_detected_time = time
+            self.last_moved_position = current_worker.position
+            return False
+
+        self.last_iteration_asked = iteration
+
+        if current_worker.tag == self.current_tag:
+            if target.distance_to_point2(current_worker.position) < 2.5:
+                return False  # Worker is close enough to destination, not stuck
+            if self.last_moved_position is None:
+                self.last_moved_position = current_worker.position
+            elif self.last_moved_position.distance_to_point2(current_worker.position) > 0.5:
+                self.last_move_detected_time = time
+                self.last_moved_position = current_worker.position
+            elif time - self.last_move_detected_time > 1:
+                self.tag_stuck = self.current_tag
+                return True
+        elif self.tag_stuck == current_worker.tag:
+            return True
+
+        # reset
+        self.tag_stuck = None
+        self.current_tag = current_worker.tag
+        self.last_move_detected_time = time
+        self.last_moved_position = current_worker.position
+        return False
+
+
 class GridBuilding(ActBuilding):
     building_solver: IBuildingSolver
     income_calculator: IIncomeCalculator
@@ -40,6 +81,7 @@ class GridBuilding(ActBuilding):
         self.building_solver: IBuildingSolver = None
         self.make_pylon = None
         self.last_iteration_moved = -10
+        self.worker_stuck: WorkerStuckStatus = WorkerStuckStatus()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
@@ -80,6 +122,8 @@ class GridBuilding(ActBuilding):
             if self.make_pylon is not None:
                 self.make_pylon.to_count = len(self.cache.own(UnitTypeId.PYLON).ready) + 1
                 await self.make_pylon.execute()
+            else:
+                self.print(f"Can't find free position to build {self.unit_type.name} in!")
             return False  # Stuck and cannot proceed
 
         worker = self.get_worker_builder(position, self.builder_tag)  # type: Unit
@@ -87,6 +131,11 @@ class GridBuilding(ActBuilding):
         if worker is None:
             self.builder_tag = None
             return False  # Cannot proceed
+
+        if self.worker_stuck.need_new_worker(worker, self.ai.time, position, self.knowledge.iteration):
+            self.print(f"Worker {worker.tag} was found stuck!")
+            self.roles.set_task(UnitTask.Reserved, worker)  # Set temp reserved for the stuck worker.
+            worker = self.get_worker_builder(position, None)
 
         if self.has_build_order(worker):
             self.set_worker(worker)
@@ -106,7 +155,7 @@ class GridBuilding(ActBuilding):
 
         adjusted_income = self.income_calculator.mineral_income * 0.93  # 14 / 15 = 0.933333
 
-        if self.knowledge.can_afford(self.unit_type):
+        if self.knowledge.can_afford(self.unit_type, check_supply_cost=False):
             if wait_time <= 0:
                 self.set_worker(worker)
                 if worker.tag not in self.ai.unit_tags_received_action and not self.has_build_order(worker):
