@@ -10,6 +10,11 @@ from sharpy.general.extended_power import ExtendedPower
 class IUnitValues(ABC):
     @property
     @abstractmethod
+    def my_worker_type(self) -> Optional[UnitTypeId]:
+        pass
+
+    @property
+    @abstractmethod
     def enemy_worker_type(self) -> Optional[UnitTypeId]:
         pass
 
