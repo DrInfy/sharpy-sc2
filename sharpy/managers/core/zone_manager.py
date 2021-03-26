@@ -599,12 +599,6 @@ class ZoneManager(ManagerBase, IZoneManager):
         return zones
 
     @property
-    def our_zones(self) -> List[Zone]:
-        """Returns all of our own zones."""
-        ours = [z for z in self.zone_manager.all_zones if z.is_ours]
-        return ours
-
-    @property
     def enemy_start_zones(self) -> List[Zone]:
         """Returns all zones that are possible enemy start locations."""
         filtered = [z for z in self.all_zones if z.is_start_location]

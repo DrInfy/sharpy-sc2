@@ -67,12 +67,6 @@ class IZoneManager(ABC):
 
     @property
     @abstractmethod
-    def our_zones(self) -> List[Zone]:
-        """Returns all of our own zones."""
-        pass
-
-    @property
-    @abstractmethod
     def enemy_start_zones(self) -> List[Zone]:
         """Returns all zones that are possible enemy start locations."""
         pass
