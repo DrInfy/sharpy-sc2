@@ -1,7 +1,10 @@
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
+from sc2.game_state import EffectData
+from sc2.ids.effect_id import EffectId
+from sc2.position import Point2
 from sharpy.managers.core.manager_base import ManagerBase
-from sc2 import UnitTypeId, AbilityId
+from sc2 import UnitTypeId, AbilityId, Race
 from sc2.unit import Unit
 from sc2.units import Units
 
@@ -19,6 +22,18 @@ class CooldownManager(ManagerBase):
         self.adept_to_shade: Dict[int, int] = dict()
         self.shade_to_adept: Dict[int, int] = dict()
         self._shade_tags_handled: Set[int] = set()
+        self.own_liberator_zones: List[Tuple[int, Point2]] = []
+        self.enemy_lib_zones: List[Tuple[Point2, EffectData]] = []
+
+    @property
+    def enemy_liberator_zones(self) -> List[Tuple[Point2, EffectData]]:
+        if self.ai.race == Race.Terran:
+            return self.enemy_lib_zones
+
+        lib_zones: List[Tuple[Point2, EffectData]] = []
+        lib_zones.extend(self.cache.effects(EffectId.LIBERATORTARGETMORPHDELAYPERSISTENT))
+        lib_zones.extend(self.cache.effects(EffectId.LIBERATORTARGETMORPHPERSISTENT))
+        return lib_zones
 
     async def update(self):
         self.available_dict.clear()
@@ -33,8 +48,13 @@ class CooldownManager(ManagerBase):
         for i in range(0, len(self.ai.all_own_units)):
             self.available_dict[self.ai.all_own_units[i].tag] = result[i]
 
-        shades = self.cache.own(UnitTypeId.ADEPTPHASESHIFT)
+        if self.ai.race == Race.Protoss:
+            self.manage_shades()
+        elif self.ai.race == Race.Terran:
+            self.manage_liberation_zones()
 
+    def manage_shades(self):
+        shades = self.cache.own(UnitTypeId.ADEPTPHASESHIFT)
         if len(shades) == 0:
             self.adept_to_shade.clear()
             self.shade_to_adept.clear()
@@ -94,3 +114,54 @@ class CooldownManager(ManagerBase):
             self.used_dict[unit_tag] = ability_dict
 
         ability_dict[ability] = self.time
+
+    def get_liberation_zone(self, unit_tag: int) -> Optional[Point2]:
+        for tag, position in self.own_liberator_zones:
+            if tag == unit_tag:
+                return position
+        return None
+
+    def set_liberation_zone(self, unit_tag: int, target: Point2):
+        for i in range(0, len(self.own_liberator_zones))[::-1]:
+            tag, position = self.own_liberator_zones[i]
+            if tag == unit_tag:
+                self.own_liberator_zones.pop(i)
+        self.own_liberator_zones.append((unit_tag, target))
+
+    def manage_liberation_zones(self):
+        lib_zones: List[Tuple[Point2, EffectData]] = []
+        lib_zones.extend(self.cache.effects(EffectId.LIBERATORTARGETMORPHDELAYPERSISTENT))
+        lib_zones.extend(self.cache.effects(EffectId.LIBERATORTARGETMORPHPERSISTENT))
+
+        if not lib_zones:
+            self.own_liberator_zones.clear()
+            self.enemy_lib_zones = lib_zones
+        else:
+            for i in range(0, len(self.own_liberator_zones))[::-1]:
+                own_lib_zone = self.own_liberator_zones[i]
+                unit = self.cache.by_tag(own_lib_zone[0])
+
+                if unit is None or (
+                    unit.type_id != UnitTypeId.LIBERATORAG
+                    and (
+                        len(unit.orders) == 0
+                        or (
+                            unit.orders[0].ability.id != AbilityId.LIBERATORMORPHTOAG_LIBERATORAGMODE
+                            and unit.orders[0].ability.id != AbilityId.MORPH_LIBERATORAGMODE
+                        )
+                    )
+                ):
+                    self.own_liberator_zones.pop(i)
+                    continue
+
+                used_zone: Optional[Tuple[Point2, EffectData]] = None
+
+                for lib_zone in lib_zones:
+                    if own_lib_zone[1] == lib_zone[0]:
+                        used_zone = lib_zone
+                        break
+
+                if used_zone:
+                    lib_zones.remove(used_zone)
+
+            self.enemy_lib_zones = lib_zones
