@@ -1,41 +1,9 @@
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans.protoss import *
+from sharpy.plans.tactics.protoss import DarkTemplarAttack
 from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
-
-
-class DtPush(ActBase):
-    def __init__(self):
-        super().__init__()
-        self.dt_push_started = False
-        self.ninja_dt_tag = None
-
-    async def execute(self) -> bool:
-        # Start dark templar attack
-        dts = self.cache.own(UnitTypeId.DARKTEMPLAR).ready
-        if dts.amount >= 2 and not self.dt_push_started:
-            self.dt_push_started = True
-            dts = dts.random_group_of(2)
-            zone = self.zone_manager.enemy_main_zone
-            harash_dt = dts[0]
-            attack_dt = dts[1]
-            harash_dt.move(zone.center_location)
-            attack_dt.attack(zone.center_location)
-            self.roles.set_task(UnitTask.Reserved, harash_dt)
-            self.roles.set_task(UnitTask.Reserved, attack_dt)
-            self.ninja_dt_tag = harash_dt.tag
-
-        elif self.dt_push_started:
-            harash_dt = self.ai.units.find_by_tag(self.ninja_dt_tag)
-            if harash_dt is not None:
-                enemy_workers = self.ai.all_enemy_units.of_type(
-                    [UnitTypeId.SCV, UnitTypeId.PROBE, UnitTypeId.DRONE, UnitTypeId.MULE]
-                )
-                if enemy_workers.exists:
-                    target = enemy_workers.closest_to(harash_dt)
-                    harash_dt.attack(target)
-        return True
 
 
 class DarkTemplarRush(KnowledgeBot):
@@ -129,7 +97,7 @@ class DarkTemplarRush(KnowledgeBot):
             PlanZoneDefense(),
             RestorePower(),
             DistributeWorkers(),
-            DtPush(),
+            DarkTemplarAttack(),
             PlanZoneGather(),
             attack,
             PlanFinishEnemy(),
