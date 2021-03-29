@@ -54,7 +54,7 @@ class DarkTemplarRush(KnowledgeBot):
             ),
             Step(
                 UnitReady(UnitTypeId.GATEWAY, 1),
-                # ProtossUnit(UnitTypeId.ZEALOT, 1),
+                ProtossUnit(UnitTypeId.ZEALOT, 1),
                 TechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
             Step(None, ProtossUnit(UnitTypeId.STALKER), None),
