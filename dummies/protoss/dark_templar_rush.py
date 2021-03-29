@@ -54,7 +54,7 @@ class DarkTemplarRush(KnowledgeBot):
             ),
             Step(
                 UnitReady(UnitTypeId.GATEWAY, 1),
-#                ProtossUnit(UnitTypeId.ZEALOT, 1),
+                # ProtossUnit(UnitTypeId.ZEALOT, 1),
                 TechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
             Step(None, ProtossUnit(UnitTypeId.STALKER), None),
@@ -62,7 +62,7 @@ class DarkTemplarRush(KnowledgeBot):
         build_steps_units2 = [
             Step(
                 UnitExists(UnitTypeId.TWILIGHTCOUNCIL, 1),
-#                ProtossUnit(UnitTypeId.STALKER, 3),
+                ProtossUnit(UnitTypeId.STALKER, 3),
                 TechReady(UpgradeId.WARPGATERESEARCH, 1),
             ),
             Step(Minerals(400), ProtossUnit(UnitTypeId.ZEALOT)),
