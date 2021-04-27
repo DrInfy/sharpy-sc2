@@ -82,7 +82,6 @@ class Tech(ActBase):
                 if len(builder.orders) == 0 and builder.tag not in self.ai.unit_tags_received_action:
                     self.print(f"Started {self.upgrade_type.name}")
                     builder(creationAbilityID)
-                    self.knowledge.reserve(cost.minerals, cost.vespene)
                     return False
 
         if builders.ready.idle.exists:

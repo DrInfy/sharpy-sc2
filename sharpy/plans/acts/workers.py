@@ -111,4 +111,3 @@ class Workers(ActBase):
                 if self.knowledge.cooldown_manager.is_ready(builder.tag, self.ability):
                     if builder.train(self.unit_type):
                         self.print(f"{self.unit_type.name} from {builder.type_id.name} at {builder.position}")
-                        self.knowledge.reserve(self.cost.minerals, self.cost.vespene)

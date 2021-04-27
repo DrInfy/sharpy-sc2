@@ -86,6 +86,7 @@ class DefensiveBuilding(ActBase):
                     self.print(f"Building {self.unit_type.name} to {position}")
                     worker.build(self.unit_type, position)
                     self.set_worker(worker)
+                    return is_done
                 else:
                     self.print(f"Could not build {self.unit_type.name} to {position}")
             else:

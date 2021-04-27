@@ -118,7 +118,8 @@ class Expand(ActBase):
 
         if expand_now:
             if self.ai.can_afford(self.townhall_type):
-                await self.build_expansion(expand_here)
+                if await self.build_expansion(expand_here):
+                    return False
             else:
                 self.possibly_move_worker(expand_here)
 
@@ -176,12 +177,14 @@ class Expand(ActBase):
             self.roles.clear_task(self.builder_tag)
             self.builder_tag = None
 
-    async def build_expansion(self, expand_here: "Zone"):
+    async def build_expansion(self, expand_here: "Zone") -> bool:
         worker = self.get_worker_builder(expand_here.center_location, self.builder_tag)
 
         if worker is not None:
             self.print(f"Expanding to {expand_here.center_location}")
             worker.build(self.townhall_type, expand_here.center_location)
+            return True
+        return False
 
     async def debug_actions(self):
         if self.builder_tag is not None:

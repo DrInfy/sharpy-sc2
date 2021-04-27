@@ -101,10 +101,11 @@ class ActUnit(ActBase):
                         if builder.train(self.unit_type):
                             pos_formatted = f"({builder.position.x:.1f}, {builder.position.y:.1f})"
                             self.print(f"{self.unit_type.name} from {self.from_building.name} at {pos_formatted}")
-                            self.knowledge.reserve(cost.minerals, cost.vespene)
-                            break  # Only one at a time
-                    elif self.priority:
-                        self.knowledge.reserve(cost.minerals, cost.vespene)
+                            return False  # Only one at a time
+
+            if self.priority:
+                # No available builders, reserve cost to avoid starving priority task.
+                self.knowledge.reserve(cost.minerals, cost.vespene)
 
         elif self.priority:
             unit_data = self.ai._game_data.units[self.unit_type.value]
