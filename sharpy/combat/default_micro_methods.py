@@ -51,7 +51,8 @@ class DefaultMicroMethods:
                     combat.attack_to(group, target, move_type)
             else:
                 power = group.power
-                enemy_power = ExtendedPower(closest_enemies)
+                enemy_power = ExtendedPower(combat.unit_values)
+                enemy_power.add_units(closest_enemies.units)
 
                 is_in_combat = group.is_in_combat(closest_enemies)
 
