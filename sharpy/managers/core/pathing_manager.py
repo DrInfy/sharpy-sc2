@@ -202,7 +202,7 @@ class PathingManager(ManagerBase):
                 values[2].append(Point2.center(effect.positions))
             elif effect.id == EffectId.LURKERMP:
                 # Each lurker spine deals splash damage to a radius of 0.5
-                values = effect_dict.get(effect.id, (1000, 1, [], False))
+                values = effect_dict.get(effect.id, (200, 1, [], False))
                 values[2].extend(effect.positions)
 
             if values is not None and effect.id not in effect_dict:

@@ -41,7 +41,7 @@ class VersionManager(ManagerBase):
             self.short_version = f"{splits[0]}.{splits[1]}.{splits[2]}"
 
         self.knowledge.print(self.full_version, "Version")
-        if "5.0.6" in self.ai.game_info.map_name:
+        if "5.0.6" in self.ai.game_info.map_name or "AIE" in self.ai.game_info.map_name:
             self.knowledge.print("5.0.6 Balance mod recognized.", "Version")
             self.base_version = GameVersion.V_5_0_6
 

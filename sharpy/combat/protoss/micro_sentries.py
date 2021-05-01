@@ -34,12 +34,15 @@ class MicroSentries(GenericMicro):
         self.upcoming_fields: List[Point2] = []
         self.building_solver: Optional[BuildingSolver] = None
 
+        self.main_ramp_position: Optional[Point2] = None
+
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
 
         ramp_ff_movement = 2
         ramp = self.zone_manager.expansion_zones[0].ramp
-        self.main_ramp_position: Point2 = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
+        if ramp:
+            self.main_ramp_position = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
         self.building_solver = knowledge.get_manager(IBuildingSolver)
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
@@ -133,7 +136,10 @@ class MicroSentries(GenericMicro):
             #  and self.model == CombatModel.StalkerToSpeedlings
         return super().unit_solve_combat(unit, current_command)
 
-    def should_force_field(self, position: Point2) -> Optional[Action]:
+    def should_force_field(self, position: Optional[Point2]) -> Optional[Action]:
+        if position is None:
+            return None
+
         for ff in self.cache.force_fields:  # type: EffectData
             for position in ff.positions:
                 if position.distance_to(position) < 1.5:
