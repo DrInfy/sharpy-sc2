@@ -244,7 +244,7 @@ class ActBase(Component, ABC):
         build_worker: Optional[Unit] = None,
         random_alternative: bool = True,
         placement_step: int = 2,
-    ):
+    ) -> bool:
         if build_worker is None:
             build_worker = self.get_worker_builder(near, 0)
 
@@ -257,3 +257,5 @@ class ActBase(Component, ABC):
         )
         if pos and build_worker:
             build_worker.build(type_id, pos)
+            return True
+        return False

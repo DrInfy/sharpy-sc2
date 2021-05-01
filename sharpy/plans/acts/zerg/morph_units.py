@@ -44,8 +44,9 @@ class MorphUnit(ActBase):
                     pos = target.position
                     self.print(f"Morphing {target.type_id.name} at ({pos.x:.1f}, {pos.y:.1f})")
                     target(self.ability_type)
+                else:
+                    self.knowledge.reserve_costs(self.ability_type)
 
-                self.knowledge.reserve_costs(self.ability_type)
                 target_count += 1
 
                 if target_count >= self.target_count:
