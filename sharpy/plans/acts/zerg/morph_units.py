@@ -43,7 +43,7 @@ class MorphUnit(ActBase):
                 if self.knowledge.can_afford(self.ability_type):
                     pos = target.position
                     self.print(f"Morphing {target.type_id.name} at ({pos.x:.1f}, {pos.y:.1f})")
-                    target(self.ability_type)
+                    target(self.ability_type, subtract_cost=True, subtract_supply=True)
                 else:
                     self.knowledge.reserve_costs(self.ability_type)
 
