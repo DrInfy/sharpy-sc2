@@ -15,7 +15,12 @@ class PlanMainDefender(ActBase):
         self.roles = self.roles
         zone_manager = knowledge.get_required_manager(IZoneManager)
         base_ramp = zone_manager.expansion_zones[0].ramp
-        self.gather_point = base_ramp.top_center.towards(base_ramp.bottom_center, -4)
+        if base_ramp:
+            self.gather_point = base_ramp.top_center.towards(base_ramp.bottom_center, -4)
+        else:
+            self.gather_point = zone_manager.expansion_zones[0].center_location.towards(
+                zone_manager.enemy_start_location, 8
+            )
 
     async def execute(self):
         if self.knowledge.enemy_race != Race.Zerg:
