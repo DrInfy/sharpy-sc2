@@ -12,6 +12,7 @@ from sc2.unit import Unit
 
 from .act_building import ActBuilding
 from sharpy.interfaces import IBuildingSolver, IIncomeCalculator
+from sharpy.managers.core import PathingManager
 
 worker_trainers = {AbilityId.NEXUSTRAIN_PROBE, AbilityId.COMMANDCENTERTRAIN_SCV}
 
@@ -58,8 +59,10 @@ class WorkerStuckStatus:
 
 
 class GridBuilding(ActBuilding):
+
     building_solver: IBuildingSolver
     income_calculator: IIncomeCalculator
+    pather: Optional[PathingManager]
     last_iteration_moved: int
 
     def __init__(
@@ -86,6 +89,7 @@ class GridBuilding(ActBuilding):
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         self.building_solver = self.knowledge.get_required_manager(IBuildingSolver)
+        self.pather = self.knowledge.get_manager(PathingManager)
         self.income_calculator = self.knowledge.get_required_manager(IIncomeCalculator)
         if self.unit_type != UnitTypeId.PYLON:
             self.make_pylon: Optional[GridBuilding] = GridBuilding(UnitTypeId.PYLON, 0, 2)
@@ -209,7 +213,15 @@ class GridBuilding(ActBuilding):
         return False
 
     def adjust_build_to_move(self, position: Point2) -> Point2:
-        closest_zone = position.closest(map_to_point2s_center(self.zone_manager.expansion_zones))
+        closest_zone: Optional[Point2] = None
+        if self.pather:
+            zone_index = self.pather.map.get_zone(position)
+            if zone_index > 0:
+                closest_zone = self.zone_manager.expansion_zones[zone_index - 1].center_location
+
+        if closest_zone is None:
+            closest_zone = position.closest(map_to_point2s_center(self.zone_manager.expansion_zones))
+
         return position.towards(closest_zone, 1)
 
     async def debug_actions(self):
