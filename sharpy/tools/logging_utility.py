@@ -2,6 +2,11 @@ import sys
 
 import sc2
 
+# TODO: Remove this after sk-learn no longer throws warnings with numpy version.
+import warnings
+
+warnings.filterwarnings("ignore")
+
 
 class NonSharpyFilter:
     def __init__(self):

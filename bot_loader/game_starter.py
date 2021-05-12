@@ -1,17 +1,14 @@
 import glob
-import logging
 import os
 import random
-import sys
 import argparse
+from configparser import ConfigParser
 from datetime import datetime
 from typing import List, Optional, Dict
 
-from bot_loader import BotLadder
 from bot_loader.bot_definitions import BotDefinitions, races, builds, difficulty
 from config import get_config
 import sc2
-from bot_loader.loader import BotLoader
 from bot_loader.runner import MatchRunner
 from sc2 import maps, Result
 from sc2.paths import Paths
@@ -56,7 +53,7 @@ known_melee_maps = (
 
 class GameStarter:
     def __init__(self, definitions: BotDefinitions) -> None:
-        self.config = get_config()
+        self.config: ConfigParser = get_config()
 
         self.definitions = definitions
         self.players = definitions.playable
@@ -186,7 +183,11 @@ Builds:
         # Randomizer is to make it less likely that games started at the same time have same name
         file_name = f"{player2}_{map_name}_{time}_{randomizer}"
         path = f"{folder}/{file_name}.log"
-        LoggingUtility.set_logger_file(log_level=self.config["general"]["log_level"], path=path)
+
+        if self.config.getboolean("general", "log_file"):
+            LoggingUtility.set_logger_file(log_level=self.config["general"]["log_level"], path=path)
+        else:
+            LoggingUtility.set_logger(log_level=self.config["general"]["log_level"])
 
         GameStarter.setup_bot(player1_bot, player1, player2, args)
         GameStarter.setup_bot(player2_bot, player2, player1, args)
