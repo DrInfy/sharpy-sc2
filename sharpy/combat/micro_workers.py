@@ -9,6 +9,9 @@ from sc2.units import Units
 
 class MicroWorkers(MicroStep):
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
+        if self.move_type in {MoveType.DefensiveRetreat, MoveType.PanicRetreat, MoveType.Push}:
+            return current_command
+
         if self.engage_ratio > 0.5 and self.closest_group:
             if self.ready_to_attack_ratio > 0.8 or self.closest_group_distance < 2:
                 return Action(self.closest_group.center, True)

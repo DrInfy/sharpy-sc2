@@ -180,12 +180,14 @@ class DefaultMicroMethods:
 
         if step.move_type == MoveType.Push:
             # If MoveType.Push don't attack anything behind us unless it's in range.
+            distance_to_target = unit.distance_to(current_command.target)
+
             def valid_push_target(enemy):
                 if enemy.is_flying:
                     r = step.unit_values.air_range(unit)
                 else:
                     r = step.unit_values.ground_range(unit)
-                behind = enemy.distance_to(current_command.target) > unit.distance_to(current_command.target)
+                behind = enemy.distance_to(current_command.target) > distance_to_target
                 return not behind or enemy.distance_to(unit) <= r
 
             enemies = enemies.filter(valid_push_target)
@@ -268,6 +270,19 @@ class DefaultMicroMethods:
 
         value_func = melee_value
         close_enemies = step.cache.enemy_in_range(unit.position, lookup)
+
+        if step.move_type == MoveType.Push:
+            # If Push, ignore targets behind us, unless we can hit them right now.
+            distance_to_target = unit.distance_to(current_command.target)
+
+            def valid_push_target(enemy):
+                if enemy.is_flying:
+                    return False
+                r = step.unit_values.ground_range(unit) + unit.radius + enemy.radius
+                behind = enemy.distance_to(current_command.target) > distance_to_target
+                return not behind or enemy.distance_to(unit) <= r
+
+            close_enemies = close_enemies.filter(valid_push_target)
 
         best_target: Optional[Unit] = None
         best_score: float = 0
