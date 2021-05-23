@@ -67,6 +67,10 @@ class DefaultMicroMethods:
                     else:
                         combat.attack_to(group, target, move_type)
 
+                elif move_type == MoveType.Push:
+                    # Don't worry about closest enemies if we are pushing
+                    combat.attack_to(group, target, move_type)
+
                 elif is_in_combat:
                     if not power.is_enough_for(enemy_power, 0.75):
                         # Regroup if possible
@@ -173,6 +177,18 @@ class DefaultMicroMethods:
         enemies = step.cache.enemy_in_range(unit.position, lookup)
 
         last_target = step.last_targeted(unit)
+
+        if step.move_type == MoveType.Push:
+            # If MoveType.Push don't attack anything behind us unless it's in range.
+            def valid_push_target(enemy):
+                if enemy.is_flying:
+                    r = step.unit_values.air_range(unit)
+                else:
+                    r = step.unit_values.ground_range(unit)
+                behind = enemy.distance_to(current_command.target) > unit.distance_to(current_command.target)
+                return not behind or enemy.distance_to(unit) <= r
+
+            enemies = enemies.filter(valid_push_target)
 
         if not enemies:
             # No enemies to shoot at
