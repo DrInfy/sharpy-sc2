@@ -7,6 +7,8 @@ from .mappings import MapsType, MapType
 
 
 class Sc2Map:
+    __slots__ = ['_overlord_spots', '_chokes', 'heuristic_accuracy', 'height_map', '_map']
+
     def __init__(
         self,
         pathing_grid: np.ndarray,
