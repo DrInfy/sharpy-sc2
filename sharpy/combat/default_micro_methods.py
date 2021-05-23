@@ -169,9 +169,7 @@ class DefaultMicroMethods:
         shoot_air = step.unit_values.can_shoot_air(unit)
         shoot_ground = step.unit_values.can_shoot_ground(unit)
 
-        air_range = step.unit_values.air_range(unit)
-        ground_range = step.unit_values.ground_range(unit)
-        lookup = min(air_range + 3, ground_range + 3)
+        lookup = step.min_range(unit) + 3
         enemies = step.cache.enemy_in_range(unit.position, lookup)
 
         last_target = step.last_targeted(unit)
