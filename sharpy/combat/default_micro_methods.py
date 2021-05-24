@@ -190,7 +190,9 @@ class DefaultMicroMethods:
                 behind = enemy.distance_to(current_command.target) > distance_to_target
                 return not behind or enemy.distance_to(unit) <= r
 
-            enemies = enemies.filter(valid_push_target)
+            # If we're in range of the target we can attack behind
+            if distance_to_target > lookup - 3:
+                enemies = enemies.filter(valid_push_target)
 
         if not enemies:
             # No enemies to shoot at
@@ -282,7 +284,8 @@ class DefaultMicroMethods:
                 behind = enemy.distance_to(current_command.target) > distance_to_target
                 return not behind or enemy.distance_to(unit) <= r
 
-            close_enemies = close_enemies.filter(valid_push_target)
+            if distance_to_target > 3:
+                close_enemies = close_enemies.filter(valid_push_target)
 
         best_target: Optional[Unit] = None
         best_score: float = 0
