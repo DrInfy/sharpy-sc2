@@ -1,6 +1,7 @@
 from sharpy import sc2math
 from sharpy.combat import MicroStep
 from sharpy.combat import Action
+from sharpy.interfaces.combat_manager import MoveType
 from sc2 import AbilityId, Race, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
