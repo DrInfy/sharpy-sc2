@@ -28,6 +28,10 @@ class MoveType(enum.IntEnum):
     ReGroup = 6
 
 
+retreat_move_types = {MoveType.DefensiveRetreat, MoveType.PanicRetreat}
+retreat_or_push_move_types = retreat_move_types | {MoveType.Push}
+
+
 class ICombatManager(ABC):
     @property
     @abstractmethod

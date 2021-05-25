@@ -57,6 +57,9 @@ class GenericMicro(MicroStep):
         if self.move_type == MoveType.DefensiveRetreat or self.move_type == MoveType.PanicRetreat:
             return current_command
 
+        if self.move_type == MoveType.Push:
+            return current_command
+
         if self.closest_group and (self.engage_ratio > 0.25 or self.can_engage_ratio > 0.25):
             # in combat
             if self.engaged_power.siege_percentage > 0.5:
@@ -130,6 +133,21 @@ class GenericMicro(MicroStep):
             else:
                 backstep = self.pather.find_weak_influence_ground(backstep, 4)
             return Action(backstep, False)
+
+        if self.move_type == MoveType.Push and unit.distance_to(current_command.target) > self.min_range(unit):
+            # If MoveType.Push and we didn't reach the target we don't care about the combat model
+            if self.ready_to_shoot(unit):
+                # focus_fire takes care of not attacking things behind us
+                focus_action = self.focus_fire(unit, current_command, self.prio_dict)
+                if isinstance(focus_action.target, Unit):
+                    return focus_action
+
+            # If not ready to attack, or focus_fire() didn't find a target, move command forward.
+            if unit.is_flying:
+                position = self.pather.find_influence_air_path(unit.position, current_command.target)
+            else:
+                position = self.pather.find_influence_ground_path(unit.position, current_command.target, 4)
+            return Action(position, False)
 
         if self.model == CombatModel.StalkerToSiege:
             siege_units = self.enemies_near_by.of_type(siege)

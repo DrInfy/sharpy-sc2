@@ -67,6 +67,10 @@ class DefaultMicroMethods:
                     else:
                         combat.attack_to(group, target, move_type)
 
+                elif move_type == MoveType.Push:
+                    # Don't worry about closest enemies if we are pushing
+                    combat.attack_to(group, target, move_type)
+
                 elif is_in_combat:
                     if not power.is_enough_for(enemy_power, 0.75):
                         # Regroup if possible
@@ -169,12 +173,26 @@ class DefaultMicroMethods:
         shoot_air = step.unit_values.can_shoot_air(unit)
         shoot_ground = step.unit_values.can_shoot_ground(unit)
 
-        air_range = step.unit_values.air_range(unit)
-        ground_range = step.unit_values.ground_range(unit)
-        lookup = min(air_range + 3, ground_range + 3)
+        lookup = step.min_range(unit) + 3
         enemies = step.cache.enemy_in_range(unit.position, lookup)
 
         last_target = step.last_targeted(unit)
+
+        if step.move_type == MoveType.Push:
+            # If MoveType.Push don't attack anything behind us unless it's in range.
+            distance_to_target = unit.distance_to(current_command.target)
+
+            def valid_push_target(enemy):
+                if enemy.is_flying:
+                    r = step.unit_values.air_range(unit)
+                else:
+                    r = step.unit_values.ground_range(unit)
+                behind = enemy.distance_to(current_command.target) > distance_to_target
+                return not behind or enemy.distance_to(unit) <= r
+
+            # If we're in range of the target we can attack behind
+            if distance_to_target > lookup - 3:
+                enemies = enemies.filter(valid_push_target)
 
         if not enemies:
             # No enemies to shoot at
@@ -254,6 +272,20 @@ class DefaultMicroMethods:
 
         value_func = melee_value
         close_enemies = step.cache.enemy_in_range(unit.position, lookup)
+
+        if step.move_type == MoveType.Push:
+            # If Push, ignore targets behind us, unless we can hit them right now.
+            distance_to_target = unit.distance_to(current_command.target)
+
+            def valid_push_target(enemy):
+                if enemy.is_flying:
+                    return False
+                r = step.unit_values.ground_range(unit) + unit.radius + enemy.radius
+                behind = enemy.distance_to(current_command.target) > distance_to_target
+                return not behind or enemy.distance_to(unit) <= r
+
+            if distance_to_target > 3:
+                close_enemies = close_enemies.filter(valid_push_target)
 
         best_target: Optional[Unit] = None
         best_score: float = 0

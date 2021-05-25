@@ -1,6 +1,7 @@
 from sharpy import sc2math
 from sharpy.combat import MicroStep
 from sharpy.combat import Action
+from sharpy.interfaces.combat_manager import MoveType, retreat_or_push_move_types
 from sc2 import AbilityId, Race, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -9,6 +10,9 @@ from sc2.units import Units
 
 class MicroWorkers(MicroStep):
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
+        if self.move_type in retreat_or_push_move_types:
+            return current_command
+
         if self.engage_ratio > 0.5 and self.closest_group:
             if self.ready_to_attack_ratio > 0.8 or self.closest_group_distance < 2:
                 return Action(self.closest_group.center, True)
