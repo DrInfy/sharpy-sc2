@@ -1,14 +1,14 @@
 from sharpy.combat import Action, GenericMicro
 from sc2.unit import Unit
 from sc2.units import Units
-from sharpy.interfaces.combat_manager import MoveType
+from sharpy.interfaces.combat_manager import MoveType, retreat_move_types, retreat_or_push_move_types
 from sharpy.managers.core import UnitValue
 
 
 class MicroZerglings(GenericMicro):
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
 
-        if self.move_type in {MoveType.DefensiveRetreat, MoveType.PanicRetreat, MoveType.Push}:
+        if self.move_type in retreat_or_push_move_types:
             return current_command
 
         if self.engage_ratio > 0.5 and self.closest_group:
@@ -31,7 +31,7 @@ class MicroZerglings(GenericMicro):
         #             if pylons:
         #                 return Action(buildings.first, True)
 
-        if self.move_type in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
+        if self.move_type in retreat_move_types:
             return current_command
 
         if self.move_type == MoveType.Push and unit.distance_to(current_command.target) > 3:

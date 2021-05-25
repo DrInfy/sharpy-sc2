@@ -1,4 +1,5 @@
 from sharpy.combat import GenericMicro, Action, MoveType, NoAction
+from sharpy.interfaces.combat_manager import retreat_move_types, retreat_or_push_move_types
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit
 from sc2.units import Units
@@ -6,7 +7,7 @@ from sc2.units import Units
 
 class MicroZealots(GenericMicro):
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:
-        if self.move_type in {MoveType.DefensiveRetreat, MoveType.PanicRetreat, MoveType.Push}:
+        if self.move_type in retreat_or_push_move_types:
             return current_command
 
         if self.engage_ratio > 0.25 and self.closest_group:
@@ -20,7 +21,7 @@ class MicroZealots(GenericMicro):
         if unit.has_buff(BuffId.CHARGING):
             return NoAction()
 
-        if self.move_type in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
+        if self.move_type in retreat_move_types:
             return current_command
 
         if self.move_type == MoveType.Push and unit.distance_to(current_command.target) > 3:
