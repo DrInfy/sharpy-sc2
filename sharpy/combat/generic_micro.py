@@ -97,9 +97,10 @@ class GenericMicro(MicroStep):
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
+        closest = self.closest_units.get(unit.tag, None)
+
         if self.move_type == MoveType.DefensiveRetreat:
             if self.ready_to_shoot(unit):
-                closest = self.closest_units.get(unit.tag, None)
                 if closest and self.is_target(closest):
                     range = self.unit_values.real_range(unit, closest)
                     if range > 0 and range > unit.distance_to(closest):
@@ -158,9 +159,7 @@ class GenericMicro(MicroStep):
                     current_command = Action(self.closest_group.center, True)
                 else:
                     current_command = Action(current_command.target, True)
-            else:
-                closest = self.closest_units[unit.tag]
-
+            elif closest:
                 # d = unit.distance_to(closest)
                 range = self.unit_values.real_range(unit, closest) - 0.5
 
