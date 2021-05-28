@@ -15,9 +15,6 @@ class MicroVipers(MicroStep):
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
-
         if self.move_type in {MoveType.PanicRetreat, MoveType.DefensiveRetreat}:
             return current_command
 

@@ -29,9 +29,6 @@ class MicroHighTemplars(GenericMicro):
         self.ordered_storms.clear()
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
-
         if self.cd_manager.is_ready(unit.tag, AbilityId.PSISTORM_PSISTORM):
             stormable_enemies = self.cache.enemy_in_range(unit.position, 10).not_structure
             storms = self.cache.effects(EffectId.PSISTORMPERSISTENT)

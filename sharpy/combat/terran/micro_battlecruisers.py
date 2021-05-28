@@ -9,9 +9,6 @@ class MicroBattleCruisers(GenericMicro):
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
-
         bc = unit
         health_to_jump = 50
         if self.engaged_power.air_power > 8:
