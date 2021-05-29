@@ -60,50 +60,47 @@ class GenericMicro(MicroStep):
         if self.move_type == MoveType.Push:
             return current_command
 
-        if self.closest_group and (self.engage_ratio > 0.25 or self.can_engage_ratio > 0.25):
-            # in combat
-            if self.engaged_power.siege_percentage > 0.5:
-                self.model = CombatModel.StalkerToSiege
-            elif self.engaged_power.surround_percentage > 0.3 and not flyers:
-                if self.knowledge.enemy_race == Race.Zerg and self.engaged_power.surround_power > 3:
-                    self.model = CombatModel.StalkerToSpeedlings
-                else:
-                    if self.attack_range < self.enemy_attack_range - 0.5:
-                        self.model = CombatModel.RoachToStalker
-                    elif self.attack_range > self.enemy_attack_range + 0.5:
-                        self.model = CombatModel.StalkerToRoach
+        # in combat
+        if self.engaged_power.siege_percentage > 0.5:
+            self.model = CombatModel.StalkerToSiege
+        elif self.engaged_power.surround_percentage > 0.3 and not flyers:
+            if self.knowledge.enemy_race == Race.Zerg and self.engaged_power.surround_power > 3:
+                self.model = CombatModel.StalkerToSpeedlings
+            else:
+                if self.attack_range < self.enemy_attack_range - 0.5:
+                    self.model = CombatModel.RoachToStalker
+                elif self.attack_range > self.enemy_attack_range + 0.5:
+                    self.model = CombatModel.StalkerToRoach
 
-            if self.model == CombatModel.StalkerToSpeedlings:
-                if self.can_engage_ratio < 0.6:
-                    # push forward
-                    if self.ready_to_attack_ratio > 0.75:
-                        return Action(self.closest_group.center, True)
-                    if self.ready_to_attack_ratio < 0.25:
-                        return Action(self.center, False)
+        if self.model == CombatModel.StalkerToSpeedlings:
+            if self.can_engage_ratio < 0.6:
+                # push forward
+                if self.ready_to_attack_ratio > 0.75:
+                    return Action(self.closest_group.center, True)
+                if self.ready_to_attack_ratio < 0.25:
+                    return Action(self.center, False)
 
-                    # best_position = self.pather.find_weak_influence_ground(
-                    #     self.center.towards(self.closest_group.center, 4), 4)
+                # best_position = self.pather.find_weak_influence_ground(
+                #     self.center.towards(self.closest_group.center, 4), 4)
 
-                    best_position = self.pather.find_low_inside_ground(self.center, self.closest_group.center, 6)
+                best_position = self.pather.find_low_inside_ground(self.center, self.closest_group.center, 6)
 
-                    return Action(best_position, False)
-                else:
-                    if self.ready_to_attack_ratio > 0.75:
-                        return Action(self.closest_group.center, True)
-                    # best_position = self.pather.find_weak_influence_ground(
-                    #     self.center.towards(self.closest_group.center, -4), 4)
-                    best_position = self.pather.find_low_inside_ground(self.center, self.closest_group.center, 6)
-                    return Action(best_position, False)
+                return Action(best_position, False)
+            else:
+                if self.ready_to_attack_ratio > 0.75:
+                    return Action(self.closest_group.center, True)
+                # best_position = self.pather.find_weak_influence_ground(
+                #     self.center.towards(self.closest_group.center, -4), 4)
+                best_position = self.pather.find_low_inside_ground(self.center, self.closest_group.center, 6)
+                return Action(best_position, False)
 
         return current_command
 
     def unit_solve_combat(self, unit: Unit, current_command: Action) -> Action:
-        if self.engage_ratio < 0.25 and self.can_engage_ratio < 0.25:
-            return current_command
+        closest = self.closest_units.get(unit.tag, None)
 
         if self.move_type == MoveType.DefensiveRetreat:
             if self.ready_to_shoot(unit):
-                closest = self.closest_units.get(unit.tag, None)
                 if closest and self.is_target(closest):
                     range = self.unit_values.real_range(unit, closest)
                     if range > 0 and range > unit.distance_to(closest):
@@ -162,9 +159,7 @@ class GenericMicro(MicroStep):
                     current_command = Action(self.closest_group.center, True)
                 else:
                     current_command = Action(current_command.target, True)
-            else:
-                closest = self.closest_units[unit.tag]
-
+            elif closest:
                 # d = unit.distance_to(closest)
                 range = self.unit_values.real_range(unit, closest) - 0.5
 
