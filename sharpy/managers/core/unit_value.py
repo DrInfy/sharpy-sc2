@@ -300,13 +300,13 @@ class UnitValue(ManagerBase, IUnitValues):
             UnitTypeId.DARKTEMPLAR: UnitData(125, 125, 2, 2, features=[UnitFeature.HitsGround, UnitFeature.Cloak]),
             UnitTypeId.ARCHON: UnitData(175, 275, 4, 5, features=[UnitFeature.HitsGround, UnitFeature.ShootsAir]),
             UnitTypeId.OBSERVER: UnitData(25, 75, 1, 0.25, features=[UnitFeature.Flying, UnitFeature.Detector]),
-            UnitTypeId.WARPPRISM: UnitData(200, 0, 2, 2, features=[UnitFeature.Flying]),
+            UnitTypeId.WARPPRISM: UnitData(250, 0, 2, 2, features=[UnitFeature.Flying]),
             UnitTypeId.IMMORTAL: UnitData(275, 100, 4, 4, features=[UnitFeature.HitsGround]),
             UnitTypeId.COLOSSUS: UnitData(300, 200, 6, 6, features=[UnitFeature.HitsGround]),
             UnitTypeId.DISRUPTOR: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround]),
             UnitTypeId.PHOENIX: UnitData(150, 100, 2, 2, features=[UnitFeature.ShootsAir, UnitFeature.Flying]),
             UnitTypeId.VOIDRAY: UnitData(
-                250, 150, 4, 4, features=[UnitFeature.Flying, UnitFeature.HitsGround, UnitFeature.ShootsAir]
+                200, 150, 4, 4, features=[UnitFeature.Flying, UnitFeature.HitsGround, UnitFeature.ShootsAir]
             ),
             UnitTypeId.ORACLE: UnitData(150, 150, 3, 3, features=[UnitFeature.HitsGround, UnitFeature.Flying]),
             UnitTypeId.TEMPEST: UnitData(
