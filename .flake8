@@ -24,7 +24,7 @@ exclude =
     __pycache__
     python-sc2
     jsonpickle
-    sc2pathlibp
+    sc2pathlib
     Bots
     games
     publish
