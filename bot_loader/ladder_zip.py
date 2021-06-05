@@ -12,7 +12,7 @@ common_sharpy = [
     ("jsonpickle", None),
     ("sharpy", None),
     (os.path.join("python-sc2", "sc2"), "sc2"),
-    ("sc2pathlibp", None),
+    ("sc2pathlib", None),
     ("config.py", None),
     ("ladder.py", None),
 ]
@@ -75,8 +75,8 @@ class LadderZip:
         # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build
 
         self.pyinstaller = (
-            'pyinstaller -y --add-data "[FOLDER]/sc2pathlibp'
-            '";"sc2pathlibp/" --add-data "[FOLDER]/sc2";"sc2/" '
+            'pyinstaller -y --add-data "[FOLDER]/sc2pathlib'
+            '";"sc2pathlib/" --add-data "[FOLDER]/sc2";"sc2/" '
             '--add-data "[FOLDER]/config.ini";"." --add-data '
             '"[FOLDER]/version.txt";"."  '
             '"[FOLDER]/run.py" '

@@ -3,7 +3,7 @@ import logging
 import sys
 from typing import Dict, List, Optional
 
-import sc2pathlibp
+import sc2pathlib
 from sc2.unit import Unit
 from sharpy import sc2math
 from sharpy.general.path import Path
@@ -258,7 +258,7 @@ class ZoneManager(ManagerBase, IZoneManager):
 
     def init_zone_pathing(self):
         """ Init zone pathing. This needs to be run after all managers have properly started. """
-        pf: sc2pathlibp.PathFinder = self.knowledge.pathing_manager.path_finder_terrain
+        pf: sc2pathlib.PathFinder = self.knowledge.pathing_manager.path_finder_terrain
         zone_count = len(self._expansion_zones)
         for i in range(0, zone_count):
             for j in range(i + 1, zone_count):

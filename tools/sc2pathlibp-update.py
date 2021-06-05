@@ -1,5 +1,5 @@
 """
-Script to update sc2-pathlib in sc2pathlibp folder.
+Script to update sc2-pathlib in sc2pathlib folder.
 """
 
 import os
@@ -18,8 +18,8 @@ assert script_path.parent.stem == "tools", "`This script expects to be in tools 
 os.chdir(script_path.parent.parent)
 
 latest_release_url = "https://api.github.com/repos/DrInfy/sc2-pathlib/releases/latest"
-sc2pathlibp = "sc2pathlibp"
-sc2pathlibp_old = "sc2pathlibp_old"
+sc2pathlib = "sc2pathlib"
+sc2pathlib_old = "sc2pathlib_old"
 
 print(f"Finding download url from ... {latest_release_url}")
 
@@ -37,15 +37,15 @@ print(f"Detected version: {version}")
 
 urlretrieve(download_url, filename)
 
-print(f"Renaming folder {sc2pathlibp} ... {sc2pathlibp_old}")
-os.rename(sc2pathlibp, sc2pathlibp_old)
+print(f"Renaming folder {sc2pathlib} ... {sc2pathlib_old}")
+os.rename(sc2pathlib, sc2pathlib_old)
 
 print(f"Extracting file ... {filename}")
 with zipfile.ZipFile(filename, "r") as zip_ref:
     zip_ref.extractall()
 
-print(f"Removing folder {sc2pathlibp_old}")
-shutil.rmtree(sc2pathlibp_old)
+print(f"Removing folder {sc2pathlib_old}")
+shutil.rmtree(sc2pathlib_old)
 
 print(f"Removing file {filename}")
 os.remove(filename)

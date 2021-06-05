@@ -10,8 +10,8 @@ from sc2.position import Point2, Point3
 from sc2.unit import Unit
 from sc2.units import Units
 
-import sc2pathlibp
-from sc2pathlibp import MapType, Sc2Map
+import sc2pathlib
+from sc2pathlib import MapType, Sc2Map
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.general.rocks import *
 from .manager_base import ManagerBase
@@ -21,7 +21,7 @@ from sharpy.sc2math import point_normalize
 
 class PathingManager(ManagerBase):
     map: Sc2Map
-    path_finder_terrain: sc2pathlibp.PathFinder
+    path_finder_terrain: sc2pathlib.PathFinder
 
     def __init__(self):
         super().__init__()
@@ -43,7 +43,7 @@ class PathingManager(ManagerBase):
         self.map.calculate_connections(self.ai.start_location)  # This is for checking dead warp zones
 
         _data = np.fmax(path_grid.data_numpy, placement_grid.data_numpy).T
-        self.path_finder_terrain = sc2pathlibp.PathFinder(_data)
+        self.path_finder_terrain = sc2pathlib.PathFinder(_data)
         self.path_finder_terrain.normalize_influence(20)
 
     @property
@@ -59,7 +59,7 @@ class PathingManager(ManagerBase):
         self.found_points.clear()
         self.found_points_air.clear()
 
-    def set_rocks(self, grid: Union[sc2pathlibp.PathFinder, Sc2Map]):
+    def set_rocks(self, grid: Union[sc2pathlib.PathFinder, Sc2Map]):
         for rock in self.ai.destructables:  # type: Unit
             rock_type = rock.type_id
             if rock.name == "MineralField450":

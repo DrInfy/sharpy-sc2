@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple, Set
 
 import numpy as np
 
-import sc2pathlibp
+import sc2pathlib
 from sharpy.constants import Constants
 from sharpy import sc2math
 from sharpy.general.zone import Zone
@@ -585,7 +585,7 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
                         zealot = lookup + finder.zealot
                         gates = finder.positions(lookup)
 
-                        tester: sc2pathlibp.PathFinder = sc2pathlibp.PathFinder(map_data)
+                        tester: sc2pathlib.PathFinder = sc2pathlib.PathFinder(map_data)
 
                         tester.create_block(gates, (3, 3))
                         tester.create_block(zealot, (1, 1))
