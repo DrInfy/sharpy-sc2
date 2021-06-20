@@ -45,6 +45,13 @@ class MapName(enum.Enum):
     EternalEmpireLE = 22
     RomanticideLE = 23
     AscensiontoAiurLE = 24
+    # Ai Arena season 2, 2021
+    Atmospheres2000 = 25  # 2000AtmospheresAIE
+    Blackburn = 26  # BlackburnAIE
+    Jagannatha = 27  # JagannathaAIE
+    Lightshade = 28  # LightshadeAIE
+    # RomanticideAIE
+    Oxide = 30  # OxideAIE
 
 
 MAIN_ZONE_SIZE_CHANGES: Dict[MapName, float] = {
@@ -104,6 +111,16 @@ def recognize_map(map_name: str, height_hash: int) -> MapName:
         return MapName.AscensiontoAiurLE
     if height_hash == 3756032:
         return MapName.RomanticideLE
+    if height_hash == 3307847:
+        return MapName.Atmospheres2000
+    if "Blackburn" in map_name:
+        return MapName.Blackburn
+    if "Jagannatha" in map_name:
+        return MapName.Jagannatha
+    if "Lightshade" in map_name:
+        return MapName.Lightshade
+    if "Oxide" in map_name:
+        return MapName.Oxide
     return MapName.Unknown
 
 
