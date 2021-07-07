@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import jsonpickle
 from datetime import datetime
@@ -100,7 +100,7 @@ class DataManager(ManagerBase, IDataManager):
             self.write_defeat()
 
     @property
-    def last_enemy_build(self) -> Tuple[EnemyRushBuild, EnemyMacroBuild]:
+    def last_enemy_build(self) -> Tuple[Union[int, EnemyRushBuild], Union[int, EnemyMacroBuild]]:
         if (
             not self.last_result
             or not hasattr(self.last_result, "enemy_macro_build")
@@ -108,7 +108,7 @@ class DataManager(ManagerBase, IDataManager):
         ):
             return EnemyRushBuild.Macro, EnemyMacroBuild.StandardMacro
 
-        return EnemyRushBuild(self.last_result.enemy_build), EnemyMacroBuild(self.last_result.enemy_macro_build)
+        return self.last_result.enemy_build, self.last_result.enemy_macro_build
 
     def set_build(self, build_name: str):
         self.result.build_used = build_name
