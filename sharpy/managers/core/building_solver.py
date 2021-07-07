@@ -353,6 +353,9 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
 
                     action(pos)
         else:
+            larva_padding = Rectangle(center.x, center.y - 3, 5, 1)
+            self.grid.fill_rect(larva_padding, fill_padding)
+
             for x in x_range:
                 for y in y_range:
                     pos = Point2((x + center.x, y + center.y))
