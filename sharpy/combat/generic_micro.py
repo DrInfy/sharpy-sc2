@@ -72,16 +72,13 @@ class GenericMicro(MicroStep):
                 elif self.attack_range > self.enemy_attack_range + 0.5:
                     self.model = CombatModel.StalkerToRoach
 
-        if self.model == CombatModel.StalkerToSpeedlings:
+        if self.model == CombatModel.StalkerToSpeedlings and self.closest_group:
             if self.can_engage_ratio < 0.6:
                 # push forward
                 if self.ready_to_attack_ratio > 0.75:
                     return Action(self.closest_group.center, True)
                 if self.ready_to_attack_ratio < 0.25:
                     return Action(self.center, False)
-
-                # best_position = self.pather.find_weak_influence_ground(
-                #     self.center.towards(self.closest_group.center, 4), 4)
 
                 best_position = self.pather.find_low_inside_ground(self.center, self.closest_group.center, 6)
 
