@@ -154,7 +154,11 @@ def stand_alone_game(bot):
 
         file_name = f"Human{race}_{map_name}_{time}"
         path = f"{folder}/{file_name}.log"
-        LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
+
+        if get_config(False)["general"].getboolean("write_gamelogs"):
+            LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
+        else:
+            LoggingUtility.set_logger(log_level=get_config(False)["general"]["log_level"])
 
         return sc2.run_game(sc2.maps.get(map_name), [Human(race, fullscreen=True), bot], realtime=True)
 

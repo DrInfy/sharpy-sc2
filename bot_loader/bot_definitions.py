@@ -280,6 +280,7 @@ class BotDefinitions:
             DummyBuilder("tank", "RustyTanks", Race.Terran, "two_base_tanks.py", TwoBaseTanks),
             DummyBuilder("terranturtle", "RustyOneBaseTurtle", Race.Terran, "one_base_turtle.py", OneBaseTurtle),
             DummyBuilder("saferaven", "SafeRaven", Race.Terran, "safe_tvt_raven.py", TerranSafeTvT),
+            DummyBuilder("silverbio", "TerranSilverBio", Race.Terran, "terran_silver_bio.py", TerranSilverBio),
         ]
 
         for bot in bots:
