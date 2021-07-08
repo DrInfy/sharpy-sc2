@@ -23,15 +23,6 @@ class BuildBio(BuildOrder):
     def __init__(self):
         self.worker_rushed = False
         self.rush_bunker = BuildPosition(UnitTypeId.BUNKER, Point2((0, 0)), exact=True)
-        viking_counters = [
-            UnitTypeId.COLOSSUS,
-            UnitTypeId.MEDIVAC,
-            UnitTypeId.RAVEN,
-            UnitTypeId.VOIDRAY,
-            UnitTypeId.CARRIER,
-            UnitTypeId.TEMPEST,
-            UnitTypeId.BROODLORD,
-        ]
 
         warn = WarnBuildMacro(
             [
