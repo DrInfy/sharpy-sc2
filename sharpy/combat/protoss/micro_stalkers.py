@@ -1,5 +1,6 @@
 from typing import Dict
 
+from sc2pathlib import MapType
 from sharpy.general.extended_power import siege
 from sharpy.combat import Action, MoveType, GenericMicro, CombatModel
 from sc2 import AbilityId, UnitTypeId
@@ -86,6 +87,7 @@ class MicroStalkers(GenericMicro):
                     closest_cyclone = cyclones.closest_to(unit)
                     backstep: Point2 = closest_cyclone.position.towards(unit.position, 15)
                     backstep = self.pather.find_weak_influence_ground(backstep, 4)
+
                     return Action(backstep, False, AbilityId.EFFECT_BLINK_STALKER)
 
             if self.model == CombatModel.StalkerToSiege and (
@@ -102,10 +104,13 @@ class MicroStalkers(GenericMicro):
 
                 target_pos = unit.position
                 if self.closest_group:
-                    target_pos = target_pos.towards(self.closest_group.center, -5)
+                    target_pos = target_pos.towards(self.closest_group.center, -3)
 
                 target = self.pather.find_weak_influence_ground_blink(target_pos, 6)
                 if target.distance_to(unit) > 3:
-                    return Action(target, False, AbilityId.EFFECT_BLINK_STALKER)
+                    backstep_influence = self.pather.map.current_influence(MapType.Ground, target)
+                    current_influence = self.pather.map.current_influence(MapType.Ground, unit.position)
+                    if backstep_influence < current_influence:
+                        return Action(target, False, AbilityId.EFFECT_BLINK_STALKER)
 
         return super().unit_solve_combat(unit, current_command)
