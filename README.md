@@ -16,9 +16,9 @@ Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actio
 
 ### Requirements
 
-1. Python 3.7 64-bit
-   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) as the pathlib is built for 64-bit python 3.7
-1. Windows or Linux
+1. Python 3.7/3.8/3.9 64-bit
+   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) as the pathlib is built for 64-bit python 3.7/3.8/3.9
+1. Windows, Linux or MacOS
    * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib)
    * macOS (and possibly others as well) may be supported after [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) is built for it.
 
