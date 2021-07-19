@@ -72,7 +72,7 @@ class MarineRushBot(KnowledgeBot):
                 BuildPosition(UnitTypeId.BARRACKS, zone.center_location, exact=False, only_once=True),
                 BuildPosition(
                     UnitTypeId.BARRACKS,
-                    zone.center_location.towards(self.knowledge.enemy_base_ramp.bottom_center, 5),
+                    zone.center_location.towards(self.zone_manager.enemy_expansion_zones[0].ramp.bottom_center, 5),
                     exact=False,
                     only_once=True,
                 ),

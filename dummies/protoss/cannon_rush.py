@@ -269,7 +269,7 @@ class CannonRush(KnowledgeBot):
         self.knowledge.print(f"Cannon contain", "Build")
         enemy_main = self.zone_manager.expansion_zones[-1]
         natural = self.zone_manager.expansion_zones[-2]
-        enemy_ramp = self.knowledge.enemy_base_ramp
+        enemy_ramp = enemy_main.ramp
 
         return Step(
             None,
