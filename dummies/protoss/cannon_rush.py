@@ -31,7 +31,7 @@ class ProxyCannoneer(ActBase):
         self.enemy_main: Point2 = self.zone_manager.expansion_zones[-1].center_location
         self.natural: Point2 = self.zone_manager.expansion_zones[-2].center_location
 
-        self.enemy_ramp = self.knowledge.enemy_base_ramp
+        self.enemy_ramp = self.zone_manager.enemy_expansion_zones[0].ramp
         d = self.enemy_main.distance_to(self.natural)
         height = self.ai.get_terrain_height(self.natural)
         self.between = self.natural.towards(self.enemy_main, 5)
@@ -203,9 +203,9 @@ class CannonRush(KnowledgeBot):
         else:
             rnd = int(self.build_name)
 
-        self.knowledge.building_solver.wall_type = WallType.NoWall
+        self.building_solver.wall_type = WallType.NoWall
         rush_killed = RequireCustom(
-            lambda k: self.knowledge.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or self.time > 4 * 60
+            lambda k: self.lost_units_manager.own_lost_type(UnitTypeId.PROBE) >= 3 or self.time > 4 * 60
         )
 
         if rnd == 2:
