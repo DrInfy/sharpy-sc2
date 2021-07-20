@@ -109,5 +109,6 @@ class MicroRules(Component):
         self.unit_micros[UnitTypeId.RAVEN] = MicroRavens()
         self.unit_micros[UnitTypeId.MEDIVAC] = MicroMedivacs()
         self.unit_micros[UnitTypeId.LIBERATOR] = MicroLiberators()
+        self.unit_micros[UnitTypeId.REAPER] = MicroReaper()
 
         self.generic_micro = GenericMicro()
