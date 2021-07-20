@@ -5,3 +5,4 @@ from .micro_battlecruisers import MicroBattleCruisers
 from .micro_ravens import MicroRavens
 from .micro_medivacs import MicroMedivacs
 from .micro_liberators import MicroLiberators
+from .micro_reaper import MicroReaper
