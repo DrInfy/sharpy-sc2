@@ -34,14 +34,17 @@ class CombatUnits:
     def is_too_spread_out(self) -> bool:
         if self._total_distance is None:
             self._total_distance = 0
-            self._area_by_circles = 5
+            self._area_by_circles = 3
 
             for unit in self.units:
                 d = unit.distance_to(self.center)
                 self._total_distance += d
                 self._area_by_circles += unit.radius ** 2
-        # self.knowledge.print(f"spread: {self._total_distance} d to {self._total_radius} r")
-        return (self._total_distance / len(self.units)) ** 2 > self._area_by_circles * 2
+        total_area_thing = (self._total_distance / len(self.units)) ** 2
+        # self.knowledge.print(
+        #     f"spread: {self._total_distance} d to {total_area_thing} r and _area_by_circles {self._area_by_circles }"
+        # )
+        return total_area_thing > self._area_by_circles
 
     def is_in_combat(self, closest_enemies: "CombatUnits") -> bool:
         if closest_enemies is None:
