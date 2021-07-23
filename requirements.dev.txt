@@ -4,3 +4,4 @@ pytest-pythonpath==0.7.3
 flake8==3.7.9
 black==19.10b0
 pre-commit==2.2.0
+Pillow
