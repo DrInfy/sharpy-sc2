@@ -71,7 +71,7 @@ class SpeedMining(ActBase):
             if mf is not None and mf.is_mineral_field:
 
                 target = self.mineral_target_dict.get(mf.position)
-                if 0.75 < worker.distance_to(target) < 2:
+                if target and 0.75 < worker.distance_to(target) < 2:
                     worker.move(target)
                     worker(AbilityId.SMART, mf, True)
 
