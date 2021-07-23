@@ -23,12 +23,12 @@ from sharpy.interfaces import IBuildingSolver
 
 
 class WallType(enum.IntEnum):
-    Auto = (0,)
-    ProtossNaturalOneUnit = (1,)
-    ProtossMainZerg = (2,)
-    ProtossMainProtoss = (3,)
-    NoWall = (4,)
-    TerranMainDepots = (5,)
+    Auto = 0
+    ProtossNaturalOneUnit = 1
+    ProtossMainZerg = 2
+    ProtossMainProtoss = 3
+    NoWall = 4
+    TerranMainDepots = 5
 
 
 def is_empty(cell: GridArea) -> bool:
