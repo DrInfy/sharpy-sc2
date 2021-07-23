@@ -11,7 +11,7 @@ class DarkTemplarRush(KnowledgeBot):
         super().__init__("Sharp Shadows")
 
     async def create_plan(self) -> BuildOrder:
-        self.building_solver.wall_type = 3  # WallType.ProtossMainZerg
+        self.building_solver.wall_type = 2  # WallType.ProtossMainZerg
 
         build_steps_buildings2 = [
             Step(UnitReady(UnitTypeId.GATEWAY, 1), GridBuilding(UnitTypeId.CYBERNETICSCORE, 1)),
