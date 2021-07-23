@@ -21,7 +21,7 @@ class PlanZoneGather(ActBase):
 
     def __init__(self, set_gather_points: bool = True):
         super().__init__()
-
+        self.gather_move_type = MoveType.Assault
         self.gather_set: sc2.List[int] = []
         self.blocker_tag: Optional[int] = None
         self.current_gather_point = Point2((0, 0))
@@ -90,7 +90,7 @@ class PlanZoneGather(ActBase):
                 if d2 > 6.5:
                     self.combat.add_unit(unit)
 
-        self.combat.execute(self.current_gather_point, MoveType.Assault)
+        self.combat.execute(self.current_gather_point, self.gather_move_type)
         return True  # Always non blocking
 
     def update_gates(self):
