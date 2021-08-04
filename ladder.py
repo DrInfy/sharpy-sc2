@@ -118,14 +118,14 @@ def stand_alone_game(bot):
     print("Play as human? (y / n)")
     input_human = input(">> ")
     maps = [
-        # AiArena season 2
-        "DeathAuraLE",
-        "EternalEmpireLE",
-        "EverDreamLE",
-        "GoldenWallLE",
-        "IceandChromeLE",
-        "PillarsofgoldLE",
-        "SubmarineLE",
+        # SC2AiArena 2021 season 2
+        "2000AtmospheresAIE",
+        # "BeckettIndustriesAIE",
+        "BlackburnAIE",
+        "JagannathaAIE",
+        "LightshadeAIE",
+        "OxideAIE",
+        "RomanticideAIE",
     ]
 
     map_name = random.choice(maps)
