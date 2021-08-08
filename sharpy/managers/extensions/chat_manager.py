@@ -10,8 +10,7 @@ class ChatManager(ManagerBase):
         self.debug_builds: Optional[str] = None
         self.debug_build_selection: Optional[str] = None
 
-    async def chat_taunt_once(self, key: str, message: Callable[[], str], log=True):
-        # self.taunted.add(taunt_type)
+    async def chat_taunt_once(self, key: str, message: Callable[[], str], log=True, team_only=False):
         if key in self.taunted:
             return True
 
@@ -20,7 +19,8 @@ class ChatManager(ManagerBase):
         if log:
             self.print(msg)
 
-        await self.ai.chat_send(msg)
+        await self.ai.chat_send(msg, team_only)
+
 
     async def chat_debug(self, message: str):
         if self.ai.realtime:
