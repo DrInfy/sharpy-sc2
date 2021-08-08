@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Union, Optional, List, Iterable, Tuple
+from typing import Dict, Union, Optional, List, Iterable, Tuple, Callable
 
 from sc2.ids.effect_id import EffectId
 from scipy.spatial.ckdtree import cKDTree
@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
+filter_units = { UnitTypeId.ADEPTPHASESHIFT, UnitTypeId.DISRUPTORPHASED, UnitTypeId.LARVA, UnitTypeId.EGG }
 
 class UnitCacheManager(ManagerBase, IUnitCache):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""
@@ -42,9 +43,10 @@ class UnitCacheManager(ManagerBase, IUnitCache):
         self.own_numpy_vectors: List[np.ndarray] = []
         self.enemy_numpy_vectors: List[np.ndarray] = []
         self._mineral_fields: Dict[Point2, Unit] = {}
-        self._mineral_wall: Units = {}
+
         # Set this to false to provide cloaked units to zones and unit micro making use of enemy_in_range method.
         self.only_targetable_enemies_default: bool = True
+        self.range_filter: Optional[Callable[[], bool]] = lambda unit: unit.type_id not in filter_units
 
     @property
     def own_unit_cache(self) -> Dict[UnitTypeId, Units]:
@@ -145,7 +147,12 @@ class UnitCacheManager(ManagerBase, IUnitCache):
             units.append(self.ai.all_enemy_units[index])
 
         if only_targetable:
+            if self.range_filter is not None:
+                return units.filter(lambda x: self.range_filter(x) and (x.can_be_attacked or x.is_snapshot))
             return units.filter(lambda x: x.can_be_attacked or x.is_snapshot)
+
+        if self.range_filter is not None:
+            return units.filter(self.range_filter)
         return units
 
     async def update(self):
