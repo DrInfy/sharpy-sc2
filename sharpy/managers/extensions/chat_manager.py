@@ -21,7 +21,6 @@ class ChatManager(ManagerBase):
 
         await self.ai.chat_send(msg, team_only)
 
-
     async def chat_debug(self, message: str):
         if self.ai.realtime:
             return True
