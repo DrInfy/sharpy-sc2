@@ -19,7 +19,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sharpy.knowledges import Knowledge
 
-filter_units = { UnitTypeId.ADEPTPHASESHIFT, UnitTypeId.DISRUPTORPHASED, UnitTypeId.LARVA, UnitTypeId.EGG }
+filter_units = {UnitTypeId.ADEPTPHASESHIFT, UnitTypeId.DISRUPTORPHASED, UnitTypeId.LARVA, UnitTypeId.EGG}
+
 
 class UnitCacheManager(ManagerBase, IUnitCache):
     """Provides performance optimized methods for filtering both own and enemy units based on unit type and position."""

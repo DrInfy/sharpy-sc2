@@ -37,9 +37,11 @@ class MicroReaper(GenericMicro):
                     grenade_target = enemy
                     grenade_best_score = grenade_score
 
-        if grenade_target is not None \
-                and self.grenade_available < self.ai.time \
-                and self.cd_manager.is_ready(unit.tag, AbilityId.KD8CHARGE_KD8CHARGE):
+        if (
+            grenade_target is not None
+            and self.grenade_available < self.ai.time
+            and self.cd_manager.is_ready(unit.tag, AbilityId.KD8CHARGE_KD8CHARGE)
+        ):
             self.grenade_available = self.ai.time + 1
             return Action(grenade_target.position, False, AbilityId.KD8CHARGE_KD8CHARGE)
 
