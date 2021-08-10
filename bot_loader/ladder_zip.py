@@ -75,7 +75,7 @@ class LadderZip:
         # --specpath /opt/bk/spec --distpath /opt/bk/dist --workpath /opt/bk/build
 
         self.pyinstaller = (
-            'pyinstaller -y --add-data "[FOLDER]/sc2pathlib'
+            'pyinstaller --add-data "[FOLDER]/sc2pathlib'
             '";"sc2pathlib/" --add-data "[FOLDER]/sc2";"sc2/" '
             '--add-data "[FOLDER]/config.ini";"." --add-data '
             '"[FOLDER]/version.txt";"."  '

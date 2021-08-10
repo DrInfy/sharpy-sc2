@@ -68,7 +68,7 @@ class CompositionGuesser:
                 if self.history(UnitTypeId.STALKER) > self.history(UnitTypeId.ADEPT) and self.history(
                     UnitTypeId.STALKER
                 ) > self.history(UnitTypeId.ZEALOT):
-                    self.add_units(UnitTypeId.STALKER, 8, additional_guess)
+                    self.add_units(UnitTypeId.STALKER, 15, additional_guess)
                 elif self.history(UnitTypeId.ADEPT) > self.history(UnitTypeId.ZEALOT):
                     self.add_units(UnitTypeId.ADEPT, 9, additional_guess)
                 elif self.history(UnitTypeId.ZEALOT):
@@ -79,7 +79,7 @@ class CompositionGuesser:
             ):
                 self.add_units(UnitTypeId.ZEALOT, 8, additional_guess)
             if len(additional_guess):
-                self.add_units(UnitTypeId.STALKER, 1, additional_guess)
+                self.add_units(UnitTypeId.STALKER, 8, additional_guess)
 
         elif self.ai.enemy_race == Race.Terran:
             self.add_units(UnitTypeId.MARAUDER, 1, additional_guess)

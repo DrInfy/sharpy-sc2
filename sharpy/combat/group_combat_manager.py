@@ -180,14 +180,23 @@ class GroupCombatManager(ManagerBase, ICombatManager):
                     pos3d = Point3((pos3d.x, pos3d.y, pos3d.z + 2))
                     self.ai._client.debug_text_world(status, pos3d, size=10)
 
-    def closest_group(self, start: Point2, combat_groups: List[CombatUnits]) -> Optional[CombatUnits]:
+    def closest_group(
+        self,
+        start: Point2,
+        combat_groups: List[CombatUnits],
+        group_center: Optional[Point2] = None,
+        distance: float = 50,
+    ) -> Optional[CombatUnits]:
         group = None
-        best_distance = 50  # doesn't find enemy groups closer than this
+        best_distance = distance  # doesn't find enemy groups closer than this
+
+        if group_center is None:
+            group_center = start
 
         for combat_group in combat_groups:
             center = combat_group.center
 
-            if center == start:
+            if center == group_center:
                 continue  # it's the same group!
 
             distance = start.distance_to(center)
