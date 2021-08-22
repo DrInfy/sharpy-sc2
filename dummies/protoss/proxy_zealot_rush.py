@@ -219,7 +219,14 @@ class ProxyZealotRushBot(KnowledgeBot):
                 Step(UnitReady(UnitTypeId.PYLON, 1), AutoPylon()),
                 ProxyZealots(),
                 ChronoUnit(UnitTypeId.ZEALOT, UnitTypeId.GATEWAY),
-                [DistributeWorkers(), PlanZoneDefense(), PlanZoneGather(), attack, PlanFinishEnemy()],
+                [
+                    DistributeWorkers(),
+                    Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
+                    PlanZoneDefense(),
+                    PlanZoneGather(),
+                    attack,
+                    PlanFinishEnemy(),
+                ],
             ]
         )
         return BuildOrder(SequentialList(Step(None, proxy, skip=Once(Supply(50))), backup))

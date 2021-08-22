@@ -184,6 +184,7 @@ class LurkerBot(KnowledgeBot):
                 SpreadCreep(),
                 InjectLarva(),
                 DistributeWorkers(),
+                Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
                 PlanZoneAttack(),
                 PlanFinishEnemy(),
             ),

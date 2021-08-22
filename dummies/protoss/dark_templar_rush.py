@@ -97,6 +97,7 @@ class DarkTemplarRush(KnowledgeBot):
             PlanZoneDefense(),
             RestorePower(),
             DistributeWorkers(),
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             DarkTemplarAttack(),
             PlanZoneGather(),
             attack,

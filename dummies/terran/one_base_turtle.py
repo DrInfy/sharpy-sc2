@@ -62,6 +62,7 @@ class OneBaseTurtle(KnowledgeBot):
             PlanZoneDefense(),
             CallMule(),
             DistributeWorkers(),
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             Repair(),
             ContinueBuilding(),
             PlanZoneGatherTerran(),

@@ -72,9 +72,11 @@ class AdeptRush(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                ChronoAnyTech(0),
                 PlanZoneDefense(),
                 RestorePower(),
                 DistributeWorkers(),
+                Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
                 PlanZoneGather(),
                 DoubleAdeptScout(number),
                 attack,

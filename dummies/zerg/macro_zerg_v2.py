@@ -78,6 +78,7 @@ class MacroZergV2(KnowledgeBot):
             PlanCancelBuilding(),
             InjectLarva(),
             DistributeWorkers(),
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             attack,
             PlanFinishEnemy(),
         ]

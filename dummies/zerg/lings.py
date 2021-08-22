@@ -225,7 +225,16 @@ class LingFlood(KnowledgeBot):
         return BuildOrder(
             [
                 LingSpeedBuild(),
-                SequentialList([worker_scout, SpreadCreep(), InjectLarva(), distribute, DummyZergAttack()]),
+                SequentialList(
+                    [
+                        worker_scout,
+                        SpreadCreep(),
+                        InjectLarva(),
+                        distribute,
+                        Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
+                        DummyZergAttack(),
+                    ]
+                ),
             ]
         )
 

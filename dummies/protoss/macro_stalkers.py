@@ -50,6 +50,7 @@ class MacroStalkers(KnowledgeBot):
                 PlanZoneDefense(),
                 RestorePower(),
                 DistributeWorkers(),
+                Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
                 PlanZoneGather(),
                 Step(UnitReady(UnitTypeId.GATEWAY, 4), PlanZoneAttack(4)),
                 PlanFinishEnemy(),

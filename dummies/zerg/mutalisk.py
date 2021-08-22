@@ -120,6 +120,7 @@ class MutaliskBot(KnowledgeBot):
                 SpreadCreep(),
                 InjectLarva(),
                 distribute,
+                Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
                 PlanZoneAttack(),
                 PlanFinishEnemy(),
             ),

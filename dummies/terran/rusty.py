@@ -139,6 +139,7 @@ class Rusty(KnowledgeBot):
             CallMule(100),
             ScanEnemy(),
             DistributeWorkers(),
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             ManTheBunkers(),
             Repair(),
             ContinueBuilding(),

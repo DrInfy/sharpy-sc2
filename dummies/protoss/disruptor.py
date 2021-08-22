@@ -67,6 +67,7 @@ class DistruptorBuild(BuildOrder):
             WorkerRallyPoint(),
             RestorePower(),
             DistributeWorkers(),
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             PlanWorkerOnlyDefense(),  # Counter worker rushes
             PlanZoneDefense(),
             PlanZoneGather(),

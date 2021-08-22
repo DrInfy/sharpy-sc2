@@ -108,6 +108,7 @@ class RoachBurrowBot(KnowledgeBot):
             SequentialList(
                 OverlordScout(),
                 DistributeWorkers(),
+                Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
                 InjectLarva(),
                 PlanZoneDefense(),
                 PlanZoneGather(),

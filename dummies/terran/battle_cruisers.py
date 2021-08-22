@@ -73,6 +73,7 @@ class BattleCruisers(KnowledgeBot):
             Step(None, CallMule(100), skip_until=Time(5 * 60)),
             Step(None, ScanEnemy(), skip_until=Time(5 * 60)),
             self.distribute_workers,
+            Step(None, SpeedMining(), lambda ai: ai.client.game_step > 5),
             ManTheBunkers(),
             Repair(),
             ContinueBuilding(),
