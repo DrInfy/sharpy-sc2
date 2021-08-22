@@ -1,9 +1,9 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Set
 
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces.lost_units_manager import ILostUnitsManager
 from .manager_base import ManagerBase
-from sc2 import UnitTypeId, Result
+from sc2 import UnitTypeId, Result, AbilityId
 from sc2.unit import Unit
 
 from sharpy.managers.core.enemy_units_manager import ignored_types
@@ -14,19 +14,40 @@ class LostUnitsManager(ManagerBase, ILostUnitsManager):
 
     def __init__(self):
         super().__init__()
-
-        self._my_lost_units: Dict[UnitTypeId, List[Unit]] = {}
-        self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = {}
+        self._cancelled_tags: Set[int] = set()
+        self._my_lost_units: Dict[UnitTypeId, List[Unit]] = dict()
+        self._enemy_lost_units: Dict[UnitTypeId, List[Unit]] = dict()
+        self.current_lost_minerals = 0
+        self.current_enemy_lost_minerals = 0
+        self._last_lost_minerals = 0
+        self._last_enemy_lost_minerals = 0
+        self._cancel_commanded_tags: Set[int] = set()
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
         knowledge.register_on_unit_destroyed_listener(self.on_unit_destroyed)
 
     async def update(self):
-        pass
+        self._last_lost_minerals = self.current_lost_minerals
+        self._last_enemy_lost_minerals = self.current_enemy_lost_minerals
+
+        self.current_lost_minerals = (
+            self.ai.state.score.lost_minerals_technology
+            + self.ai.state.score.lost_minerals_economy
+            + self.ai.state.score.lost_minerals_upgrade
+        )
+
+        self.current_enemy_lost_minerals = (
+            self.ai.state.score.killed_minerals_technology
+            + self.ai.state.score.killed_minerals_economy
+            + self.ai.state.score.killed_minerals_upgrade
+        )
 
     async def post_update(self):
-        pass
+        for action in self.ai.actions:
+            if action.ability == AbilityId.CANCEL_BUILDINPROGRESS:
+                if action.unit.tag not in self._cancel_commanded_tags:
+                    self._cancel_commanded_tags.add(action.unit.tag)
 
     def on_unit_destroyed(self, event: UnitDestroyedEvent):
         if not event.unit:
@@ -41,6 +62,9 @@ class LostUnitsManager(ManagerBase, ILostUnitsManager):
 
         # Find a mapping if there is one, or use the type_id as it is
         real_type = self.unit_values.real_type(type_id)
+        if unit.is_structure and unit.build_progress < 1:
+            if self.cancelled(unit) and unit.tag not in self._cancelled_tags:
+                self._cancelled_tags.add(unit.tag)
 
         if unit.is_mine:
             self._my_lost_units.setdefault(real_type, []).append(unit)
@@ -74,7 +98,12 @@ class LostUnitsManager(ManagerBase, ILostUnitsManager):
         lost_gas = 0
 
         for unit_type in lost_units:
-            count = len(lost_units.get(unit_type, []))
+            count = 0
+            for unit in lost_units.get(unit_type, []):
+                if unit.tag in self._cancelled_tags:
+                    count += 0.25
+                else:
+                    count += 1
 
             minerals = self.unit_values.minerals(unit_type) * count
             gas = self.unit_values.gas(unit_type) * count
@@ -88,9 +117,19 @@ class LostUnitsManager(ManagerBase, ILostUnitsManager):
         self.print_contents()
 
     def print_contents(self):
+        lost_value = (
+            self.current_lost_minerals + self.ai.state.score.lost_minerals_army + self.ai.state.score.lost_minerals_none
+        )
+        killed_value = (
+            self.current_enemy_lost_minerals
+            + self.ai.state.score.killed_minerals_army
+            + self.ai.state.score.killed_minerals_none
+        )
         self.print_end(f"My lost units minerals and gas: {self.calculate_own_lost_resources()}")
+        self.print_end(f"My lost units minerals by score: {lost_value}")
 
         self.print_end(f"Enemy lost units minerals and gas: {self.calculate_enemy_lost_resources()}")
+        self.print_end(f"Enemy lost units minerals by score: {killed_value}")
 
     def print_end(self, msg: str):
         self.knowledge.print(msg, "LostUnitsContents", stats=False)
@@ -98,3 +137,24 @@ class LostUnitsManager(ManagerBase, ILostUnitsManager):
     def get_own_enemy_lost_units(self) -> Tuple[Dict[UnitTypeId, List[Unit]], Dict[UnitTypeId, List[Unit]]]:
         """Get tuple with own and enemy lost units"""
         return (self._my_lost_units, self._enemy_lost_units)
+
+    def cancelled(self, unit: Unit) -> bool:
+        if unit.is_mine:
+            if (
+                unit.tag in self._cancel_commanded_tags
+                and self.unit_values.minerals(unit.type_id) > self.current_lost_minerals - self._last_lost_minerals
+            ):
+                self.print(f"Cancel registered for {unit.type_id} {unit.tag}")
+                return True
+            return False  # Cancel probably didn't succeed
+        if unit.is_enemy:
+            if (
+                unit.tag in self._cancel_commanded_tags
+                and self.unit_values.minerals(unit.type_id)
+                > self.current_enemy_lost_minerals - self._last_enemy_lost_minerals
+            ):
+                self.print(f"Cancel registered for {unit.type_id} {unit.tag}")
+                return True
+            return False  # Cancel probably didn't succeed
+
+        return False
