@@ -11,3 +11,8 @@ class MapType(IntEnum):
     Reaper = 1
     Colossus = 2
     Air = 3
+
+class VisionStatus(IntEnum):
+    NotSeen = 0
+    Seen = 1
+    Detected = 2

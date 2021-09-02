@@ -7,3 +7,4 @@ from .memory_manager import MemoryManager
 from .archon import ArchonManager
 from .heat_map import HeatMapManager
 from .custom_func_manager import CustomFuncManager
+from .enemy_vision_manager import EnemyVisionManager

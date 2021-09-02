@@ -1,7 +1,7 @@
 from .sc2pathlib import PathFind
 
 import numpy as np
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Optional
 
 
 def to_float2(original: Tuple[int, int]) -> Tuple[float, float]:
@@ -10,16 +10,16 @@ def to_float2(original: Tuple[int, int]) -> Tuple[float, float]:
 
 class PathFinder:
     def __init__(self, maze: Union[List[List[int]], np.array]):
-        """ 
-        pathing values need to be integers to improve performance. 
+        """
+        pathing values need to be integers to improve performance.
         Initialization should be done with array consisting values of 0 and 1.
         """
         self._path_find = PathFind(maze)
         self.heuristic_accuracy = 1  # Octile distance
 
     def normalize_influence(self, value: int):
-        """ 
-        Normalizes influence to integral value.    
+        """
+        Normalizes influence to integral value.
         Influence does not need to be calculated each frame, but this quickly resets
         influence values to specified value without changing available paths.
         """
@@ -68,7 +68,11 @@ class PathFinder:
             self._path_find.remove_block(center, size)
 
     def find_path(
-        self, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
+        self, start: Tuple[float, float], end: Tuple[float, float],
+        large: bool = False,
+        influence: bool = False,
+        window: Optional[Tuple[Tuple[float, float], Tuple[float, float]]] = None,
+        distance_from_target: Optional[float] = None
     ) -> Tuple[List[Tuple[int, int]], float]:
         """
         Finds a path ignoring influence.
@@ -76,30 +80,23 @@ class PathFinder:
         :param start: Start position in float tuple
         :param end: Start position in float tuple
         :param large: Unit is large and requires path to have width of 2 to pass
+        :param influence: Account for enemy influence
+        :param window: Restrict path finding to the given window
+        :param distance_from_target: Short circuit when finding a point closer
+            than the given distance from the target
         :return: Tuple of points and total distance.
         """
         start_int = (int(round(start[0])), int(round(start[1])))
         end_int = (int(round(end[0])), int(round(end[1])))
-        if large:
-            return self._path_find.find_path_large(start_int, end_int, self.heuristic_accuracy)
-        return self._path_find.find_path(start_int, end_int, self.heuristic_accuracy)
+        if window is not None:
+            window = ((int(round(window[0][0])), int(round(window[0][1]))),
+                      (int(round(window[1][0])), int(round(window[1][1]))))
+        return self._path_find.find_path(start_int, end_int, large, influence, self.heuristic_accuracy, window, distance_from_target)
 
     def find_path_influence(
         self, start: Tuple[float, float], end: Tuple[float, float], large: bool = False
-    ) -> (List[Tuple[int, int]], float):
-        """
-        Finds a path that takes influence into account
-
-        :param start: Start position in float tuple
-        :param end: Start position in float tuple
-        :param large: Unit is large and requires path to have width of 2 to pass
-        :return: Tuple of points and total distance including influence.
-        """
-        start_int = (int(round(start[0])), int(round(start[1])))
-        end_int = (int(round(end[0])), int(round(end[1])))
-        if large:
-            return self._path_find.find_path_influence_large(start_int, end_int, self.heuristic_accuracy)
-        return self._path_find.find_path_influence(start_int, end_int, self.heuristic_accuracy)
+    ) -> Tuple[List[Tuple[int, int]], float]:
+        return self.find_path(start, end, large, influence=True)
 
     def safest_spot(self, destination_center: Tuple[float, float], walk_distance: float) -> Tuple[Tuple[int, int], float]:
         destination_int = (round(destination_center[0]), round(destination_center[1]))
@@ -148,7 +145,7 @@ class PathFinder:
     def plot(self, path: List[Tuple[int, int]], image_name: str = "map", resize: int = 4):
         """
         Uses cv2 to draw current pathing grid.
-        
+
         requires opencv-python
 
         :param path: list of points to colorize

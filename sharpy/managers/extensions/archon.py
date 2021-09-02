@@ -7,7 +7,9 @@ class ArchonManager(ManagerBase):
     def __init__(self) -> None:
         """
         Archon manager allows the player to tak control of selected units.
-        Units that have been controlled by player are released on idle
+        Units that have been controlled by player are released on idle.
+
+        This does not control Archan the units!
         """
         super().__init__()
         self.controlled_tags: Set[int] = set()
