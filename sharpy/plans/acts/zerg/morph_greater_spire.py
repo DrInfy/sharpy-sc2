@@ -1,5 +1,6 @@
+from sc2.ids.ability_id import AbilityId
 from sharpy.plans.acts.morph_building import MorphBuilding
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class MorphGreaterSpire(MorphBuilding):

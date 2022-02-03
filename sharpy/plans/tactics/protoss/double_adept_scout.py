@@ -1,10 +1,11 @@
 from typing import List, Dict, Optional
 
+from sc2.ids.ability_id import AbilityId
 from sharpy.combat.protoss import MicroAdepts
 from sharpy.interfaces import IZoneManager, IEnemyUnitsManager
 from sharpy.managers.extensions import BuildDetector
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sc2.units import Units

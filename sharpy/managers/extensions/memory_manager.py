@@ -1,11 +1,12 @@
 from collections import deque
 from typing import Dict, Set, Deque, List, Optional
 
+from sc2.data import Race
 from sc2.position import Point2
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces import IMemoryManager
 from sharpy.managers.core import ManagerBase
-from sc2 import UnitTypeId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 

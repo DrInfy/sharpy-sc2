@@ -6,7 +6,7 @@ from sc2.ids.effect_id import EffectId
 from sc2.units import Units
 
 from sharpy.combat import GenericMicro, Action, CombatUnits
-from sc2 import AbilityId
+from sc2.ids.ability_id import AbilityId
 from sc2.unit import Unit
 from sharpy.interfaces.combat_manager import MoveType
 

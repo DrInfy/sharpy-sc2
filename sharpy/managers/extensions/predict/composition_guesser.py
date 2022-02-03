@@ -1,9 +1,10 @@
 from math import floor
 from typing import List
 
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.interfaces import IEnemyUnitsManager, ILostUnitsManager
 from sharpy.unit_count import UnitCount
-from sc2 import Race, UnitTypeId
 
 
 class CompositionGuesser:

@@ -1,6 +1,6 @@
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.require import Time
 from sharpy.plans.tactics import DistributeWorkers, PlanZoneAttack
-from sc2 import UnitTypeId
 
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans import BuildOrder, Step

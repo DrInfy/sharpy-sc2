@@ -1,8 +1,8 @@
 import logging
 from typing import Union, Optional, List, Callable
 
+from sc2.data import Race, race_townhalls
 from sharpy.general.unit_feature import UnitFeature
-from sc2 import Race, race_townhalls
 from sc2.constants import *
 from sc2.unit import Unit
 from sc2.units import Units

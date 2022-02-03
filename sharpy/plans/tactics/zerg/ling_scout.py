@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.tactics import Scout
 from sharpy.plans.tactics.scouting import ScoutBaseAction
 

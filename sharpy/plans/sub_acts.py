@@ -1,6 +1,5 @@
 from typing import List, Union, Callable
 
-from sc2 import BotAI
 from sharpy.plans.build_step import Step
 from sharpy.plans.acts import ActBase
 

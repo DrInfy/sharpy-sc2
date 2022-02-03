@@ -1,9 +1,9 @@
 import logging
 import string
 from configparser import ConfigParser
-from typing import List, Optional, Callable, Type
+from typing import List, Optional, Callable, Type, Union
 
-import sc2
+from sc2.data import Race, Result
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces.data_manager import IDataManager
 from sharpy.managers.core import *
@@ -17,7 +17,6 @@ from sharpy.interfaces import (
     IPostStart,
     IPreviousUnitsManager,
 )
-from sc2 import Race, Result
 from sc2.constants import *
 from sc2.position import Point2
 from typing import TYPE_CHECKING, TypeVar
@@ -81,7 +80,7 @@ class Knowledge:
         return self.get_manager(IUnitCache)
 
     def pre_start(self, ai: "SkeletonBot", additional_managers: Optional[List[ManagerBase]]):
-        # assert isinstance(ai, sc2.BotAI)
+        # assert isinstance(ai, BotAI)
         self.ai: "SkeletonBot" = ai
         self._set_managers(additional_managers)
         self.config: ConfigParser = self.ai.config
@@ -183,7 +182,7 @@ class Knowledge:
         self.reserved_minerals += minerals
         self.reserved_gas += gas
 
-    def reserve_costs(self, item_id: sc2.Union[UnitTypeId, UpgradeId, AbilityId]):
+    def reserve_costs(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId]):
         if isinstance(item_id, UnitTypeId):
             unit = self.ai._game_data.units[item_id.value]
             cost = self.ai._game_data.calculate_ability_cost(unit.creation_ability)
@@ -193,7 +192,7 @@ class Knowledge:
             cost = self.ai._game_data.calculate_ability_cost(item_id)
         self.reserve(cost.minerals, cost.vespene)
 
-    def can_afford(self, item_id: sc2.Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
+    def can_afford(self, item_id: Union[UnitTypeId, UpgradeId, AbilityId], check_supply_cost: bool = True) -> bool:
         """Tests if the player has enough resources to build a unit or cast an ability even after reservations."""
         enough_supply = True
         if isinstance(item_id, UnitTypeId):

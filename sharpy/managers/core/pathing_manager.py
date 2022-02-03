@@ -3,7 +3,8 @@ from typing import Dict, List, Tuple, Union
 
 import numpy as np
 from math import floor
-from sc2 import Race
+
+from sc2.data import Race
 from sc2.game_info import GameInfo
 from sc2.ids.effect_id import EffectId
 from sc2.position import Point2, Point3

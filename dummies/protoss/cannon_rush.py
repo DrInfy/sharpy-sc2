@@ -1,7 +1,8 @@
 from math import floor
 from typing import List, Optional
 
-from sc2 import UnitTypeId, Race
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
 from sc2.unit import Unit

@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.interfaces import IEnemyUnitsManager, ILostUnitsManager
 
 from sharpy.plans.require.require_base import RequireBase

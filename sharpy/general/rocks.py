@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 unbuildable_rocks = {
     UnitTypeId.UNBUILDABLEROCKSDESTRUCTIBLE,

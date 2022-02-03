@@ -4,7 +4,7 @@ from sharpy.plans.acts import ActBase
 from sharpy.managers.extensions import HeatMapManager
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 
 

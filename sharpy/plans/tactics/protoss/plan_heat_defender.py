@@ -7,7 +7,7 @@ from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
 import sc2
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class PlanHeatDefender(ActBase):

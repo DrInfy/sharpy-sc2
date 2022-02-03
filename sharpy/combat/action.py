@@ -1,6 +1,6 @@
 from typing import Union, Optional
 
-from sc2 import AbilityId
+from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2, Pointlike
 from sc2.unit import Unit
 from sc2.unit_command import UnitCommand

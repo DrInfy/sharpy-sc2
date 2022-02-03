@@ -1,6 +1,6 @@
 from typing import List, Union, Set, TYPE_CHECKING
 
-from sc2 import BotAI
+from sc2.bot_ai import BotAI
 from sc2.unit import Unit
 from sc2.units import Units
 

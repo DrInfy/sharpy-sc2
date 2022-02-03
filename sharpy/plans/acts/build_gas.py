@@ -1,9 +1,11 @@
 from typing import Optional
 
 import sc2
+from sc2.bot_ai import BotAI
+from sc2.data import Race, race_gas
 from sharpy.managers.core.roles import UnitTask
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, BotAI, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.constants import ALL_GAS
 from sc2.unit import Unit
 from sharpy.knowledges import Knowledge
@@ -28,7 +30,7 @@ class BuildGas(ActBase):
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
 
-        self.unit_type = sc2.race_gas.get(knowledge.my_race)
+        self.unit_type = race_gas.get(knowledge.my_race)
 
     @property
     def active_harvester_count(self):

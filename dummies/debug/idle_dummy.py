@@ -1,4 +1,4 @@
-from sc2 import BotAI
+from sc2.bot_ai import BotAI
 
 
 class IdleDummy(BotAI):

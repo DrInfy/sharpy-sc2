@@ -3,7 +3,7 @@ from typing import Tuple, List
 
 from sharpy.managers.extensions import ChatManager
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class WarnBuildMacro(ActBase):

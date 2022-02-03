@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import Union, Optional
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 from sharpy.general.extended_power import ExtendedPower

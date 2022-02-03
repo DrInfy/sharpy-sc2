@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Dict
 
-from sc2 import AbilityId, Dict
+from sc2.ids.ability_id import AbilityId
 from sc2.unit import Unit
 from sc2.units import Units
 from sharpy.combat import Action, MicroStep, MoveType

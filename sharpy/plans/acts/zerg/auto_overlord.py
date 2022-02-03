@@ -2,7 +2,7 @@ from math import ceil
 
 from sharpy.interfaces import IIncomeCalculator
 from .zerg_unit import ZergUnit
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class AutoOverLord(ZergUnit):

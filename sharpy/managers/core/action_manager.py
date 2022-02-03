@@ -1,10 +1,10 @@
-from typing import Optional, TYPE_CHECKING, Dict, Union
+from typing import Optional, TYPE_CHECKING, Dict, Union, List
 
 from sc2.dicts.unit_train_build_abilities import TRAIN_INFO
+from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2
 from sc2.unit_command import UnitCommand
 from sharpy.managers.core.manager_base import ManagerBase
-from sc2 import BotAI, List, Set, AbilityId
 from sc2.unit import Unit
 
 if TYPE_CHECKING:

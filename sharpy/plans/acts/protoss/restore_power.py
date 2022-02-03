@@ -1,9 +1,10 @@
 from typing import List, Optional
 
+from sc2.data import Race
 from sharpy.constants import Constants
 from sharpy.interfaces import IBuildingSolver
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 

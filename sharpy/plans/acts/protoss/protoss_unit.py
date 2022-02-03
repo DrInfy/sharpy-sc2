@@ -1,6 +1,6 @@
 from sharpy.interfaces import ILostUnitsManager
 from sharpy.plans.acts import ActUnit
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.dicts.unit_trained_from import UNIT_TRAINED_FROM
 from sc2.ids.upgrade_id import UpgradeId
 from .warp_unit import WarpUnit

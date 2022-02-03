@@ -3,7 +3,7 @@ from typing import Optional
 from sharpy.interfaces import ICombatManager, IZoneManager
 from sharpy.knowledges import Knowledge
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 

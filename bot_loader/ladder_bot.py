@@ -3,7 +3,7 @@ import subprocess
 import os
 from typing import Tuple, Dict, Any
 
-from sc2 import PlayerType, Race
+from sc2.data import PlayerType, Race
 from sc2.player import AbstractPlayer
 import json
 

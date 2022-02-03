@@ -1,7 +1,7 @@
 import string
 from typing import Union
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class UnitCount:

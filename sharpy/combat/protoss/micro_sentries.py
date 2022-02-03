@@ -1,5 +1,7 @@
 from typing import List, Optional, TYPE_CHECKING
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sharpy.general.zone import Zone
 from sharpy.combat import MoveType, Action, NoAction, GenericMicro, CombatModel
 from sc2.position import Point2
@@ -9,7 +11,6 @@ if TYPE_CHECKING:
     from sharpy.managers.core import *
     from sharpy.knowledges import *
 
-from sc2 import AbilityId, Race
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit, UnitOrder
 from sc2.units import Units

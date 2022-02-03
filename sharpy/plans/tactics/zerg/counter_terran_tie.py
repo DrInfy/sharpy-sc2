@@ -1,9 +1,10 @@
 from typing import List, Union
 
+from sc2.data import Race
 from sharpy.general.zone import Zone
 from sharpy.plans import BuildOrder, SequentialList, StepBuildGas, Step
 from sharpy.plans.acts import ActBase, ActBuilding, DefensiveBuilding, DefensePosition
-from sc2 import UnitTypeId, AbilityId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.acts.zerg import MorphLair, ZergUnit, AutoOverLord
 from sharpy.plans.require import Supply
 from sharpy.plans.tactics import DistributeWorkers

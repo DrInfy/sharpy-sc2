@@ -2,7 +2,7 @@ import warnings
 from typing import Optional
 
 from sharpy.general.zone import Zone
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 from sharpy.interfaces import IZoneManager

@@ -6,7 +6,7 @@ from typing import Optional, Union, List
 import pytest
 from unittest import mock
 
-from sc2 import UnitTypeId, Race, BotAI, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId, Race, BotAI, AbilityId
 from sc2.constants import ALL_GAS, mineral_ids, IS_STRUCTURE, IS_MINE
 from sc2.game_data import AbilityData
 from sc2.position import Point2

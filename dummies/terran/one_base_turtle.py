@@ -1,5 +1,5 @@
-from sc2 import UnitTypeId, Race
-
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans import BuildOrder, Step, StepBuildGas
 from sharpy.plans.acts import *

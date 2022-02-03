@@ -1,4 +1,5 @@
-from sc2 import UnitTypeId, Race
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.acts.act_unit import ActUnit
 from sharpy.plans.acts.act_base import ActBase
 from sharpy.plans.acts.workers import Workers

@@ -1,7 +1,10 @@
+from typing import List
+
 import sc2
+from sc2.ids.ability_id import AbilityId
 from sharpy.interfaces import IGatherPointSolver, IUnitValues
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 
@@ -10,7 +13,7 @@ from sharpy.knowledges import Knowledge
 
 class PlanZoneGatherTerran(ActBase):
     gather_point: Point2
-    gather_set: sc2.List[int]
+    gather_set: List[int]
     gather_point_solver: IGatherPointSolver
     unit_values: IUnitValues
 
@@ -22,7 +25,7 @@ class PlanZoneGatherTerran(ActBase):
         self.gather_point_solver = knowledge.get_required_manager(IGatherPointSolver)
         self.unit_values = knowledge.get_required_manager(IUnitValues)
         self.gather_point = self.gather_point_solver.gather_point
-        self.gather_set: sc2.List[int] = []
+        self.gather_set: List[int] = []
 
     async def execute(self) -> bool:
         random_variable = (self.ai.state.game_loop % 120) * 0.1
@@ -37,11 +40,11 @@ class PlanZoneGatherTerran(ActBase):
                 self.gather_point = self.gather_point.towards(main_ramp.bottom_center, -3)
 
         unit: Unit
-        for unit in self.cache.own([sc2.UnitTypeId.BARRACKS, sc2.UnitTypeId.FACTORY]).tags_not_in(self.gather_set):
+        for unit in self.cache.own([UnitTypeId.BARRACKS, UnitTypeId.FACTORY]).tags_not_in(self.gather_set):
             # Rally point is set to prevent units from spawning on the wrong side of wall in
             pos: Point2 = unit.position
             pos = pos.towards(self.gather_point_solver.gather_point, 3)
-            unit(sc2.AbilityId.RALLY_BUILDING, pos)
+            unit(AbilityId.RALLY_BUILDING, pos)
             self.gather_set.append(unit.tag)
 
         units = []

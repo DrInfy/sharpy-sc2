@@ -7,7 +7,7 @@ from sharpy.managers.core import UnitCacheManager, PathingManager, ManagerBase
 from sharpy.combat import Action
 from sc2.units import Units
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
 import numpy as np

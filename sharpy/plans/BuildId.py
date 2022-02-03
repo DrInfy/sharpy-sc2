@@ -1,5 +1,7 @@
 from typing import Union
-from sc2 import UnitTypeId, Race
+
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.constants import ALL_GAS
 from sharpy.managers.core.unit_value import buildings_5x5, BUILDING_IDS
 from sharpy.plans.acts import ActBase, GridBuilding, Expand, Workers, BuildGas

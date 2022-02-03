@@ -1,6 +1,7 @@
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sharpy.plans.acts import ActBase
 
-from sc2 import Race, AbilityId
 from sharpy.tools import IntervalFunc
 
 

@@ -1,9 +1,11 @@
 import math
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sharpy.interfaces import IIncomeCalculator
 from sharpy.knowledges import Knowledge
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, AbilityId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.game_data import AbilityData, Cost
 from sc2.unit import Unit, UnitOrder
 

@@ -1,12 +1,13 @@
 import math
 from typing import Optional, Set, Dict, List, Callable
 
+from sc2.ids.ability_id import AbilityId
 from sc2.position import Point2, Point3
 from sc2.units import Units
 from sharpy.managers.core import BuildingSolver
 from sharpy.plans.acts import ActBase
 from sharpy.knowledges import Knowledge
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 """

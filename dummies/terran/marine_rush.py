@@ -1,6 +1,8 @@
 # import sc2
 import random
 
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.combat import MoveType
 from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import *
@@ -9,7 +11,6 @@ from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList
-from sc2 import UnitTypeId, Race
 from sc2.position import Point2
 
 from sharpy.knowledges import KnowledgeBot

@@ -1,6 +1,6 @@
 from typing import List, Set, Union
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.units import Units
 from sharpy.managers.core.roles import UnitTask
 from sharpy.plans import SubActs, Step

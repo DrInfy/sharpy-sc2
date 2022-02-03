@@ -7,10 +7,10 @@ from typing import Dict, List, Optional, Tuple, Set
 import numpy as np
 
 import sc2pathlib
+from sc2.data import Race
 from sharpy.constants import Constants
 from sharpy import sc2math
 from sharpy.general.zone import Zone
-from sc2 import Race
 
 from sc2.client import Client
 
