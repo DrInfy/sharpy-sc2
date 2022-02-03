@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.combat.group_combat_manager import GroupCombatManager
 from sharpy.managers.core import *
