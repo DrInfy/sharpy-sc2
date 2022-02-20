@@ -205,7 +205,8 @@ class DistributeWorkers(ActBase):
         self.work_queue.clear()
         self.active_gas_workers = 0
 
-        for building in self.ai.gas_buildings + self.ai.townhalls:
+        mining_bases = lambda unit: (unit.position in self.ai.expansion_locations_list)
+        for building in self.ai.gas_buildings + self.ai.townhalls.filter(mining_bases):
             if building.is_ready and building.ideal_harvesters == 0:
                 # Ignore empty buildings
                 continue
