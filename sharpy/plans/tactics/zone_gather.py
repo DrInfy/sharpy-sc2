@@ -72,9 +72,7 @@ class PlanZoneGather(ActBase):
 
         unit: Unit
         if self.set_gather_points:
-            for unit in self.cache.own([UnitTypeId.GATEWAY, UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
-                self.gather_set
-            ):
+            for unit in self.cache.own([UnitTypeId.GATEWAY, UnitTypeId.ROBOTICSFACILITY]).tags_not_in(self.gather_set):
                 # Rally point is set to prevent units from spawning on the wrong side of wall in
                 pos: Point2 = unit.position
                 pos = pos.towards(self.current_gather_point, 3)
