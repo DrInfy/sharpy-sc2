@@ -3,7 +3,7 @@ import string
 from configparser import ConfigParser
 from typing import Any, Optional
 
-import sc2
+from sc2.main import logger
 from sharpy.interfaces import ILogManager
 from .manager_base import ManagerBase
 
@@ -21,7 +21,7 @@ class LogManager(ManagerBase, ILogManager):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.logger = sc2.main.logger
+        self.logger = logger
         self.config = knowledge.config
 
     async def update(self):
