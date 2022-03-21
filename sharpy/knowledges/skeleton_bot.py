@@ -2,9 +2,11 @@ import logging
 import sys
 import time
 
-from sc2 import BotAI, UnitTypeId, Result
+from sc2.bot_ai import BotAI
 from sc2.constants import abilityid_to_unittypeid
+from sc2.data import Result
 from sc2.game_data import Cost
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit_command import UnitCommand
 from sc2.units import Units
 from config import get_config, get_version

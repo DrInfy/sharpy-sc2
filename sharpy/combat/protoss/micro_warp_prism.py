@@ -1,12 +1,13 @@
 from typing import Dict
 
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.combat import Action, MicroStep
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     pass
 from sharpy.general.extended_power import ExtendedPower
-from sc2 import AbilityId, UnitTypeId
 from sc2.unit import Unit
 from sc2.units import Units
 

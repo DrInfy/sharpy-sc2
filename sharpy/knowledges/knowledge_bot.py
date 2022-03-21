@@ -2,7 +2,7 @@ import logging
 import sys
 import threading
 from abc import abstractmethod, ABC
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, List
 
 from sc2.units import Units
 from sharpy.knowledges.skeleton_bot import SkeletonBot
@@ -10,7 +10,6 @@ from sharpy.combat.group_combat_manager import GroupCombatManager
 from sharpy.managers.core import *
 from sharpy.managers.extensions import *
 from config import get_config, get_version
-from sc2 import BotAI, Result, Optional, UnitTypeId, List
 from sc2.unit import Unit
 import time
 

@@ -1,7 +1,7 @@
 from typing import Dict
 
 from sharpy.combat import Action, GenericMicro, CombatModel
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.units import Units
 
 high_priority: Dict[UnitTypeId, int] = {

@@ -2,7 +2,7 @@ from typing import Optional
 
 from sharpy.plans import BuildOrder
 from sharpy.plans.acts import ActUnit
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.acts.zerg.morph_units import (
     MorphUnit,
     MorphRavager,

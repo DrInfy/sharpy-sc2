@@ -2,12 +2,13 @@ import random
 from typing import Optional, Dict, Set
 import numpy as np
 
+from sc2.ids.ability_id import AbilityId
 from sc2.units import Units
 from sharpy.interfaces import IBuildingSolver
 from sharpy.managers.core import BuildingSolver
 from sharpy.managers.core.grids import BlockerType, BuildArea
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 

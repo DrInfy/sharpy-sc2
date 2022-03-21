@@ -1,9 +1,11 @@
 from typing import List, Dict, Tuple, Set
 
+from sc2.data import Result
+from sc2.ids.ability_id import AbilityId
 from sharpy.events import UnitDestroyedEvent
 from sharpy.interfaces.lost_units_manager import ILostUnitsManager
 from .manager_base import ManagerBase
-from sc2 import UnitTypeId, Result, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 from sharpy.managers.core.enemy_units_manager import ignored_types

@@ -1,13 +1,16 @@
 from typing import TYPE_CHECKING, Optional
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sharpy.general.zone import Zone
 from sharpy.managers.core.roles import UnitTask
 from sharpy.managers.core import ZoneManager, UnitRoleManager
 from sharpy.interfaces import IIncomeCalculator, IGatherPointSolver
-from sc2 import UnitTypeId, Race, AbilityId, common_pb
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase
 from sharpy.sc2math import to_new_ticks
+from s2clientprotocol import common_pb2 as common_pb
 
 if TYPE_CHECKING:
     from sharpy.knowledges import *

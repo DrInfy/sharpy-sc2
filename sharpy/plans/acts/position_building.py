@@ -2,9 +2,10 @@ import enum
 from math import floor
 from typing import Optional
 
+from sc2.data import Race
 from sharpy.plans.acts import ActBase, DefensePosition, ActBuilding
 from sharpy.general.zone import Zone
-from sc2 import UnitTypeId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 
 

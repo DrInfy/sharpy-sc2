@@ -1,8 +1,9 @@
 import warnings
 from typing import List
 
+from sc2.ids.ability_id import AbilityId
 from sharpy.events import UnitDestroyedEvent
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 from sharpy.managers.core.roles import UnitTask

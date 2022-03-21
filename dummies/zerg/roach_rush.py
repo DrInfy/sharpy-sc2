@@ -2,11 +2,12 @@ import itertools
 import random
 
 import sc2
+from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId as AbilID
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 
 
-class RoachRush(sc2.BotAI):
+class RoachRush(BotAI):
     def __init__(self):
         # set of things that come from a larva
         self.from_larva = {UnitID.DRONE, UnitID.OVERLORD, UnitID.ZERGLING, UnitID.ROACH}

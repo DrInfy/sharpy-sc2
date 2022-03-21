@@ -1,3 +1,6 @@
+from typing import List, Dict
+
+from sc2.data import Result
 from sharpy.interfaces import ILostUnitsManager, IIncomeCalculator, IGameAnalyzer, IEnemyUnitsManager
 from .enemy_army_predicter import EnemyArmyPredicter
 from .game_states.advantage import (
@@ -11,7 +14,7 @@ from sharpy.managers.core.income_calculator import GAS_MINE_RATE
 from sharpy.general.extended_power import ExtendedPower
 from sharpy.tools import IntervalFunc
 from sharpy.unit_count import UnitCount
-from sc2 import UnitTypeId, Result, List, Dict
+from sc2.ids.unit_typeid import UnitTypeId
 
 from sharpy.managers.core.manager_base import ManagerBase
 from sharpy.managers.extensions.game_states import *

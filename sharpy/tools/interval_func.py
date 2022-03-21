@@ -1,8 +1,8 @@
-import sc2
+from sc2.bot_ai import BotAI
 
 
 class IntervalFunc:
-    def __init__(self, ai: sc2.BotAI, func, timer_seconds: float):
+    def __init__(self, ai: BotAI, func, timer_seconds: float):
         self.timer_seconds = timer_seconds
         self.ai = ai
         self.func = func
@@ -17,7 +17,7 @@ class IntervalFunc:
 
 
 class IntervalFuncAsync:
-    def __init__(self, ai: sc2.BotAI, func, timer_seconds: float):
+    def __init__(self, ai: BotAI, func, timer_seconds: float):
         self.timer_seconds = timer_seconds
         self.ai = ai
         self.func = func

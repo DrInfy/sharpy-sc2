@@ -9,7 +9,7 @@ from aiohttp.web_ws import WebSocketResponse
 from bot_loader.killable_process import KillableProcess
 from bot_loader.ladder_bot import BotLadder
 from bot_loader.port_picker import pick_contiguous_unused_ports, return_ports
-from sc2 import run_game
+from sc2.main import run_game
 
 # noinspection PyProtectedMember
 from sc2.main import _host_game

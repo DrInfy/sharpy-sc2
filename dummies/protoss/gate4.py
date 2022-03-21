@@ -1,5 +1,8 @@
 from typing import Optional, List
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.combat.group_combat_manager import GroupCombatManager
 from sharpy.managers.core import *
 from sharpy.managers.core import ActManager, GatherPointSolver
@@ -11,7 +14,6 @@ from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
 from sharpy.knowledges import SkeletonBot
-from sc2 import UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
 

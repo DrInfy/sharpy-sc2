@@ -1,12 +1,12 @@
 import logging
 import os
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 
 import jsonpickle
 from datetime import datetime
 from pathlib import Path
 
-from sc2 import Result, Tuple
+from sc2.data import Result
 from sharpy.interfaces import IGameAnalyzer
 from sharpy.interfaces.data_manager import IDataManager
 from sharpy.managers.extensions.build_detector import EnemyRushBuild, EnemyMacroBuild, BuildDetector

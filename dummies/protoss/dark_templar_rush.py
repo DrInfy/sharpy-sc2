@@ -1,8 +1,9 @@
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans.protoss import *
 from sharpy.plans.tactics.protoss import DarkTemplarAttack
-from sc2 import BotAI, UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
 

@@ -1,7 +1,7 @@
 from math import ceil
 
 from sharpy.plans.acts import GridBuilding
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class AutoPylon(GridBuilding):

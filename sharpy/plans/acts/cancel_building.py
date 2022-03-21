@@ -1,6 +1,7 @@
 from typing import Optional
 
-from sc2 import UnitTypeId, BotAI, AbilityId
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.game_data import AbilityData
 from sc2.unit import Unit, UnitOrder
 from .act_base import ActBase

@@ -1,6 +1,7 @@
 import os
 from typing import List, Dict, Tuple, Callable, Optional
 
+from sc2.data import AIBuild, Race, Difficulty
 from . import BotLadder
 from .dummy_zip import DummyZip
 from .ladder_zip import LadderZip
@@ -8,7 +9,6 @@ from dummies.protoss import *
 from dummies.terran import *
 from dummies.zerg import *
 from dummies.debug import *
-from sc2 import Race, AIBuild, Difficulty
 from sc2.player import Human, Bot, Computer, AbstractPlayer
 
 races = {

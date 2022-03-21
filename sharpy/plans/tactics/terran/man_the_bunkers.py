@@ -1,6 +1,7 @@
+from sc2.ids.ability_id import AbilityId
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 
 
 class ManTheBunkers(ActBase):

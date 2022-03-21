@@ -1,5 +1,3 @@
-from sc2 import UnitTypeId, BotAI, AbilityId
-from sc2.unit import Unit
 from .act_base import ActBase
 
 

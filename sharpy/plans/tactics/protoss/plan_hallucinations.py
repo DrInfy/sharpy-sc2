@@ -2,7 +2,7 @@ from typing import Set
 
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core import UnitRoleManager
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 from sharpy.managers.core.roles import UnitTask

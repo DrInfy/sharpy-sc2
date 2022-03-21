@@ -1,7 +1,9 @@
+from typing import Optional
+
+from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.units import Units
 from sharpy.combat import MicroStep, Action, MoveType
-from sc2 import AbilityId, Optional
 from sc2.unit import Unit
 
 

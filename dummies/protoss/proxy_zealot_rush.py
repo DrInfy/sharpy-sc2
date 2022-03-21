@@ -1,5 +1,7 @@
 from math import floor
 
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.interfaces import IBuildingSolver, ILostUnitsManager, IGatherPointSolver
 from sharpy.managers.core.building_solver import WallType
 from sharpy.managers.core.roles import UnitTask
@@ -18,7 +20,6 @@ from sharpy.knowledges import KnowledgeBot, Knowledge
 
 from sc2.ids.upgrade_id import UpgradeId
 
-from sc2 import Race, UnitTypeId
 from sc2.position import Point2
 
 

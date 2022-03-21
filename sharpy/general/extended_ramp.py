@@ -1,7 +1,7 @@
 import math
 from typing import Dict
 
-import sc2
+from sc2.bot_ai import BotAI
 import enum
 
 from sc2.game_info import Ramp
@@ -42,7 +42,7 @@ class ExtendedRamp:
     Cache any usable positions
     """
 
-    def __init__(self, ramp: Ramp, ai: sc2.BotAI):
+    def __init__(self, ramp: Ramp, ai: BotAI):
         self.ramp = ramp
         # Do NOT Modify
         self.upper = list(ramp.upper2_for_ramp_wall)
@@ -62,7 +62,7 @@ class ExtendedRamp:
             }
             self.find_ultimatum(ai)
 
-    def find_ultimatum(self, ai: sc2.BotAI):
+    def find_ultimatum(self, ai: BotAI):
         if not self.upper:
             return
         corners = []

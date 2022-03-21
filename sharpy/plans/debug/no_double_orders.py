@@ -1,5 +1,5 @@
+from sc2.ids.ability_id import AbilityId
 from sharpy.plans.acts import ActBase
-from sc2 import AbilityId
 
 
 class NoDoubleOrders(ActBase):

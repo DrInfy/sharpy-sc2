@@ -1,8 +1,10 @@
-from typing import Optional
+from typing import Optional, List
 
-from sc2 import AbilityId, UnitTypeId, Race
+from sc2.bot_ai import BotAI
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 
-import sc2
 from sharpy.combat import MoveType
 from sharpy.interfaces import IGatherPointSolver, IBuildingSolver, IEnemyUnitsManager
 from sharpy.plans.acts import ActBase
@@ -22,7 +24,7 @@ class PlanZoneGather(ActBase):
     def __init__(self, set_gather_points: bool = True):
         super().__init__()
         self.gather_move_type = MoveType.Assault
-        self.gather_set: sc2.List[int] = []
+        self.gather_set: List[int] = []
         self.blocker_tag: Optional[int] = None
         self.current_gather_point = Point2((0, 0))
         self.close_gates = True
@@ -70,13 +72,11 @@ class PlanZoneGather(ActBase):
 
         unit: Unit
         if self.set_gather_points:
-            for unit in self.cache.own([sc2.UnitTypeId.GATEWAY, sc2.UnitTypeId.ROBOTICSFACILITY]).tags_not_in(
-                self.gather_set
-            ):
+            for unit in self.cache.own([UnitTypeId.GATEWAY, UnitTypeId.ROBOTICSFACILITY]).tags_not_in(self.gather_set):
                 # Rally point is set to prevent units from spawning on the wrong side of wall in
                 pos: Point2 = unit.position
                 pos = pos.towards(self.current_gather_point, 3)
-                unit(sc2.AbilityId.RALLY_BUILDING, pos)
+                unit(AbilityId.RALLY_BUILDING, pos)
                 self.gather_set.append(unit.tag)
 
         await self.manage_blocker()
@@ -184,18 +184,18 @@ class PlanZoneGather(ActBase):
         return True
 
     def get_blocker(self, ai, position: Point2) -> Optional[Unit]:
-        unit = self.get_blocker_type(sc2.UnitTypeId.ZEALOT, ai, position)
+        unit = self.get_blocker_type(UnitTypeId.ZEALOT, ai, position)
         if unit is None:
-            unit = self.get_blocker_type(sc2.UnitTypeId.ADEPT, ai, position)
+            unit = self.get_blocker_type(UnitTypeId.ADEPT, ai, position)
         # if unit is None:
         #     unit = self.get_blocker_type(sc2.UnitTypeId.STALKER, ai, position)
         if unit is None:
-            unit = self.get_blocker_type(sc2.UnitTypeId.DARKTEMPLAR, ai, position)
+            unit = self.get_blocker_type(UnitTypeId.DARKTEMPLAR, ai, position)
         # if unit is None:
         #     unit = self.get_blocker_type(sc2.UnitTypeId.IMMORTAL, ai, position)
         return unit
 
-    def get_blocker_type(self, unit_type: sc2.UnitTypeId, ai: sc2.BotAI, position: Point2) -> Optional[Unit]:
+    def get_blocker_type(self, unit_type: UnitTypeId, ai: BotAI, position: Point2) -> Optional[Unit]:
         units = self.roles.free_units(unit_type).closer_than(15, position)
         if units.exists:
             return units.closest_to(position)

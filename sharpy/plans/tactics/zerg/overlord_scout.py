@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sc2.position import Point2
-from sc2 import UnitTypeId, AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.tactics.scouting import ScoutBaseAction, Scout
 
 

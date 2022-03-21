@@ -2,7 +2,7 @@ import json
 from typing import List, Dict, Optional
 from uuid import uuid4
 
-from sc2 import Race
+from sc2.data import Race
 
 
 class GameResult:

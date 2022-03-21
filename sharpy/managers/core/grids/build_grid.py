@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 
 from s2clientprotocol.debug_pb2 import Color
 
+from sc2.bot_ai import BotAI
 from sc2.pixel_map import PixelMap
 from sc2.game_info import GameInfo
 
-import sc2
 from sc2.position import Point2, Point3
 from sc2.unit import Unit
 
@@ -50,7 +50,7 @@ class BuildGrid(Grid):
     def get_default(self):
         return GridArea(BuildArea.NotBuildable)
 
-    def Generate(self, ai: sc2.BotAI):
+    def Generate(self, ai: BotAI):
         self.copy_build_map(self.game_info.placement_grid)
 
         for ramp in self.game_info.map_ramps:
@@ -133,7 +133,7 @@ class BuildGrid(Grid):
                 else:
                     self.set(x, y, GridArea(BuildArea.NotBuildable))
 
-    def SolveCliffs(self, ai: sc2.BotAI):
+    def SolveCliffs(self, ai: BotAI):
         maxDifference = 3
         hMap = self.game_info.terrain_height
         correction = Point2((0, 1))

@@ -1,8 +1,9 @@
 from typing import Set, Optional, Dict
 
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.general.extended_power import siege
 from sharpy.combat.move_type import MoveType
-from sc2 import Race, UnitTypeId
 
 from .micro_step import MicroStep
 from sc2.position import Point2

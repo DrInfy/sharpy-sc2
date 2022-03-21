@@ -1,5 +1,7 @@
 import random
 
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.plans.acts import *
 from sharpy.plans.acts.protoss import *
 from sharpy.plans.require import *
@@ -11,7 +13,6 @@ from sharpy.knowledges import KnowledgeBot
 from sharpy.knowledges import Knowledge
 
 from sharpy.general.extended_power import ExtendedPower
-from sc2 import UnitTypeId, AbilityId, Race
 from sc2.ids.upgrade_id import UpgradeId
 
 

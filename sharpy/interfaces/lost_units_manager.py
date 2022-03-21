@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import List, Tuple, Dict
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 

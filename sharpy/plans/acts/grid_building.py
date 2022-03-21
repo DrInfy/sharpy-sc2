@@ -1,12 +1,14 @@
 from math import floor
 from typing import Optional, Set
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sc2.pixel_map import PixelMap
 from sharpy.sc2math import to_new_ticks
 
 from sharpy.managers.core.roles import UnitTask
 from sharpy.utils import map_to_point2s_center
-from sc2 import UnitTypeId, AbilityId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 

@@ -1,5 +1,6 @@
 from typing import Optional, List
 
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.knowledges import KnowledgeBot
 from sharpy.managers.core import ManagerBase
 from sharpy.plans.acts import *
@@ -8,7 +9,7 @@ from sharpy.plans.require import *
 from sharpy.plans.tactics import *
 from sharpy.plans.tactics.terran import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas
-from sc2 import UnitTypeId, AbilityId, Race
+
 from sc2.ids.upgrade_id import UpgradeId
 import random
 

@@ -1,4 +1,4 @@
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sharpy.combat import Action, MicroStep
 from sc2.unit import Unit

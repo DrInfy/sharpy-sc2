@@ -1,6 +1,7 @@
 from typing import List, Union
 
-from sc2 import UnitTypeId, Race
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 from sharpy.knowledges import *
 from sharpy.plans import *

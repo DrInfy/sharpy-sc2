@@ -1,7 +1,7 @@
 import warnings
 from typing import Dict, TYPE_CHECKING
 
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 
 from sharpy.plans.acts.act_base import ActBase

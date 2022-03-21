@@ -1,5 +1,4 @@
 from sharpy.plans.tactics import DistributeWorkers
-from sc2 import UnitTypeId
 
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans import BuildOrder

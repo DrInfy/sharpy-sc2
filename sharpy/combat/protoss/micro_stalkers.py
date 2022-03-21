@@ -1,9 +1,10 @@
 from typing import Dict
 
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2pathlib import MapType
 from sharpy.general.extended_power import siege
 from sharpy.combat import Action, MoveType, GenericMicro, CombatModel
-from sc2 import AbilityId, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 

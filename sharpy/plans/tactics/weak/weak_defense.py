@@ -1,9 +1,10 @@
 from typing import List, Dict
 
+from sc2.data import Race
 from sharpy.combat import MoveType
 from sharpy.managers.core import UnitValue
 from sharpy.plans.acts import ActBase
-from sc2 import UnitTypeId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 
 from sharpy.knowledges import Knowledge

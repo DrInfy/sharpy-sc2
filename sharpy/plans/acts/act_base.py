@@ -2,10 +2,12 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 import sc2
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.general.component import Component
 
-from sc2 import AbilityId, Race, UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit, UnitOrder
 from sc2.unit_command import UnitCommand

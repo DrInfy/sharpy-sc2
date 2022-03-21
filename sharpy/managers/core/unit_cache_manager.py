@@ -1,18 +1,18 @@
 import numpy as np
 from typing import Dict, Union, Optional, List, Iterable, Tuple, Callable
 
+from sc2.data import race_townhalls
 from sc2.ids.effect_id import EffectId
 from scipy.spatial.ckdtree import cKDTree
 
 from sharpy.interfaces import IUnitCache
-from sharpy.managers.core.unit_value import race_townhalls
 from sc2.constants import FakeEffectID
 from sc2.game_state import EffectData
 from sc2.position import Point2
 from sc2.units import Units
 
 from sharpy.managers.core.manager_base import ManagerBase
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
 from typing import TYPE_CHECKING
 

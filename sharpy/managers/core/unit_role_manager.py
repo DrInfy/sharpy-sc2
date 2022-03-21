@@ -1,7 +1,8 @@
 from typing import List, Union, Set, Iterable, Optional
 
+from sc2.data import Race
 from sharpy.managers.core.manager_base import ManagerBase
-from sc2 import UnitTypeId, Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.client import Client
 from sc2.position import Point2
 from sc2.unit import Unit

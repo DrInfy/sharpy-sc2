@@ -10,7 +10,8 @@ from bot_loader.bot_definitions import BotDefinitions, races, builds, difficulty
 from config import get_config
 import sc2
 from bot_loader.runner import MatchRunner
-from sc2 import maps, Result
+from sc2 import maps
+from sc2.data import Result
 from sc2.paths import Paths
 from sc2.player import AbstractPlayer, Bot, Human
 from sharpy.knowledges import KnowledgeBot

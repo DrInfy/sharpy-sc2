@@ -2,7 +2,8 @@ import logging
 import string
 from abc import ABC, abstractmethod
 
-from sc2 import Result, UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
+from sc2.data import Result
 
 import sc2
 from sc2.client import Client

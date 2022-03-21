@@ -1,7 +1,6 @@
 from typing import Optional, Callable, Union, List
 
 # Singular step of action
-from sc2 import BotAI
 from sc2.unit import Unit
 from sharpy.plans.acts import merge_to_act
 from sharpy.plans.require import merge_to_require

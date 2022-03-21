@@ -1,5 +1,6 @@
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.combat import Action, GenericMicro
-from sc2 import AbilityId, UnitTypeId
 from sc2.ids.buff_id import BuffId
 from sc2.unit import Unit
 from sc2.units import Units

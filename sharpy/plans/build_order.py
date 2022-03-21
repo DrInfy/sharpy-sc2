@@ -1,7 +1,6 @@
-from typing import List, Union, Callable, Tuple
+from typing import List, Union, Callable
 
-import sc2
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.ids.upgrade_id import UpgradeId
 
 from sharpy.plans.acts import Tech, ActUnit, ActBase, merge_to_act

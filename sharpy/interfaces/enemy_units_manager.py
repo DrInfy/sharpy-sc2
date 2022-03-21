@@ -2,7 +2,7 @@ from abc import abstractmethod, ABC
 from typing import List, KeysView
 
 from sharpy.unit_count import UnitCount
-from sc2 import UnitTypeId
+from sc2.ids.unit_typeid import UnitTypeId
 from sc2.position import Point2
 from sc2.unit import Unit
 

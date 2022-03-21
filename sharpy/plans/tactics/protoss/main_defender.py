@@ -1,8 +1,9 @@
+from sc2.data import Race
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.interfaces import IZoneManager
 from sharpy.plans.acts import ActBase
 from sharpy.managers.core.roles import UnitTask
 from sharpy.knowledges import Knowledge
-from sc2 import Race, UnitTypeId
 
 
 class PlanMainDefender(ActBase):
