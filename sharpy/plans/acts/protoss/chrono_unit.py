@@ -32,7 +32,7 @@ class ChronoUnit(ActBase):
         self.creation_ability = unit.creation_ability.id
 
     async def execute(self) -> bool:
-        if self.count > 0 and self.count < self.casted:
+        if self.count > 0 and self.casted >= self.count:
             return True
 
         for target in self.cache.own(self.from_building).ready:  # type: Unit
