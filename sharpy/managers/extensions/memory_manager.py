@@ -127,7 +127,8 @@ class MemoryManager(ManagerBase, IMemoryManager):
                         # For burrowed units, let's change the snapshot
                         snap._proto.is_burrowed = True
                         # snap._proto.unit_type = BURROWED_ALIAS.get(snap.type_id, snap.type_id).value  # int value
-                        snap.cache.clear()
+                        # todo: what are the ramifications of removing this? Does a different cache need to be busted?
+                        # snap.cache.clear()
                 else:
                     self.clear_unit_cache(memory_tags_to_remove, unit_tag)
 
