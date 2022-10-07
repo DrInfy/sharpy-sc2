@@ -74,7 +74,7 @@ jobs:
 
     - name: Load and build docker image
       run: |
-        docker build -t test_image -f test/Dockerfile_python_3.7-sc2_4.10 .
+        docker build -t test_image -f test/Dockerfile_python-sc2 .
 
     - name: Run bots
       run: |

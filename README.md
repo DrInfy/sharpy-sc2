@@ -16,8 +16,9 @@ Develop branch ![](https://github.com/DrInfy/sharpy-sc2/workflows/Python%20actio
 
 ### Requirements
 
-1. Python 3.7/3.8/3.9 64-bit
-   * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) as the pathlib is built for 64-bit python 3.7/3.8/3.9
+1. Python 3.8/3.9 64-bit
+   * Python-sc2 requires python 3.8
+   * 64-bit requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) as the pathlib is built for 64-bit python 3.8/3.9
 1. Windows, Linux or MacOS
    * This requirement comes from [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib)
    * macOS (and possibly others as well) may be supported after [sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) is built for it.
@@ -39,6 +40,7 @@ We also appreciate well written issues, comments and improvements to project wik
 ### Pull Request Process
 
 * Keep pull requests small and atomic. Change only one logical thing at a time.
+* If you do a pull request for unit micro, showcase it with a dummy bot and explain how it improves the previous implementation
 * All Github actions checks for the PR must pass before it will be reviewed.
     * Make sure that the source code is formatted according to rules (see below)
     * Make sure that the source code passes linting
