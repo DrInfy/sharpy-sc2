@@ -66,44 +66,44 @@ def mock_ai() -> BotAI:
     ai.state.effects = []
     ai.state.visibility.__getitem__ = lambda s, x: 2
 
-    ai._client = mock.Mock()
-    ai._game_info = mock.Mock()
-    ai._game_info.player_start_location = MAIN_POINT
-    ai._game_info.start_locations = [ENEMY_MAIN_POINT]
-    ai._game_info.placement_grid.height = 100
-    ai._game_info.placement_grid.width = 100
-    ai._game_info.map_center = Point2((50, 50))
-    ai._game_info.map_name = "Mock"
-    ai._game_info.terrain_height.__getitem__ = lambda s, x: 0
-    ai._game_info.terrain_height.data_numpy = [0]
-    ai._game_info.map_ramps = []
+    ai.client = mock.Mock()
+    ai.game_info = mock.Mock()
+    ai.game_info.player_start_location = MAIN_POINT
+    ai.game_info.start_locations = [ENEMY_MAIN_POINT]
+    ai.game_info.placement_grid.height = 100
+    ai.game_info.placement_grid.width = 100
+    ai.game_info.map_center = Point2((50, 50))
+    ai.game_info.map_name = "Mock"
+    ai.game_info.terrain_height.__getitem__ = lambda s, x: 0
+    ai.game_info.terrain_height.data_numpy = [0]
+    ai.game_info.map_ramps = []
 
-    ai._game_data = mock.Mock()
-    ai._game_data.unit_types = {}
-    ai._game_data.abilities = dict()
+    ai.game_data = mock.Mock()
+    ai.game_data.unit_types = {}
+    ai.game_data.abilities = dict()
     ability_proto_mock = mock.Mock()
     ability_proto_mock.target = 4
     ability_proto_mock.ability_id = AbilityId.HARVEST_GATHER.value
     ability_proto_mock.remaps_to_ability_id = False
-    ability_mock = AbilityData(ai._game_data, ability_proto_mock)
-    ai._game_data.abilities[AbilityId.HARVEST_GATHER.value] = ability_mock
-    ai._game_data.units = {
+    ability_mock = AbilityData(ai.game_data, ability_proto_mock)
+    ai.game_data.abilities[AbilityId.HARVEST_GATHER.value] = ability_mock
+    ai.game_data.units = {
         UnitTypeId.MINERALFIELD.value: mock.Mock(),
         UnitTypeId.PROBE.value: mock.Mock(),
     }
 
-    ai._game_data.units[UnitTypeId.MINERALFIELD.value].has_minerals = True
-    ai._game_data.units[UnitTypeId.MINERALFIELD.value].attributes = {}
-    ai._game_data.units[UnitTypeId.PROBE.value].attributes = {}
+    ai.game_data.units[UnitTypeId.MINERALFIELD.value].has_minerals = True
+    ai.game_data.units[UnitTypeId.MINERALFIELD.value].attributes = {}
+    ai.game_data.units[UnitTypeId.PROBE.value].attributes = {}
 
     for typedata in BUILDING_IDS:
-        ai._game_data.units[typedata.value] = mock.Mock()
-        ai._game_data.units[typedata.value].attributes = {IS_STRUCTURE}
-        ai._game_data.units[typedata.value].has_minerals = False
+        ai.game_data.units[typedata.value] = mock.Mock()
+        ai.game_data.units[typedata.value].attributes = {IS_STRUCTURE}
+        ai.game_data.units[typedata.value].has_minerals = False
 
-    ai._game_data.units[UnitTypeId.ASSIMILATOR.value].has_vespene = True
-    ai._game_data.units[UnitTypeId.ASSIMILATOR.value].has_minerals = False
-    ai._game_data.units[UnitTypeId.ASSIMILATORRICH.value].has_vespene = True
+    ai.game_data.units[UnitTypeId.ASSIMILATOR.value].has_vespene = True
+    ai.game_data.units[UnitTypeId.ASSIMILATOR.value].has_minerals = False
+    ai.game_data.units[UnitTypeId.ASSIMILATORRICH.value].has_vespene = True
 
     mineral = create_mineral(ai, Point2((16, 10)))
     mineral2 = create_mineral(ai, Point2((16, 60)))
