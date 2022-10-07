@@ -2,7 +2,7 @@ from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sc2.unit import Unit
-from sc2.units import UnitSelection
+from sc2.units import Units
 
 
 class UseNeuralParasiteDummy(BotAI):
@@ -12,7 +12,7 @@ class UseNeuralParasiteDummy(BotAI):
         if iteration == 0:
             await self.my_init()
 
-        infestors: UnitSelection = self.units(UnitTypeId.INFESTOR)
+        infestors: Units = self.units(UnitTypeId.INFESTOR)
         if not infestors.exists:
             return
 
