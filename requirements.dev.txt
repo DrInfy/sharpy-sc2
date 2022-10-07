@@ -5,3 +5,4 @@ flake8==3.7.9
 black==19.10b0
 pre-commit==2.2.0
 Pillow
+pipenv==2018.11.26
