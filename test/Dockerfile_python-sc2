@@ -81,13 +81,6 @@ RUN wget --quiet --show-progress --progress=bar:force https://github.com/shostyn
     && unzip -q -o '506.zip' \
     && rm 506.zip
 
-# Get flat and empty maps
-RUN wget --quiet --show-progress --progress=bar:force http://blzdistsc2-a.akamaihd.net/MapPacks/Melee.zip \
-    && unzip -q -P iagreetotheeula -o 'Melee.zip' \
-    && mv Melee/* . \
-    && rm Melee.zip \
-    && rm -r Melee
-
 # Remove LE suffix from file names
 RUN rename -v 's/LE.SC2Map/.SC2Map/' *.SC2Map 
 
