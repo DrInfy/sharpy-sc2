@@ -11,10 +11,10 @@ from datetime import datetime
 import aiohttp
 
 from config import get_config
-from sc2 import Race, Difficulty
 from sc2.client import Client
 
 import sc2
+from sc2.data import Race, Difficulty
 from sc2.player import Computer, Human
 from sc2.protocol import ConnectionAlreadyClosed
 from sharpy.tools import LoggingUtility
@@ -160,9 +160,9 @@ def stand_alone_game(bot):
         else:
             LoggingUtility.set_logger(log_level=get_config(False)["general"]["log_level"])
 
-        return sc2.run_game(sc2.maps.get(map_name), [Human(race, fullscreen=True), bot], realtime=True)
+        return sc2.main.run_game(sc2.maps.get(map_name), [Human(race, fullscreen=True), bot], realtime=True)
 
     file_name = f"IngameAI_{map_name}_{time}"
     path = f"{folder}/{file_name}.log"
     LoggingUtility.set_logger_file(log_level=get_config(False)["general"]["log_level"], path=path)
-    return sc2.run_game(sc2.maps.get(map_name), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)
+    return sc2.main.run_game(sc2.maps.get(map_name), [bot, Computer(Race.Random, Difficulty.VeryHard)], realtime=False,)
