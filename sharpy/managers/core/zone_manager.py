@@ -160,6 +160,16 @@ class ZoneManager(ManagerBase, IZoneManager):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
+
+        self.ai.game_info.player_start_location = Point2(
+            [round(self.ai.start_location.x, 1), round(self.ai.start_location.y, 1)]
+        )
+
+        for i in range(0, len(self.ai.enemy_start_locations)):
+            self.ai.enemy_start_locations[i] = Point2(
+                [round(self.ai.enemy_start_locations[i].x, 1), round(self.ai.enemy_start_locations[i].y, 1)]
+            )
+
         # noinspection PyTypeChecker
         height_hash: int = np.sum(knowledge.ai.game_info.terrain_height.data_numpy)
         self.map = recognize_map(self.ai.game_info.map_name, height_hash)
