@@ -22,12 +22,18 @@ if TYPE_CHECKING:
 
 class MicroRules(Component):
     handle_groups_func: Callable[["GroupCombatManager", Point2, MoveType], None]
-    init_group_func: Callable[[MicroStep, CombatUnits, Units, List[CombatUnits], MoveType], None]
+    init_group_func: Callable[
+        [MicroStep, CombatUnits, Units, List[CombatUnits], MoveType], None
+    ]
     group_solve_combat_func: Callable[[MicroStep, Units, Action], Action]
     unit_solve_combat_func: Callable[[MicroStep, Unit, Action], Action]
     ready_to_shoot_func: Callable[[MicroStep, Unit], bool]
-    focus_fire_func: Callable[[MicroStep, Unit, Action, Optional[Dict[UnitTypeId, int]]], Action]
-    melee_focus_fire_func: Callable[[MicroStep, Unit, Action, Optional[Dict[UnitTypeId, int]]], Action]
+    focus_fire_func: Callable[
+        [MicroStep, Unit, Action, Optional[Dict[UnitTypeId, int]]], Action
+    ]
+    melee_focus_fire_func: Callable[
+        [MicroStep, Unit, Action, Optional[Dict[UnitTypeId, int]]], Action
+    ]
     generic_micro: MicroStep
 
     def __init__(self) -> None:
@@ -52,9 +58,13 @@ class MicroRules(Component):
         self.handle_groups_func = DefaultMicroMethods.handle_groups
         self.init_group_func = DefaultMicroMethods.init_micro_group
         # Pass command
-        self.group_solve_combat_func = lambda step, units, current_command: current_command
+        self.group_solve_combat_func = (
+            lambda step, units, current_command: current_command
+        )
         # Pass command
-        self.unit_solve_combat_func = lambda step, unit, current_command: current_command
+        self.unit_solve_combat_func = (
+            lambda step, unit, current_command: current_command
+        )
 
         self.ready_to_shoot_func = DefaultMicroMethods.ready_to_shoot
 
@@ -106,6 +116,7 @@ class MicroRules(Component):
         self.unit_micros[UnitTypeId.MARINE] = MicroBio()
         self.unit_micros[UnitTypeId.MARAUDER] = MicroBio()
         self.unit_micros[UnitTypeId.BATTLECRUISER] = MicroBattleCruisers()
+        self.unit_micros[UnitTypeId.GHOST] = MicroGhosts()
         self.unit_micros[UnitTypeId.RAVEN] = MicroRavens()
         self.unit_micros[UnitTypeId.MEDIVAC] = MicroMedivacs()
         self.unit_micros[UnitTypeId.LIBERATOR] = MicroLiberators()
