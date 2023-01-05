@@ -9,3 +9,4 @@ from .roach_rush import RoachRush
 from .zerg_random import RandomZergBot
 from .lurkers import LurkerBot
 from .roach_burrow import RoachBurrowBot
+from .zerg_silver import ZergSilver
