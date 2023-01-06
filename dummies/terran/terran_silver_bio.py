@@ -174,6 +174,7 @@ class TerranSilverBio(KnowledgeBot):
         self.attack = WeakAttack(30)
 
     def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        self.client.game_step = 20
         return [BuildDetector(), ChatManager()]
 
     async def create_plan(self) -> BuildOrder:
