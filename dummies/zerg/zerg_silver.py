@@ -12,7 +12,7 @@ from sharpy.plans.acts.zerg import *
 from sharpy.plans.require import *
 from sharpy.plans.require.supply import SupplyType
 from sharpy.plans.tactics import *
-from sharpy.plans.tactics.weak import WeakAttack
+from sharpy.plans.tactics.weak import WeakAttack, WeakDefense
 from sharpy.plans.tactics.zerg import *
 from sharpy.plans import BuildOrder, Step, SequentialList, StepBuildGas, IfElse
 from sc2.ids.upgrade_id import UpgradeId
@@ -138,6 +138,7 @@ class ZergSilver(KnowledgeBot):
         self.attack = WeakAttack(30)
 
     def configure_managers(self) -> Optional[List["ManagerBase"]]:
+        self.client.game_step = 20
         return [BuildDetector(), ChatManager()]
 
     async def create_plan(self) -> BuildOrder:
@@ -151,12 +152,12 @@ class ZergSilver(KnowledgeBot):
         )
 
         tactics = [
-            PlanZoneGather(),
-            PlanZoneDefense(),
+            WeakDefense(),
             worker_scouting,
             SpreadCreep(),
             InjectLarva(),
             DistributeWorkers(),
+            PlanZoneGather(),
             self.attack,
             PlanFinishEnemy(),
         ]
