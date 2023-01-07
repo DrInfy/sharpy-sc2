@@ -106,7 +106,7 @@ class SkeletonBot(BotAI, ABC):
             await self._do_actions(self.actions)
             self.actions.clear()
 
-        self._client.game_step = int(self.config["general"]["game_step_size"])
+        self.client.game_step = int(self.config["general"]["game_step_size"])
 
     async def split_workers(self):
         if self.realtime_split:
