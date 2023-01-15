@@ -257,6 +257,7 @@ class CannonRush(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanCancelBuilding(),
                 PlanZoneDefense(),
                 DistributeWorkers(),

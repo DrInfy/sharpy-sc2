@@ -80,6 +80,7 @@ class MacroRobo(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanCancelBuilding(),
                 PlanHeatObserver(),
                 PlanZoneDefense(),

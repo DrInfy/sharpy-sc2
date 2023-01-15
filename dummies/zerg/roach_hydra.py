@@ -98,6 +98,7 @@ class RoachHydra(KnowledgeBot):
         return BuildOrder(
             RoachHydraBuild(),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanCancelBuilding(),
                 PlanZoneGather(),
                 PlanZoneDefense(),

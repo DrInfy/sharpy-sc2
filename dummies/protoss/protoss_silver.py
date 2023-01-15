@@ -56,6 +56,7 @@ class SilverProtoss(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 WeakDefense(),
                 RestorePower(),
                 DistributeWorkers(),

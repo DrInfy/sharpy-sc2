@@ -152,6 +152,7 @@ class ZergSilver(KnowledgeBot):
         )
 
         tactics = [
+            MineOpenBlockedBase(),
             WeakDefense(),
             worker_scouting,
             SpreadCreep(),

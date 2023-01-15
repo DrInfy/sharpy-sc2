@@ -90,6 +90,7 @@ class TwoBaseTanks(KnowledgeBot):
 
         self.attack = PlanZoneAttack(60)
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             LowerDepots(),
             PlanZoneDefense(),

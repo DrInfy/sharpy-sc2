@@ -48,6 +48,7 @@ class MacroStalkers(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanZoneDefense(),
                 RestorePower(),
                 DistributeWorkers(),

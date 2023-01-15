@@ -73,6 +73,7 @@ class AdeptRush(KnowledgeBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 ChronoAnyTech(0),
                 PlanZoneDefense(),
                 RestorePower(),

@@ -180,6 +180,7 @@ class TerranSilverBio(KnowledgeBot):
     async def create_plan(self) -> BuildOrder:
         self.knowledge.data_manager.set_build("bio")
         tactics = [
+            MineOpenBlockedBase(),
             LowerDepots(),
             WeakDefense(),
             CallMule(0),

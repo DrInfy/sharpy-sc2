@@ -1,3 +1,4 @@
+from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.knowledges import KnowledgeBot
 from sharpy.plans.acts import *
 from sharpy.plans.acts.terran import *
@@ -27,6 +28,7 @@ class Banshees(KnowledgeBot):
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         self.distribute_workers = DistributeWorkers(4)
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             LowerDepots(),
             PlanZoneDefense(),

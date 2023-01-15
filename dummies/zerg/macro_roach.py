@@ -93,6 +93,7 @@ class MacroRoach(KnowledgeBot):
         attack = PlanZoneAttack(120)
 
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             SpreadCreep(),
             InjectLarva(),

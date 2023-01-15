@@ -229,6 +229,7 @@ class LingFlood(KnowledgeBot):
                 SequentialList(
                     [
                         worker_scout,
+                        MineOpenBlockedBase(),
                         SpreadCreep(),
                         InjectLarva(),
                         distribute,
@@ -252,6 +253,7 @@ class LingFlood(KnowledgeBot):
                 SequentialList(
                     [
                         worker_scout,
+                        MineOpenBlockedBase(),
                         SpreadCreep(),
                         InjectLarva(),
                         Step(None, DistributeWorkers(3, 3), skip=Any([stop_gas, end_game])),

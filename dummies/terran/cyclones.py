@@ -63,6 +63,7 @@ class CycloneBot(KnowledgeBot):
         self.distribute_workers = DistributeWorkers()
 
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             LowerDepots(),
             PlanZoneDefense(),

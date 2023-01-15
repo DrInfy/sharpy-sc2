@@ -64,6 +64,7 @@ class DistruptorBuild(BuildOrder):
         )
 
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             WorkerRallyPoint(),
             RestorePower(),

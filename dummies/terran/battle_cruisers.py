@@ -1,5 +1,7 @@
 from typing import Optional, List
 
+from sc2.data import Race
+from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
 from sharpy.knowledges import KnowledgeBot
 from sharpy.managers.core import ManagerBase
@@ -66,6 +68,7 @@ class BattleCruisers(KnowledgeBot):
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         self.distribute_workers = DistributeWorkers(4)
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             LowerDepots(),
             PlanZoneDefense(),

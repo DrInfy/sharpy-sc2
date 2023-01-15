@@ -213,6 +213,7 @@ class BioBot(KnowledgeBot):
         self.knowledge.data_manager.set_build("bio")
         worker_scout = Step(None, WorkerScout(), skip_until=UnitExists(UnitTypeId.SUPPLYDEPOT, 1))
         tactics = [
+            MineOpenBlockedBase(),
             PlanCancelBuilding(),
             LowerDepots(),
             PlanZoneDefense(),

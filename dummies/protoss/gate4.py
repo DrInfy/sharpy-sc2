@@ -83,6 +83,7 @@ class Stalkers4Gate(SkeletonBot):
                 ),
             ),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanZoneDefense(),
                 RestorePower(),
                 DistributeWorkers(),

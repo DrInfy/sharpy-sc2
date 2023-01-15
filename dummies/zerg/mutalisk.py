@@ -114,6 +114,7 @@ class MutaliskBot(KnowledgeBot):
         return BuildOrder(
             MutaliskBuild(),
             SequentialList(
+                MineOpenBlockedBase(),
                 PlanCancelBuilding(),
                 PlanZoneGather(),
                 PlanZoneDefense(),
