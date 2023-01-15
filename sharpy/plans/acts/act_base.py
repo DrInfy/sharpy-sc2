@@ -185,7 +185,9 @@ class ActBase(Component, ABC):
             count += self.cache.own(EQUIVALENTS_FOR_TECH_PROGRESS[unit_type]).amount
         return count
 
-    def get_worker_builder(self, position: Point2, priority_tag: Optional[int]) -> Optional[Unit]:
+    def get_worker_builder(
+        self, position: Point2, priority_tag: Optional[int], only_roles: Optional[List[UnitTask]] = None
+    ) -> Optional[Unit]:
         """
         Gets best worker to build in the selected location.
         Priorities:
@@ -198,6 +200,8 @@ class ActBase(Component, ABC):
 
         @param position: location on where we want to build something
         @param priority_tag: Worker tag that has been used here before
+        @param only_roles: If worker tag is not in these roles, then pick up another worker.
+        Useful if another act kidnaps worker
         @return: Worker if one was found
         """
 
@@ -207,6 +211,14 @@ class ActBase(Component, ABC):
             if worker is None or worker.is_constructing_scv or self.roles.unit_role(worker) != UnitTask.Building:
                 # Worker is probably dead or it is already building something else.
                 worker = None
+
+        if (
+            only_roles
+            and worker is not None
+            and (self.roles.unit_role(worker) not in only_roles or worker.is_constructing_scv)
+        ):
+            # Worker is probably taken by some other act or it is already building something else.
+            worker = None
 
         if worker is None:
             workers = self.ai.workers.filter(
@@ -240,10 +252,7 @@ class ActBase(Component, ABC):
             workers.sort(key=sort_method)
 
             worker = workers.first
-        else:
-            if worker is None or worker.is_constructing_scv:
-                # Worker is probably dead or it is already building something else.
-                worker = None
+
         return worker
 
     async def build(

@@ -80,6 +80,7 @@ class GridBuilding(ActBuilding):
         self.allow_wall = allow_wall
         assert isinstance(priority, bool)
         self.priority = priority
+        self.only_roles = [UnitTask.Idle, UnitTask.Building, UnitTask.Gathering]
         self.builder_tag: Optional[int] = None
         self.iterator: Optional[int] = iterator
         self.consider_worker_production = consider_worker_production
@@ -132,7 +133,7 @@ class GridBuilding(ActBuilding):
                 self.print(f"Can't find free position to build {self.unit_type.name} in!")
             return False  # Stuck and cannot proceed
 
-        worker = self.get_worker_builder(position, self.builder_tag)  # type: Unit
+        worker = self.get_worker_builder(position, self.builder_tag, self.only_roles)  # type: Unit
 
         if worker is None:
             self.builder_tag = None
@@ -141,7 +142,7 @@ class GridBuilding(ActBuilding):
         if self.worker_stuck.need_new_worker(worker, self.ai.time, position, self.knowledge.iteration):
             self.print(f"Worker {worker.tag} was found stuck!")
             self.roles.set_task(UnitTask.Reserved, worker)  # Set temp reserved for the stuck worker.
-            worker = self.get_worker_builder(position, None)
+            worker = self.get_worker_builder(position, None, self.only_roles)
 
         if self.has_build_order(worker):
             self.set_worker(worker)

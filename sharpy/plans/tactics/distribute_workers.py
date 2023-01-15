@@ -55,6 +55,7 @@ class DistributeWorkers(ActBase):
         self.work_queue: List[WorkStatus] = []
         self.gas_workers_target = 0
         self.gas_workers_max = 0
+        self.only_roles = [UnitTask.Idle, UnitTask.Gathering]
 
     async def start(self, knowledge: Knowledge):
         await super().start(knowledge)
@@ -175,6 +176,10 @@ class DistributeWorkers(ActBase):
             return
 
         for worker in self.ai.workers:
+            if self.roles.unit_role(worker) not in self.only_roles:
+                # Prevent scouts and otherwise reserved units to be part of mining force even if they are mining.
+                continue
+
             # worker.is_gathering
             if worker.orders:
                 order: UnitOrder = worker.orders[-1]
