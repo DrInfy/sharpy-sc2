@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: [3.9]
+        python-version: [3.11]
 
     steps:
     - uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: true  # one failure is enough
       matrix:
-        python-version: [3.9]
+        python-version: [3.11]
         player1: [bio, bc, 4gate, lurker, mutalisk, saferaven, disruptor]
         player2: [ai.zerg.hard.macro]
 
