@@ -111,14 +111,6 @@ class ActBase(Component, ABC):
         return positions
 
     def unit_pending_count(self, unit_type: UnitTypeId) -> float:
-        if unit_type == UnitTypeId.ARCHON:
-            templars = self.cache.own([UnitTypeId.HIGHTEMPLAR, UnitTypeId.DARKTEMPLAR])
-            count = 0
-            for templar in templars:
-                if templar.orders and templar.orders[0].ability == AbilityId.MORPH_ARCHON:
-                    count += 0.5
-            return count
-
         return self.ai.already_pending(unit_type)
 
     def building_progress(self, pre_type: UnitTypeId):
