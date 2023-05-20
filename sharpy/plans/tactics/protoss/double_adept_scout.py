@@ -221,7 +221,7 @@ class DoubleAdeptScout(ActBase):
         self.is_behind_minerals = False
 
     async def check_start(self):
-        adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
+        adepts: Units = self.roles.free_units(UnitTypeId.ADEPT)
         if adepts.amount >= self.adepts_to_start:
             self.started = True
 

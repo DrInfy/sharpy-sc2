@@ -50,6 +50,7 @@ class SilverProtoss(KnowledgeBot):
                         ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 22),
                         Step(UnitExists(UnitTypeId.NEXUS, 2), ActUnit(UnitTypeId.PROBE, UnitTypeId.NEXUS, 44)),
                         StepBuildGas(3, skip=Gas(300)),
+                        GridBuilding(UnitTypeId.TWILIGHTCOUNCIL, 1, priority=True),  # this does nothing on purpose
                     ],
                     [ProtossUnit(UnitTypeId.STALKER, 100)],
                     [GridBuilding(UnitTypeId.GATEWAY, 7), StepBuildGas(4, skip=Gas(200))],

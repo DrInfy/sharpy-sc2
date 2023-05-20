@@ -33,7 +33,7 @@ class PlanHeatDefender(ActBase):
     async def execute(self) -> bool:
 
         if self.adept_tag is None:
-            adepts: Units = self.roles.free_units()(UnitTypeId.ADEPT)
+            adepts: Units = self.roles.free_units(UnitTypeId.ADEPT)
             if adepts.exists:
                 adept = adepts.first
                 self.adept_tag = adept.tag
