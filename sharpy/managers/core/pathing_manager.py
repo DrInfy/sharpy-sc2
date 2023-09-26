@@ -40,8 +40,8 @@ class PathingManager(ManagerBase):
             game_info.terrain_height.data_numpy,
             game_info.playable_area,
         )
-
-        self.map.calculate_connections(self.ai.start_location)  # This is for checking dead warp zones
+        if self.ai.start_location is not None:
+            self.map.calculate_connections(self.ai.start_location)  # This is for checking dead warp zones
 
         _data = np.fmax(path_grid.data_numpy, placement_grid.data_numpy).T
         self.path_finder_terrain = sc2pathlib.PathFinder(_data)

@@ -41,9 +41,10 @@ class MicroSentries(GenericMicro):
         await super().start(knowledge)
 
         ramp_ff_movement = 2
-        ramp = self.zone_manager.expansion_zones[0].ramp
-        if ramp:
-            self.main_ramp_position = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
+        if self.zone_manager.expansion_zones:
+            ramp = self.zone_manager.expansion_zones[0].ramp
+            if ramp:
+                self.main_ramp_position = ramp.bottom_center.towards(ramp.top_center, ramp_ff_movement)
         self.building_solver = knowledge.get_manager(IBuildingSolver)
 
     def group_solve_combat(self, units: Units, current_command: Action) -> Action:

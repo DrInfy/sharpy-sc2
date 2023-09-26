@@ -88,6 +88,19 @@ class Knowledge:
         self._debug = self.config["general"].getboolean("debug")
         self.my_worker_type = UnitValue.get_worker_type(self.my_race)
 
+        if self.ai.start_location is None:
+            if self.ai.structures:
+                self.ai.game_info.player_start_location = self.ai.structures.center
+            elif self.ai.structures:
+                self.ai.game_info.player_start_location = self.ai.units.center
+            else:
+                self.ai.game_info.player_start_location = self.ai.game_info.map_center
+
+            if self.ai.enemy_structures:
+                self.ai.game_info.start_locations = [self.ai.enemy_structures.center]
+            else:
+                self.ai.game_info.start_locations = [self.ai.game_info.map_center]
+
     def _set_managers(self, additional_managers: Optional[List[ManagerBase]]):
         """
         Sets managers to be updated.

@@ -198,14 +198,15 @@ class BuildingSolver(ManagerBase, IBuildingSolver):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        self.grid = BuildGrid(self.knowledge)
-        self.base_ramp = self.zone_manager.expansion_zones[0].ramp
-        self.color_zone(self.zone_manager.expansion_zones[0], ZoneArea.OwnMainZone)
-        self.color_zone(self.zone_manager.expansion_zones[1], ZoneArea.OwnNaturalZone)
-        self.color_zone(self.zone_manager.expansion_zones[2], ZoneArea.OwnThirdZone)
+        if (len(self.zone_manager.expansion_zones) > 1):
+            self.grid = BuildGrid(self.knowledge)
+            self.base_ramp = self.zone_manager.expansion_zones[0].ramp
+            self.color_zone(self.zone_manager.expansion_zones[0], ZoneArea.OwnMainZone)
+            self.color_zone(self.zone_manager.expansion_zones[1], ZoneArea.OwnNaturalZone)
+            self.color_zone(self.zone_manager.expansion_zones[2], ZoneArea.OwnThirdZone)
 
     async def update(self):
-        if self.knowledge.iteration == 0:
+        if self.knowledge.iteration == 0 and len(self.zone_manager.expansion_zones) > 0:
             await self.solve_grid()
 
     async def post_update(self):

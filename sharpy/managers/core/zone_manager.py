@@ -187,6 +187,9 @@ class ZoneManager(ManagerBase, IZoneManager):
             pather.map.calculate_zones(expansion_locations_list)
 
     def init_zones(self):
+        if len(self.ai._expansion_positions_list) == 0:
+            return
+
         """Add expansion locations as zones."""
         for exp_loc in self.ai.expansion_locations_list:  # type: Point2
             is_start_location = False
@@ -388,9 +391,12 @@ class ZoneManager(ManagerBase, IZoneManager):
     # region Update
 
     async def update(self):
+        if len(self.expansion_zones) == 0:
+            return
+
         self._enemy_zones.clear()
         self._our_zones.clear()
-        if self.knowledge.iteration == 0:
+        if self.knowledge.iteration == 0 and self._expansion_zones:
             self.init_zone_pathing()
 
         self.update_own_units_zones()

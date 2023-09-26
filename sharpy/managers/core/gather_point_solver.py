@@ -34,13 +34,16 @@ class GatherPointSolver(ManagerBase, IGatherPointSolver):
 
     async def start(self, knowledge: "Knowledge"):
         await super().start(knowledge)
-        base_ramp = self.zone_manager.expansion_zones[0].ramp
-        if base_ramp:
-            self._inital_gather_point = base_ramp.top_center.towards(base_ramp.bottom_center, -4)
+        if self.zone_manager.expansion_zones:
+            base_ramp = self.zone_manager.expansion_zones[0].ramp
+            if base_ramp:
+                self._inital_gather_point = base_ramp.top_center.towards(base_ramp.bottom_center, -4)
+            else:
+                self._inital_gather_point = self.zone_manager.expansion_zones[0].center_location.towards(
+                    self.zone_manager.enemy_start_location, 8
+                )
         else:
-            self._inital_gather_point = self.zone_manager.expansion_zones[0].center_location.towards(
-                self.zone_manager.enemy_start_location, 8
-            )
+            self._inital_gather_point = self.ai.start_location
 
     async def update(self):
         if not self._gather_point_set:

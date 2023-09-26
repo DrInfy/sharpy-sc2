@@ -97,7 +97,7 @@ class GameAnalyzer(ManagerBase, IGameAnalyzer):
             enemy_workers = 12
         else:
             enemy_workers = self.enemy_units_manager.enemy_worker_count
-            if not self.zone_manager.enemy_main_zone.is_scouted_at_least_once:
+            if self.zone_manager.expansion_zones and not self.zone_manager.enemy_main_zone.is_scouted_at_least_once:
                 enemy_workers += 12
 
         mineral_fields = 0
