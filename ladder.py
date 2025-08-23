@@ -16,7 +16,7 @@ from sc2.client import Client
 import sc2
 from sc2.data import Race, Difficulty
 from sc2.player import Computer, Human
-from sc2.protocol import ConnectionAlreadyClosed
+from sc2.protocol import ConnectionAlreadyClosedError
 from sharpy.tools import LoggingUtility
 
 
@@ -91,7 +91,7 @@ async def join_ladder_game(
         result = await sc2.main._play_game(players[0], client, realtime, portconfig, step_time_limit, game_time_limit)
         if save_replay_as is not None:
             await client.save_replay(save_replay_as)
-    except ConnectionAlreadyClosed:
+    except ConnectionAlreadyClosedError:
         logging.error(f"Connection was closed before the game ended")
         return None
     finally:
