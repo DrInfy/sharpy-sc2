@@ -3,7 +3,7 @@ import shutil
 import time
 
 from typing import Any
-from sc2.sc2process import kill_switch
+from sc2.sc2process import KillSwitch
 
 """
 Process that is automatically killed by sc2.
@@ -15,7 +15,7 @@ class KillableProcess:
         self._tmp_dir = tmp_dir
         self._process: Any = process
         super().__init__()
-        kill_switch.add(self)
+        KillSwitch.add(self)
 
     def _clean(self) -> None:
         """
