@@ -23,7 +23,8 @@ class AutoWorker(ActBase):
 
     async def execute(self) -> bool:
         self.act.to_count = min(self.to_count, self._optimal_count())
-        return await self.act.execute()
+        await self.act.execute()
+        return True
 
     def _optimal_count(self) -> int:
         count = 1
