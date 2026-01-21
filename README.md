@@ -2,7 +2,7 @@
 
 Sharpy is a Python framework for rapid development of Starcraft 2 AI bots.
 
-Sharpy is built on top of [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the framework used by [Sharpened Edge](https://ai-arena.net/bots/40/) bot.
+Sharpy is built on top of [python-sc2](https://github.com/BurnySc2/python-sc2) and it is the framework used by [Sharpened Edge](https://aiarena.net/bots/40/) bot.
 
 Sharpy was created to make it as easy as possible to create practice dummies for testing against Sharpened Edge. Sharpy contains everything needed to run all the practise dummies, as well as means to create more.
 
